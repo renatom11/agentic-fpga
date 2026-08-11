@@ -1946,3 +1946,480 @@ a second candidate beside it, item 3 below.
 ### Files-in-this-commit
 - agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md
 - agents/handoffs/WO-0080_tb-m04-first-bench.md
+
+## [J-dv_lead-0176] 2026-08-11T11:05Z | task:WO-0080 | Two acts on one green tree: BUG-0004 CLOSED on the one route measured end to end and explicitly NOT on the two derived ones, the W=2 conversion rule convicted as too wide and restated over the handover — and the rev-B ACCEPT paid at last, sixteen bars of sixteen, with the repeated instrument lapse ruled against my own uncured remedy rather than against the worker
+
+### Trigger
+
+Orchestrator dispatch. **No siblings.** One round, two acts, both of them acts I
+deferred or owed: (1) the empty `## Fix verdict` section of
+`BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md`, whose re-test protocol
+at §8 I wrote and must now execute; (2) the rev-B `RV-` verdict on `WO-0080`,
+which entry `J-dv_lead-0175` refused as a separate act because §12's bars had not
+been re-executed and `M-2` read a `failure`. Plus the adjudication of the worker's
+**second** instrument-lapse disclosure (`J-tb_writer-0043` Open-questions).
+
+**Abort-first head check, before reading anything.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # af06c623e4ea1ace45b2763d8c511649dedd338e
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+Byte-equal to the dispatched spawn-head `af06c62`, tree clean. Neither branch of
+the abort procedure was reached.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, before any
+  write (§3 packet classes and the VERBATIM relay rule, §4/§4.2 entry grammar and
+  set-equality, §6 write scopes, §7's harvest clause, §10's independence and
+  evidence rules).
+- **`agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md`**,
+  whole — my own §1–§8 and **rtl_lead's §9 response in full** (§9.1's mechanism
+  and its cycle-by-cycle account against my own §1 stimulus, §9.2's fix
+  expression and its difference analysis, §9.3's routes 2 and 3, §9.4's `W = 2`
+  derivation, §9.5's structural argument and its snapshot prediction, §9.6's
+  non-claims).
+- **`agents/handoffs/WO-0080_tb-m04-first-bench.md`** — §2 (the thirteen rows and
+  the corrected 11/2 split), §11.2, **§12 (the sixteen bars, re-read row by row
+  before executing them)**, §13's `BM1`…`BM16`, §15, §17.1/§17.2/§17.3, §19.2,
+  §19.3; both worker Return sections; my own `RV-0080-VERDICT` in full (its §1 bar
+  tally as the method to repeat, §6's `BM16` ruling as the precedent I am now
+  tested against, §8's re-issue terms as the promise to check) and the
+  `DISPOSITION` section.
+- **`agents/journals/workers/claude_tb_writer_agent.v03.md`** — `J-tb_writer-0043`
+  whole: Trigger, Inputs (for `M-16`), Reasoning, and **Open-questions**, which is
+  the disclosure adjudicated at §5 of the new verdict.
+- **`agents/journals/claude_rtl_lead_agent.v02.md`** — `J-rtl_lead-0018` (its
+  `#### Root cause` section, verified present for §8 item 4) and
+  `J-rtl_lead-0019` whole (§4, §5's determinism watch stated **before** the run,
+  the prediction grading, the "WHAT IS NOT CLAIMED" block, and its
+  Open-questions 1–5).
+- **`agents/handoffs/WO-0071_m03-family-m-co-occurrence.md`** — §17.1/§17.2/§17.3's
+  standing form and `RV-0071-VERDICT` §3's conclusion about four self-caught
+  disclosures and the unwritten spawn-prompt allow-list; the precedent this
+  round's `BM16` ruling is framed by.
+- **`test/attack_plans/AP-xgmii_tx_64.md`** — §1's Status vocabulary, §0.2's
+  prohibition register, §4.A/§4.B/§4.C's thirteen commissioned rows, §9's change
+  log; and `test/attack_plans/AP-xgmii_rx_64.md` §9's change-log tail, read for
+  the *discharge-recording convention* this plan inherits.
+- **The landed bench at `af06c62`**, read as a reviewer for the worker-seat bars:
+  `test/xgmii_tx_64/bench.ml` (`sample_cycle` `:89–149`, `poison` `:41`,
+  `content_octets` `:151`), `bench.mli`, `dune`, and the four unit files.
+- **`.github/workflows/build.yml`** — the `Run tests` and determinism steps read
+  in full, because the meaning of a green determinism step is load-bearing for
+  both acts and I would not quote it without knowing what it runs.
+- **`tools/dv_checks.sh`**, and its execution at this tree — the census keying,
+  re-measured rather than recalled.
+- **CI, read at the source rather than relayed**: `get_workflow_run` +
+  `list_workflow_jobs` for runs **31482795659** (af06c62) and **31479688462**
+  (02f762a), and the `build` job log tail at `af06c62`.
+- **One RTL read, post-verdict, declared**: `git diff fcf6f08..02f762a -- libs/`.
+  See Reasoning item 9.
+
+### Reasoning
+
+**1. The reading I was told and the reading I made — checked, not inherited.**
+The dispatch stated that at `02f762a` the job "reached the determinism step, so
+Run tests passed". That is an inference from step ordering and it happens to be
+right, but I do not carry an inference where a direct reading exists (`SC-13`).
+I listed the jobs of run **31479688462** and read step 6 by name: *"Run tests
+(expect tests, waveform snapshots)" = `success`*, with the `failure` at step 8,
+the determinism step, exactly where `J-rtl_lead-0018` §9.5 predicted the staleness
+would land. The direct reading and the inference agree; the direct reading is what
+I cite.
+
+**2. The fact that turns a green suite into evidence about a *specific* bench,
+and it is the load-bearing measurement of this whole round.** `git diff cbbeb76
+af06c62 -- test/` is **empty**. The seven files under `test/xgmii_tx_64/` are
+byte-identical between the SHA at which three units raised and the SHA at which
+none does. Without that measurement, "the suite is green now" is compatible with
+"the bench was changed until it stopped complaining" — which is precisely the
+failure mode `BUG-0004` §8's closing rule and §7 item 5's promotion prohibition
+exist to prevent. With it, the red and the green are **one instrument reading two
+designs**, which is the only shape in which a re-test proves a fix. I also
+measured the other half at the fix commit itself: `git diff --name-only fcf6f08
+02f762a -- test/` is empty, so no `test/**` file was touched by the fix.
+
+**3. `CLOSED`, and the exact scope of what is closed.** §8's four items are met
+(verdict §10.1). Item 2 is the largest evidentiary movement and it is worth
+naming: a green `dune runtest` requires each unit's `List.iter` to run to its last
+member, so `P ∈ {20, 59, 60, 61, 64, 67, 1514}` in U5, `{59, 60, 61}` in U7 and
+`{20, 59}` in U10 — the members `J-dv_lead-0175` recorded as *driven but never
+adjudicated* — are now driven **and read**. Item 4 is met in the narrow sense the
+charter states: I verify a Root-cause section **exists** (`J-rtl_lead-0018`'s
+`#### Root cause`), not that its mechanism is correct — adjudicating a design
+mechanism is not this seat's act, and saying so is what keeps the division real.
+
+**4. `W = 2` — the disposition, and why I convicted my own conversion rule rather
+than answer its question.** §6 said the CRITICAL converter is *"a demonstration
+that `W = 2` also strobes"*. rtl derives two things: on the round's stimulus shape
+`W = 2` is clean in **both** designs (so no measurement there can convert
+anything, in either direction), and route 3 **is** a `W = 2` strobe in the unfixed
+design (so read literally, the converter exists). Both halves are true, which is
+the tell that the question was malformed. **The mechanism does not turn on a word
+count; it turns on whether the frame's `tlast` word is already in the module's
+hands at the cycle the frame starts.** `W = 2` was a proxy for reachability and it
+is the wrong proxy. What actually protects the composed chain is SPEC-M04 §7's
+own note that M07 presents nothing at `C+8`, so the early acceptance both routes
+require is not produced upstream at all. **§6's conclusion survives; its ground
+does not, and I recorded the substitution rather than letting a later reader
+re-derive the protection from the premise that broke.** Filed as
+`FINDING BUG-0004-1` (MINOR, mine). Severity stays MAJOR and does not convert.
+
+**5. The residue, and the symmetry I applied against myself.** rtl cited my own
+`BUG-0003` §V.2 back at me — *a derivation is not a class DV records a severity
+on* — and it is right to. **The symmetric half is the one that binds this seat: a
+derivation is not a class DV records a *clearance* on either.** So `CLOSED` is
+closure on **route 1**, measured end to end. Routes 2 and 3 are fixed **by
+derivation** and have never been measured, in either design, and the closure does
+not claim them. I could have written a clean `CLOSED` that quietly absorbed them —
+that is exactly how a fixed-by-derivation defect becomes a sign-off's silent
+assumption — so instead the packet's header, its §10.3 and its §10.4 carry them
+out of the closure with carriers named, and the eventual `SO-` is barred from
+reporting REQ-206 coverage without either measuring them or declaring them a gap
+with this packet's id.
+
+**6. Where the two routes are routed, and why not to a future family.** Not AP
+rows today (I cannot author rows this round and did not). Not "family G will pick
+them up" — family G's rows assert what **must** pulse, and these assert what must
+**not**, on a shape no committed bench can drive: a back-to-back direct-drive
+handover at `C+8`. REQ-209's sustained run does not reach it either, its frames
+being `W = 8`. **They need a capability that does not exist**, so writing them
+into a family without it would produce rows that cannot be mounted, which is what
+`GAP` is for and is not what these are. Hence: two new family-G rows as plan debt
+(**debt count EIGHT → NINE**), a carried verification obligation, and a hard
+precondition on the `SO-`. Three routings for one finding, because it is three
+different kinds of thing.
+
+**7. A carrier failure mode this round found by nearly falling into it.** The
+`AP-M04` repair debt's carrier has read *"the round that next opens
+`test/attack_plans/**`"*. This round opens that file — for one change-log row.
+**A carrier phrased over a path is discharged by accident the first time a round
+opens that path for an unrelated reason**, and nobody would ever notice, because
+the debt's own carrier would read as satisfied. Re-pinned to *"the round
+commissioned to repair this plan"*, and the debt restated at nine so it is counted
+rather than inferred. Banked as a harvest candidate (Open-questions item 4).
+
+**8. The rev-B ACCEPT, and why `M-2` passes rather than being waived.** All
+sixteen bars re-executed at the base each subject quantifies over (`FINDING K-3`
+again — `ee47eee` is now twelve commits back and a literal diff to it would read
+nine foreign paths as the worker's). `M-2` is the bar that failed twice and it is
+the one I was most at risk of fudging. Its pass condition is *a step reading by
+name and status*, plus the routing rule *a red at "Run tests" is routed through
+§15, never through a re-run*. I record **both** readings rather than only the
+convenient one: at `cbbeb76`, Build `success` / Run tests `failure` / Verify
+`skipped`, with the red routed through §15 as D1 to `BUG-0004` at `run_attempt` 1;
+at `af06c62`, all three `success` on a byte-identical bench. The bar is satisfied
+by its own text at the first reading and demonstrated by the second. **16 PASS, 0
+FAIL**, no `BM1`–`BM15` reached.
+
+**9. One RTL read, and it is a departure I will not bury in a subclause.** I read
+`git diff fcf6f08..02f762a -- libs/`. `BUG-0004` was authored without opening any
+`libs/**` file and every expectation in it is spec-derived; this read is
+**post-verdict** and its sole purpose was **scope**: that one expression moved,
+that no `test/**` file did, and that the promotion commit `af06c62` changed no
+source (`git diff --stat 02f762a af06c62 -- libs/ bin/` empty). No expectation was
+derived from it and none was revised after it. Declared in the packet's §10.1 and
+here, per charter §8's independence discipline, which asks for exactly this
+statement rather than for the read not to happen.
+
+**10. The census, re-measured because §9.7's finding became load-bearing the
+moment I quoted a count.** My own `L-B01` rule is that a count is quoted with its
+provenance or not at all. Measured at `af06c62`: `tools/dv_checks.sh` contains
+**zero** occurrences of `M04`, `xgmii_tx_64` or `AP-xgmii_tx`; its row-discharge
+census is keyed to `AP-xgmii_rx_64.md`/`M03-`/`test/xgmii_rx_64/*.ml` and reports
+78 rows (M03's, not M04's 80); its per-file bench inventory reports 59 over the
+M03 directory. **Exactly one census figure moved on this round** — the
+repository-wide inventory line, **149**, agreeing with my own `M-3` measurement.
+So `dv_checks: all checks passed` at this tree says **nothing** about M04, and
+every M04 count in both artefacts is a hand count with a named method. §19.3 item
+1 is promoted from "owed" to "the difference between a countable coverage claim
+and a hand count in a packet".
+
+**11. `BM16`'s second occurrence, ruled against my own uncured remedy.** The
+condition is met again by admission, and the pattern repeats rather than corrects
+— including the sharpest instance, a post-edit `git status --short`, the one
+instrument §17.3 forbids **by name**, run after the packet had been read, in a
+round whose entire dispatch was the repair of a round whose instrument finding the
+worker had already read. **And then I measured what I myself had promised.** Every
+packet repair `RV-0080-VERDICT` §8 undertook to ride rev B is **absent**: §12
+stops at `M-16` with no `M-17`; §17.1 still forbids every `git` subcommand with no
+spawn-precheck carve-out; §4/§6.0(b) carry no `Int.rem` gloss. Those were **my**
+edits to **my** packet, no round was commissioned to make them, and `PROTOCOL §6`
+made them impossible for the worker — which it said, in its §7, rather than
+assuming or reaching. So the worker met the forced precheck conflict **uncured**,
+at a spawn where the orchestrator's standing precheck mandates the two commands
+§17.1 forbids. **That is the case my own rev-A ruling said must not recur, and it
+recurred because I did not pay it.** Filed as `FINDING WO-0080-6` (MATERIAL,
+mine), stated *before* the `BM16` ruling in the packet so the ruling is read
+against it.
+
+**12. Why not a bounce, expressed as a limit on my instrument rather than as
+leniency.** Bouncing rev B on `BM16` would return a bench CI has now proven
+correct against the fixed design, with a defect list containing nothing the worker
+could repair. **A bounce whose defect list is empty of anything the returning
+agent can act on is not a bounce; it is a sanction wearing a bounce's clothes**,
+and neither §13 nor §15 gives me that instrument. The three measured grounds hold
+as at rev A — no forbidden path (`M-16`), no bar resting on a forbidden instrument
+(I re-executed `M-8`…`M-16` myself and every figure agrees), and §17.3's
+substitution clause **held on its output** even though the forbidden command was
+run: `J-tb_writer-0043`'s five-path files list is set-equal to
+`git diff --name-only 895a076 cbbeb76` minus the worker's journal, and
+`journal-check` re-verified it. So the ruling's content lands **upward**, per
+`RV-0071-VERDICT` §3's own conclusion that this is not a comprehension failure
+clearer prose fixes: the untried remedy is the enumerated tool allow-list at the
+head of the spawn prompt, the orchestrator's, still unwritten. **And I
+pre-committed the tripwire** so this does not become an indefinite waiver: once
+that allow-list exists **and** §17.1 carries the carve-out, the next instance is a
+bounce on its own — written as the *next* packet's §13 term, before its facts
+exist, never applied retroactively.
+
+**13. The count I refused to state cleanly.** `RV-0071-VERDICT` tallied "four
+instances across four rounds". Adding the two I read myself gives six. I have
+**not** re-measured the four, so the packet says *"at least six — four from that
+verdict's own tally, which I have not re-measured and quote with its provenance,
+plus the two I read myself"*. A tidier number was available and would have been
+unsourced.
+
+**14. What moves in the plan, and the reading behind it.** The dispatch's write
+set admits `AP-xgmii_tx_64.md` *"ONLY if row statuses move on an ACCEPT — your §9
+change-log discipline"*. The plan's own §1 makes `Status` a row **kind**
+(`ASSERT`/`NO-ASSERT`/`NO-STIMULUS`/`RULING`/`GAP`/`STRUCTURAL`), never a
+discharge state, and `AP-M03`'s change log records every discharge under its
+standing *"NO STATUS MOVED"* formula. **So no `Status` cell moves and the
+discharge is recorded where this plan's predecessor records it: one appended §9
+change-log row.** I state the reading rather than acting on it silently, and the
+row is **severable** — if the orchestrator reads the gate as hard, dropping that
+one file leaves the two packets standing unaltered. Nothing else in the plan
+moved: status-cell pass run **before and after** the edit, both times 80 rows,
+56 ASSERT / 12 NO-ASSERT / 6 NO-STIMULUS / 5 STRUCTURAL / 1 GAP / 0 RULING.
+
+### Actions
+
+- Verified the spawn-head precheck; read the charter and PROTOCOL before writing.
+- Read CI runs **31482795659** (af06c62) and **31479688462** (02f762a) at the
+  source — run objects, job listings with **per-step name and status**, and the
+  `build` job log tail at `af06c62`.
+- Re-executed **all sixteen** `WO-0080` §12 bars at `af06c62`, each at the base
+  its own subject quantifies over, including every worker-seat bar
+  (`M-8`…`M-16`) independently at the tree.
+- Measured the fix's scope from `git diff fcf6f08..02f762a` (three paths, none
+  under `test/`) and the bench's invariance from `git diff cbbeb76 af06c62 --
+  test/` (empty).
+- Re-measured the census keying and ran `bash tools/dv_checks.sh` at this tree.
+- Ran a status-cell pass over every `AP-M04` row table, before and after the edit.
+- Wrote the **`Fix verdict`** section of `BUG-0004` (`CLOSED`) with §10.1–§10.6,
+  and flipped its State `OPEN` → `CLOSED` with the two surviving obligations named
+  in the header.
+- Appended **`RV-0080B-VERDICT`** (`ACCEPT`) to `WO-0080` with the sixteen-bar
+  tally, the thirteen discharged rows, the census provenance, `FINDING WO-0080-6`,
+  the `BM16` adjudication and its tripwire; flipped the header State to
+  `ACCEPTED` keeping the prior chain visible.
+- Appended **one** row to `AP-xgmii_tx_64.md` §9's change log.
+- **No git write of any kind**: no `git add`, no `git commit`, no `git push`.
+- **Nothing under `libs/**`, `top/**`, `rtl_snapshots/**`, `docs/**` or
+  `tools/**` was staged, edited or created**, and no bench file was touched — a
+  re-test judges; it does not repair what it judges.
+
+### Evidence
+
+**1. Precheck, at this seat.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # af06c623e4ea1ace45b2763d8c511649dedd338e
+
+**2. CI, externally verifiable, read by step name and status.**
+`build` run **31482795659**, `head_sha` `af06c62…`, `run_attempt` **1**,
+conclusion **`success`**, created 10:34:18Z. Job `build` id **93751338432**:
+step 5 *Build* `success`; step 6 *Run tests (expect tests, waveform snapshots)*
+`success`; step 7 *Generate RTL* `success`; step 8 *Verify nothing was left
+unpromoted or non-deterministic* `success`; step 9 *DV mechanical checks* `success`;
+step 10 *Abort-bit availability quantifier* `success`. Job `cosim` id
+**93751338523**: all steps `success`.
+`build` run **31479688462**, `head_sha` `02f762a…`, conclusion **`failure`**,
+`run_attempt` **1**. Job `build` id **93741536143**: step 5 *Build* `success`;
+**step 6 *Run tests* `success`**; step 7 *Generate RTL* `success`; **step 8
+*Verify nothing was left unpromoted or non-deterministic* `failure`** — the
+scheduled staleness, not a second defect.
+`build` run **31476319884** at `cbbeb76` (the rev-B landing): Build `success`,
+Run tests `failure`, Verify `skipped` — the reading `RV-0080B-VERDICT` §1's `M-2`
+records as Reading A.
+
+**3. The bench is byte-identical across the red/green boundary.**
+
+```sh
+git diff --stat cbbeb76 af06c62 -- test/     # empty
+git diff --name-only fcf6f08 02f762a         # 3 paths: BUG-0004, rtl_lead journal,
+                                             #   libs/hardcaml_ethernet/src/xgmii_tx_64.ml
+git diff --name-only fcf6f08 02f762a -- test/ # empty
+git diff --stat 02f762a af06c62 -- libs/ bin/ # empty
+```
+
+**4. The sixteen bars, re-executed at `af06c62`.**
+
+```sh
+# M-1
+git diff --name-only 747e561 960c831   # 9 paths
+git diff --name-only 895a076 cbbeb76   # 6 paths
+# M-3 (base re-measured in a scratch tree)
+git archive ee47eee test | tar -x -C "$S/base_ee47eee"
+(cd "$S/base_ee47eee" && grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .)  # 139
+grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .                            # 149
+# M-4 / M-5
+git ls-files test/xgmii_tx_64/                        # 7 paths
+git diff --stat ee47eee af06c62 -- test/xgmii_rx_64/  # empty (17 files tracked)
+# M-7
+grep -roh --include=*.ml 'M04-[A-Za-z0-9]*' test/ | sort | uniq -c
+#   -> 13 commissioned ids + 2 bare `M04-` (scaffold's own negation); zero others
+# M-10 / M-11 / M-12
+#   scaffold 1, a 1, b 3, c 5; 10 `[%expect {||}]`, all empty, 11th hit is dune prose
+#   10 `=` lines alone: a:101 b:129,215,297 c:64,111,174,223,287 scaffold:66
+# M-13 / M-14
+grep -rn 'tready' test/xgmii_tx_64/   # bench.ml:108,133,135,139 + 6 bench.mli prose; zero in test_m04_*.ml
+grep -rn 'poison' test/xgmii_tx_64/*.ml | head -1   # bench.ml:41  let poison = 0xA5
+# M-15
+for f in test/xgmii_tx_64/*.ml*; do ocamlc -stop-after parsing "$f"; done   # exit 0 x6
+```
+
+Per-directory census at `af06c62` summing the `M-3` delta: `axi64_probe` 3,
+`cosim` 0, `golden` 11, `hardcaml_ethernet` 1, `monitors` 37, `xgmii` 25,
+`xgmii_probe` 3, `xgmii_rx_64` 59, `attack_plans` 0, `third_party` 0 = **139**;
+`xgmii_tx_64` **10**; total **149**.
+
+**5. The census, measured rather than recalled.**
+
+```sh
+grep -c 'M04\|xgmii_tx_64\|AP-xgmii_tx' tools/dv_checks.sh   # 0
+bash tools/dv_checks.sh
+#   row-discharge census: "78  row ids declared in the plan"   <- AP-M03's, not M04's 80
+#   bench inventory:      " 59  test/xgmii_rx_64/ (the M03 bench)"
+#                         "149  test/**/*.ml (repository-wide, FILE-TYPE scoped)"
+#   "dv_checks: every check that COULD run passed, and 1 obligation is still OPEN"
+```
+
+**6. The status-cell pass over `AP-M04`, before and after the edit** — both
+times: 80 row ids (80 distinct), **56 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5
+STRUCTURAL, 1 GAP, 0 RULING**.
+
+```sh
+grep -oE '^\| \*\*M04-[A-Z][0-9]+\*\*.*\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|GAP|STRUCTURAL) \|$' \
+  test/attack_plans/AP-xgmii_tx_64.md \
+  | grep -oE '\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|GAP|STRUCTURAL) \|$' | sort | uniq -c
+```
+
+**7. The promised rev-B packet repairs, measured absent at `af06c62`.**
+`grep -n 'M-17' agents/handoffs/WO-0080_tb-m04-first-bench.md` returns three hits,
+**all three inside `RV-0080-VERDICT` §3.1/§8 and the worker's own flag** — §12's
+table stops at `M-16`. §17.1 at lines 1512–1535 still reads *"`git` (every
+subcommand, including read-only ones such as `status`, `diff`, `show` and
+`log`)"* with no spawn-precheck carve-out.
+
+**8. The worker's files list, independently checked.** `J-tb_writer-0043`'s
+`Files-in-this-commit` lists five paths; `git diff --name-only 895a076 cbbeb76`
+returns those five plus `agents/journals/workers/claude_tb_writer_agent.v03.md`
+— set-equal under PROTOCOL §4.2, and re-verified by `journal-check` at that
+commit.
+
+**9. The determinism datapoint, measured at this tree.** Committed digests
+`sha256sum rtl_snapshots/xgmii_tx_64.v rtl_snapshots/eth_mac_10g.v` →
+`27cb8ebe…ee85` and `6735d092…02ac`, the two shas `J-rtl_lead-0019` §5 named in
+advance; run 31482795659's step 8 regenerated and found no diff, with
+`git diff --stat 02f762a af06c62 -- libs/ bin/` empty. `.github/workflows/build.yml`
+read: the step generates **once** and compares against the committed tree, so this
+is cross-run identity between two commits and **not** a double-generation check.
+
+**10. Independence.** `git status --short` at return lists exactly four paths:
+`agents/handoffs/BUG-0004_…md`, `agents/handoffs/WO-0080_…md`,
+`test/attack_plans/AP-xgmii_tx_64.md` and this journal. **One `libs/**` read
+occurred and is declared** (Reasoning item 9): `git diff fcf6f08..02f762a --
+libs/`, post-verdict, for fix scope only. No file under `top/**`,
+`rtl_snapshots/**` or `test/third_party/**` was opened.
+
+### Outcome
+
+**DoD for a two-act adjudication round: met.**
+
+- **`BUG-0004` — `CLOSED`**, one token, per the packet's own grammar. §8's four
+  re-test items executed; the fix's scope measured; the bench proven invariant
+  across the red/green boundary. **`W = 2`**: §6/§8's condition **discharged** on
+  a **replaced ground** (SPEC-M04 §7's `C+8` note, not the word count), severity
+  stays **MAJOR**, `FINDING BUG-0004-1` minted against my own conversion rule.
+  **Routes 2 and 3**: a **carried obligation** plus **plan row debt** (EIGHT →
+  NINE) plus a **hard `SO-` precondition** — not discharged, not a future
+  family's to inherit by silence, carriers named at §10.4. **rtl's non-claims**:
+  three dispositioned, one (REQ-902's two-run byte identity) **superseded by one
+  measured datapoint** and routed back to rtl_lead as its requirement.
+- **`WO-0080` rev B — `ACCEPT`**, one token. **16 of 16 bars PASS**, each at the
+  base its subject quantifies over; no `BM1`–`BM15` reached. **Thirteen rows
+  discharged** — eleven ASSERT by green assertion, two NO-ASSERT by prohibitions
+  that held. **67 of 80 outstanding**, `BAR T1` SHUT, no `SO-`, `M04-G4` not
+  discharged. The PROTOCOL §10 mutation campaign's sequencing precondition is now
+  **met**; scheduling is the orchestrator's and my recommendation is the
+  per-family cadence.
+- **`BM16`, second occurrence** — accept, disclosure credited in full, **no
+  sanction**, finding **escalated** to structural and routed to the orchestrator
+  (the unwritten spawn-prompt allow-list), with `FINDING WO-0080-6` (MATERIAL,
+  mine) recording that my own rev-A remedy was never applied, and a **tripwire
+  pre-committed** for the next packet.
+- **Plan**: one §9 change-log row, no `Status` cell, no coverage-map line, no
+  editorial repair. Severable from the rest of the commit.
+- **Handoff**: three artefacts to the orchestrator for commit; `BUG-0004`'s
+  closure is **VERBATIM** relay class to rtl_lead (PROTOCOL §3).
+
+**No harvest note is owed.** ADR-0018 attaches one to every `SO-` and every phase
+gate; this round is neither. The span tiles unbroken from `J-dv_lead-0174` through
+this entry to the next sign-off, where three banked candidates now wait
+(Open-questions item 4).
+
+### Open-questions
+
+1. **Routes 2 and 3 of `BUG-0004` are fixed by derivation and have never been
+   measured, in either design.** The shape needs a direct-drive back-to-back bench
+   with a controllable handover at `C+8` — a capability no round has built and
+   that family D does not require. **Route**: mine, the round that first opens
+   such a bench; and it is a **hard precondition** on any `SO-xgmii_tx_64.md`
+   claiming REQ-206 coverage (`BUG-0004` §10.3 item 3). `M04-G5`, §5 item 4's
+   opposite-verdict neighbour, is in the same condition and rides the same
+   carrier.
+2. **The `AP-M04` repair debt stands at NINE and its carrier is re-pinned** from
+   *"the round that next opens `test/attack_plans/**`"* to *"the round
+   commissioned to repair this plan"* — because this round opened that path for a
+   change-log row and would otherwise have discharged the carrier by accident.
+   The two new rows are the `W = 1` collapse and the pre-loaded handover.
+3. **Six packet repairs I promised at `RV-0080-VERDICT` §8 were never made**
+   (`FINDING WO-0080-6`, mine): the `M-17` infix-`mod` bar, §17.1's spawn-precheck
+   carve-out, the `Int.rem` gloss at §4/§6.0(b), the read-list row, §16.3's
+   operator clause, §3.4's/§3.6's wording. `WO-0080` is now `ACCEPTED` and closed
+   to further terms, so they are **re-pinned to the next packet this seat writes
+   for the `tb_writer` chain**, together with the `BM16` tripwire and
+   `FINDING WO-0080-5`'s §15 instrument-class repair. **The structural half —
+   the enumerated tool allow-list at the head of the spawn prompt — is the
+   orchestrator's and remains unwritten since `RV-0071-VERDICT` §3.**
+4. **Three harvest candidates banked for the next `SO-`.** (a) Carried from
+   `J-dv_lead-0175`: *a defect found by an instrument that runs on every stimulus,
+   on a stimulus commissioned for an unrelated property, is evidence about the
+   instrument's placement and not luck* — LH1 `cbbeb76`, and this round supplies
+   its second instance in the same instrument's silence at `af06c62`. (b) New:
+   *an obligation whose carrier is phrased over a file path is discharged by
+   accident the first time a round opens that path for an unrelated reason; a
+   carrier must name the commissioning act, not the artefact* — LH1 this round.
+   (c) New: *a re-test proves a fix only if the instrument is measurably unchanged
+   between the failing and passing observations; without that measurement, "it is
+   green now" is compatible with the instrument having been edited until it
+   stopped complaining* — LH1 `cbbeb76`→`af06c62`. LH2/LH3 to be discharged at the
+   next sign-off.
+5. **`tools/dv_checks.sh` still cannot count an M04 row** (§19.3 item 1, measured
+   again at `af06c62`). Every M04 count in this round's artefacts is a hand count
+   with its method stated. **Mine**, `tools/**`, and it should land before any
+   `SO-` quotes an M04 coverage fraction; `DVC-1a` remains wanted by three plans.
+6. **Standing and untouched by this round**: the transmit-side conservation
+   monitor (`AP-M04` §7 `T-2`); `AP-ip_eth_rx_64`'s `M14-F1`/`F2`/`F3`; the three
+   `BAR T1` work orders; `FINDING ABS-1`'s §0.6 sentence (architect_docs_lead's);
+   `SO-xgmii_rx_64.md`'s Stage-3 gate table; family D as the next bench round, now
+   unblocked.
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md
+- agents/handoffs/WO-0080_tb-m04-first-bench.md
+- test/attack_plans/AP-xgmii_tx_64.md

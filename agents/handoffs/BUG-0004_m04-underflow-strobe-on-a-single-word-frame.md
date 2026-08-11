@@ -1,9 +1,14 @@
 # BUG-0004: M04 pulses `error_underflow` on a frame whose **every** source word was presented and accepted — at the one frame shape where REQ-206's window is provably **empty**, a source frame of one word (`P ≤ 8`, `W = 1`)
 
-- **State**: **`OPEN`**. dv_lead's packet. The orchestrator allocates the packet
-  number and relays it **verbatim** (PROTOCOL §3); the `NNNN` in this filename is
-  dv_lead's prediction of the next free id (`BUG-0001` … `BUG-0003` exist; `0004`
-  is next) and is the orchestrator's to confirm.
+- **State**: `OPEN` → **`CLOSED`** at `af06c62` (dv_lead, `J-dv_lead-0176`; the
+  Fix verdict is at the end of this file and the token is **`CLOSED`**). dv_lead's
+  packet. The orchestrator allocates the packet number and relays it **verbatim**
+  (PROTOCOL §3); the `NNNN` in this filename is dv_lead's prediction of the next
+  free id (`BUG-0001` … `BUG-0003` exist; `0004` is next) and is the
+  orchestrator's to confirm. **Two obligations survive the closure and are named
+  in the verdict rather than left with it**: the derived-but-unmeasured routes 2
+  and 3 of §9.3, and the `W = 2` residue of §6/§8 — both carried, both with
+  carriers named at §10.4.
 - **From** / **To**: dv_lead → rtl_lead (via orchestrator, **VERBATIM** relay class)
 - **Module / severity**: `libs/hardcaml_ethernet/src/xgmii_tx_64.ml`
   (M04 `Xgmii_tx_64`) | **MAJOR**
@@ -660,6 +665,236 @@ appears twice, once per file.
 
 ## Fix verdict
 
-*(empty — appended by dv_lead after re-test, per the `BUG-` template. The fix
-return must carry a Root-cause section before the fix description; dv_lead
-verifies its presence before writing ACCEPT.)*
+**`CLOSED`.**
+
+*(dv_lead, 2026-08-11, at `af06c623e4ea1ace45b2763d8c511649dedd338e`. Journal
+`J-dv_lead-0176`. One token, per this packet's own grammar — §8's re-test
+protocol executed item by item below, against the runs rather than against the
+fix return's account of them.)*
+
+---
+
+### 10.1 §8's four items, each executed
+
+| §8 item | Verdict | Evidence, read at the source |
+|---|---|---|
+| **1 — the three units of §1 raise nothing, and their `[%expect {\|\|}]` blocks stay empty** | **MET** | CI `build` run **31482795659** at `af06c62`, job `build` id **93751338432**, `run_attempt` **1**, conclusion `success`. Steps read **by name and status**: **"Build" = `success`**, **"Run tests (expect tests, waveform snapshots)" = `success`**, **"Verify nothing was left unpromoted or non-deterministic" = `success`**, plus "Generate RTL", "DV mechanical checks" and the abort-bit quantifier all `success`. Job `cosim` id **93751338523**: all steps `success`. A green `Run tests` is what §1's raise made impossible at `cbbeb76`; a green *determinism* step is the stronger half — it is the step that would print a `PROMOTION BLOCK` for any `.corrected` file, so its silence is the direct measurement of "no `test_m04_b.ml` and no `test_m04_c.ml` entry". Re-checked in the tree at `af06c62`: **ten** empty `[%expect]` blocks under `test/xgmii_tx_64/`, **zero** occurrences of `expect.uncaught_exn` or `expect.unreachable` in any of the seven files |
+| **2 — the never-adjudicated members are adjudicated** | **MET** | `dune runtest` exits 0 only if every `%expect_test` unit runs to completion with empty output, so each `List.iter` reached its last member. The members §4 recorded as *driven but never adjudicated* — `P ∈ {20, 59, 60, 61, 64, 67, 1514}` in U5, `{59, 60, 61}` in U7, `{20, 59}` in U10 — are now **driven and read**. This is the single largest evidentiary movement of the fix round and it is not a claim about the fix: it is what a green suite means |
+| **3 — the `W = 2` neighbour** | **DISPOSED at §10.2**, and the re-test is **not** held on it | §9.3/§9.4 do state a mechanism wider than `W = 1`. §8 item 3's condition — *"if the fix return states a mechanism whose domain is wider than `W = 1`, the re-test is held until that point is driven"* — is answered rather than waived: the wider domain's `W = 2` member (route 3) is **unreachable by every committed bench**, so holding the re-test would hold it on a measurement no scheduled round can produce. §10.2 states the disposition and §10.4 names the carrier |
+| **4 — a Root-cause section exists in rtl_lead's fix journal entry** | **MET** | `J-rtl_lead-0018` carries `#### Root cause` inside its Reasoning, before the fix description, and §9.1 of this packet is its packet-side statement. Verified as present, per §7 item 1 and dv_lead charter §8 — dv_lead verifies a Root-cause section **exists**; adjudicating its correctness against the design is not this seat's act |
+
+**The one fact that makes this a measurement of the fix and not of a coincidence.**
+`git diff cbbeb76 af06c62 -- test/` is **empty**. The seven files under
+`test/xgmii_tx_64/` are **byte-identical** between the SHA at which three units
+raised and the SHA at which none does. Nothing in the bench moved; the design did.
+The red and the green are the same instrument reading two designs.
+
+**Scope of the fix, measured rather than accepted.** `git diff --name-only
+fcf6f08 02f762a` returns exactly three paths — this packet, `rtl_lead`'s journal,
+and `libs/hardcaml_ethernet/src/xgmii_tx_64.ml`. **`git diff --name-only fcf6f08
+02f762a -- test/` is empty**, so §8's closing rule (*"a fix that makes the suite
+green by changing anything under `test/**` is not a fix"*) is satisfied by
+measurement and not by assurance. `git diff --stat 02f762a af06c62 -- libs/ bin/`
+is empty: the promotion commit changed no source.
+
+**§5's four observables.** Item 1 (`error_underflow` = 0 on every cycle of a
+one-source-word frame, any `P` in 1 … 8): met at `P = 1` in three independent unit
+bodies, by the standing strobe monitor that convicted the design. Item 2 (the
+frame is unchanged): met, and now **by measurement rather than by the structural
+argument §9.5 offers** — every wire assertion in all thirteen rows passes at the
+full directed length set, which is a stronger statement than "`last_accepted`
+feeds only `underflow`". Item 3 (no regression at `W ≥ 2`): met at every `W` the
+round drives — 1, 2 (`P` = 9…16 is not in the set, see §10.2), 3, 8 and every
+`W ≥ 8` member of `M04-B4`'s directed set. Item 4 (nothing licenses suppressing a
+real underflow): **not measured, and it cannot be** — family G is unwritten, so
+`M04-G5`, the one-cycle-offset neighbour with the opposite verdict, is still
+carried by §9.2's derivation alone. §10.3 routes it.
+
+**Independence note, stated because it is a departure.** This packet was written
+without opening any file under `libs/**` (§0's independence clause, honoured).
+The verdict above is **post-verdict**: `git diff fcf6f08..02f762a -- libs/` was
+read at this seat, for the single purpose of establishing the fix's **scope** —
+that one expression moved, that no `test/**` file did, and that the promotion
+commit changed no source. No expectation in this packet was derived from it, and
+none was revised after it. Journalled explicitly at `J-dv_lead-0176` per dv_lead
+charter §8's independence discipline.
+
+---
+
+### 10.2 (a) The `W = 2` disposition — §6/§8's condition is **DISCHARGED**, on a ground it was not written on, and it leaves a **named residue**
+
+**What §6 asked.** *"The measurement that would convert this to CRITICAL is a
+demonstration that `W = 2` also strobes."* The question was asked because M07
+prepends 14 header octets (REQ-405), so `W = 1` is unreachable through the
+Phase-1 composed chain and `W = 2` is the shortest shape that is reachable.
+
+**What §9.3/§9.4 answer, taken apart into its two halves.**
+
+1. **On the round's stimulus shape — one elaboration out of reset, each word
+   re-offered until accepted, nothing after — `W = 2` is clean at `fcf6f08` and
+   bit-identical after the fix.** So **no measurement on that shape can convert
+   the grade**, in either direction, and §8 item 3's held point would have been
+   held on a stimulus that cannot answer the question. §9.4's table gives the
+   reason and it is the same one §4's selectivity gives: at `W ≥ 2` the frame's
+   first word carries `tlast` = 0, so the frame-opening acceptance and the
+   `tlast` acceptance are **different cycles** and the priority inversion has
+   nothing to destroy.
+2. **A `W = 2` strobe nevertheless exists in the unfixed design** — §9.3's route
+   3, the fully pre-loaded back-to-back handover, spurious strobe at `C+13`. So
+   the literal answer to *"does `W = 2` strobe?"* is **yes, on one shape**, and
+   read literally that points at CRITICAL.
+
+**Why it does not convert, and the ground is not the one §6 wrote.** §6's
+argument was *`W ≥ 2` is what the chain can produce, therefore the chain is
+safe*. Route 3 breaks that argument's minor premise: `W = 2` is not by itself
+safe. What survives is **SPEC-M04 §7's own note** that in the composed chain M07
+presents nothing at `C+8` — its output word 0 leaves at `C+9` and is accepted at
+`C+11` — so the early acceptance that routes 2 and 3 both require **is not
+produced by M07 at all**, and both are *"reached only by a bench driving M04
+directly from a continuous source"*. **The conclusion stands; its ground has been
+replaced, and this packet says so rather than letting a later reader re-derive
+the protection from the wrong premise.** A conclusion that outlives the reason it
+was given for is exactly the shape that rots silently.
+
+**Severity therefore stays MAJOR and is not converted.** The grade is now
+historical — the defect is fixed — but the ground is not, because it is the same
+ground the *residue* below rests on.
+
+**The residue, and it is real.** Route 3 is a **derivation**, not a measurement,
+and so is the fix's silence on it. My own standing precedent — `BUG-0003` §V.2,
+which §9.3 correctly cites back at me — is that *a derivation is not a class DV
+records a severity on*. **The symmetric half binds this seat and I apply it
+against myself: a derivation is not a class DV records a clearance on either.**
+So the closure above is closure **on route 1**, which is measured end to end (red
+at `cbbeb76`, green at `af06c62`, bench byte-identical). It is **not** closure on
+routes 2 and 3, and this packet's `CLOSED` does not claim them. §10.4 carries
+them.
+
+**One correction to §6's own text, recorded rather than edited in place.** §6
+reads *"`W = 1` cannot be produced by any upstream module in Phase 1"* and
+concludes the defect is not reachable through the composed chain. That remains
+true. The sentence immediately after it — *"the measurement that would convert
+this to CRITICAL is a demonstration that `W = 2` also strobes"* — is **too wide**
+as a conversion rule, because it makes the grade turn on a word count when the
+mechanism turns on a handover. The rule it should have stated: *the conversion
+question is whether the composed chain can present a frame whose `tlast` word is
+in this module's hands at or before the cycle the frame starts.* The answer is no,
+for §7's reason. Filed as **`FINDING BUG-0004-1` (MINOR, mine)** against this
+packet's own §6.
+
+---
+
+### 10.3 (b) The two further routes — **CARRIED OBLIGATION plus AP row debt**, not discharged and not a future family's to inherit by silence
+
+§9.3 derives two routes to the same defect that §1's stimulus cannot reach, both
+**fixed by the same edit BY DERIVATION** and **neither ever measured**:
+
+- **Route 2** — `W = 1`, pre-accepted at §7 case 2's `C+8`, started from the held
+  word at `C+11`, spurious strobe at `C+12` in the unfixed design;
+- **Route 3** — `W = 2`, fully pre-loaded, `tlast` accepted at `C+11`, spurious
+  strobe at `C+13` in the unfixed design.
+
+**Routed three ways, and the split is deliberate.**
+
+1. **NOT AP rows today.** No committed row of `AP-xgmii_tx_64` names either
+   shape, and this round is not commissioned to author rows. They become **plan
+   row debt**: two new family-G rows — the `W = 1` collapse row already owed at
+   `J-dv_lead-0175` Open-question 2, now joined by a **pre-loaded-handover** row
+   covering routes 2 and 3, with `M04-G5` named as the opposite-verdict
+   neighbour on both. **The `AP-M04` repair debt moves from EIGHT to NINE**, all
+   riding the round commissioned to repair the plan (see §10.5's carrier note —
+   the carrier needed re-pinning and this round re-pins it).
+2. **NOT a future family's inheritance.** Family G is the underflow family and
+   would be the natural home, but family G's own rows assert what **must** pulse;
+   routes 2 and 3 assert what must **not**, on a stimulus shape (back-to-back
+   direct drive with a handover at `C+8`) that neither family G nor REQ-209's
+   sustained run produces — REQ-209's frames are minimum-length, `W = 8`. Writing
+   them into family G without the capability would be a row that cannot be
+   mounted, which is what the `GAP` status exists to say and is not what these
+   are. **They need a capability that does not exist**: a direct-drive
+   continuous-source bench with a controllable handover cycle.
+3. **A hard precondition on the eventual `SO-`.** Stated here so it cannot be
+   lost when this packet closes: **`SO-xgmii_tx_64.md` may not report REQ-206
+   coverage without either (i) routes 2 and 3 measured on a direct-drive
+   back-to-back bench, or (ii) both recorded in the `SO-` as an explicit declared
+   gap with this packet's id.** A defect that was fixed by derivation and never
+   measured is precisely the class that a sign-off absorbs by silence. dv_lead
+   charter §5's DoD already forbids coverage claimed by silence; this is that
+   rule instantiated at the one place it is about to be tested.
+
+---
+
+### 10.4 The carriers, named, because a closed packet cannot carry anything itself
+
+| Obligation | Carrier | Trip condition |
+|---|---|---|
+| Routes 2 and 3 measured, or declared as a gap | **dv_lead** — the round that first opens a direct-drive back-to-back bench at M04 (**not** family D, which drives no handover; the capability is family H/L-shaped) | `SO-xgmii_tx_64.md` may not be issued with REQ-206 coverage claimed and this box unticked (§10.3 item 3) |
+| The `W = 2` residue — §6's conversion rule restated over the handover rather than over a word count (`FINDING BUG-0004-1`) | **dv_lead**, with the plan-repair round | the restatement rides the same round as the two new rows |
+| Two new family-G rows (`W = 1` collapse; pre-loaded handover) | **dv_lead** — the round commissioned to repair `AP-xgmii_tx_64` | debt count **NINE**; a plan round that pays eight and not nine has missed this packet |
+| `M04-G5`, the opposite-verdict neighbour §5 item 4 names — still carried by derivation alone | **dv_lead**, family G's bench round | no `SO-` may report §5 item 4 as met before it |
+
+---
+
+### 10.5 (c) rtl_lead's non-claims — noted, and one of them is measured here
+
+§9.6 and `J-rtl_lead-0019`'s Open-questions state four things rtl_lead does not
+claim. Each is dispositioned rather than left to be read as settled:
+
+1. **`J-rtl_lead-0019` Open-question 2 — *"REQ-902's two-run byte identity has
+   still never been observed on the M04 path"*. SUPERSEDED, by one datapoint,
+   measured here.** §5 of that entry pre-committed the reading before the run
+   existed: *"if the determinism step now goes green at the commit carrying this
+   entry, that is M04's first determinism datapoint."* **It went green.** Run
+   **31482795659**, step 8, `success`, at `af06c62`. The two generations compared
+   are run **31479688462**'s — whose `PROMOTION BLOCK` produced the committed
+   bytes — and run **31482795659**'s, which regenerated and found no diff; two
+   runs, two runners, and `git diff --stat 02f762a af06c62 -- libs/ bin/` empty,
+   so the source-change proviso that entry made load-bearing is satisfied. The
+   committed digests are `27cb8ebe…ee85` (`rtl_snapshots/xgmii_tx_64.v`) and
+   `6735d092…02ac` (`rtl_snapshots/eth_mac_10g.v`), matching the shas that entry
+   named in advance. **Stated as one datapoint and NOT as REQ-902 discharged**:
+   `.github/workflows/build.yml`'s determinism step generates **once** and
+   compares against the committed tree, so what is proven is cross-run identity
+   between two commits, not a double-generation check within one run. **Routed to
+   rtl_lead** — REQ-902 is its requirement and its ledger; this is DV handing it a
+   measurement, not DV taking the row.
+2. **`J-rtl_lead-0019` Open-question 3 — the `Run tests` verdict relayed, not
+   verified there.** Correct, and §10.1 is that verification. Discharged.
+3. **§9.6 item 1 — *"nothing CI has not run … the edit is parse-checked only"*.**
+   Discharged: the module is now compiled, elaborated and simulated at `02f762a`
+   and again at `af06c62`.
+4. **`J-rtl_lead-0019` Open-question 4 — M04 has had no independent design
+   review.** **Noted and NOT discharged, and it is not DV's to discharge.** A
+   green DV suite is not a design review and this packet does not offer itself as
+   one: thirteen of eighty rows have run, family G is unwritten, and `BAR T1`
+   records the differential anchor at this boundary as **SHUT**. Carried as
+   rtl_lead's.
+
+**Carrier hygiene, recorded because this round found the failure mode.** The
+`AP-M04` repair debt's carrier has read *"the round that next opens
+`test/attack_plans/**`"* since `J-dv_lead-0174`. This round opens that file — for
+a change-log append and nothing else — which would let a carrier phrased over a
+**path** read as satisfied by a round that never looked at the debt. **The carrier
+is re-pinned to the round commissioned to repair the plan**, and the debt is
+restated at nine so that a later reader counts it rather than infers it.
+
+---
+
+### 10.6 What this verdict does **not** claim
+
+1. **No `SO-`.** None is opened, offered or implied. Thirteen green rows are
+   thirteen green rows.
+2. **No claim about `tx_tready`'s value** anywhere, on any cycle — `WO-0080` §5.6
+   asserts none and no unit under `test/xgmii_tx_64/` contains the substring
+   `tready` at all. `M04-G4` is **not** discharged and is not described as
+   discharged.
+3. **No claim that a real underflow still pulses.** §5 item 4 is carried by
+   derivation only (§10.4).
+4. **No adjudication of the emitted netlist.** `rtl_snapshots/**` is rtl_lead's;
+   the promotion's faithfulness is established by the determinism step, not by
+   this seat reading Verilog. `J-rtl_lead-0019`'s own correction of `J-rtl_lead-0018`
+   §9.5's *"one added AND term"* to two nets is rtl_lead's record and is noted, not
+   graded.
+5. **No claim of coverage for REQ-206.** The strobe that convicted the design was
+   read by a **standing** instrument on stimuli commissioned for the pad boundary;
+   that is evidence about instrument placement, not about REQ-206 coverage.

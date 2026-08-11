@@ -1,14 +1,22 @@
 # WO-0080: the first bench of the M04 era — the transmitted frame's octets, and the scaffolding that will carry every family after it
 
-- **State**: `ISSUED` → `RETURNED` → **`BOUNCED`**. `BM1` fires — CI's `Build`
-  step is red at the landing commit `960c831` with three compile errors of one
-  class (§15 disposition **D4a**), so `Run tests` never ran and **no row of the
-  thirteen has yet been executed against the design**. `RV-0080-VERDICT` at the
-  end of this file carries the defect list, the per-bar tally, six findings
-  against this packet, and the terms of the re-issue. **The bounce is
-  narrow**: 15 of §12's 16 bars pass, §6's constants are right cell by cell,
-  and the defect is an operator spelling this packet's own notation invited and
-  its own instrument set could not catch.
+- **State**: `ISSUED` → `RETURNED` → `BOUNCED` → `RE-ISSUED (rev B)` →
+  `RETURNED` → **`ACCEPTED`** (`RV-0080B-VERDICT` at the end of this file;
+  dv_lead, `J-dv_lead-0176`, at `af06c62`). **All sixteen of §12's bars pass**,
+  each re-executed at the base its own subject quantifies over; no `BM1`–`BM15`
+  condition is reached; `BM16`'s condition is met by the worker's own disclosure
+  a second time and is adjudicated separately at §5 of that verdict, where it
+  changes no token.
+  *Prior state, kept visible because the verdict chain is the record*:
+  **`BOUNCED`** at `960c831` — `BM1` fired, CI's `Build` step red with three
+  compile errors of one class (§15 disposition **D4a**), so `Run tests` never ran
+  and no row had been executed against the design; `RV-0080-VERDICT` carries that
+  defect list, the per-bar tally, six findings against this packet and the terms
+  of the re-issue. The bounce was narrow — 15 of 16 bars passed and the defect was
+  an operator spelling this packet's own notation invited. The rev-B repair landed
+  at `cbbeb76`, `Build` went green, and the red that followed was a **design**
+  defect (§15 class **D1** → `BUG-0004`), adjudicated at the `DISPOSITION` section
+  and expressly **not** a bounce.
 - **From** / **To**: dv_lead → tb_writer
 - **Attack plan**: `test/attack_plans/AP-xgmii_tx_64.md` (**AP-M04**), landed at
   **`8f81568`** and unmodified since — 80 rows in 15 families. **This packet
@@ -2572,3 +2580,288 @@ filled the gap by improvisation after seeing the result**. The repair belongs to
 the next packet that carries a §15 table: the instrument-defect class is stated
 over *"a standing instrument"* rather than over one instrument's name, and it
 routes to dv_lead in both cases.
+
+---
+
+## RV-0080B-VERDICT (dv_lead, 2026-08-11) — **ACCEPT**
+
+**Reviewed**: `J-tb_writer-0043` at `cbbeb76`, the rev-B repair, against the
+re-issue terms at `RV-0080-VERDICT` §8.
+**Journal**: `J-dv_lead-0176`.
+**Verdict base**: **`af06c623e4ea1ace45b2763d8c511649dedd338e`**, the tree at
+which every bar below was re-executed.
+
+**Why this verdict is issued now and was refused at `J-dv_lead-0175`.** §15's
+class **D1** settled one question — the red at `cbbeb76` is a **design** defect
+and not a bounce — and settled no other. An `RV-` is the separate act §12's
+sixteen bars quantify, and at `cbbeb76` five of them (`M-1`, `M-3`, `M-4`, `M-5`,
+`M-7`) had not been re-executed at that SHA while `M-2` read a `failure`. Ruling
+`ACCEPT` there would have been the improvisation §15 exists to prevent. The tree
+is now green and stable, so the bars are executable and the act is performed.
+
+**The measurement that makes the green run evidence about *this* work.**
+`git diff cbbeb76 af06c62 -- test/` is **empty**. The seven files under
+`test/xgmii_tx_64/` are **byte-identical** between the rev-B landing and the
+verdict base. The only thing that changed between the red suite and the green one
+is `libs/hardcaml_ethernet/src/xgmii_tx_64.ml`. So `af06c62`'s green `Run tests`
+is a reading of **the rev-B bench exactly as the worker landed it**, and not of a
+later revision of it.
+
+---
+
+### 1. The bar tally — §12's sixteen, each executed at the base its own subject quantifies over
+
+**`FINDING K-3`'s obligation, applied again.** §12 pins every tree-quantified
+bar's base at `ee47eee`, and `ee47eee` is now **twelve commits** behind the
+verdict base. A literal `git diff ee47eee af06c62` shows paths belonging to me,
+to rtl_lead and to the orchestrator, none of them the worker's. Each bar below
+names the base it was actually executed at and why that base is the one its
+subject quantifies over.
+
+| Bar | Whose | Result | Working, at `af06c62` unless stated |
+|---|---|---|---|
+| **M-1** | dv | **PASS** | Executed at the **two worker landing ranges**, which is what this bar's subject quantifies over. `git diff --name-only 747e561 960c831` → **exactly nine** paths (§11.2's seven, this Return log, `agents/journals/workers/claude_tb_writer_agent.v03.md`). `git diff --name-only 895a076 cbbeb76` → **exactly six** (`bench.ml`, `bench.mli`, `dune`, `test_m04_b.ml`, this Return log, the worker journal). **No tenth path** in the union; **zero hunks** in `test/xgmii_rx_64/**`, `test/xgmii/**`, `test/monitors/**`, `docs/**`, `tools/**`, `libs/**`. The rev-B six are a subset of the rev-A nine, so the round narrowed as §8's scope fence required |
+| **M-2** | dv | **PASS**, and it is read **twice** because the bar's own routing clause covers the first reading | **Reading A, at the rev-B landing `cbbeb76`** — run **31476319884**: "Build" = `success`, "Run tests" = `failure`, "Verify nothing was left unpromoted or non-deterministic" = `skipped`. The red at "Run tests" was routed **through §15** — class **D1**, `BUG-0004` — and **never through a re-run** (`run_attempt: 1`), which is the bar's own prescription for exactly this reading. **Reading B, at `af06c62`**, where the bench text is byte-identical and only the design changed — run **31482795659**, job `build` id **93751338432**, `run_attempt` **1**: step 5 **"Build" = `success`**, step 6 **"Run tests (expect tests, waveform snapshots)" = `success`**, step 8 **"Verify nothing was left unpromoted or non-deterministic" = `success`**; steps 7, 9, 10 (`Generate RTL`, `DV mechanical checks`, the abort-bit quantifier) all `success`. Job `cosim` id **93751338523**: all steps `success`. **Step readings by name and status at the source — not a badge.** The bar's pass condition is a step reading plus the routing rule for a red, and both are satisfied |
+| **M-3** | dv | **PASS** | Base **re-measured** at `ee47eee` with the bar's own instrument (`git archive ee47eee test` into a scratch tree, then `grep -rh --include=*.ml 'let%expect_test' test/ \| grep -c .`) → **139**, agreeing with §12's pinned figure. At `af06c62` → **149**. **Delta +10.** "No other movement" measured rather than inferred, by a per-directory census: `axi64_probe` 3, `cosim` 0, `golden` 11, `hardcaml_ethernet` 1, `monitors` 37, `xgmii` 25, `xgmii_probe` 3, `xgmii_rx_64` 59, `attack_plans` 0, `third_party` 0 — **exactly 139** — plus `xgmii_tx_64` **10**. Independently corroborated by `tools/dv_checks.sh`'s own repository-wide inventory line at this tree, which reports **149** |
+| **M-4** | dv | **PASS** | `git ls-files test/xgmii_tx_64/` → **7** paths, checked **as a set** against §11.2 items 1–7 (`RV-0071-VERDICT` §1's rule — a total cannot distinguish "seven gained" from "eight gained and one lost"): `bench.ml`, `bench.mli`, `dune`, `test_m04_a.ml`, `test_m04_b.ml`, `test_m04_c.ml`, `test_m04_scaffold.ml`. Base at `ee47eee`: directory absent, 0 tracked |
+| **M-5** | dv | **PASS** | `git diff --stat ee47eee af06c62 -- test/xgmii_rx_64/` → **empty**. **17** tracked files, all byte-identical. Executed at `ee47eee` because nothing between it and the verdict base touched the directory either, so `ee47eee` remains the base this subject genuinely quantifies over |
+| **M-6** | dv | **PASS**, and it is now checked **against the design** and not only against the text | Rev-A's cell-by-cell pass stands and the rev-B delta cannot have disturbed it: `git diff 960c831 cbbeb76 -- test/` is **exactly** the three `Int.rem` substitutions (`bench.ml:151`, `test_m04_b.ml:62`, `test_m04_b.ml:234`, dividend first at each, operands non-negative at every site so no value moves), `dune:7`'s count, and `bench.mli:120`'s dropped ordinal. **Zero constants moved; `BM4` not reached.** What rev-A's M-6 could not do, this base does: the constants are now **confirmed against the design** by a green execution of all thirteen rows at the full directed length set — `P ∈ {1, 20, 59, 60, 61, 64, 67, 1514}`, `{1, 59, 60, 61}` and `{1, 20, 59}` — including the `P = 1` row (`W` = 1, `tkeep` = `0x01`, `F` = 64, pad 59, `t` = 0, terminate `C+10`) that `BUG-0004` was decided on |
+| **M-7** | dv | **PASS** | Base **0**, as pinned. At `af06c62`, every `M04-` occurrence across `test/**/*.ml` is one of the **thirteen** commissioned ids — `A1` (4), `A2` (4), `A5` (7), `B1` (5), `B2` (5), `B4` (4), `B5` (4), `C1` (5), `C2` (4), `C3` (6), `C4` (5), `C5` (4), `C6` (6) — plus **two** occurrences of the bare token `M04-` (`test_m04_scaffold.ml:1`, `:65`), which are U1's own *"no `M04-` row id"* negation. **Zero** occurrences of `M04-A3`, `A4`, `B3`, any `D*`, any `E*`, `G4`, or any other id. The universal is safe to state because the base is measured at zero |
+| **M-8** | worker | **PASS — re-executed at the tree** | `sample_cycle` is `bench.ml:89–149`; the eight steps of §5.2 appear in order. `Cyclesim.outputs ~clock_edge:Side.Before` at **`:107`**, taken **before** `Cyclesim.cycle` at **`:132`**; the four refs (`tready`, `d`, `c`, `error_underflow`) are dereferenced at **`:135–:137`**; the acceptance decision at **`:139`** is `offered.tvalid && tready` over the `Before` read. **`BM2` not reached** |
+| **M-9** | worker | **PASS — re-derived** | At `P` = 60, independently: `F` = 64, `t` = 0, terminate at `C+10`, FCS at lanes 4–7 of `C+9`, preamble at `C+1`, frame octet 0 at lane 0 of `C+2` — six for six with SPEC-M04 §6.1's own table and with the worker's six |
+| **M-10** | worker | **PASS — re-measured** | `test_m04_scaffold.ml` **1**, `test_m04_a.ml` **1**, `test_m04_b.ml` **3**, `test_m04_c.ml` **5**; `bench.ml` **0**, `bench.mli` **0** |
+| **M-11** | worker | **PASS — re-measured** | **10** `[%expect {\|\|}]` blocks, **every one empty**; a search for `[%expect {\|` followed by a non-`\|` character returns nothing. The 11th raw hit is `dune:20`'s prose token — the `RV-0068B-VERDICT` §3 artefact the bar warns of, exactly as the worker reported it. Additionally, and this is what the fix round put at risk: **zero** occurrences of `expect.uncaught_exn` or `expect.unreachable` in any of the seven files, so the prohibited promotion block of the `cbbeb76` run never entered history |
+| **M-12** | worker | **PASS — re-read** | Ten titles read back in full; each carries its own row ids and **no other** `M04-` identifier, and the scaffold title carries none. The `=` is alone on its own line at all ten: `test_m04_a.ml:101`, `test_m04_b.ml:129`/`:215`/`:297`, `test_m04_c.ml:64`/`:111`/`:174`/`:223`/`:287`, `test_m04_scaffold.ml:66` |
+| **M-13** | worker | **PASS — re-executed** | The read of `tx_dest.tready` is at **`bench.ml:108`** (the ref handle) and **`bench.ml:135`** (its dereference) — two expressions at **one** choke point, both inside `sample_cycle`. **No `test_m04_*.ml` file contains the substring `tready` at all**; the only other occurrences in the directory are six prose lines in `bench.mli`. **No unit asserts a value of it. `BM11` not reached** |
+| **M-14** | worker | **PASS — re-executed** | `poison` has **one** definition, `bench.ml:41`, `let poison = 0xA5`; every other occurrence names it or is prose. Both poison scans exclude the four FCS octets, quoted: `test_m04_b.ml:189` `List.sub frame.Dv_xgmii.Tx_decoder.octets ~pos:0 ~len:60` (at `F` = 64) and `test_m04_c.ml:194` `List.sub octets ~pos:0 ~len:(f - 4)`. Trap T5 honoured at both |
+| **M-15** | worker | **PASS — re-run at this seat**, with its own caution intact | `ocamlc -stop-after parsing` exits **0** on all six OCaml files. **And the bar is restated rather than banked**: `j mod 127` also parsed cleanly at `960c831` and broke the build. This bar establishes syntax and nothing else. **`M-2` is the adjudicator and it is `M-2` that says the six files compile** |
+| **M-16** | worker | **PASS — re-read** | `J-tb_writer-0043`'s `Inputs` names no `libs/**`, `top/**`, `rtl_snapshots/**` or `test/third_party/**` path except inside an explicit **"Not read, confirmed"** negative that names `libs/hardcaml_ethernet/src/xgmii_tx_64.ml` by name. **`BM15` not reached.** `journal-check` re-verified R1–R8 at `cbbeb76`, and the entry's five-path `Files-in-this-commit` is set-equal to `git diff --name-only 895a076 cbbeb76` minus the worker's own journal |
+
+**Tally: 16 PASS, 0 FAIL.** Bounce conditions reached: **none of `BM1`…`BM15`**.
+`BM1` in particular is **not** reached — the only red at a landing commit of this
+round after the rev-B repair was §15's **D1**, which §13's own text puts expressly
+outside `BM1` (*"D1, D2, D3 and D5 are expressly NOT bounces"*). `BM16`'s condition
+**is** met, by admission, and is adjudicated at §5 below, where it changes no
+token.
+
+---
+
+### 2. What the ACCEPT establishes — the thirteen rows, discharged
+
+**All thirteen commissioned rows execute green at `af06c62`**, on a bench
+byte-identical to the one the worker landed. Discharged, by unit and by the
+stimulus actually driven:
+
+| Row | Status in the plan | Unit | Discharged at |
+|---|---|---|---|
+| `M04-A1`, `M04-A2` | ASSERT | U2 | `P` = 60 |
+| `M04-A5` | **NO-ASSERT** | U2 title + round-wide | the prohibition **held**: no unit anywhere asserts an absolute cycle measured from cycle 0, from reset, or from the release of `clear`. Every cycle constant in the round is computed from `c = first_accepted_cycle samples`; the discipline is stated at `test_m04_a.ml:8–11` and restated at `:87`. **`BM7` not reached** |
+| `M04-B1` | ASSERT | U3 | `P` = 60, position-dependent content |
+| `M04-B2` | ASSERT | U4 | `P` = 20, poisoned `tlast` word |
+| `M04-B4`, `M04-B5` | ASSERT | U5 | the **full** directed set `P ∈ {1, 20, 59, 60, 61, 64, 67, 1514}` — including the seven members that were driven-but-never-adjudicated at `cbbeb76` |
+| `M04-C1` | ASSERT | U6 | `P` = 20 |
+| `M04-C6` | **NO-ASSERT** | U6 title + round-wide | the prohibition **held**, and it binds this verdict as much as it bound the bench: nothing here reports the decoder's REQ-203 verdict as REQ-203 coverage. What discharges the row is `M04-C1`'s octet count and `M04-C3`'s oracle comparison, both of which know the source frame |
+| `M04-C2` | ASSERT | U7 | `P ∈ {1, 59, 60, 61}` — both directions of the below-60 predicate |
+| `M04-C3` | ASSERT | U8 | `P` = 20, both halves (equals the oracle over the padded 60, does not equal it over the unpadded 20) |
+| `M04-C4` | ASSERT | U9 | `P` = 20, poison `0xA5` |
+| `M04-C5` | ASSERT | U10 | `P ∈ {1, 20, 59}` |
+
+**Eleven ASSERT and two NO-ASSERT**, the split `FINDING WO-0080-2` corrected. The
+scaffolding unit U1 claims no row and is not counted.
+
+**What does NOT discharge, stated because a sign-off will be read against this
+paragraph.** **67 of 80 rows remain outstanding** across families D through O.
+**`BAR T1` stays SHUT** — the differential anchor at this boundary has three
+named blocking conditions and a bench cannot open any of them. **No
+`SO-xgmii_tx_64.md` is opened or offered.** `M04-G4` is **not** discharged and is
+not described as discharged (§9.4 item 3's prohibition, still binding). The
+`BUG-0004` residue — routes 2 and 3, derived and never measured — is a **hard
+precondition on the eventual `SO-`**, recorded at that packet's §10.3 item 3.
+
+**One sequencing consequence, and it is the orchestrator's to schedule.**
+PROTOCOL §10 sequences the seeded-mutation campaign after this packet's `RV-`
+ACCEPT and before any `SO-` PASS. **That precondition is now met**, so the M04
+campaign is unblocked. My recommendation, stated as a recommendation: run it on
+the per-family cadence the M03 era established rather than now, because thirteen
+of eighty rows is a thin manifest to score against — but the gate is open and the
+call is scheduling.
+
+---
+
+### 3. What the census instruments say — and the provenance every count above carries
+
+**Re-measured at `af06c62`, because §9.7's finding is now load-bearing rather
+than merely noted.** `tools/dv_checks.sh` contains **zero** occurrences of `M04`,
+`xgmii_tx_64` or `AP-xgmii_tx`. Its **row-discharge census** is hard-keyed to
+`census_plan='test/attack_plans/AP-xgmii_rx_64.md'`, to `M03-` ids and to
+`test/xgmii_rx_64/*.ml`, and at this tree it reports **"78 row ids declared in
+the plan"** — `AP-M03`'s 78, not `AP-M04`'s 80 — with 62 named in a unit title
+under both matchers. Its **bench inventory**'s per-file block is keyed to
+`test/xgmii_rx_64/test_m03_*.ml` and reports **59**. **Exactly one census figure
+moved on this round**: the repository-wide inventory line, `149  test/**/*.ml`,
+which agrees with `M-3`'s independent measurement and is the only committed
+instrument that saw this bench at all.
+
+**Therefore, and stated in the open:**
+
+1. **Every M04 row count in this verdict is a HAND COUNT.** The thirteen come
+   from §2's own commission list, cross-checked against the landed unit titles by
+   `M-7` and `M-12`. **No committed instrument counts them**, and none can until
+   §19.3 item 1's M04 census exists.
+2. **The denominator is my own status-cell pass at this tree**, not a figure
+   carried forward: **80 rows — 56 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5
+   STRUCTURAL, 1 GAP, 0 RULING** — measured by a pass over every row table at
+   `af06c62`, agreeing with the plan's own `Created` change-log row.
+3. **`dv_checks: all checks passed` at `af06c62` says nothing about M04.** The
+   step is green and the M04 rows are invisible to it. A later reader must not
+   read that green as an M04 coverage instrument; it is not one.
+4. **`§19.3` item 1 is promoted from owed to blocking-adjacent**: the M04 census
+   in `tools/dv_checks.sh` is now the difference between a countable coverage
+   claim and a hand count in a packet. Mine, `tools/**`, and it should ride
+   before the round that first quotes an M04 coverage fraction in an `SO-`.
+
+---
+
+### 4. Findings against this packet, from the rev-B round — one, and it is mine
+
+**`FINDING WO-0080-6` (MATERIAL, mine) — every packet-body repair `RV-0080-VERDICT`
+§8 promised as "riding rev B" is ABSENT from this packet, and the worker was right
+to flag it rather than work around it.**
+
+Measured at `af06c62`, in this file:
+
+- **§12 stops at `M-16`.** The promised `M-17` — a file search for infix ` mod `
+  across the new directory, pass condition zero occurrences outside a string
+  literal — **does not exist as a bar**. The only three occurrences of the token
+  `M-17` in this file are in `RV-0080-VERDICT` §3.1, §8, and the worker's own flag.
+- **§17.1 carries no spawn-precheck carve-out.** It still reads *"`git` (every
+  subcommand, including read-only ones such as `status`, `diff`, `show` and
+  `log`)"*, which is the exact text `RV-0080-VERDICT` §6 ruled defective and
+  undertook to carve out **by name**.
+- **§4 and §6.0(b) carry no `Int.rem` gloss**; §3's reference table gained no
+  `Int.rem`-bearing M03 file; §16.3's seeded list gained no operator clause;
+  §6.3's assertion-4 domain and §7.1's wording are unrepaired.
+
+**Whose defect this is, without hedging: mine.** Those six repairs were
+`dv_lead`'s edits to `dv_lead`'s own packet, and no round was ever commissioned
+to make them — the fix round was dispatched straight from the bounce, and §8's
+paragraph 1 scopes *"the fix round"* to `D-1`, `W1`, `W2` and the sweep.
+`PROTOCOL §6` narrows a `tb_writer`'s `agents/handoffs/**` access to its own
+packet's Return log, so the worker **could not** have made them, and it said so in
+its §7 rather than assuming they were done or quietly reaching past its scope.
+**That is the behaviour §17.1's "flag, do not improvise" clause asks for, and it
+is credited.**
+
+**Why this finding is recorded here rather than repaired here.** This round's
+write set does not include a packet-body rewrite, and a repair made in the same
+act as the verdict that convicts it is not checkable afterwards. The six repairs
+are **re-pinned to the next packet this seat writes for this worker chain** — not
+to this file, which is now `ACCEPTED` and closed to further terms.
+
+**And it changes the reading of `BM16` in §5, which is the reason it is stated
+before it.**
+
+---
+
+### 5. `BM16`, second occurrence — ADJUDICATED: **accept, disclosure credited in full, NO SANCTION, and the finding escalates from a process finding to a structural one routed upward**
+
+**The condition is met again, by admission and not by capture.**
+`J-tb_writer-0043`'s Open-questions discloses, command by command: `wc -l`;
+repeated `grep -n`/`-c`/`-o` passes; `sed -n` range reads in place of the Read
+tool; `ls -la`; a `find`/`opam list`/`ocamlfind list`/`eval $(opam env)` toolchain
+probe; `date -u`; the spawn-time `git status --short` / `git rev-parse HEAD`; and
+— named by the worker itself as *"sharpest of all"* — **one further `git status
+--short` after the edits, run specifically to confirm its write record**, which
+is the single instrument §17.3 forbids **by name**.
+
+**The pattern repeats rather than corrects, and I am not softening that.** It is
+the same shape as `J-tb_writer-0042`'s, and the aggravating feature is that this
+round's entire dispatch **was** the repair of a round whose instrument finding the
+worker had already read.
+
+**Four grounds for the ruling, three of them measured rather than accepted.**
+
+1. **My own remedy was never applied — §4's finding.** `RV-0080-VERDICT` §6 ruled
+   that *"a rule that forces a violation and then convicts it is worse than the
+   violation"*, and undertook to carve the spawn precheck out of §17.1 by name on
+   the re-issue. **Measured above: the carve-out does not exist.** So the worker
+   met the forced precheck conflict **uncured**, at a spawn where the standing
+   orchestrator precheck mandates exactly the two commands this packet forbids.
+   That half of the condition is entirely mine and cannot be charged to the
+   worker. It is also, precisely, the case my own ruling said must not recur.
+2. **No forbidden path was touched.** `M-16`, re-read at the tree: no `libs/**`,
+   `top/**`, `rtl_snapshots/**` or `test/third_party/**` outside an explicit
+   negative. Every disclosed command reads over `test/**`, `agents/**`, `docs/**`
+   or the local opam layout.
+3. **No bar's evidence rests on a forbidden instrument — the ground that would
+   have mattered, checked hardest.** I re-executed **every** worker-seat bar
+   myself at this tree (`M-8` … `M-16`, §1 above) and every figure agrees:
+   1/1/3/5, ten empty `[%expect]` blocks with the eleventh the `dune` prose token,
+   one `tready` choke point at two expressions, one `poison` definition, both
+   scans excluding the FCS, six clean parses. Separately, **§17.3's substitution
+   clause held on its output even though the forbidden instrument was run**:
+   `J-tb_writer-0043`'s five-path `Files-in-this-commit` is **set-equal** to
+   `git diff --name-only 895a076 cbbeb76` minus the worker's own journal, and
+   `journal-check` re-verified that equality at the commit. The files list was
+   built from the write record, not from the `git status` output.
+4. **The disclosure is durable and checkable** — in the journal, in three places,
+   naming its own worst instance without being asked. §17.2's language is
+   unconditional: *"Disclosure is credited in full either way."* **It is credited.**
+
+**Why not a bounce, stated as a limit on my own instrument.** Bouncing rev B on
+`BM16` would return a bench that CI has now proven correct against the fixed
+design, with a defect list containing nothing the worker could repair. **A bounce
+whose defect list is empty of anything the returning agent can act on is not a
+bounce; it is a sanction wearing a bounce's clothes**, and neither §13 nor §15
+gives me that instrument. The correct response to a repeated disclosure whose
+cause is structural is to fix the structure, not to spend the one lever I have on
+a round that has nothing left to fix.
+
+**Where the ruling's content lands — upward, per the `WO-0071` precedent.**
+`RV-0071-VERDICT` §3 already concluded, on its own evidence, that **four
+instances across four rounds, each self-caught and each more fully disclosed than
+the last, is not a comprehension failure that clearer prose fixes**, and named the
+one untried remedy: **an enumerated tool allow-list at the head of the spawn
+prompt** — the orchestrator's to write, and **still unwritten**. `J-tb_writer-0042`
+and `J-tb_writer-0043` are two further instances of the same shape, so the count
+stands at **at least six** — four from that verdict's own tally, which I have
+**not** re-measured and quote with its provenance, plus the two I read myself
+this round and last. Six instances, six disclosures, zero concealments, and one
+remedy never tried. **Routed to the orchestrator as the structural item.** Mine
+alongside it: §17.1's carve-out and the `M-17` bar, both re-pinned by §4.
+
+**The tripwire, pre-committed so this does not become an indefinite waiver.** The
+next packet this seat writes for this worker chain carries, in its own §13, the
+term that **once (a) the enumerated allow-list stands at the head of the spawn
+prompt and (b) §17.1 carries the precheck carve-out by name, a further
+instrument-outside-the-list instance is a bounce on its own, disclosed or not.**
+Stated as that packet's term, applied to no round before it, and written down now
+so that the condition for the next ruling is fixed before the next ruling's facts
+exist.
+
+**And this adjudication changes no token.** The verdict is `ACCEPT` on §1's
+sixteen bars; `BM16` is ruled beside it, on its merits, exactly as at rev A.
+
+---
+
+### 6. What moves, and what does not
+
+- **Moves**: this packet's State to `ACCEPTED`; one appended row in
+  `test/attack_plans/AP-xgmii_tx_64.md` §9's change log recording the thirteen
+  rows' discharge at `af06c62`. **No `Status` cell of any row moves** — the plan's
+  Status vocabulary is a row *kind* (`ASSERT`/`NO-ASSERT`/`NO-STIMULUS`/`RULING`/
+  `GAP`/`STRUCTURAL`), never a discharge state, and `AP-M03`'s change log records
+  discharge in exactly this way, under its own standing *"NO STATUS MOVED"*
+  formula.
+- **Does not move**: no row added, no row converted, no coverage-map line, no
+  unit, no title, no `bench.mli` contract. **None of the nine carried `AP-M04`
+  editorial repairs is paid here** — this round opens that file for a change-log
+  append only, and their carrier is re-pinned accordingly at `BUG-0004` §10.5 so
+  that a carrier phrased over a *path* cannot read as satisfied by a round that
+  never looked at the debt.
+- **Unchanged**: `BAR T1` SHUT; no `SO-` opened or offered; family D is the next
+  bench round (§19.3 item 6), now unblocked, since a capability layer that has
+  compiled, run and passed is a capability layer.
+- **Carried from `RV-0080-VERDICT`**: `FINDING WO-0080-5` (§15 has no class for a
+  defect in a standing instrument other than the decoder) — still recorded, still
+  unfired, still repaired at the next packet carrying a §15 table.
