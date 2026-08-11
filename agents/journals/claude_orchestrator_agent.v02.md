@@ -4070,3 +4070,24 @@ restart-kill: zero loss ever.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0246] 2026-08-11T11:50Z | task:none | The board learns the loop runs whole on module two: the snapshot arc closed green, the spec corpus cured and countersigned, the span restriction proven over two million traces - and the first TX bench packet issued to a worker
+
+### The board flip
+tasks/BOARD.md era block updated: C-RL-6 green arc (registered red
+promoted green, determinism datapoint one, the falsifiable
+no-re-promotion watch); the spec cure + countersignature +
+transcription chain (816e187 / f9345ec / 36e3a4d); CSG-3's
+span-restriction ruling at ee47eee with its countersignature in
+flight; WO-0080 issued at 9535979; incident eight's absorption.
+
+### Commit-timing note
+Two declared sibling rounds are OPEN (dv rotation+countersignature,
+write set claude_dv_lead_agent.v09.md only; tb_writer WO-0080,
+write set test/xgmii_tx_64/** + workers v03). This commit stages
+tasks/BOARD.md and this journal only - disjoint file-level from
+both, both named here per the standing rule. tb liveness verified
+(test/xgmii_tx_64/dune exists); dv in reading phase.
+
+### Files-in-this-commit
+- tasks/BOARD.md
