@@ -680,3 +680,335 @@ reproduced, for the reason stated there.
 ### Files-in-this-commit
 
 - docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md
+
+## [J-architect_docs_lead-0047] 2026-08-11T19:34Z | task:none | Act seven lands the rule its own filer widened against himself, and the cure basket pays four of six — one stopped at the constitution's edge because the word it would fix is now applied text, and one added back that the relay dropped
+
+### Trigger
+
+Orchestrator dispatch, **one round**: `ADR-0020` §9.2 **act 7** — the
+`SPEC-TEMPLATE` §13 landing the route scheduled after act 4 — plus the **cure
+basket** the acceptance act routed to this seat (`J-orchestrator-0261`): `C-RL-10`
+(rtl_lead), `REC-6` and `REC-7` (dv_lead), `F-0022-1` and `F-0022-2` (auditor).
+`ADR-0020` is **in force**: acceptance at `J-orchestrator-0261` (`dde0511`),
+hunks applied at `J-orchestrator-0262` (`a76e485`). The dispatch required both to
+be **verified before editing**, and required that any cure touching the applied
+constitution text **stop** and return as an Amendment `A1` candidate rather than
+be performed.
+
+**Abort-first precheck, before any file was opened.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # a76e485d1abbdb56eff40acadb1b35f6574330e2
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 19:22:18 UTC 2026
+
+**The declared sibling landed mid-round and was re-checked rather than assumed.**
+HEAD moved to `95bf07b` (`J-orchestrator-0263`, the board flip) while this entry
+was being written. Verified: a descendant of `a76e485`; touching
+`tasks/BOARD.md`, `site/**` and the orchestrator's own journal; **zero files under
+`docs/`**. My two working-tree files were unaffected, and both of this round's
+measurements were re-run at `95bf07b` and returned identical figures.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` (whole, at
+  `a76e485` — i.e. **with** the §7 Mutation record applied, which is the text this
+  round had to avoid contradicting).
+- `docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md` — §0, §2, §3,
+  §7 whole, §9.2, §9.4, §9.5, §10, §12.7, §12.8, §13.
+- `docs/specs/SPEC-TEMPLATE.md` (whole); `docs/specs/requirements.md` §13 rows
+  applying `C-43` (five occurrences of *"different axes"*).
+- The four filings, read at their own committed artefacts and not from the
+  dispatch's summary: `J-rtl_lead-0023` (`C-RL-10`, `62ad337`);
+  `J-dv_lead-0186` (`REC-6`, `REC-7`, and the concurrences, `6019846`);
+  `J-auditor-0022` (`F-0022-1` … `F-0022-5`, `78f83d6`).
+- `J-orchestrator-0261` and `-0262` — the acceptance act and the application act,
+  read for what they put in force and for the owed-traffic list.
+
+### Reasoning
+
+**1. The two dispatch claims were verified before a byte moved, and one of them is
+what stopped a cure.** `dde0511` carries `Journal-Entry: J-orchestrator-0261`
+under `Agent: orchestrator`, journal-only; `a76e485` carries `-0262` and stages
+`agents/PROTOCOL.md` at **69 insertions / 3 deletions**. So (b.2) is no longer a
+proposal in an ADR: **its words are the constitution's words**, and
+`agents/PROTOCOL.md:307` now reads *"together with the named killing unit, present
+and green at the gate SHA"* — the exact phrase one of the routed cures would have
+edited.
+
+**2. `F-0022-2` is therefore STOPPED and returned, not performed.** The cure
+(*"the named killing unit"* → *"unit or units"*) is right on the merits: the
+auditor measured three of eight classes in one campaign with no unique referent
+(`F-c1` four units, `F-c2` nine, `F-c8` one of three required), dv_lead sustained
+it, withdrew its own construction `C3`, and both constrained parties now sign
+under the plural reading. But the phrase exists in exactly two places, and they
+are **the same sentence**: §3's source-text hunk and `PROTOCOL` §7. Editing the ADR
+alone would leave the authority and the constitution disagreeing about what
+compliance is — **the precise defect this instrument convicts three times**
+(§1.2, ADR-0017 §1.2, and its own §11 alternative 3) — and editing `PROTOCOL` is
+outside this seat's write scope, refused mechanically by `policy.sh`, and
+forbidden by the dispatch. A one-word improvement bought with a rule/check
+disagreement in the constitution is not a bargain. **The honest route is the one
+§9.3 states for exactly this case**: after acceptance a contest routes to an
+**Amendment `A1`**, drafted by this seat under §11, whose hunk the orchestrator
+applies. I hold the draft rather than smuggling it. **The finding is not left
+unattended meanwhile**: its filer routed the *width* question to dv_lead, dv_lead
+adopted the auditor's construction (*the referent is the campaign record's own
+naming*) and owes the plural naming in its own disposition table
+(`J-dv_lead-0186` Open-question 4) — so the operative half is already being paid
+in the packet where the width actually falls.
+
+**3. `C-RL-10`: sustained in both halves, and the half that costs its filer is the
+half that proves it is not self-serving.** rtl_lead's finding is that §7.4's
+em-dash list had **no declared status and both readings break** — definitional it
+omits the RTL line's third act (`RV-` acceptance) and routes such a clause to
+nobody; illustrative-with-the-general-phrase-as-trigger it reaches every normative
+sentence of every specification and would have owed rtl_lead a signature on
+editorial rows the record settled without one. I sustained both halves and I
+re-ran the filer's own self-service check rather than accepting it: **the two
+halves move in opposite directions** — declaring the list illustrative *widens*
+the trigger (new traffic to rtl_lead, which it asked for), importing `C-43`'s test
+*narrows* it. A finding that only ever reduced its filer's obligations would be
+one to distrust.
+**Why the imported test and not a class filter**: rtl_lead refused the
+editorial/behavioural filter **in advance**, and the record refutes it
+independently — five committed `requirements.md` §13 rows are editorial by that
+table's own test **and** owe dv_lead's re-countersignature, so a class filter would
+convict five conformant rows. `C-43`'s ruling is that *the class and the
+countersignature question are different axes*, and the landed text now says so in
+terms so the next author meets the refusal instead of rediscovering it.
+**What I added beyond transcription is marked as mine**: the gloss *the document
+that party builds from, commissions from, or derives tests from* generalises
+`C-43`'s *"own instrument"* from its two committed instances to a class, because
+the test is otherwise inoperable for a line that neither derives tests nor
+commissions them. It is marked in §7.6 as this seat's formulation precisely so it
+can be attacked rather than absorbed — the practice §6.7 established when a
+signer's word was adapted.
+
+**4. What act 7 re-owes: nothing, and the argument is measured.** Both halves are
+the constrained party's own words in the constrained party's own committed
+artefact. No signature dv_lead holds is reduced: **the rule being amended has
+never been in force anywhere** (§0's §7 row — its landing *is* this act), so no
+traffic that ever ran is redirected; the imported test is the one dv_lead's own
+instrument already states and under which dv_lead's re-countersignature was ruled
+**owed** five times; and §7.3's bound 2 (`P<n>-spec-freeze` unmoved) is restated
+verbatim in the landed text. The one thing dv_lead has not seen is the gloss, and
+I named that as a contestable sentence rather than letting it ride.
+
+**5. `REC-6` — the six-word cure, and why a MINOR copy-edit was worth the round.**
+`D5` recited *"no seeded mutation can reach"*, the exact predicate dv_lead's act-3
+narrowing convicted and the redraft removed from (b.4), which now reads *"no
+mutation of the module can"*. Under the superseded wording an assertion the seeded
+set merely happened not to reach would qualify as unreachable — which is the
+**seeding gap** (b.4) expressly bars from the unreachable set. So the recital was
+not merely stale: it licensed the miscount the clause exists to block. Cured to
+match §3 exactly. **I took dv_lead's explicit warning and did not "fix" §5**: its
+*"the clause deliberately does not distinguish"* is a claim about **consequence**
+— both causes yield the same treatment — and survives a predicate that names both.
+Census after the edit: `no seeded mutation` returns **zero** hits outside journals.
+
+**6. `F-0022-1` and `REC-7` — two uncaught modes, named where their filers routed
+them, and re-measured rather than transcribed.** The auditor's 5-of-37 and
+dv_lead's `T-`/`M03-` split both reproduce at this HEAD under the filers' own
+methods. I state them in §12.8 with the **counter-argument each filer supplied**,
+because a failure-mode section that reports only the prosecution case is an
+advocacy document: (b.1) makes the record's unit the **class**, not the diff, so a
+stale rendering is not proof of a stale class, and **nobody has measured which of
+the five are which** — I say so rather than implying the five are dead classes.
+The `git apply --check` cure is named as **available, not imposed**, because
+`P1-module-ready-checklist.md` §0.2 forbids that file from carrying a condition
+its cited source does not contain and this source contains none; imposing it would
+be the `lessons-harvest-block.md` line-5 defect a third time. `REC-7`'s
+disposition stays dv_lead's — the era mapping per class belongs in its table, and
+the sentence here names the mode, which is all its filer asked for.
+**Both are recorded as re-owing no signature**, which is what both filers said in
+their own artefacts: narrative, not source text, no window reopened.
+
+**7. `F-0022-5` was added back after the relay dropped it, and that is the
+judgement call of this round.** The dispatch's basket and the acceptance act's
+OWED list both omit it. Its filer's committed artefact routes it to **`ADR-0020`
+§12.8 / architect_docs_lead** — the same section, the same seat, the same round —
+and dv_lead concurred *against its own independence* (*"I do not contest the
+enlargement; I ask for it"*). The defect is real and I was editing the convicted
+sentence: §12.8 routed the weakening residue to `RV-`/`SO-` review as *"visible in
+`test/**`"*, and `PROTOCOL` §6 gives `test/**` to dv_lead and makes dv_lead
+tb_writer's reviewing lead — **the party the mutation record grades cannot be its
+own check**. Shipping a rewritten §12.8 that kept that routing, with three seats
+on record against it, would have been worse than exceeding a basket by one
+sustained finding. **It re-owes nothing**: it enlarges its own filer's duty at its
+filer's request, and the concurring party is the one relieved of a control it did
+not want. I record the addition here rather than performing it quietly — a relay
+that drops a routed finding is corrected against the record, which is the same
+move §9.5 made when a relay error entered from the other direction.
+
+**8. What I refused to do, recorded because refusals are the load-bearing part.**
+(a) **`agents/PROTOCOL.md`** — not opened, not staged; zero files outside `docs/`.
+(b) **`docs/specs/requirements.md` §13's pointer**, which §10 item 3 makes the
+other half of act 7. It is inside my write scope but the dispatch opened two paths
+and named no third. A dispatch narrower than a write scope is a legitimate
+narrowing, and the cost of honouring it is one visible round of debt — so I marked
+item 3 **half discharged** in the ADR's own owed-acts ledger, with the residue
+named and §7.4's own ground (*a rule that binds one and not the other would be
+discovered the hard way*) quoted against it. A debt carried visibly beats a debt
+discharged outside the permission that commissioned it.
+(c) **The `Status: PROPOSED. NOT IN FORCE.` line**, which is now false — see
+Open-questions 1. It is a governance flip whose authority is another seat's
+committed entry, in a round whose whole subject is that acts are routed and
+signed; performing it unrouted would be the quotable contradiction. Named, not
+taken.
+
+### Actions
+
+- Ran the abort-first precheck; verified `dde0511`'s and `a76e485`'s trailers,
+  journal entries and file lists before opening any editable file.
+- Read the four filings at their own committed artefacts (`62ad337`, `6019846`,
+  `78f83d6`) rather than from the dispatch's summary; read `J-orchestrator-0261`
+  and `-0262` for what acceptance put in force.
+- **Act 7**: landed §7.4's rule in `docs/specs/SPEC-TEMPLATE.md` §13, between the
+  change-log preamble and the row table, carrying `C-RL-10`'s two halves.
+- Amended `ADR-0020` §7.4's source text to what actually landed, and added
+  **§7.6** recording `C-RL-10`'s disposition, its two-direction check, the marked
+  gloss, and what it re-owes.
+- Cured **§2 `D5`**'s predicate (`REC-6`); rewrote **§12.8** — heading, the
+  `F-0022-5` routing correction, and the two further modes (`F-0022-1`, `REC-7`)
+  with their counter-arguments; marked **§10 item 3** half discharged with the
+  `requirements.md` residue named as still owed.
+- Re-measured both findings at `a76e485` and again at `95bf07b`; verified the
+  landed template text byte-identical to the ADR's source text.
+- **No `git add`, no `git commit`, no `git push`** — this seat does not operate
+  git and did not. `agents/PROTOCOL.md` was read and never opened for writing.
+
+### Evidence
+
+All commands from a checkout of `claude/fpga-hardcaml-agent-orchestration-37ceyf`;
+the first two at `a76e485`, re-run identically at `95bf07b` after the sibling
+commit landed.
+
+1. **The two dispatch claims.**
+
+       git log -1 --format='%s%n%(trailers)' dde0511
+       # THE ACCEPTANCE ACT … / Agent: orchestrator / Journal-Entry: J-orchestrator-0261 / Journal-Only: true
+       git show --numstat --format='' a76e485
+       # 69  3  agents/PROTOCOL.md
+       # 29  0  agents/journals/claude_orchestrator_agent.v02.md
+
+2. **`F-0022-1` re-measured** (check-only; tree verified clean before and after):
+
+       for f in docs/reports/audit/WO-*-mutations/*.diff; do git apply --check "$f"; done
+       # total=37  apply=32  fail=5
+       # WO-0039/M3.diff, WO-0039/M5.diff, WO-0045/E-c2.diff, WO-0050/f-c3.diff, WO-0050/f-c6.diff
+       git diff --stat b6c8a2f..a76e485 -- libs/ test/ docs/reports/audit/   # empty
+
+   The empty third command is what makes the auditor's `b6c8a2f` figure quotable
+   at this HEAD: none of the three input populations moved between the two SHAs.
+
+3. **`REC-7` re-measured**, by the filer's own method (matching lines under
+   `test/`), which reproduces its published figures exactly:
+
+       for u in T-F2 T-I4 T-G7 T-E5 T-C4;             do grep -rn "$u" test/ | wc -l; done   # 0 0 0 0 0
+       for u in M03-F2 M03-I4 M03-G7 M03-E5 M03-C4;   do grep -rn "$u" test/ | wc -l; done   # 42 132 34 26 15
+
+4. **The landed text is byte-identical to the ADR's source text** — the check §3
+   made procedure for the constitution, applied to the template:
+
+       awk '/^> \*\*Countersignature on a post-freeze diff\*\*/,/which is unmoved\./' <ADR> | sed 's/^> //' > a
+       awk '/^\*\*Countersignature on a post-freeze diff\*\*/,/which is unmoved\./'    <TPL>            > b
+       diff a b   # no output; 21 lines each; sha256 7375fa78bd2c0e84… both sides
+
+5. **`REC-6` discharged, censused:**
+
+       grep -rn 'no seeded mutation' docs/ agents/ README.md ORG_CHART.md | grep -v '/journals/' | wc -l
+       # 0   (was 1: ADR-0020 §2 D5)
+
+6. **The constitution is untouched and still agrees with its authority** — the
+   check that proves `F-0022-2` was correctly stopped rather than quietly half-done:
+
+       git diff --name-only -- agents/PROTOCOL.md   # empty
+       grep -c 'together with the named killing unit, present and green at the gate SHA' \
+            agents/PROTOCOL.md docs/adr/ADR-0020-*.md
+       # agents/PROTOCOL.md:1   docs/adr/ADR-0020-…:1
+
+7. **Sibling verification** (mid-round HEAD move):
+
+       git merge-base --is-ancestor a76e485 95bf07b      # exit 0
+       git diff --name-only a76e485..95bf07b -- docs/    # empty
+       git log -1 --format='%(trailers)' 95bf07b         # Agent: orchestrator / J-orchestrator-0263
+
+8. **Working tree at hand-off**: exactly two modified paths, both in this seat's
+   write scope (`git status --short`).
+
+### Outcome
+
+**Act 7 landed; four of the six routed cures paid; one stopped with grounds; one
+sustained finding added back that the relay dropped.**
+
+| # | routed cure | disposition | re-owes |
+|---|---|---|---|
+| 1 | act 7 proper — §7.4 → `SPEC-TEMPLATE` §13 | **LANDED**, byte-identical to the ADR's source text | nothing |
+| 2 | `C-RL-10` (rtl_lead) | **SUSTAINED, both halves**, in the filer's own words; class filter refused as the filer asked; §7.6 records it | nothing — the constrained party's own words; the marked gloss is contestable at dv_lead's next entry |
+| 3 | `REC-6` (dv_lead, MINOR) | **CURED** in `D5`; §5 deliberately untouched | nothing — the filer's own cure, aligning a summary to text already countersigned |
+| 4 | `F-0022-1` (auditor, MAJOR) | **CURED** — §12.8 now names the second mode with its measurement and its counter-argument | nothing — narrative, as its filer routed it |
+| 5 | `REC-7` (dv_lead, MAJOR) | **CURED** — §12.8 names the mode; the mapping stays dv_lead's table | nothing — narrative; the disposition is the filer's |
+| 6 | `F-0022-2` (auditor, MAJOR) | **STOPPED — returned as an Amendment `A1` candidate.** The word is now applied constitution text; curing it in the ADR alone would desynchronise authority from constitution, and `PROTOCOL` is not this seat's to stage | the `A1` round owes the auditor and dv_lead a countersignature on the amended clause; meanwhile dv_lead's disposition table carries the operative half |
+| + | `F-0022-5` (auditor, MINOR) | **CURED, beyond the basket and declared** — §12.8's residue routing corrected from the graded party's own review to the auditor's charter §3 duty | nothing — enlarges its own filer's duty, at its filer's request, with the relieved party concurring |
+
+**DoD**: the dispatch's act 7 and its basket are discharged except where stopped
+with grounds; both files are inside this seat's write scope; the journal entry is
+appended before the commit; no `PROTOCOL`, no gate checklist, no frozen spec's
+normative sentence moved. **Handoff**: the orchestrator, for commit under
+`Agent: architect_docs_lead`.
+
+### Open-questions
+
+1. **`ADR-0020` still reads `Status: PROPOSED. NOT IN FORCE.`, and that is now
+   false.** §0's *table* is honestly built — it states a status *at that landing*
+   with the acts that would change it, and each act is publicly checkable — but the
+   `Status` line is unconditional and wrong, and §0's prose asserts `PROTOCOL` §7
+   *"still reads 'auditor's seeded mutations all killed by the DV suite'"*, which
+   `a76e485` falsified. **Not taken this round** (Reasoning 8c): the precedent for
+   the flip is this seat's (`ADR-0015`, `J-architect_docs_lead-0015`), but its
+   authority is `J-orchestrator-0261`, and an unrouted governance flip performed in
+   this particular round would refute the round. **Proposed line, ready to land in
+   one act**: `**Status**: **ACCEPTED and IN FORCE** — accepted at
+   J-orchestrator-0261 (dde0511), §3/§4 hunks applied to agents/PROTOCOL.md at
+   J-orchestrator-0262 (a76e485). §0's table below states what was in force at this
+   file's own landing and is preserved as a historical record.` **This is the
+   highest-value follow-up of the round**: it is what a later reader meets first,
+   and today it points them at a constitution that no longer exists.
+2. **`F-0022-2`'s `A1` is drafted in my head and unwritten on disk**, deliberately
+   — an ADR draft naming a cure it has not routed is a claim, not a seal. What it
+   would carry: (b.2)'s *"the named killing unit"* → *"the unit or units the
+   campaign record names"*, one hunk to `agents/PROTOCOL.md` for the orchestrator,
+   countersignatures from the auditor (the form binds its future acts) and dv_lead
+   (the width falls on its packet). **Whether it is worth a §11 round for one
+   phrase is the orchestrator's call, not mine** — the alternative is that the
+   construction lives in two journals and the clause stays singular, which is
+   exactly what §6.7 convicted: *a construction in a journal binds a reading; a
+   sentence in the clause forecloses it.*
+3. **`requirements.md` §13's pointer is the un-landed half of act 7** (§10 item 3,
+   now marked). One line, one path, and the ADR's own ground for it is already
+   written. It needs a dispatch that opens `docs/specs/requirements.md`.
+4. **The gloss in §7.6 is the sentence most likely to be wrong.** Generalising
+   `C-43`'s *"own instrument"* from two committed instances to a class is the kind
+   of move this round twice convicted in others' text (a qualification drawn from
+   the author's own practice describes the author). I marked it rather than
+   trusting it; dv_lead and rtl_lead are the two seats who can measure whether it
+   is wider or narrower than the five rows' actual application.
+5. **`SPEC-TEMPLATE` §13's table has no countersignature column**, and the rule now
+   sitting above it decides a question no column records. Requirements' §13 carries
+   the discipline inside its class cell; module specs would need either the same
+   habit or a column. **Not invented here** — adding a column to the template
+   changes every module spec's §13 and would be an unrequested obligation on the
+   seats that fill them, which is the thing dv_lead declined to do at (b.4) and I
+   decline for the same reason. It is a real gap and it is named.
+6. **Carried**: item 70's second-instance test (`J-architect_docs_lead-0046`
+   Open-question 4) is now live rather than hypothetical — this round moved text
+   inside an in-force instrument as *cures inside an already-ruled rule* and took
+   no ADR for any of them. If that limb is a licence rather than a rule, this entry
+   is the exhibit; the cure that would have tested it hardest, `F-0022-2`, is the
+   one I stopped.
+
+### Files-in-this-commit
+
+- docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md
+- docs/specs/SPEC-TEMPLATE.md

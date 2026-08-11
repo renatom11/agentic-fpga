@@ -352,5 +352,27 @@ Filled in at `P1-spec-freeze`. All four rows are required (charter §5).
 Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
 interface change is counted against post-freeze churn (charter §6).
 
+**Countersignature on a post-freeze diff** (ADR-0020 §7). A post-freeze diff
+owes **no** countersignature when every figure it lands is the signer's own
+derivation, or another specification's already-countersigned figure relayed
+unchanged. It **owes one from the constrained party** when it lands a clause
+that constrains a party other than its author — for example a prohibition, a
+licence, or a scope on what another line may build, emit, accept at review, or
+assert. **That list is illustrative, and the general phrase is not the test
+either**: what decides it is whether the diff moves **normative text in the
+constrained party's own instrument** — the document that party builds from,
+commissions from, or derives tests from. That is the test this record already
+applies (`requirements.md` §13, the `C-43` ruling that *the class and the
+countersignature question are different axes*), and it is sharper than
+*constrains a party other than its author*, which on its own reaches every
+normative sentence of every specification. **The editorial/behavioural class
+decides nothing here**: an editorial row can owe a countersignature, and a row
+that is normative nowhere owes none whatever its class. The countersignature's
+value is not arithmetic, which the filing already did, but whether the guard is
+*exactly* the rule rather than wider than it, which only the constrained party
+can answer. A clause constraining only its own author owes nothing. **This rule
+does not touch the `P<n>-spec-freeze` testability countersignature**
+(`PROTOCOL` §7), which is unmoved.
+
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|

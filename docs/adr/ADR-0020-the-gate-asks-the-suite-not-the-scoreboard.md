@@ -229,10 +229,10 @@ dispatch, and one of the four is narrower than a first reading suggests.
 - **D4.** `PROTOCOL` gains its first **equivalent-mutant clause**, with a
   three-part standard (committed proof; quantified over the specification's legal
   stimulus space, never over a bench; recorded by the seeder). §6.
-- **D5.** The `G-9` question is answered: an assertion no seeded mutation can
-  reach **contributes nothing to a mutation-coverage claim** and still discharges
-  its requirement row; the gate record carries the unreachable set beside the
-  tally. §5.
+- **D5.** The `G-9` question is answered: an assertion **no mutation of the
+  module can** reach **contributes nothing to a mutation-coverage claim** and
+  still discharges its requirement row; the gate record carries the unreachable
+  set beside the tally. §5.
 - **D6.** dv_lead's offered post-freeze countersignature rule is **ADOPTED**, with
   one adaptation — the signer is *the constrained party*, not dv_lead by name —
   and homed in **`docs/specs/SPEC-TEMPLATE.md` §13**, not in `PROTOCOL`. §7.
@@ -1016,15 +1016,30 @@ so — gains a one-line pointer, because its own preamble already establishes th
 it is *"the requirements-side counterpart of a spec diff"* and a rule that binds
 one and not the other would be discovered the hard way.
 
-**Source text**, to land in `SPEC-TEMPLATE` §13 at the act named in §10 item 3:
+**Source text**, landed in `SPEC-TEMPLATE` §13 at act 7
+(`J-architect_docs_lead-0047`) and **amended there by `FINDING C-RL-10`** —
+rtl_lead's non-blocking finding, filed beside its act-4 countersignature and
+routed by its own filer to this act because the text it is filed against had not
+landed. Disposed at §7.6; the two sentences it adds are marked there, and the
+text below is what `SPEC-TEMPLATE` §13 now carries:
 
 > **Countersignature on a post-freeze diff** (ADR-0020 §7). A post-freeze diff
 > owes **no** countersignature when every figure it lands is the signer's own
 > derivation, or another specification's already-countersigned figure relayed
 > unchanged. It **owes one from the constrained party** when it lands a clause
-> that constrains a party other than its author — a prohibition, a licence, or a
-> scope on what another line may build or assert. The countersignature's value
-> there is not arithmetic, which the filing already did, but whether the guard is
+> that constrains a party other than its author — for example a prohibition, a
+> licence, or a scope on what another line may build, emit, accept at review, or
+> assert. **That list is illustrative, and the general phrase is not the test
+> either**: what decides it is whether the diff moves **normative text in the
+> constrained party's own instrument** — the document that party builds from,
+> commissions from, or derives tests from. That is the test this record already
+> applies (`requirements.md` §13, the `C-43` ruling that *the class and the
+> countersignature question are different axes*), and it is sharper than
+> *constrains a party other than its author*, which on its own reaches every
+> normative sentence of every specification. **The editorial/behavioural class
+> decides nothing here**: an editorial row can owe a countersignature, and a row
+> that is normative nowhere owes none whatever its class. The countersignature's
+> value is not arithmetic, which the filing already did, but whether the guard is
 > *exactly* the rule rather than wider than it, which only the constrained party
 > can answer. A clause constraining only its own author owes nothing. **This rule
 > does not touch the `P<n>-spec-freeze` testability countersignature**
@@ -1044,6 +1059,70 @@ constrains a party other than its author. Its author is this seat; it newly make
 rtl_lead a countersignature**, and this ADR does not pretend otherwise: §9.2
 routes it. The rule generating its own route is not a rhetorical flourish; it is
 the first check that the rule is operable, and it passes.
+
+### 7.6 `FINDING C-RL-10` — the list declared illustrative, the operative test imported
+
+Filed at `J-rtl_lead-0023` (`62ad337`) beside act 4's unconditional
+countersignature, non-blocking, and routed by its own filer to act 7 rather than
+to a redraft. **SUSTAINED in both halves, in the filer's own words**, and landed
+with the text at `J-architect_docs_lead-0047`.
+
+**The defect: the em-dash list's status was undeclared, and both available
+readings break something** — which is what makes it a defect rather than a
+preference between two workable readings.
+
+- **Definitional** — the class *is* prohibition, licence, and
+  scope-on-building-or-asserting. Then it is **too narrow for the very line the
+  generalisation was written for**. Charter §3 gives rtl_lead three acts a spec
+  clause can reach: it **builds** (`libs/**`), it **emits**
+  (`rtl_snapshots/**`), and it **accepts** — the `RV-` verdict that puts a
+  worker's module in the tree. A clause scoping what may be *accepted at review*
+  constrains that line, is none of the three listed things, and **routes to
+  nobody**. §7.3 generalised dv_lead's *what a bench may assert* by adding
+  *build*, which moved the sentence from one line's principal act to another
+  line's principal act and stopped one act short.
+- **Illustrative, with the general phrase as trigger** — then it is **too wide**,
+  because every normative sentence of a module specification constrains the RTL
+  line; that is what a specification is. Under the literal trigger an editorial
+  repair to a frozen spec's §7 owes rtl_lead a signature, and the record settled
+  exactly such a row without one, correctly.
+
+**The cure is transcription, not invention: both halves are already ruled in this
+program's own committed artefacts.** The list is declared **illustrative** and
+gains the two acts the enumeration omitted (*emit*, *accept at review*); the
+operative test is imported from **`C-43`** — *the class and the countersignature
+question are different axes* — whose decisive question in all five committed rows
+that apply it is whether the diff moves **normative text in the constrained
+party's own instrument** (§0.5, *"normative text in the test-derivation basis"*;
+REQ-016's verification column, *"dv_lead's own commissioning instrument"*; and a
+row owing nothing because it is *"normative nowhere"*). The obvious alternative
+repair — filter on the **editorial/behavioural** class — is **refused, and was
+refused in advance by the filer**: `C-43` ruled those a different axis, and a
+class filter would convict five committed rows that are editorial *and* owe a
+countersignature. The landed text says so in terms, so that the next author meets
+the refusal rather than rediscovering it.
+
+**One gloss is this seat's, and is marked so it can be contested rather than
+absorbed**: *the document that party builds from, commissions from, or derives
+tests from* generalises `C-43`'s *"own instrument"* from its two committed
+instances to a class, so that the test is operable for a line that neither
+derives tests nor commissions them. It is the sentence to attack if the import is
+read as wider or narrower than `C-43`'s own application.
+
+**What this re-owes: nothing — measured rather than asserted.** Both halves are
+the constrained party's own words in the constrained party's own committed
+artefact, and they move in **opposite** directions, which is the filer's own
+self-service check and is re-run here rather than accepted: declaring the list
+illustrative **widens** the trigger and routes rtl_lead traffic it does not have
+today, while importing the `C-43` test **narrows** it. **And no signature
+dv_lead holds is reduced**: the rule being amended has never been in force
+anywhere (§0's §7 row), so no traffic that ever ran is redirected; the imported
+test is the one dv_lead's own instrument already states, under which dv_lead's
+re-countersignature was ruled **owed** in five committed rows; and §7.3's bound 2
+is restated verbatim in the landed text. **The one thing dv_lead has not seen is
+the gloss**, and if it reads as narrower than `C-43`'s own application the route
+is a finding at dv_lead's next entry against a live rule — named here rather than
+left to silence.
 
 ---
 
@@ -1315,6 +1394,14 @@ silently or forgotten. **None is performed in this commit** (D8).
    undeclared and that the test it asks for — *normative text in the constrained
    party's own instrument* — should be imported; filed against text that has not
    landed, which is why it lands with the text rather than before it.
+   **Half discharged at `J-architect_docs_lead-0047`**: the `SPEC-TEMPLATE` §13
+   text is landed, carrying `C-RL-10`'s cure in both halves (§7.6). **The
+   `requirements.md` §13 preamble pointer is NOT landed and is still owed** — the
+   dispatch commissioning act 7 opened `SPEC-TEMPLATE` and this file and named no
+   other path, and a debt is better carried visibly for one round than discharged
+   outside the permission that commissioned it. Until it lands, §7.4's own ground
+   stands unanswered on the requirements side: *a rule that binds one and not the
+   other would be discovered the hard way.*
 4. **`docs/reports/audit/WO-0041-mutations/README.md`** — one paragraph recording
    the `D-M3` equivalence exclusion in the seeder's own artefact, closing §6.2's
    limb 3. *Owner*: **auditor** (that path is its exclusive scope and nobody
@@ -1500,15 +1587,79 @@ goes red. `IC-2` is the shape to compare against — eighteen reds, seventeen of
 them predicted, and a green at the target: a control that earns its exemption by
 making a prediction it could have failed.
 
-### 12.8 The kill-disposition form catches deletion, not weakening
+### 12.8 The kill-disposition form catches deletion, not weakening — nor two further modes measured after acceptance
 
 (b.2)'s new limb asks that a killed class's named unit be **present and green at
 the gate SHA**. That detects a unit deleted and a unit disabled. It does **not**
 detect a unit **weakened** — assertions loosened while the unit stays present and
 stays green and no longer catches what it once caught. The bar is deliberately
-lower than the survivor form's (§6.6), and the residue is a review question: a
-diff that loosens an assertion inside a killing unit is visible in `test/**` and
-is the shape `RV-` and `SO-` review exists to catch.
+lower than the survivor form's (§6.6), and the residue is a review question — but
+**not the graded party's own review**. `PROTOCOL` §6 gives `test/**` to dv_lead
+and tb_writer and makes dv_lead tb_writer's reviewing lead, so routing this
+residue to `RV-`/`SO-` alone would ask the party the mutation record grades to be
+its own check. **The independent catcher of a loosened or re-promoted expect block
+is the auditor** (charter §3, *"flag vacuous or promoted-without-review expect
+tests"*); that a loosening diff is visible in `test/**` makes `RV-`/`SO-` review
+an adjunct, not the control. This correction is `FINDING F-0022-5`
+(`J-auditor-0022`), which **enlarges its own filer's duty**, and which dv_lead
+concurred in against its own independence (`J-dv_lead-0186`): *"I do not contest
+the enlargement; I ask for it."*
+
+**Two further modes, measured against the record after acceptance and named here
+because the form does not catch them either.** Both were filed by seats the limb
+binds, both were routed by their own filers to this narrative and to a
+disposition table rather than to a clause, and **neither redrafts a clause nor
+re-owes a signature**.
+
+- **The class's rendering can go stale under a moving design**, so the form is
+  satisfiable for a class that cannot be re-rendered at the gate SHA at all: the
+  instrument stands unweakened and the **target moved out from under it**. Filed
+  as `FINDING F-0022-1` (`J-auditor-0022`, MAJOR) on a measurement at `b6c8a2f`
+  and re-run by this seat at `a76e485`, with `libs/**`, `test/**` and the
+  manifests unmoved between the two: `git apply --check` over all **37** committed
+  renderings under `docs/reports/audit/WO-*-mutations/*.diff` returns **32 that
+  apply and 5 that do not** — `WO-0039/M3`, `WO-0039/M5`, `WO-0045/E-c2`,
+  `WO-0050/f-c3`, `WO-0050/f-c6` — every one a context-search failure in
+  `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, and every one in a campaign scored
+  as a kill. Two of the five, `f-c3` and `f-c6`, sit inside the 62 with their
+  named killing unit present at HEAD, so the form is **fully satisfiable today for
+  two killed classes whose sealed rendering no longer applies**. **The survivor
+  path is self-checking against this and the kill path is not**: a replay either
+  renders or it does not, while a present, green unit is producible whether or not
+  the class can still be posed. **What the measurement does not establish**: (b.1)
+  makes the record's unit the **class**, not the diff, so a stale rendering is not
+  proof of a stale class — which of the five are which has not been measured by
+  anyone, and this section does not assume it. The check that would tell is
+  mechanical, is not a re-run, does not touch the transient model, and costs one
+  command over the whole record; it is named here as **available, not imposed** —
+  `docs/gates/P1-module-ready-checklist.md` §0.2 forbids that file from carrying a
+  condition its cited source does not contain, and this source does not contain
+  one.
+
+- **The record and the bench can name the same unit differently**, so a literal
+  application of *"the named killing unit, present and green at the gate SHA"*
+  fails where no instrument has moved at all. Filed as `FINDING REC-7`
+  (`J-dv_lead-0186`, MAJOR) **by the seat that offered the limb, against its own
+  offer**, and re-measured here at `a76e485` by the filer's own method (matching
+  lines under `test/`): `T-F2`, `T-I4`, `T-G7`, `T-E5` and `T-C4` — the units four
+  campaign records name — return **zero**, while `M03-F2` (42), `M03-I4` (132),
+  `M03-G7` (34), `M03-E5` (26) and `M03-C4` (15) are present in force. **The
+  hazard is not deletion but a silent mapping**: the relay carrying `F-0022-1`
+  reported the named unit `M03-F2` present for `f-c3`/`f-c6` where the record
+  names `T-F2` — the mapping performed correctly, by the seat least likely to get
+  it wrong, and **invisible in the artefact**. **The disposition is dv_lead's and
+  not this file's**: the era mapping per class — record name → present name, with
+  the evidence for each — belongs in the disposition table owed at §10 item 2,
+  where *"a class whose mapping cannot be established is a disposition failure,
+  not a footnote"* (its filer's words, in its filer's own packet).
+
+**The two are one hazard read from two ends** — a kill's referent can go stale in
+the unit's **name** and in the rendering's **applicability** — and neither is
+cured by text on this round. A clause covering both would have to say that a
+disposition citing a frozen measurement states what it re-verified and what it
+could not; **it is not drafted here**, at its filers' explicit request, and a
+later round that wants it argues an **Amendment A1 against a live rule** (§9.3),
+not a redraft of an accepted one.
 
 **What the limb buys is that the question can be asked at all.** Before it, a gate
 record could discharge 61 dispositions by citing campaigns run against trees that
