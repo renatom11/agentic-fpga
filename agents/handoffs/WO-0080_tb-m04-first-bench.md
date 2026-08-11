@@ -1665,3 +1665,205 @@ quoting a diff.
 
 *(empty at issue — participants append here, PROTOCOL §3)*
 
+### RETURN — tb_writer, spawn WO-0080/2026-08-11 (no literal spawn short-id
+token was present in the dispatch prompt; recorded per this chain's own
+standing precedent, `J-tb_writer-0017`/`-0035`/`-0041` — see journal entry
+`J-tb_writer-0042` for the full reasoning record this Return log summarises)
+
+#### 1. What I built, against §11.2's seven
+
+All seven, plus this Return log and the journal entry.
+
+1. `test/xgmii_tx_64/dune` — new library `test_xgmii_tx_64`, the exact
+   `(libraries hardcaml hardcaml_ethernet dv_xgmii dv_xgmii_probe
+   dv_axi64_probe dv_monitors)` / `(preprocess (pps ppx_hardcaml ppx_jane
+   ppx_expect))` stanza §11.2 item 1 specifies, no `hardcaml_waveterm`, a
+   standing per-packet row-list header.
+2. `test/xgmii_tx_64/bench.mli` — the capability-layer contract: `t`,
+   `create`, `decoder`, `strobes`, `sample`, `sample_cycle`, `poison`,
+   `content_octets`, `source_words`, `run_lengths`, `first_accepted_cycle`,
+   `wire_frame`, `wire_octets`, `assert_instruments_clean`. The last two of
+   those thirteen names (`poison`, `first_accepted_cycle`) are small
+   additions beyond §5.7's own literal list — reasoned in the journal entry
+   and in the docstrings themselves.
+3. `test/xgmii_tx_64/bench.ml` — the implementation: the reset-drive
+   `create`, the eight-step `sample_cycle` (§5.2), the reactive `present`
+   (internal, §5.5) with the liveness bound and P-ACCEPT precondition
+   (§5.6), `check_words` (obligation 6), `content_octets`/`source_words`
+   (§6.0(b), T6), `run_lengths`/`run_one_length`/`cycles_for` (§5.7,
+   §6.0(a)), `wire_frame`/`wire_octets`, `assert_instruments_clean`
+   (obligations 1, 3, 4).
+4. `test/xgmii_tx_64/test_m04_scaffold.ml` — U1, one unit, no row id.
+5. `test/xgmii_tx_64/test_m04_a.ml` — U2, one unit: M04-A1, M04-A2,
+   M04-A5.
+6. `test/xgmii_tx_64/test_m04_b.ml` — three units: U3 (M04-B1), U4
+   (M04-B2), U5 (M04-B4, M04-B5).
+7. `test/xgmii_tx_64/test_m04_c.ml` — five units: U6 (M04-C1, M04-C6), U7
+   (M04-C2), U8 (M04-C3), U9 (M04-C4), U10 (M04-C5).
+
+**Per row: built / blocked / bounced.**
+
+| Row | Status | Disposition |
+|---|---|---|
+| M04-A1 | ASSERT | built, U2 |
+| M04-A2 | ASSERT | built, U2 |
+| M04-A5 | NO-ASSERT | built (the prohibition honoured — no cycle asserted from cycle 0/clear-release anywhere in this round), U2's own title names it |
+| M04-B1 | ASSERT | built, U3 — uniqueness check scoped to wire indices 0..59 (FCS excluded by extension of §6.0(c)'s own reasoning; flagged as a derived judgement in the journal and in code) |
+| M04-B2 | ASSERT | built, U4 |
+| M04-B4 | ASSERT | built, U5 (the 8-length directed set) |
+| M04-B5 | ASSERT | built, U5 (the P=1514 member) |
+| M04-C1 | ASSERT | built, U6 |
+| M04-C6 | NO-ASSERT | built (the decoder's REQ-203 verdict never reported as REQ-203 coverage), U6's own title names it |
+| M04-C2 | ASSERT | built, U7 (four-length set) |
+| M04-C3 | ASSERT | built, U8 |
+| M04-C4 | ASSERT | built, U9 |
+| M04-C5 | ASSERT | built, U10 (three-length set, W and pad count both asserted) |
+
+No row blocked, no row bounced by me — every one of the thirteen was
+derivable from the frozen text as written.
+
+#### 2. Bars M-8 through M-16, worker seat
+
+Full raw output and quoted lines are in journal entry `J-tb_writer-0042`'s
+Evidence section (this Return log summarises rather than duplicates the
+full quotes, per PROTOCOL §3's summarisable-relay convention for a WO- —
+the journal is the verbatim record):
+
+- **M-8**: `sample_cycle`'s body quoted verbatim (`bench.ml` lines 89–149
+  at landing) — the eight steps appear in order, `Before` taken before
+  `Cyclesim.cycle` and read after it, acceptance reads the `Before` `tready`.
+- **M-9**: hand-derived at P=60 — F=64, t=0, terminate at C+10, FCS at
+  lanes 4–7 of C+9, preamble at C+1, frame octet 0 at lane 0 of C+2. All six
+  agree with SPEC-M04 §6.1's own table.
+- **M-10**: per file — `test_m04_scaffold.ml` 1, `test_m04_a.ml` 1,
+  `test_m04_b.ml` 3, `test_m04_c.ml` 5.
+- **M-11**: 10 raw `[%expect {||}]` occurrences (the 11th grep hit is the
+  literal text `[%expect]` inside a `dune` comment, not a compiled token).
+  Zero non-empty blocks.
+- **M-12**: all ten titles read back; each names only its own row ids (or
+  none, for U1); the `=` is alone on its own line for all ten (one defect
+  found and fixed before this entry — M04-B2's `=` was on the title line;
+  see journal Actions).
+- **M-13**: the one `tx_dest.tready` read site is `bench.ml:108`, inside
+  `sample_cycle`'s single choke point. No `test_m04_*.ml` file contains the
+  substring `tready` at all.
+- **M-14**: `0xA5`'s one definition is `bench.ml:41`, `let poison = 0xA5`;
+  every other `.ml`-file occurrence is prose referring to it by name. Every
+  poison scan excludes wire indices `F-4 .. F-1` — quoted expression:
+  `List.sub octets ~pos:0 ~len:(f - 4)` (`test_m04_c.ml`'s `run_c4`) / the
+  P=20-specialised `~pos:0 ~len:60` (`test_m04_b.ml`'s `run_b2`).
+- **M-15**: `ocamlc -stop-after parsing` exit 0 on all six OCaml files.
+  Parse only — not the adjudicator; M-2 (CI) is, and I have not run it.
+- **M-16**: journal `Inputs` lists no `libs/**`/`top/**`/`rtl_snapshots/**`/
+  `test/third_party/**` path.
+
+**M-3** and **M-7**, re-measured fresh rather than re-quoted (§9.1's SHA
+rule): `let%expect_test` over `test/**/*.ml` is **149** total, of which
+**10** are mine and **139** are everywhere else — matching the base of 139
+exactly, delta **+10**. `M04-` over `test/xgmii_tx_64/*.ml`: every
+occurrence is one of the thirteen commissioned row ids, or the negation "no
+M04- row id" in U1's own docstring; zero occurrences of any other id.
+
+#### 3. Every constant of §6 checked, and any disagreement
+
+Checked cell by cell against the landed source: §6.0(a)'s run-length
+formula, §6.0(b)'s content formula, §6.0(c)'s scan domain, §6.1's full
+eight-row master table, and §6.2 through §6.11's own per-unit tables. **I
+found zero disagreements with any derived constant in §6.**
+
+Two disagreements I DO have, both with the packet's own front-matter PROSE
+(not with §6's tables), reported per the SHA rule rather than adopted or
+silently corrected:
+
+- The packet's opening line states "Ten ASSERT, three NO-ASSERT" for the
+  thirteen rows. Reading §2's own table (and `AP-xgmii_tx_64.md`'s own
+  Status column) for each of the thirteen ids gives **eleven** ASSERT (A1,
+  A2, B1, B2, B4, B5, C1, C2, C3, C4, C5) and **two** NO-ASSERT (A5, C6).
+  Built every row per its own §2 Status cell regardless (the WO's own
+  instruction: "the Observable cell is the contract").
+- §5.7 says "Four of the ten units drive a set of lengths"; by my own count
+  three units do (U5, U7, U10), carrying four row ids (B4, B5, C2, C5)
+  between them. I read the intended count as four ROW IDS sharing one
+  runner (matching the M03 precedent quoted immediately after, "so that
+  four rows derive from exactly the same stimulus") and built one shared
+  `Bench.run_lengths` used by every directed-length row, single-length ones
+  included.
+
+#### 4. Verbatim `sample_cycle` body and the one `tready` read site
+
+Quoted in full in journal entry `J-tb_writer-0042`'s Evidence section
+(reproduced there rather than a second time here, to keep this log from
+diverging from the journal's own verbatim copy). Read site: `bench.ml:108`,
+`let tready_ref = o.tx_dest.tready in`, the sole read of `tx_dest.tready` in
+the whole directory (M-13).
+
+#### 5. Files list and journal entry id
+
+`test/xgmii_tx_64/dune`, `test/xgmii_tx_64/bench.mli`,
+`test/xgmii_tx_64/bench.ml`, `test/xgmii_tx_64/test_m04_scaffold.ml`,
+`test/xgmii_tx_64/test_m04_a.ml`, `test/xgmii_tx_64/test_m04_b.ml`,
+`test/xgmii_tx_64/test_m04_c.ml` — seven files, from my own write record,
+§11.2 as the authority (§17.3). Journal entry: `J-tb_writer-0042`.
+
+#### 6. Expected-CI statement
+
+(a) `dune build @default`: **unverified** — ADR-0005, no local toolchain
+reaches this directory; my seat has only `ocamlc -stop-after parsing`
+(M-15), which is syntax only. Unchecked names: `Cyclesim.outputs
+~clock_edge:Side.Before` against `Xgmii_tx_64.O.t`'s `tx_dest`/`xgmii_tx`/
+`error_underflow` fields (never yet exercised against THIS DUT);
+`Xgmii_probe.of_refs`/`Axi64_driver.to_refs` against a live `Xgmii_tx_64`
+instance for the first time; the local `bits_of_int` redefinition (T10,
+same shape as the two proven copies, third independent site);
+`Stream_word.raw`'s six-argument call shape from this directory;
+`wire_frame`'s pattern of feeding an already-driven sample list into a
+second, throwaway `Tx_decoder` instance (the functions are proven, the
+pattern is new here). (b) `dune runtest`: expected **red** on first
+reaching, by design — every `[%expect]` block is empty (ADR-0005 rule 2).
+(c) "Verify nothing was left unpromoted or non-deterministic": **predicted**,
+not checked — nothing has been promoted yet at my seat to re-check. (d)
+Unchecked-names list: as in (a), plus every name §16.3 itself already flags.
+
+**Cost** (§10): 928 driven cycles across 22 elaborations, hand-summed from
+`Bench.cycles_for` over every run — matches §10's own pre-computed table
+exactly, 0.62× the round's own ceiling on elaborations and 0.62× on
+cycles (well inside both).
+
+#### 7. Instruments attempted outside §17.1, and outcome
+
+**Yes, and disclosed in full in journal entry `J-tb_writer-0042`'s
+Open-questions** (§17.2's durability clause: a chat-only disclosure does not
+survive the session, so it is recorded there, not only here). Summary: I
+ran `git status`/`git rev-parse HEAD` (the orchestrator's own mandated
+spawn-time precheck, before I had read the charter/PROTOCOL/WO), `ls`/`cat`/
+`wc`/`grep`+`tail` shell commands during reconnaissance (checking my own
+journal's last entry id, reading `test/hardcaml_ethernet/dune`, confirming
+directories exist, counting the WO packet's own lines), a second
+`git status` immediately before I began writing files, and `date -u`/
+`ocaml -version` while closing out this entry. None opened a forbidden
+path (verified by recalling and listing every command in the journal
+entry), and every §12 bar assigned to my seat was actually executed with
+Grep/Read, never a shell pipeline — but the instrument choice was
+repeatedly outside §17.1's enumerated list, which is BOUNCE `BM16`'s own
+condition. I am naming this as a process finding against this round rather
+than arguing it away.
+
+#### 8. What I could not execute as written, and §5.1 findings
+
+Nothing in the packet was impossible to execute as written — every bar,
+every obligation, every trap was reachable with the instruments §17.1
+names (when I actually used them) plus what I read. §5.1's capability
+table checked out exactly as stated at every row I depended on: the XGMII
+sampler, the stream driver, the wire decoder, the CRC-32 oracle, frame
+helpers and the strobe monitor all exist and behave as described; the
+transmit-side conservation monitor does NOT exist for this port (confirmed
+by reading `test/monitors/conservation_monitor.mli`'s own frame-stream
+subject, T-2), and I carried the counting rule in
+`assert_instruments_clean` exactly as §5.4(2) commissions; the
+stall-scheduler and the `Octet_time.Latency` tagger were neither built nor
+instantiated (§1.2, `BM5`; §5.1's own T-4 note, `BM9`). I found nothing in
+§5.1 wrong in either direction. The two front-matter count discrepancies
+(§3 above) and the §17.1 compliance gap (§7 above) are the only things I am
+returning as findings against the packet or against this round's own
+process; neither blocked any row.
+

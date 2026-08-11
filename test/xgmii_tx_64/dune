@@ -1,0 +1,55 @@
+; The M04 bench — WO-0080, the first bench of the M04 era. WO-0080 §0's own
+; opening sentence, carried from WO-0038: "the scaffolding is the deliverable
+; as much as the rows are."
+;
+; AP-xgmii_tx_64.md rows live here, by packet:
+;   WO-0080  A1, A2 ASSERT, A5 NO-ASSERT; B1, B2, B4, B5 ASSERT; C1, C2, C3,
+;            C4, C5 ASSERT, C6 NO-ASSERT (ten ASSERT + two NO-ASSERT rows,
+;            plus U1, the scaffolding smoke unit with no row id) — seven
+;            files, ten %expect_test units
+; When a packet adds rows, add its line — WO-0038's own dune header found
+; the staleness this rule guards against (see test/xgmii_rx_64/dune's own
+; history) and this header follows that precedent from its first commit.
+;
+; Depends on hardcaml_ethernet (the design under test — REQ-010's
+; type-identity check does its job if the implementation's ports diverge from
+; docs/specs/ifc_check/xgmii_tx_64_ifc.ml, WO-0080 §7). tools/precompile_
+; check.sh's STUBBABLE set does not cover it (WO-0080 §16.2 item 5), so this
+; directory is EXCLUDED from that harness by construction and CI's `dune
+; build @default` is the only compiler that reaches it (ADR-0005) — which is
+; exactly why WO-0080 §16.2 rule 1 (every [%expect] block empty, promoted
+; from CI's own diff) governs every unit here.
+;
+; No hardcaml_waveterm: no unit in this round needs a waveform (WO-0080
+; §16.2 rule 3) — the RV-0038 addendum D1 finding (J-dv_lead-0023) about an
+; unread Waveform.create's elaboration cost is the reason this stanza omits
+; it from the first commit rather than adding it and dropping it later.
+;
+; dv_xgmii, dv_xgmii_probe, dv_axi64_probe and dv_monitors are the
+; DUT-independent machinery WO-0080 §5.1 measures the existence of, at
+; ee47eee, by reading the committed file that establishes each: the
+; link-partner's transmit-side decoder and frame/word builders (dv_xgmii),
+; the XGMII sample seam (dv_xgmii_probe), the Axi64 drive seam
+; (dv_axi64_probe), and the standing strobe monitor (dv_monitors). None of
+; libs/hardcaml_ethernet/src/xgmii_tx_64.ml or rtl_snapshots/** was opened to
+; write anything in this directory (PROTOCOL §10, WO-0080 §8) — bench.ml
+; reaches the DUT's ports only through the field names SPEC-M04 §4.1 and the
+; WO itself state, via type-directed record-field projection, never by
+; naming the concrete module that defines them.
+;
+; No new dependency edge beyond WO-0080's own six: dv_golden is not named
+; directly because Frame.fcs (dv_xgmii) already reaches
+; Dv_golden.Crc32_ref; ifc_check is not a dependency because the bench reaches
+; every port by field projection off Cyclesim.inputs/outputs (WO-0080 §7),
+; never by naming Ifc_check.Axi64_ifc's types.
+;
+; ppx_hardcaml ppx_jane ppx_expect, matching test/hardcaml_ethernet/dune and
+; test/xgmii_rx_64/dune — this is the one directory in this packet that
+; touches Signal.t/Bits.t and needs Base's operators alongside Hardcaml's ppx.
+
+(library
+ (name test_xgmii_tx_64)
+ (inline_tests)
+ (libraries hardcaml hardcaml_ethernet dv_xgmii dv_xgmii_probe dv_axi64_probe dv_monitors)
+ (preprocess
+  (pps ppx_hardcaml ppx_jane ppx_expect)))
