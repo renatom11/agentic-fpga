@@ -5187,3 +5187,85 @@ mutation campaign, mine to schedule. Watching, not acting: shell PR #3
 - site/public/process.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0267] 2026-08-11T23:37Z | task:none | Council round two returns under the Sal-first topology: pass with conditions in four tiers, the stamps found to measure a document half the current one's size, and the one thing to do first is the cold boot nobody has run
+
+### Trigger
+
+Council round 2 completed (workflow wf_2c784e2b-889, ten agents, zero errors:
+Sal's framework first per the sponsor's revised topology, then Charlie/Bob/Bill
+on own-judgment-plus-framework, then the five advisors with the spirit framing,
+then the Chairman in the exact five-heading structure). This entry lands all
+ten artifacts VERBATIM at docs/reports/process-council/round-2/ — the round-1
+file set plus sal-framework.md — and records the relay to the sponsor.
+
+### The verdict, compressed for the board (the file is the record)
+
+**PASS WITH CONDITIONS — conditions precedent, mandatory, re-verified; the
+document may not be described as replication-grade until discharged.** Eight
+voices converged on: the export unit broken at its first link (the shell never
+named — §6.2 step 0 unexecutable); the stamp apparatus citing a posture list
+with no stated path; §6's adoption order contradicting §1.7 and the G0 record
+it came from; zero literal grammars in a document claiming to include them;
+three fresh unqualified quantifiers in the edition produced to purge the class.
+Certified whole: the enforcement core (Bob re-executed ~25 claims, every one
+held) and the failure-museum layer — "I found no rule I could not state the
+failure of." The council's blind-spot catch is the round's sharpest: **the
+128-row posture measurement was taken at 6c02f5b (1,445 lines); the document
+is now 2,973 — more than half the text postdates its own evidentiary spine**,
+and the preamble's coverage claims are false against that fact. Clashes
+recorded honestly: FAIL vs PASS-WITH-CONDITIONS (Contrarian alone on FAIL);
+prose-complete mechanism vs fission (resolved by structure: shell normative,
+document carries marked anonymized facsimiles, drift check binds the halves);
+naming-the-shell dissolves-nothing without the drift check (Contrarian wins on
+the record — the shell is thirty-one commits ahead and not frozen).
+
+Four revision tiers: truth repairs (§2.7's false limb — refuted at a0454b4;
+§4.7's missing fifth sponsor power; §3's taxonomy closure rule; §6.0's frozen
+claim vs the federation transit; the preamble's stamp-coverage honesty), supply
+lines (name the shell, path the posture list, row the fifth script, edition
+anchor, reorder §6.2 to match §1.7/G0, fix the DoD equation), structure and
+coverage (facsimiles per artifact class; DV-escape ledger; model-tier
+invariant; contingent-seat onboarding; layering rule-first-archaeology-behind;
+fork contract for stamps), drift resistance (PROCESS.md bound into the
+amendment procedure; a per-edition cold-reader row; §6.2 itself stamped).
+
+**The One Thing to Do First — before any editorial repair: run the adoption
+path once, for real.** A non-author, a clean repository, §6.2 executed
+literally, a halt log committed at every under-determination. "A document whose
+central innovation is 'a claim is a measurement' must not ship an adoption
+procedure that has never been measured."
+
+### Plan of record (mine)
+
+The One Thing executes NEXT, before the architect revision round: a fresh
+agent with no authorship of the document, a clean directory, the document as
+an adopter would receive it, a halt log as the deliverable, landed beside the
+round's artifacts. The halt log plus the verdict then form the architect's
+revision work order; round 3 convenes on the revised document, same topology.
+This sequence — measurement before repair — is the verdict's own instruction
+and the document's own doctrine applied to itself. Noted for the sponsor: the
+council independently arrived at the cold-boot diagnostic this seat offered
+after the shell-export post-mortem; that offer stands, now with the council's
+mandate behind its in-program form.
+
+### Verification
+
+Ten artifacts extracted from the workflow's structured result (keys verified:
+verdict, sal, charlie, bob, bill, contrarian, first_principles, expansionist,
+outsider, executor; sizes 7,763–33,428 bytes), written byte-for-byte with a
+single trailing-newline normalization, file set mirroring round-1's plus
+sal-framework.md. Volume arithmetic before this append: 250,546 + entry <
+262,144 — fits; rotation due at the entry after this one.
+
+### Files-in-this-commit
+- docs/reports/process-council/round-2/bill.md
+- docs/reports/process-council/round-2/bob.md
+- docs/reports/process-council/round-2/charlie.md
+- docs/reports/process-council/round-2/contrarian.md
+- docs/reports/process-council/round-2/executor.md
+- docs/reports/process-council/round-2/expansionist.md
+- docs/reports/process-council/round-2/first-principles.md
+- docs/reports/process-council/round-2/outsider.md
+- docs/reports/process-council/round-2/sal-framework.md
+- docs/reports/process-council/round-2/verdict.md
