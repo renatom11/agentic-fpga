@@ -131,11 +131,12 @@ PHASES = [
 
 # D4: plain-first, insider reference in parentheses — the standing style.
 NEXT = [
-    'Finish the transmitter’s test plan — 57 of its 82 planned checks remain, two families closed this window — then seeded-defect campaigns must prove the benches catch planted bugs before any sign-off (AP-M04 → SO-M04)',
-    'Independent design review of the two newest modules, the frame receiver and frame transmitter, then their own test plans and benches by the same loop (M06/M07)',
-    'Open the transmitter’s cross-simulation lane: vendor the reference design’s transmit side and build the runner that replays both implementations against each other (co-sim BAR T1)',
-    'Accumulate per-module rows on the module-readiness gate toward the sponsor’s signature — the receiver’s fourteen-of-fourteen PASS is row one (P1-module-ready)',
-    'The first lessons harvest is delivered to the parent organization as a pull request awaiting the maintainer’s review — 353 candidate lessons from the receiver’s full verification cycle (federation inbox PR #3)',
+    'Council review of the process document, rounds two and three: round one’s verdict and two seats’ independent confirmations are already folded in, and each next round runs standards-setter first, then three reviewers, then the five-advisor council, with revisions between rounds',
+    'Finish the transmitter’s test plan — stage one of the two-frame work is reviewed and accepted (six more checks green, the anchor law now measured where it was only derived); stage two follows a packet revision, with 57 of 82 planned checks still open on the plan’s books',
+    'Seeded-defect campaign against the transmitter’s newest benches — planted bugs must be caught before any sign-off credit (AP-M04 → SO-M04)',
+    'Enforcement hardening implementation: the countersigned design that puts each check on the surface it actually runs on, with every signing seat’s conditions riding (ADR-0021)',
+    'Independent design review of the frame receiver and frame transmitter, then the transmitter’s cross-simulation lane against the reference design (M06/M07, co-sim BAR T1)',
+    'Accumulate per-module rows on the module-readiness gate toward the sponsor’s signature — the receiver’s fourteen-of-fourteen PASS is row one (P1-module-ready); the first lessons harvest awaits the maintainer’s review (federation inbox PR #3)',
 ]
 
 # ---- shared style -----------------------------------------------------------

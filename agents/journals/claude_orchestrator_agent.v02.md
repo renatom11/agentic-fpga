@@ -5008,3 +5008,182 @@ verified posture list.
 - docs/reports/process-council/round-1/expansionist.md
 - docs/reports/process-council/round-1/outsider.md
 - docs/reports/process-council/round-1/executor.md
+
+## [J-orchestrator-0266] 2026-08-11T23:05Z | task:none | The falsifier's run is green and the CRITICAL withdraws by its own sealed terms; the two confirmation rounds land with ten corrections routed to one written round; my four confirmations close against the committed text; and stage one of the two-frame packet is classified green with one transient named beside it
+
+### Trigger
+
+The batch that closes the council round-1 arc: the auditor's confirmation
+returned (landed d502aa1), dv's already landed (680689c), the architect
+correction micro-round dispatched on both correction sets, my four Annex B.1
+confirmations performed, and the classifications this seat owed as operator and
+CI-reader now on the record. This entry is the board flip that closes the batch;
+council round 2 under the sponsor's Sal-first topology convenes on its landing.
+
+### 1. F-0024-A: WITHDRAWN IN FULL, by its own pre-committed terms
+
+The finding (CRITICAL, auditor, J-auditor-0024 at d4be71b, against RV-0041's
+D-M3 equivalence ruling) sealed its own falsifier: the unmodified D-M3.diff plus
+a witness test — three 65-octet good frames at lane 0, expecting zero error
+strobes — with the term that a green run withdraws the finding whole. I executed
+as operator (ADR-0019: the seeder never operates): worktree, diff applied,
+witness appended to test/xgmii_rx_64/test_m03_d.ml, never-merge commit 528b045
+on mut/wo-0041-dm3-falsifier. Run 31541276523: Build SUCCESS, Run-tests SUCCESS,
+Generate-RTL SUCCESS; the witness produced zero error strobes; the only red was
+snapshot-verify, inherent to any mutant (two snapshot FILE blocks, no corrected
+test file staged). By the finding's own terms: **withdrawn in full**. The
+15-of-15 mutation tally of WO-0041 stands. The worktree and local branch are
+removed; the remote transient stands as record. Owed onward: the auditor's
+reconciliation round — why hand-derivation predicted a strobe that execution
+refutes — and its re-grade of F-0024-C (the multi-frame coverage gap, which
+stays factually true independent of A's withdrawal). Both entries that froze
+before the run (J-dv_lead-0190 §1.6, J-auditor-0025 open-question 3) correctly
+treated the finding as pending; this entry is the classification they deferred to.
+
+### 2. The two confirmation rounds, landed; ten corrections routed to one round
+
+dv_lead (J-dv_lead-0190, 680689c): three subjects CONFIRMED, four corrections
+routed to architect_docs_lead — the survivor exhibit describing a failure the
+record does not contain (repair: open on F-0021-5's perishability hazard); the
+frozen-kill limb disclosing one of its three known limits (F-0022-1 and REC-7
+are the other two); the SHIP-BLOCKER: the external anchor omitted everywhere,
+§3.8 exporting a sign-off form under which an unanchored oracle may grade an
+artifact; and §4.3's closing claim overtaken twice on dv's own receiving side.
+Plus six routed recommendations (precisions A/B, the import-as-rules boundary,
+the §3.8 floor wording, exhibit 3's second ground, the C-109 precision).
+
+auditor (J-auditor-0025, d502aa1): CONFIRMED with six MINOR findings
+F-0025-A..F, no CRITICAL, no MAJOR, nothing blocking round 2. Annex B.5
+RESOLVED: 15 FALSE / 8 PLANNED are correct; the wrong figure (12/4) is the
+auditor's own C-126 evidence cell, cure an APPENDED DATED NOTE never a rewritten
+cell (§5.4's own rule, de85393's example); second self-discrepancy C-117's
+anchor (true anchor J-architect_docs_lead-0047). Both self-cures are the
+auditor's scope, a later auditor round. F-0025-E overlaps dv's correction 1 —
+both seats convict the same exhibit in the same direction; no split, one round.
+
+The architect micro-round ran on the full set and LANDED at 1f1c09e
+(J-architect_docs_lead-0051): twenty items applied, none declined. The
+ship-blocker landed at four sites — a new FIFTH separation §1.4(e), an element
+of §3.8's list, a clause in §1.2, an entry in §6.1. The survivor exhibit both
+seats independently convicted was rebuilt on the rehabilitation-expiry hazard
+with its first edition preserved in the margin and both finding ids cited
+(F-0025-E settled jointly with dv's repair — the anticipated disagreement did
+not exist). F-0025-F was cured IN THE SOURCE, docs/SPONSOR.md, with a dated
+note, on the stated ground that routing a fix inside one's own scope is a
+refusal the seat is not entitled to; the general form went into §1.5's margin.
+My one mid-round addendum, MARKED as mine, was applied: the second instance of
+F-0025-D's "ninety" at :1030 (measured figure 86), found during my §2.6
+confirmation. Beyond the dispatch, the round declared rather than absorbed:
+three pre-existing render-breaking markup defects fixed (inner emphasis inside
+bold spans, one producing an unclosed tag — two of the three its own), Annex
+B.1's dv row criterion added MARKED as post-answer, two claims given a fourth
+stamp property with Annex B.7 opened as the finding-id ledger, and C-104/C-94's
+grown referents rowed for the auditor's re-measurement. Figures re-derived,
+not quoted, per dv's own boundary sentence.
+
+### 3. My four Annex B.1 confirmations — CONFIRMED, against the committed text at d502aa1
+
+Performed against `git show d502aa1:docs/PROCESS.md`, never the working tree
+(the architect was mid-round in that file).
+
+- **§2.1 commit-handoff steps (:685–:704): CONFIRMED.** The five steps are
+  literally my practice as sole committer, instanced this very window at
+  d502aa1's landing: pure-append verified by byte-prefix cmp, the returned set
+  staged, the script invoked with the acting seat's identity as a parameter
+  (--agent auditor), entry id checked one-past (0025 = 0024+1), trailers
+  written. Both stated consequences true: identity asserted-not-proven with the
+  residue mine, and serialization required — which is what the sibling
+  declaration law polices.
+- **§2.6 enforced-where table (:987–:1042): CONFIRMED row by row**, including
+  the two added rows (chain/rotation C-45, size thresholds C-46). The size-
+  threshold row's "commit surface only" is accurate today and is precisely what
+  ADR-0021 subject 2 proposes to change — the row must move to "both surfaces"
+  at that implementing commit, recorded here so the doc-update is owed with the
+  implementation. Branch-topology note true (working branch / trunk trivial
+  merges / mut refs a third population). One observation routed mid-round: the
+  :1030 "ninety" (see §2 above).
+- **§6.0 kit table (:2382–:2396): CONFIRMED, all ten rows verified on disk.**
+  agent_commit.sh, check_journals.sh, policy.sh, test_protocol.sh (plus
+  verify_journal_chain.sh beyond the table), the three workflows, PROTOCOL.md,
+  nine charters, the launcher prompts (committed at .claude/agents/, eight seat
+  files), the packet skeletons (agents/handoffs/README.md), docs/SPONSOR.md.
+  Honest limits confirmed: the shell is named-not-inspected from here; the
+  drift test does not exist. One observation, below correction threshold: the
+  row phrase "launcher directory" names no directory an adopter would find by
+  that name — the committed location is .claude/agents/.
+- **§1.7 genesis sequence (:569–:645): CONFIRMED against my first-hand founding
+  acts.** Machinery on before the first real work order (founding range
+  2026-08-01; first RTL work order 2026-08-02); charters laundered through
+  three-lens adversarial review before anyone worked under them (and the owed
+  item is accurate: that review's evidence does not survive in version
+  control); sponsor ratification at G0 (items 8–9 the sponsor's); the
+  retro-audit as the auditor's first act with its weakness declared (AUD-0001,
+  17 findings, 1 CRITICAL, gate blocked until AUD-0002 re-verified, item 11).
+  All three owed items stated accurately, including the recovery drill still
+  unrun.
+
+### 4. WO-0082 stage one: classified GREEN, then RV-0082 ACCEPT landed
+
+65ba148 (stage 1: presenter + M04-A3/B3/F1/F2/F5/G10, executed by tb_writer
+with two disclosures): run 31539904673 — build SUCCESS, journal-check SUCCESS,
+site-deploy SUCCESS. On that classification dv's review ran and landed at
+9747cbc (J-dv_lead-0191): **RV-0082 ACCEPT on all twenty-three §12 bars** —
+diff exactly the nine authorised paths, regression witnesses byte-untouched,
+zero deletions in the appended files, 31 distinct M04- ids with zero forbidden,
+CI read at source by the reviewer rather than from my dispatch. The anchor law
+S(k+1) = T_k + g_k, a derivation when the packet was written, is now measured
+at eight terminate lanes and sixteen green runs including the t=4
+convention-discriminating member. Both worker disclosures ruled against the
+packet, not the worker (the ocamlc plumbing ruled INSIDE §17.1 item 3 — bar
+M-15 demands an exit status). Carried obligations from the verdict: the
+absorption acts (AP-M04 §9 row, T-7 state cell, six Status cells) are NOT done
+— test/attack_plans/** was outside the round's allowance, the plan still reads
+57 outstanding and row 51 may not be cited until that edit lands; stage 2's
+packet owes four corrections plus one design obligation (SP-2 false by
+construction against stage 2's stall stimulus — a third postcondition class)
+before any stage-2 row is commissioned; and the M04 stage-1 mutation campaign
+is unblocked and mine to schedule. Separately, one anomaly classified so the
+record does not carry an unexplained red: fb58ba3 (dv's journal-only
+countersignature commit) build job FAILED at 22:05Z in the "Install
+dependencies" (opam) step, everything after skipped, cosim on the same run
+green — and the identical dependency set installed green four minutes later at
+d4be71b. Classification: transient infrastructure failure, no project defect,
+no action owed.
+
+### 5. Ledger — four dispatch errors of mine this window, each caught by its recipient
+
+(a) rotation-flag misattributed to J-rtl_lead-0022 (lives at 0014); (b) the
+auditor dispatch's claim that (b.3) carried its G-9 adaptation — it is (b.4),
+dv's (F-0021-1); (c) "committed 16:57Z" off by 2m13s (F-0021-2); (d) the REC-7
+relay's silent T-F2→M03-F2 namespace mapping — the demonstration that produced
+the marked-additions rule now in force and exhibited in §4.3's coming repair.
+Standing corollary from this window also on my ledger: new lanes are announced
+to in-flight agents (adopted after the ADR-0021 lane appeared undeclared
+mid-round to the auditor).
+
+### Next
+
+On the architect's return: verify, land, push; site rebuild (process page
+re-renders from the corrected document); then council round 2 fires under the
+sponsor's Sal-first topology (script authored and held: Sal phase 0 →
+Charlie/Bob/Bill each on own judgment plus Sal's framework → the council of
+five with the spirit framing → the Chairman in the exact five-heading
+structure), artifacts to docs/reports/process-council/round-2/, verdict
+relayed verbatim, revisions, then round 3. Behind it: my ADR-0021
+implementation round with every countersignature condition riding; the
+amendment batch (C-40, C-93, F-0022-2, ADR21-1); the auditor's reconciliation
+and self-cures; dv's stage-2 packet revision (four corrections + the SP-2
+third-postcondition repair + the §17.1 date-u carve-out + the absorption acts
+in test/attack_plans/**) before stage-2 commissioning; the M04 stage-1
+mutation campaign, mine to schedule. Watching, not acting: shell PR #3
+(human-merge law); the sponsor's cold-boot diagnostic offer stands.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/process.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
