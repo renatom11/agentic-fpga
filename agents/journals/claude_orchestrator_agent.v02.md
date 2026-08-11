@@ -3651,3 +3651,67 @@ settled by A2; ONE TOKEN, both prior FAILs quoted beneath.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0236] 2026-08-11T03:55Z | task:none | The board learns the module is signed: PASS on round 4, fourteen of fourteen, with both FAILs quoted beneath it - and the transit's moment, which the amendment left open, is answered by the form of the transit itself
+
+### The landing this entry records
+dv_lead's re-verdict round 4 landed 69f1475 (J-dv_lead-0168): PASS,
+one token, no qualifier, at sign-off SHA 41fead6. My landing
+verification, run before staging: files-list = the SO- packet and
+dv v08 exactly; journal pure append 455+/0- with exactly one
+"## [J-" header at column 0; the packet carries exactly one bare
+"# PASS" at column 0 and zero bare "# FAIL" (both prior tokens
+survive quoted - grep counts 2 in block-quote form); the packet's
+19 deleted lines are the re-issue mechanic only (masthead and the
+round-3 live-verdict framing demoted to quoted retrospective
+references - the same mechanic round 3 applied to round 2's);
+ancestry HEAD == origin == merge-base at 41fead6 before staging.
+SC-12's disposition as dv measured it: the successor note pays
+FINDING SO-6 (18/18 LH2-g + LH3, classifier stated twice, round
+3's counts re-run on 0233 first and reproduced before being called
+repaired), A2 settles FINDING SO-5 by amendment as required, and
+dv raised no contest against A2. OBSERVATION SO-O1 minted and NOT
+charged: two of my eighteen carry a version-control tool noun
+under a stated LH2-g (candidate 8 names git show HEAD:; candidate
+2 turns on HEAD/merge-base) - owner me as miner, routed to the
+collator's gate-time hide test with A1.4's later-harvest regrade
+as the instrument. I own that disposition at the transit: those
+two candidates get the hide test run against them explicitly
+before any shell write, and the result recorded either way.
+
+### The board flip
+tasks/BOARD.md WO-0078 row: status cell now leads with the
+signature (PASS 14/14 at 41fead6, first five-seat harvest complete
+Part A, A2 in force); the stale "IN FLIGHT: dv countersignature
+round" fragment - three rounds behind the record - replaced with
+the four-round arc: countersignature transcribed, round 2 FAIL on
+two, the clearing rounds (WO-0079's 34 rows; four commissioned
+harvests), round 3 FAIL on new ground against my own note, the
+cure, the amendment, the acceptance act, round 4 PASS. Owed-onward
+carried into the cell with carriers named.
+
+### The transit's moment - ruled here, because someone must own it
+A2 explicitly declines to decide "whether the shell commit may
+land before the gate that ratifies it, or must land at it",
+leaving the moment where 4.4 and 12 left it. dv's round-4 table
+routes Part B to "orchestrator as collator, at P1-module-ready" -
+which names where Part B's boxes are CHECKED (A2-D2/D3), not when
+the transit artifact may exist. The sponsor's standing direction
+is explicit: on a PASS, the harvest transit - the shell unfreezes
+for exactly ONE commit, my only shell write, as an INBOX PR,
+FETCH FIRST. I rule the PR form answers the open moment question
+without deciding it: a PR is a proposal, not shell history; 4.4's
+sponsor refusal right is preserved candidate-by-candidate before
+any merge; the gate at P1-module-ready still re-checks Part A over
+its own spans and reads the shell diff as one commit. If the
+sponsor prefers the PR to wait at the gate, it waits - open, at
+zero cost, refusable. Constraint I bind myself to now: the
+collation edits no statement (the surviving statement of any merge
+is one of the two verbatim, A2-D8), ids transfer seat-qualified
+and unrenumbered, every entry carries its permalinked provenance,
+LH2-d and project-tier candidates do NOT leave this repo, and the
+hide test runs at transcription with SO-O1's two candidates called
+out by name in the result.
+
+### Files-in-this-commit
+- tasks/BOARD.md
