@@ -4218,3 +4218,93 @@ commitments is readable: the rule precedes the round it binds.
 
 ### Files-in-this-commit
 - docs/specs/requirements.md
+
+## [J-orchestrator-0251] 2026-08-11T13:58Z | task:none | The site catches up six days in one command - and the honest stamp that made one entry the outlier turns out to be the only true clock in a record that runs fast
+
+### Trigger
+
+Two events in one window: the sponsor asked, mid-turn, "have you been updating
+the backlog page on the website" — and the architect's C-RL-8 round returned.
+The answer to the sponsor was **no**: the last site rebuild was 8acd28d,
+2026-08-05, six days and an entire era ago. Everything since — the
+SO-xgmii_rx_64 PASS, the harvest transit and shell PR #3, the P1-module-ready
+checklist, M06 and M07, the whole M04 bench arc with BUG-0004 — happened
+without the refresh my own standing step ("site refresh at each natural
+landing") promised. On my ledger; repaired in this entry.
+
+### The architect landing, and the two rulings it asked for
+
+C-RL-8 came back UPHELD and refined; landed at 0b7be1f as
+J-architect_docs_lead-0041. The architect flagged two judgment calls rather
+than presuming them, and I ruled:
+
+1. **The three-file diff lands whole.** The dispatch allowed requirements.md
+   "ONLY if a change-log row belongs there"; the architect edited §0.5's body
+   because a §13 row records a diff and cannot land without one, and because
+   SPEC-M07 stating L = 22 under the live §0.5 would be self-refuting (22 is
+   not a multiple of 8). Grounds accepted. The alternative — module repairs
+   without the term that makes them lawful — is unsound by the architect's own
+   showing, and bouncing the round whole to relitigate scope would have held a
+   licensing defect in force to defend a preposition in my dispatch.
+2. **The §0.5 amendment is in force meanwhile**, unlike the REQ-210 precedent
+   row. The unrepaired straddle test is the *licensing* defect — it invites a
+   wrapper to assert a per-octet latency every conformant design fails. Holding
+   the repair pending countersignature would leave the hazard governing in the
+   gap. The dv countersignature on the §0.5 diff, narrowed to what it adds, is
+   OWED and rides dv's next dispatch after RV-0081 returns.
+
+### The timestamp-drift finding
+
+Bounced 0041 for one line: its header stamped 2026-08-12T01:40Z against a real
+clock of 2026-08-11T13:54Z. The author fixed it to the true time and then
+showed me what the fix exposes: its six prior committed entries are stamped
++11h44m to +14h47m in the future, so the honest stamp now reads earlier than
+all of them. I then measured across seats (header stamp vs the pairing
+commit's author time):
+
+- architect 0035–0040: +12h to +15h fast
+- orchestrator 0250: stamped 16:10Z, committed 12:45Z — my own seat runs
+  +3h25m fast; this entry's stamp is honest and therefore reads earlier
+  than 0250's. Same ruling I gave the architect, applied to myself.
+- dv_lead 0178: stamped 15:30Z against commits that closed before 13:12Z —
+  fast by two hours or more.
+- rtl_lead 0020: 13:05Z against a 13:16Z commit — essentially true.
+- tb_writer 0044: "13:00Z (estimated…)" — that seat already knew its clock
+  was unreliable and said so in the header.
+
+**Ruling, program-wide**: honest stamps from now on, even where they read
+earlier than a drifted predecessor — the truthful entry exposes the defect
+rather than causing it. No committed stamp is edited (R3: above-EOF is
+frozen); the correction is forward-looking only. Entry-id order (R5,
+mechanically enforced) is the chain's true order; timestamps are testimony,
+not sequence. Carried: (a) the architect notes the drift as a ledger row +
+Open-question in its next entry — its own offer, accepted; (b) each seat's
+next dispatch carries the honest-stamp instruction; (c) the finding routes to
+the auditor as a process item at its next round — cross-seat timestamp
+ordering was unreliable for every entry that cites a time rather than a date.
+Dates remain correct everywhere measured; nothing cited by date moves.
+
+### The refresh itself
+
+`python3 site/build.py` — one command, five pages. The builder's counters are
+live (561 commits, 508 journal entries across volume chains, 80 work orders,
+223 attack rows, 7/20 modules with RTL); the roadmap blurb's figures are
+f-string interpolations of the same counters, verified against build.py
+line 127 before trusting the diff (the "5 of 20 / 141" in the old page was
+the stale text being replaced, not the new). Commit stamp on the page:
+0b7be1f, today. The backlog page now shows the WO ledger through WO-0081 and
+the matrix with M06/M07 present. dv's RV-0081 lane is still in flight; when
+it lands, the board flips and the site rebuilds again — the rebuild is one
+command, and the six-day gap is the last one.
+
+Also carried from this window: architect journal v03 crossed 256 KiB at 0041
+(R10 warned at commit) — rotation to v04 owed at its next entry, alongside
+the drift note.
+
+### Files-in-this-commit
+
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
