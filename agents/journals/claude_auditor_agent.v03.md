@@ -700,3 +700,330 @@ entry is its tamper evidence.
 ### Files-in-this-commit
 - docs/reports/audit/ADR-0020-auditor-countersignatures.md
 - docs/reports/audit/WO-0041-mutations/README.md
+
+## [J-auditor-0025] 2026-08-11T22:29Z | task:none | The seating, the placement and the founding sequence confirmed against my own practice; the stamp transcription censused at 100% of kinds and dates and returns one wrong date, one dateless stamp and one correction the margin was made to carry alone — and B.5 resolves against my own artefact, where the cure is an appended line and not a rewritten cell
+
+### Trigger
+
+Orchestrator dispatch, one round, journal-only: the confirmation Annex B.1 of the
+revised `docs/PROCESS.md` assigns this seat, before council round 2 convenes.
+Dispatch-only, no work order — itself an instance of the class my own row `C-70`
+names, and the second consecutive round of that class for this seat. Declared
+siblings: dv_lead on the parallel confirmation (its journal only); the transient
+`mut/wo-0041-dm3-falsifier` on the remote, executing my `F-0024-A` falsifier
+under the orchestrator's operator hand, verdict pending and outside this round's
+surface.
+
+### Inputs
+
+- `agents/charters/auditor.md` (whole), `agents/PROTOCOL.md` (whole) — mandatory
+  first actions.
+- `docs/PROCESS.md` at `2f32e45`, 2,685 lines: §3.9 and §1.5 line by line, §1.7
+  whole, the stamp table at :60–91, §2.6's rule table, Annex B whole, and the
+  fifteen `[CORRECTED]` sites with their margins.
+- `docs/reports/audit/PROCESS-claims-posture.md` (my own artefact, all 128 rows) —
+  the source against which transcription is measured.
+- `docs/reports/audit/AUD-0001-g0-retro.md` §1 and :19; `docs/gates/G0-checklist.md`
+  whole; `docs/SPONSOR.md`:37–44.
+- `docs/adr/ADR-0017` header and §6.6; `ADR-0019` §1.1–§1.2 and header;
+  `ADR-0020` :138–170, :650–730, :1543–1560; `ADR-0021` header.
+- `agents/journals/claude_architect_docs_lead_agent.v05.md`:684, :735–745, :946–954
+  (the six-cure round); `.v02.md`:670, :972, :1170–1195 (the anchor my own row
+  `C-117` cites, read to check it); `claude_dv_lead_agent.v10.md`:2743, :2880–2895;
+  `claude_orchestrator_agent.v02.md`:4723; `claude_auditor_agent.v02.md`:1570–1600,
+  :3286–3300.
+- `scripts/policy.sh`, `scripts/agent_commit.sh`, `scripts/check_journals.sh`,
+  `.github/workflows/`, and git history at `2f32e45`.
+
+### Reasoning
+
+**Sampling frame, stated first because an audit whose sample cannot be
+reconstructed is vacuous (charter §8).**
+
+*In the window*: the four scope items of the dispatch — §3.9 whole plus the §1.5
+seating; every posture stamp's transcription fidelity; §1.7's founding sequence,
+record half; and the `B.5` discrepancy in my own artefact.
+
+*Sampled, and at what depth.* Three different depths, chosen by where a defect
+could hide rather than by a uniform percentage:
+
+1. **Stamp kind — census, 100%.** All 135 stamp occurrences carrying a `C-nn`
+   citation were extracted mechanically from `docs/PROCESS.md` and diffed against
+   the posture cell of all 128 rows. This is the only part of the transcription
+   that is mechanically decidable, so it is the part that gets a census rather
+   than a sample.
+2. **Stamp date — census, 100%.** All 26 `[P1]` citations, each re-anchored to a
+   commit, a gate row or an entry header. Dates are the only stamp field carrying
+   information that is not already in the kind, and they are testimony by §5.4's
+   own classification, so a sample would have been the wrong instrument.
+3. **Claim text — stratified sample, 49 of 128 rows = 38.3%**: all 15 `CORRECTED`
+   rows (the class where the revision *rewrote* the claim, so the only class where
+   a mis-rewrite is possible), all 8 `PLANNED`, all 26 `P1`. Plus, outside the
+   strata, the whole of §3.9's fifteen-bullet block and §1.5 read line by line
+   because they are this seat's own scope item.
+
+*Deliberately skipped, and why.* The claim texts of the 44 `RE` and 34 `MC` rows
+were not re-read one by one except where they fall inside §3.9, §1.5, §1.7, §2.6's
+table or the strata above. Their *kinds* are censused. The ground is specific and
+checkable: those postures were re-executed against the machinery at `6c02f5b`
+thirteen hours earlier, and `scripts/` has not moved since `678948b` (2026-08-04)
+— re-verified this round — so a second re-execution would re-measure an unmoved
+surface. Two were re-executed anyway as controls, chosen because they are the two
+that bear directly on my own scope items (the auditor write scope, and the
+no-script-reads-a-tally claim under `C-104`). Both hold. I also did not audit the
+`RV-` ACCEPT half of §3.9's placement clause from the implementing line's side —
+see the residue in Outcome; that limb belongs to the seats Annex B.1 rows 2 and 3
+bind, and asserting it from a partial read would be the defect this round exists
+to catch.
+
+**1. The seating (§1.5) is stated correctly, and it is stated for the right
+reason.** The reading that a defect manifest **is** one of this seat's own reports
+is exactly the reading I operate under, and the text's ground for stating it is
+the ground that matters: without it the mechanism has no author, because the
+verification lead is the subject under test and the orchestrator is the operator.
+Re-executed rather than agreed: every one of the 24 commits trailered
+`Agent: auditor` touches only `docs/reports/audit/**` plus this chain — zero
+out-of-scope paths — and the manifests themselves sit at
+`docs/reports/audit/WO-00NN-mutations/*.diff`. Nothing is relaxed by the reading;
+the scope check is unchanged and it is the same instrument `C-25` and `C-26` cite.
+The sentence that generalises it — *a roster that forbids more precisely than it
+enumerates will eventually forbid a duty it also requires* — is the transferable
+part and I would not weaken it.
+
+**2. The placement is true at its boundaries and singular in its framing.** The
+rule as written is faithful to the constitution's §10 sequencing, and the record's
+boundary conditions hold: the last campaign sealed at `aced7b4` (2026-08-06) and
+the module's only sign-off issued its PASS at `69f1475` (2026-08-11), so no
+campaign in this program ran after a sign-off, and none ran on a calendar. What
+the singular framing under-describes is the shape the record actually has: fifteen
+campaigns on one artefact across nine days, interleaved with four defect packets
+and their repairs. A campaign *era* bounded by acceptance and sign-off is what an
+adopter will find here; one campaign in one gap is what the sentence draws. I do
+not file that as a defect in the rule — the rule is the constitution's and it is
+stated accurately — but it bears on the exhibit-level accuracy of the same
+section, and it is why `F-0025-D` matters more than its size suggests.
+
+**3. The scoring block's rebuilt referents are faithful, and the rebuild is an
+improvement on what it anonymises.** All fifteen bullets check against the
+constitution's §7 (b)–(b.4) and §10's floor. The two-column rule, the three
+grounds, the openness-of-grounds with the closed naming duty, the
+disclosure-frozen-before-the-run condition, the class-not-branch unit, the
+individually-named non-kills, the survivor form, the frozen-kill form with its
+stated limit, the equivalence proof standard with its three guards, the
+unreachable/seeding-gap distinction, and the floor measured before exclusion — all
+present, none weakened. Three referents are spelled out where the constitution
+leaves them compressed (what a never-rendered class looks like, what a falsified
+seeding looks like, why a negative control exists), and every one of those
+expansions is right against the cases they generalise. Three referents are dropped
+that I would carry: *which* grounds turn on the seal's disclosure (the second and
+third), the definition of *survived its own campaign* (the seal predicted a kill
+and no unit killed it), and the rehabilitation-asymmetry ground under the
+frozen-kill limb. None of the three changes a rule; each costs a reader one
+inference. I record them as carried-forward observations rather than findings,
+because a portable document that states every rule and half the rationale is still
+a document that states every rule.
+
+**4. Two of the three exhibits are incidents; the middle one is a hazard, and the
+framing promises three incidents.** Exhibit 1 reproduces at every clause,
+including both additions the revision makes — the two grounds that had never been
+stated together (nine days apart, under different words) and the discovery route
+(the draft taken from the practice's columns while the operative word lived in its
+verdict lines, which the codifying seat records against itself). Exhibit 3
+reproduces exactly, and it is my own finding: four units, nine units, one of three
+required; filed against a clause I had signed in the same entry; routed to the
+seat the width would fall on; stopped at the constitution's edge. Exhibit 2's
+underlying case is `G-c4`, and in the record `G-c4`'s rehabilitation was proved in
+the **strong** form from the beginning — the unmodified diff, a run id, the killing
+unit named. The rule was minted *from* that case as its exemplar; my own verdict
+sentence says so. An exhibit set introduced as *a ruling without its case is a rule
+nobody can apply* will be read as three cases of a defect, and the middle one is
+not one. One clause fixes it and the exhibit gets stronger, not weaker: a rule
+generalised from a case that went right is a better advertisement than a rule
+generalised from a case that went wrong.
+
+**5. The founding sequence's record half is confirmed, item by item.** The
+retro-audit declares its own weakness in the terms §1.7 attributes to it, in its
+own §1: *the auditor did not exist during the window it audits … I witnessed none
+of it* — and it does more than the document claims, naming two further weaknesses
+(single-author attribution degenerating to substance-vs-narrative, and R1 being
+audit-enforced for that agent, so that one section is the whole of the enforcement
+for the range). Seventeen findings, one CRITICAL, at `:19`. The gate blocked on it
+and could not be signed around: `G0-checklist.md` item 11 is a row of its own —
+*gate release: AUD-0001 CRITICAL (F17) dispositioned by ADR and re-verified by the
+auditor* — signed `J-auditor-0003` against the second report. Eleven items, every
+one signed by an entry reference, two of them the sponsor's, one closing only on
+this seat's re-verification, and the first module work order after G0 passed. The
+owed-weaknesses paragraph is also accurate, including the one that is against my
+own chain: the retro-audit's tally *was* published wrong and corrected in place by
+its author, at `de85393`, whose subject line says so.
+
+That last fact decided how I answer `B.5`, and it is the substantive half of my
+answer.
+
+**6. `B.5` resolves for 15 and 8 — and the cure is an appended line, not a
+rewritten cell.** The figures are not a matter of judgement: recounted mechanically,
+posture cell by posture cell, over all 128 rows, `FALSE` = 15 and `PLANNED` = 8,
+and both agree with the summary table, the per-section table, the collected-FALSE
+table and the PLANNED table, with the row-total identity closing at 128. The wrong
+figure is in my own row `C-126`'s evidence cell. But the record already names
+in-place correction by the author as a weakness of exactly the artefact class this
+is — §1.7 carries it, §5.4 rules that a frozen record is not repaired by rewriting
+it, and `de85393` is the instance both point at. So the correction owed is a
+**dated appended note** naming the wrong figure and the right one, not a silent
+edit of the cell. I could not establish where `12/4` came from within this round's
+frame and it does not bear on the resolution; I say so rather than construct a
+provenance.
+
+**7. And one discrepancy in my own artefact that `B.5` did not route, found while
+checking a stamp date.** My row `C-117` anchors §4.8's six-cure exhibit at
+`claude_architect_docs_lead_agent.v02.md`:1181. That line is inside
+`J-architect_docs_lead-0025` (2026-08-04) and its *sixth* is the sixth check of a
+countersignature, not the sixth cure of a cure basket — a text-similarity match I
+did not falsify at the time. The true anchor is `J-architect_docs_lead-0047`
+(2026-08-11T19:34Z), whose disposition table has six rows with row 6
+`F-0022-2` **STOPPED**. The consequence runs in the document's favour: the
+`[P1 · 2026-08-11 · C-117]` stamp is **correct** and my row's anchor is wrong. I
+record it here because a posture list whose anchors are not falsifiable is the
+same defect it was written to measure, and because the seat that finds an error in
+its own artefact should be the seat that says so first.
+
+### Actions
+
+- Abort-first precheck (§4.1) before any file was opened.
+- Extracted all stamp occurrences from `docs/PROCESS.md` and diffed kinds against
+  all 128 posture cells; re-anchored all 26 dated stamps; read the 15 `CORRECTED`
+  sites with their margins.
+- Re-executed the `mut/*` never-merged measurement, the auditor write-scope
+  measurement, and the no-script-reads-a-tally measurement at `2f32e45`.
+- Re-read §3.9's fifteen bullets against `PROTOCOL` §7 (b)–(b.4) and §10, and the
+  three exhibits against `ADR-0020` and the campaign record.
+- Verified §1.7's record half against `AUD-0001`, `AUD-0002` and
+  `docs/gates/G0-checklist.md`.
+- Wrote no file but this journal. Ran no git write command. Refused no stop-hook
+  demand because none arrived; the standing refusal holds either way.
+
+### Evidence
+
+All at `2f32e45` on `claude/fpga-hardcaml-agent-orchestration-37ceyf`, tree clean
+at precheck (`git status --short` → empty, `git rev-parse HEAD` →
+`2f32e45d86f6c04f1ad50eaff1a08f71605a5125`, `date -u` → `2026-08-11T22:15:54Z`).
+
+1. **Stamp-kind census.** 135 citations extracted; every one of the 128 rows is
+   stamped at least once; nine rows carry two stamps; **zero rows unstamped**;
+   exactly one row (`C-08`) carries two different kinds, and it is correct — `[RE]`
+   at :219 on the surviving limb (single-authority allocation) and `[CORRECTED]` at
+   :223 on the refuted limb (*monotonic by construction*). All 15 `FALSE` rows map
+   to `[CORRECTED]`, all 8 `PLANNED` to `[PLANNED]`, the one `NOT SAMPLED` row to
+   `[UNANCHORED]` (twice, §1.4(d) and §5.7, correctly the same episode).
+2. **Stamp-date census, and the one that fails.** `[P1 · 2026-08-04 · C-55]` at
+   :920. `git log -S'R11' -- scripts/check_journals.sh` → `a0454b4`, and
+   `git log -1 --format='%ad' --date=iso a0454b4` → **2026-08-03 20:20:04 +0000**;
+   `S38` enters `test_protocol.sh` in the same commit; `ADR-0017` is added at
+   `8d83371` (2026-08-03) and accepted at `J-orchestrator-0140`
+   (2026-08-03T18:55Z). The only `scripts/` commit dated 2026-08-04 is `678948b`,
+   a SIGPIPE-race fix (S39) — the commit my own row `C-54` cites for a different
+   fact. Every other dated stamp re-anchors: `AUD-0001` added `bd7fbcf`
+   (2026-08-01); `G0-checklist.md`:17 (2026-08-01); `61e0c76` (2026-08-11);
+   `SO-xgmii_rx_64.md` PASS at `69f1475` (2026-08-11) with the preserved FAILs in
+   the same file; `ADR-0020` added `8264183` (2026-08-11);
+   `J-dv_lead-0185` (2026-08-11T17:47Z); `J-orchestrator-0260` (2026-08-11T17:06Z);
+   `J-architect_docs_lead-0047` (2026-08-11T19:34Z); M0 root range 2026-08-01
+   against the first RTL work order 2026-08-02.
+3. **Never-merged, re-measured at HEAD.** `git for-each-ref
+   'refs/remotes/origin/mut/*'` → **86** references; `git merge-base --is-ancestor`
+   over each against `HEAD` → **0 merged**, 86 checked. Grouped by campaign prefix:
+   **15** `wo-00NN` campaigns plus two probe prefixes. `ADR-0019` §1.1's measured 85
+   is consistent with a population that grows; the *class* count is not ninety.
+4. **No script reads a tally.** `grep -rniE
+   'seeded|sealed|mutat|unreachab|equivalen|kill|tally|denominator|floor'
+   scripts/ .github/` → three hits, all unrelated: two `R8` foreign-volume-*seed*
+   messages and one workflow step name containing *re-checked*. `[RE · C-104]`
+   re-executes true.
+5. **Auditor write scope.** 24 commits trailered `Agent: auditor`; the union of
+   their non-journal paths, filtered against `docs/reports/audit/`, is **empty**.
+   Manifests confirmed at `docs/reports/audit/WO-0041-mutations/D-M1..D-M5.diff`.
+6. **`B.5` recount.** All 128 rows parsed; `MACHINE-CHECKED` 34, `REVIEW-ENFORCED`
+   44, `PERFORMED-ONCE` 26, `PLANNED` 8, `FALSE` 15, `NOT SAMPLED` 1; total 128,
+   127 with a posture. FALSE set: `C-07, C-08, C-32, C-33, C-40, C-56, C-67, C-70,
+   C-77, C-80, C-82, C-93, C-97, C-114, C-123`. PLANNED set: `C-23, C-41, C-51,
+   C-53, C-54, C-71, C-109, C-119`. `docs/PROCESS.md` carries 15/8 at :21–25, :667,
+   :2430, :2437 and :2454 and nowhere carries 12/4 outside `B.5`'s own flag.
+7. **§1.7's record half.** `AUD-0001-g0-retro.md`:32–49 (three declared weaknesses,
+   the first verbatim as §1.7 describes it), `:19` (*1 CRITICAL, 7 MAJOR, 7 MINOR,
+   2 NOTE — 17 findings*), `:735` (F17), `G0-checklist.md` items 1–11 all signed,
+   items 8 and 9 the sponsor's, item 11 closing on `J-auditor-0003`/`AUD-0002`, and
+   the in-place tally correction at `de85393`.
+8. **Exhibit anchors.** Exhibit 1: `ADR-0020`:650–672 (three checks, `I-c1`
+   declared SEEDED then VOID, `IC-M5` never rendered yet inside `sealed`, *nine days
+   after*, and the codifying seat's own *would have frozen a `sealed` column that
+   omits a class the seeder itself declared seeded*); the qualifier *9 of 9
+   scoreable classes* at `WO-0061_family-i-mutation-campaign.md`:646 and :749, in
+   the verdict lines, in no normative document. Exhibit 2: `ADR-0020`:145–160
+   (`G-c4`, `mut/wo-0056-gc4-replay` = `c95c9f4`, run `30852220315`, `M03-G8` the
+   only failing unit) and the minting sentence at `claude_auditor_agent.v02.md`:1583
+   — *exactly the evidence form `G-c4` already has*. Exhibit 3:
+   `claude_auditor_agent.v02.md`:3296 and
+   `claude_architect_docs_lead_agent.v05.md`:739, :952.
+9. **The canary residue.** `docs/PROCESS.md`:512–515 against `docs/SPONSOR.md`:43–44
+   (*This page documents the mechanism; never document the instances*), which is
+   inside the specification lead's own write scope per `scripts/policy.sh`:174–178.
+
+### Outcome
+
+**Confirmed, with six MINOR corrections and no CRITICAL and no MAJOR.** All four
+dispatch items are answered: the §1.5 seating and §3.9's separations match this
+seat's practice and are stated correctly; the placement is true at its boundaries;
+the scoring block is faithful to the rulings it anonymises; §1.7's record half
+reproduces item by item; and `B.5` resolves for **15 FALSE and 8 PLANNED**, with
+the wrong figure in my own artefact and the cure owed as an appended dated note
+rather than an edited cell.
+
+Findings `F-0025-A` … `F-0025-F`, all MINOR, none blocking: a stamp date one day
+late (`C-55`); a stamp missing the date its own grammar requires (`C-125`); one
+`[CORRECTED]` site where the false sentence is preserved and the correction left
+entirely to the margin (`C-32`); an ambiguous *some ninety* in the one section
+that rules a ref population cannot be a denominator; the second exhibit reading as
+an incident that did not occur; and a contradiction cured in the copy, left in the
+source, and not rowed in Annex B. Two corrections are owed against **my own**
+artefact: `C-126`'s figures and `C-117`'s anchor. The full text is returned to the
+orchestrator verbatim as the round's product; nothing is committed by me.
+
+**Residue, declared.** The *after the implementing line's review has accepted the
+artefact* limb of §3.9's placement was **not** audited from the implementing line's
+side this round. The record's `RV-` verdicts that I read are the verification
+line's — bench reviews and campaign adjudications — and I found no rtl_lead
+acceptance gating a campaign start within the frame I sampled. That is an
+unmeasured limb, not a negative finding, and it belongs to the seats Annex B.1
+rows 2 and 3 bind.
+
+**Harvest**: none owed. `PROTOCOL` §7 attaches the lessons harvest to every
+sign-off and every phase gate; this round is neither, and the span since
+`J-auditor-0019` stays open and untiled rather than being closed by a round that
+does not carry one. Declared so the gap is visible rather than inferred.
+
+### Open-questions
+
+1. **The two corrections against my own artefact are mine to state and not mine to
+   make this round** — writes were restricted to this journal by dispatch. If the
+   round that applies them is not this seat's, note that `C-126`'s cure is an
+   **appended** note by §5.4's own rule and by `de85393`'s example, and that
+   silently rewriting the cell would reproduce, in the file that measures the
+   program's honesty, the exact weakness §1.7 lists as still owed.
+2. **`F-0025-E` is a judgement about how an exhibit will be read, not about
+   whether a fact reproduces**, and dv_lead holds the parallel confirmation on the
+   same block. If dv_lead reads the exhibit as accurate, the disagreement is worth
+   one written round rather than a split, and the fact under it is not in dispute:
+   `G-c4` was rehabilitated in the strong form and the rule was minted from it.
+3. **`F-0024-A` remains open and CRITICAL** while its falsifier runs on
+   `mut/wo-0041-dm3-falsifier`. Nothing in this round touches it, and nothing in
+   this round should be read as a disposition of it. If the run is green the
+   finding is withdrawn in full, as sealed.
+4. **The charter names a manifest directory this seat has never used.**
+   `agents/charters/auditor.md`:22 says `docs/reports/audit/mutations/`; the
+   practice is `docs/reports/audit/WO-00NN-mutations/`. `PROCESS` §1.5 is right
+   because it says *its report directory* and not a path. The charter is
+   orchestrator scope; recorded so a later reader does not take the charter's path
+   for the record's.
+
+### Files-in-this-commit
+- (none)
