@@ -3869,3 +3869,39 @@ seat's next harvest); the rest of the ledger as at 0236.
 
 ### Files-in-this-commit
 - agents/handoffs/HT-01_first-harvest-transit.md
+
+## [J-orchestrator-0241] 2026-08-11T06:50Z | task:none | The build ran red on my own transit paperwork: three bare shell paths read as local citations - repaired by the same qualification rule the shell's law taught this window, and the instrument question routed to its owner
+
+### What this entry records
+The build lane failed at 11e20c6 and stayed red through 2c38307
+(runs incl. 31456079818) on the RN-6 citation resolve-check: THREE
+UNDECLARED broken citations, all in HT-01, all bare docs/** paths
+that live in the GENERIC SHELL, not here - the checker resolves
+docs/** citations in handoff packets against THIS repo's tracked
+tree, correctly and mechanically. Diagnosed by reproducing locally
+(same three sites), repaired by qualification: each foreign path
+now carries its repository URL or drops the bare docs/ prefix -
+which is the shell's own ADR-0017 A1 rule (a bare id is
+unresolvable at the fence) applied in the opposite direction.
+Local re-run: 0 undeclared, resolve-check OK. The extractor's rule
+(a docs/ token preceded by start-or-non-path-character) means full
+URLs never trip it; the architect's new checklist was scanned for
+the same defect class before landing and is clean - its shell
+references already avoid bare paths.
+
+### Routed, not decided
+Whether the resolver should grow a DECLARED foreign-citation
+syntax (a recognized cross-repo citation class, rather than
+authors avoiding the token shape) is an instrument question and
+the instrument is dv's (tools/dv_checks.sh). Carried to dv's next
+round that opens the tool, with this incident as the instance.
+
+### Commit-timing note
+The architect's gates round returned before this commit; its
+files (docs/gates/*, its v03) are in the tree and are NOT staged
+here - this commit stages HT-01 and this journal only, disjointness
+verified file-level, the returned round named. Its landing is the
+next commit.
+
+### Files-in-this-commit
+- agents/handoffs/HT-01_first-harvest-transit.md

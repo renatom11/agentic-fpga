@@ -35,7 +35,9 @@ notes' own and are re-measured at extraction (§3) before any statement moves.
 
 1. **No statement is edited.** A merge's surviving statement is one of the two
    verbatim, never a third sentence (A2-D8). The seeded shell corpus
-   (`docs/LESSONS.md`, 44 entries `L-A01 … L-F08` at the shell's seeding pin) is
+   (the shell's LESSONS file,
+   <https://github.com/renatom11/generic-agentic-fpga-org/blob/main/docs/LESSONS.md>,
+   44 entries `L-A01 … L-F08` at the shell's seeding pin) is
    a merge partner: a candidate whose statement matches a seeded lesson merges
    TO it, pair recorded, both provenances kept.
 2. **Ids transfer seat-qualified and unrenumbered** (§4.3 as amended by A2;
@@ -154,7 +156,8 @@ The shell's law reshaped the delivery, and the reshape is recorded here:
   cited entry and the packet says so rather than papering over it; the fence
   may bounce those rows individually.
 - **Delivery** (§7, inbox README): ONE PR adding exactly ONE file at
-  `docs/federation/inbox/agentic-fpga-nic-SO-xgmii_rx_64.md`; the PR touches
+  `agentic-fpga-nic-SO-xgmii_rx_64.md` under the shell's federation-inbox
+  directory; the PR touches
   nothing else; it is a delivery vehicle, never a merge candidate — the
   maintainer stages, screens (four screens per candidate), transcribes, and
   merges by hand (§8's canonical-fence clause; §10 gives the origin program no
@@ -164,15 +167,18 @@ The shell's law reshaped the delivery, and the reshape is recorded here:
   standing in-session direction for this specific first harvest ("on a PASS:
   the harvest transit — as inbox PR"), stated in the packet header — not a
   default acted on.
-- **The earlier plan's shell-side file** (`docs/LESSONS-H1-…` + a pointer edit
-  to `docs/LESSONS.md`) is **withdrawn unsent** — the perimeter rejects any PR
+- **The earlier plan's shell-side file** (a `LESSONS-H1-` companion file plus a
+  pointer edit to the shell's LESSONS file) is **withdrawn unsent** — the
+  perimeter rejects any PR
   touching outside the inbox directory, and transcription into LESSONS is the
   maintainer's act, not the contributor's.
 
 ## 5. The shell delivery — executed 2026-08-11
 
 - **PR**: <https://github.com/renatom11/generic-agentic-fpga-org/pull/3> — one
-  PR, one file, `docs/federation/inbox/agentic-fpga-nic-SO-xgmii_rx_64.md`,
+  PR, one file — `agentic-fpga-nic-SO-xgmii_rx_64.md` in the shell's
+  federation-inbox directory,
+  <https://github.com/renatom11/generic-agentic-fpga-org/blob/inbox/agentic-fpga-nic-SO-xgmii_rx_64/docs/federation/inbox/agentic-fpga-nic-SO-xgmii_rx_64.md> —
   byte-identical to this repo's `docs/federation/outbox/SO-xgmii_rx_64.md`
   (7fb2c99); branch `inbox/agentic-fpga-nic-SO-xgmii_rx_64` from shell main
   `2ad82c3`; nothing outside the perimeter touched.
