@@ -2451,3 +2451,124 @@ same rev B umbrella rather than assigned to this fix round's `§8` paragraph 1
 Flagged here rather than silently worked around or silently assumed already
 done.
 
+
+---
+
+## DISPOSITION — dv_lead, 2026-08-11 — the rev-B execution result, adjudicated under **§15 as pre-committed**
+
+**Journal**: `J-dv_lead-0175`. **Subject**: CI `build` run **31476319884** at
+`cbbeb76`, conclusion **`failure`**, `run_attempt` **1** — the first run in this
+packet's life in which `Run tests` **executed** against `Xgmii_tx_64`.
+
+**Read at the source, not relayed.** Job `build` id **93730745511**, log fetched
+and read directly; the three corrected hunks and their failure strings are
+byte-identical to the extraction handed to this seat, and the promotion block
+contains **exactly two** files (`test_m04_b.ml`, `test_m04_c.ml`) and **exactly
+three** corrected `%expect` blocks inside them.
+
+### 1. The rev-B repair is proven effective, by the run itself
+
+`D-1` is closed on evidence rather than on inspection: the **`Build` step is
+green** at `cbbeb76`, so the three `Int.rem` substitutions cleared the compile
+and `Run tests` ran. `BM1`'s condition — a **D4a** red — is **not** met at this
+SHA. §2's defect is discharged.
+
+### 2. The red is class **D1**, and it is not a bounce
+
+| §15 class | Verdict |
+|---|---|
+| **D1** — a row's assertion fails and this packet's derived constant for it is right → **design** defect → `BUG-` to rtl_lead → **no bounce** | **THIS ONE** |
+| D2 — `Tx_decoder.violations` non-empty | not reached: `Tx_decoder.is_clean` is checked at `bench.ml:364`, **before** the strobe check at `:368`, and **passed** at every failing member |
+| D3 — `P-ACCEPT` fires | not reached: it did not fire, so the accepted cycles were exactly `[C]` at `W = 1` |
+| D4a / D4b / D4c / D4d | not reached: the compile is green; no exception from the bench's own code (the raise is obligation 4's assertion doing its job); no non-empty `[%expect]` and no run-to-run difference; obligation 6's stimulus check did not fire |
+| D5 | not reached: no constant of §6 is in dispute; §6.1's `P = 1` row (`W` = 1, `tkeep` = `0x01`, `F` = 64, pad 59, `t` = 0, terminate `C+10`) is confirmed by the run |
+
+**The derivation, in one paragraph.** At `P = 1` the source frame is **one** word,
+so the frame's first word **is** its `tlast` word and is accepted at `C`.
+REQ-206's window is bounded below by *"after the transmitter has emitted a frame's
+start character"* — and §6.2 enters `Preamble` on the cycle a first word is
+accepted and emits the start character at `C+1` — and above by *"before it has
+accepted that frame's `tlast` word"*, which closes at `C`. `C+1 > C`: **the window
+is empty**, whatever `C` is and whatever `tready` does. §7's `C-16` consequence 1
+says the same from the other side, and `W = 1` is the one frame shape at which its
+silent cycle and §6.2's `Preamble` cycle **collapse onto the same cycle** — which
+is why §9.4 item 2's pre-commitment (*"obligation 4's empty strobe set is what
+asserts the silence"*) is exactly right and exactly what fired. The wire in the
+same run corroborates: 64 octets, 59 zero pad octets, terminate at `C+10` lane 0,
+no `/E/` — REQ-206's mandated remedy is absent, so the strobe and the lane pair
+contradict each other.
+
+**The two bench-lane mechanisms are excluded by derivation, not by preference.**
+The presenter (`bench.ml:246–256`) offers a word every cycle and advances only on
+acceptance; at `W = 1` there is no second word in existence to withhold, and
+`P-ACCEPT` plus the liveness bound would have fired first. The strobe monitor's
+`expected = 0` is this packet's own §1.2 scope rule **and** independently correct
+by the window derivation; its `high-cycles = 1 … error_underflow@2` is a count of
+high cycles on the design's output pin under convention `C-23`, not a model.
+
+### 3. Route
+
+**`agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md`** —
+**MAJOR**, dv_lead → rtl_lead, VERBATIM relay class, `OPEN`. The M04 era's first
+bug packet. It carries the reproducing member, the reproduction command at
+`cbbeb76`, the CI run and job ids, the derivation above in full, the exclusion of
+both bench-lane mechanisms, the observables a fix must satisfy, the `M04-G5`
+neighbour a fix must not break, and the re-test protocol.
+
+### 4. The corrected-file promotion block — **PROHIBITED, and stated so no later round promotes it by habit**
+
+The run's `PROMOTION BLOCK` printed `.corrected` bodies for `test_m04_b.ml` and
+`test_m04_c.ml` whose new content is `[%expect.unreachable]` plus an
+`[@@expect.uncaught_exn {| … |}]` payload carrying this failure's message **and an
+OCaml backtrace**. **They must not be promoted, now or in any later round.**
+Promoting them would bake the crash text into the expectations and turn a red
+suite green with the defect intact — and the backtrace would additionally make the
+expectation fragile against any line-number change. The standing house rule,
+restated: **a `.corrected` carrying `expect.uncaught_exn` is never a promotion
+candidate; a promotion candidate is printed data, an uncaught exception is a
+verdict.** Verified at `cbbeb76`: zero occurrences of `expect.uncaught_exn` or
+`expect.unreachable` across all seven files of `test/xgmii_tx_64/`, and the
+committed sha256 of both files differs from the runner-local promoted one
+(`test_m04_b.ml` committed `465a8b91…` vs promoted `1178cec5…`; `test_m04_c.ml`
+committed `f127ff13…` vs promoted `10e7d0b6…`). Nothing was promoted into history.
+
+### 5. What this run did and did not establish — and what is **not** issued here
+
+- **Executed green**: U1 (scaffolding seam), U2 (`M04-A1`, `A2`, `A5` at `P = 60`),
+  U3 (`M04-B1` at `P = 60`), U4 (`M04-B2` at `P = 20`), U6 (`M04-C1`, `C6` at
+  `P = 20`), U8 (`M04-C3` at `P = 20`), U9 (`M04-C4` at `P = 20`) — **nine** of the
+  thirteen commissioned rows, at a stimulus set of exactly `{P = 20, P = 60}`.
+- **Not adjudicated**: `M04-B4`, `M04-B5`, `M04-C2`, `M04-C5`. `P = 1` is the
+  **first** member of all three failing length lists, so the raise aborts each
+  `List.iter` before the later members are read: `P ∈ {59, 61, 64, 67, 1514}` were
+  **driven but never adjudicated**. Any sentence saying "every larger member
+  passed" is true only of `P = 20` and `P = 60`, in **other** units, and this
+  disposition asserts nothing about the rest.
+- **No row status moves** in `AP-xgmii_tx_64` on this disposition, and **no
+  `SO-xgmii_tx_64.md`** is opened or offered. `BAR T1` stays SHUT. The PROTOCOL
+  §10 mutation campaign stays sequenced after this packet's eventual `RV-` ACCEPT
+  and before any `SO-` PASS.
+- **The rev-B `RV-` verdict (ACCEPT or otherwise) is NOT issued in this
+  disposition, and its absence is deliberate.** §15's D1 settles one question —
+  this red is **not** a bounce — and settles no other. An ACCEPT is the separate
+  act §12's sixteen bars quantify: `M-2` reads a CI run that is `failure` at
+  `cbbeb76` (now for a **design** reason, which `BM1` does not reach), and
+  `M-1`, `M-3`, `M-4`, `M-5`, `M-7` have not been re-executed at this SHA. Ruling
+  ACCEPT here would be exactly the improvisation §15 exists to prevent. **Route**:
+  orchestrator, as scheduling — the rev-B `RV-` round is owed and nothing in
+  `BUG-0004` blocks it.
+
+### 6. One finding against §15 itself, recorded because it is mine
+
+**`FINDING WO-0080-5` (MINOR, mine).** §15's table names the **decoder** as the
+instrument-defect vehicle (`D2`: *"or a decoder defect. Mine to separate"*), and
+this round attaches **two** standing instruments — the wire decoder **and** the
+strobe monitor. Had the fault been in the strobe monitor's own expectation model
+rather than in the design, §15 would have had **no class for it**: `D2` names the
+decoder by name, and `D4a`–`D4d` are all bench-seat classes that would have routed
+a dv-owned instrument defect to the worker. It did not fire this round — §4 above
+excludes the instrument on derivation — so **it changes no route and I have not
+filled the gap by improvisation after seeing the result**. The repair belongs to
+the next packet that carries a §15 table: the instrument-defect class is stated
+over *"a standing instrument"* rather than over one instrument's name, and it
+routes to dv_lead in both cases.

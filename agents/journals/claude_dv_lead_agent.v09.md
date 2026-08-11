@@ -1538,3 +1538,411 @@ carry into it.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0080_tb-m04-first-bench.md
+
+## [J-dv_lead-0175] 2026-08-11T09:28Z | task:WO-0080 | The M04 bench's first execution adjudicated against a table written before it: the red is a DESIGN defect at the one frame shape where REQ-206's window is provably empty, both bench-lane explanations excluded by derivation rather than by preference — and the crash text the run offered as an expectation refused in writing
+
+### Trigger
+
+Orchestrator dispatch. **No siblings.** The commission is a single adjudication:
+`WO-0080`'s rev-B repair landed at `cbbeb76` (`J-tb_writer-0043`), the three
+`Int.rem` substitutions cleared the compile, and CI `build` run **31476319884**
+**executed `Run tests` against `Xgmii_tx_64` for the first time in this
+programme**. The run is `failure`. Three things are asked: classify the red under
+`WO-0080` §15's **pre-committed** disposition table; rule on the corrected-file
+promotion block; route the outcome per the classification, one route and no
+improvisation.
+
+**Abort-first head check, before reading anything.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # cbbeb76650f3b471d0ecc1bf85db4001cb907ec1
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+Byte-equal to the dispatched spawn-head `cbbeb76`, tree clean. Neither branch of
+the abort procedure was reached.
+
+**The standing fact that shapes this entry.** §15's table was written **before any
+run existed**, and this seat refused once already to renegotiate it after seeing
+which way it points. The entry below is written in the order the table demands —
+classify, then route — and not in the order that would let a route be chosen and a
+class fitted to it afterwards.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, before any write
+  (§3's packet classes and the VERBATIM relay rule, §4's entry grammar, §4.2's
+  set-equality, §6's write scopes, §10's independence and evidence rules).
+- **`agents/handoffs/WO-0080_tb-m04-first-bench.md`** — §6.0 and §6.1 (the round's
+  derived constants, `P = 1` row re-read cell by cell), §9.4 (the three underflow
+  facts that bind the driver), §12 (the sixteen bars), §13 (the bounce
+  conditions), **§15 (the disposition table, the subject of this round)**, §16.3,
+  §19; the worker's rev-A and rev-B Return sections; my own `RV-0080-VERDICT`.
+- **`docs/specs/requirements.md`** — REQ-206 (line 765, the underflow window,
+  quoted verbatim in both artefacts I wrote), REQ-008 (line 649, both verification
+  halves), REQ-016's own M04 carve-out (line 657), REQ-709/REQ-710 (the
+  co-occurrence obligations a spurious pulse breaks), §0.6's **fourth clause**
+  (lines 476–500, carry-forward `C-5`, closed 2026-08-11).
+- **`docs/specs/modules/xgmii_tx_64.md`** at `ee47eee` — §2's not-my-job table,
+  §3's REQ-016 row, §6.1 (the preamble word, `C + m + 2`, the padding rule, the
+  minimum-frame cycle table), §6.2 (the `Preamble` row and the `Idle` row's second
+  entry condition), §6.3 items 3 and 5, **§7** (the `C-16` bullet's four
+  consequences, the reset clause, the handshake bullet), **§9** (the one strobe
+  row, the pinned strobe cycle, the co-occurrence bullet), §10's REQ-206 and
+  REQ-209 hooks, §11.3, §13's change log.
+- **`test/attack_plans/AP-xgmii_tx_64.md`** — rows `M04-B4`, `M04-C2`, `M04-C5`
+  (the three commissioned stimuli that carry `P = 1`), the whole of family G
+  (`G1`…`G8`), §7 item `T-2`.
+- **The landed bench at `cbbeb76`, read as a reviewer** — `test/xgmii_tx_64/bench.mli`
+  in full, `bench.ml` (`create` `:43–76`, `sample_cycle` `:89–149`, `source_words`
+  `:155–180`, `present` `:246–305`, `assert_instruments_clean` `:363–399`),
+  `test_m04_b.ml` (U5, `:228–291`), `test_m04_c.ml` (U7 `:73–106`, U10 `:231–290`),
+  and `test/monitors/strobe_monitor.mli`. **Stated for the independence record**:
+  these are landed, reviewed DV artefacts and reading them is this seat's review
+  duty; **no file under `libs/**`, `top/**`, `rtl_snapshots/**` or
+  `test/third_party/**` was opened at any point in this round**, and every
+  expectation adjudicated below is derived from the two specification documents
+  above.
+- **The CI run, read at the source rather than relayed.** `get_workflow_run`
+  31476319884 (head_sha `cbbeb76…`, conclusion `failure`, `run_attempt` 1) and
+  `get_job_logs` for job `build` id **93730745511**, full body.
+- `docs/adr/ADR-0003`, `ADR-0005`, `ADR-0011`, `ADR-0018`; the promotion house
+  rule as first stated in this chain at `claude_dv_lead_agent.v04.md` §4 of the
+  entry quoted below.
+- Prior entries: `J-dv_lead-0170` (§7's countersignature and `AP-M04-2`),
+  `J-dv_lead-0173` (the fourth clause), **`J-dv_lead-0174`** (`RV-0080-VERDICT`,
+  the bounce this round follows).
+
+### Reasoning
+
+**1. The extraction was verified, so it is evidence and not a relay.** The
+dispatch offered an orchestrator extraction of the failure signature with
+permission to treat it as a relay if the log could not be fetched. It could be:
+job **93730745511**'s body was read whole. The three corrected hunks and their
+failure strings are **byte-identical** to the extraction, and two facts the
+extraction did not carry came out of the same read and matter to the
+adjudication — the promotion block contains **exactly two** files, and inside
+them **exactly three** corrected `%expect` blocks. That bounds what failed
+without inferring it from what was reported.
+
+**2. What that bound establishes, and one correction to the round's narrative.**
+Files absent from the promotion block ran green: `test_m04_a.ml` and
+`test_m04_scaffold.ml` entirely, and within the two touched files every block but
+`B4/B5`, `C2` and `C5`. So **nine of the thirteen rows executed green** — `A1`,
+`A2`, `A5`, `B1`, `B2`, `C1`, `C6`, `C3`, `C4` — at a stimulus set of exactly
+`{P = 20, P = 60}`. The correction: **`P = 1` is the first member of all three
+failing length lists**, and `List.iter` aborts at the first raise, so
+`P ∈ {59, 61, 64, 67, 1514}` were **driven but never adjudicated**. "Every larger
+member passed" is true only of `P = 20` and `P = 60`, in *other* units. I would
+rather correct the sentence than inherit a wider claim than the log supports; the
+narrower claim is also the more useful one, because it is what brackets the
+defect (item 5).
+
+**3. The classification, derived before it was routed.** `P = 1` means
+`W = ⌈1/8⌉ = 1` source words, so the frame's **first** word **is** its `tlast`
+word. REQ-206's window has two bounds and both are events, not cycle offsets:
+open *after the start character has been emitted*, close *before the frame's
+`tlast` word has been accepted*. The `tlast` word is accepted at `C`; SPEC-M04
+§6.2 enters `Preamble` on the cycle a first word is accepted and emits the start
+character at `C+1`. `C+1 > C`, so **the window is empty** — no cycle in a
+one-word frame's life can satisfy REQ-206, **independent of `C` and independent of
+`tready`**, since neither bound mentions `tready` and the handshake clause is a
+conjunct inside a window that never opens. §7's `C-16` consequence 1 states the
+same fact from the other side and I read it as it is written — over the **`tlast`
+acceptance**, not over the number 8 that §6.1's `P = 60` table happens to give it:
+*"this is the one cycle in a frame's life where `tx_tready` = 1 with
+`tx_tvalid` = 0 means nothing at all."* At `W = 1` that cycle is `C+1`, which is
+**also** the start-character cycle. **`W = 1` is the one frame shape at which §7's
+silent cycle and §6.2's `Preamble` cycle collapse onto one another**, and that
+collapse is the whole of this bug's surface.
+
+**4. The wire corroborates, from assertions that had already passed.** Each of the
+three units raises at `assert_instruments_clean`, which is the **last** call in
+each row body — so at `P = 1` everything before it passed, in three independent
+unit bodies: `Tx_decoder.is_clean` (checked at `bench.ml:364`, before the strobe
+check at `:368`), exactly one completed frame, **64** wire octets, octets 0…59
+equal to `pad_to_60(content)` (U5's prefix comparison; U7's and U10's explicit
+all-`0x00` pad-region scans), terminate character at `C + 2 + ⌊64/8⌋ = C+10` in
+lane 0 with its control bit set. REQ-206 is **one** `SHALL` binding the strobe to
+a remedy — error character, terminate character, no FCS — and none of the remedy
+appeared. So the design's two outputs contradict each other and at least one is
+non-conformant; the window derivation says which. I recorded the missing remedy as
+a **second** breach rather than as a mitigation: "the wire survived" is not
+conformance, and a spurious strobe that *had* aborted would have destroyed a legal
+frame.
+
+**5. Both bench-lane mechanisms excluded by derivation, which is the part of this
+round I was most obliged to get right**, because one of the two candidates is my
+own instrument and the other is a worker's work I had just bounced.
+**(b) the presenter**: `Bench.present` (`:246–256`) offers word `next` on every
+cycle and advances only on acceptance; at `W = 1` there is **no second word in
+existence** to withhold, and two guards would have fired first — the liveness
+bound and `P-ACCEPT` (`:284–303`, accepted cycles must be exactly `[C]` at
+`W = 1`). Neither fired. **(c) the strobe monitor**: its `expected = 0` is
+`WO-0080` §1.2's own pre-commitment (family G excluded, every run presents every
+word) **and** independently correct by item 3's derivation, so it is not resting
+on a convention; and `high-cycles = 1 … observed: error_underflow@2` is a count of
+high cycles on the design's output pin under convention `C-23`, sampled every
+cycle — an observation, not a model. The only modelled quantity in the whole
+instrument is the zero, and the zero is derived. **(a) the design** is therefore
+sustained by elimination *and* independently by items 3 and 4, which is the
+stronger position: I did not want a classification that rested on elimination
+alone.
+
+**6. §15 class D1, and the one strain in fitting it, stated rather than
+smoothed.** D1 reads *"a row's assertion fails and this packet's derived constant
+for it is right"*. The assertion that failed is obligation 4's **standing**
+instrument check, invoked from inside each row's body under that row's id; its
+"derived constant" is the empty expected-event set, which §9.4 item 2 derived from
+§7 in advance. That is a row assertion in the sense that matters — it runs under
+the row's id and its expectation is derived in the packet — and no other class
+fits: D2 needs a non-empty `Tx_decoder.violations` and the decoder was clean; D3
+needs `P-ACCEPT` to fire and it did not; D4a–d are the bench-seat classes and the
+compile is green with nothing withheld and no `[%expect]` drift; D5 needs a
+constant in dispute and §6.1's `P = 1` row is confirmed by the run. **D1, and D1
+carries "no bounce" in the table's own Bounce column.**
+
+**7. A gap in my own table, found by the case that did not happen.** §15's D2
+names the **decoder** as the instrument-defect vehicle, and this round attaches
+**two** standing instruments. Had candidate (c) been sustained, §15 would have had
+no class for it — D2 names the wrong instrument and D4a–d would have routed a
+dv-owned instrument defect to the worker's seat. **It did not fire, so it changes
+no route, and I have deliberately not filled the gap now that I know which way the
+result points** — that is the exact move §15 exists to prevent. Filed as
+`FINDING WO-0080-5` (MINOR, mine) against the packet, with the repair stated for
+the next packet that carries a §15 table: state the class over *"a standing
+instrument"* rather than over one instrument's name.
+
+**8. The promotion block, refused in writing.** The run printed `.corrected`
+bodies whose new content is `[%expect.unreachable]` plus
+`[@@expect.uncaught_exn {| … |}]` carrying this failure's message **and an OCaml
+backtrace**. Promoting them would bake the crash text into the expectations and
+turn a red suite green with the defect intact, and the backtrace would make the
+expectation fragile against any line-number change besides. The house rule this
+chain already carries, restated so no later round has to rediscover it: **a
+`.corrected` carrying `expect.uncaught_exn` is never a promotion candidate; a
+promotion candidate is printed data, an uncaught exception is a verdict.** I
+stated it in **both** artefacts — the packet disposition §4 and `BUG-0004` §7
+item 5 — because the next reader of either might be the one holding the promote
+button, and the bug packet is the one that reaches rtl_lead.
+
+**9. Severity, argued on both sides rather than asserted.** **MAJOR.** Not
+CRITICAL: no octet on the wire is wrong, and the shape is **not reachable through
+the Phase-1 composed chain** — M07 prepends 14 header octets (REQ-405), so the
+shortest frame that can reach M04's source from the stack above is `W = 2`. Not
+MINOR: SPEC-M04 places no lower bound on the source frame length (§2's not-my-job
+table says *nobody* knows a length in advance, and REQ-203's pad rule is written
+to reach any `P` below 60 — which is exactly why `AP-M04` rows `B4`, `C2` and `C5`
+all commission `P = 1`), REQ-008's *"no strobe the stimulus did not create"* is
+unconditional, REQ-804 aggregates this strobe into a host-visible status record,
+and REQ-709's bench asserts one pulse of each per under-delivered frame — an
+assertion a spurious pulse breaks. The single measurement that would convert it to
+CRITICAL is `W = 2` also strobing, and `W = 2` is untested; I asked for it in the
+re-test protocol rather than assuming either answer.
+
+**10. What the selectivity brackets, and the neighbour a fix must not break.**
+Adjudicated: `W = 1` strobes; `W = 3` and `W = 8` are clean. So the design is
+**not** a naive reading of REQ-206 to its first full stop — that defect is
+`M04-G4`'s and would have shown at `P = 60` too. It fails when the frame-opening
+acceptance and the `tlast` acceptance are the **same** acceptance. The sharp
+neighbour, and the reason `BUG-0004` §5 item 5 exists: at `P = 60` a word withheld
+at `C+1` — the *same cycle offset* as this spurious strobe — **is** an underflow
+and **must** pulse (`M04-G5`). The two cases sit one cycle offset apart with
+opposite verdicts, so the condition has to be keyed on whether the `tlast` word
+has been accepted and never on an offset from `C`. That is the most useful
+sentence this packet can hand a fix and it is derived entirely from the plan and
+the spec.
+
+**11. What I refused to issue.** The rev-B `RV-` verdict. §15's D1 settles that
+this red is not a bounce and settles nothing else; an ACCEPT is the separate act
+§12's sixteen bars quantify, `M-2` reads a CI run that is `failure` at `cbbeb76`
+(now for a design reason, which `BM1` does not reach), and `M-1`/`M-3`/`M-4`/`M-5`/`M-7`
+have not been re-executed at this SHA. Ruling ACCEPT here would be the
+improvisation the dispatch forbade in the same sentence that gave me the route.
+Routed to the orchestrator as scheduling, with the explicit statement that nothing
+in `BUG-0004` blocks it. I also moved **no** row status in `AP-xgmii_tx_64` and
+opened **no** `SO-`: nine green rows are nine green rows, not coverage, and
+`test/attack_plans/**` is outside this round's write set in any case.
+
+### Actions
+
+- Verified the spawn-head precheck; read the charter and PROTOCOL before writing.
+- Fetched and read CI `build` run **31476319884** and job **93730745511** at the
+  source; confirmed the handed extraction byte for byte and bounded the failing
+  set from the promotion block's own contents.
+- Derived REQ-206's window at `W = 1` from `requirements.md` and SPEC-M04 §6.1,
+  §6.2, §7 and §9; cross-checked against §0.6's fourth clause; corroborated
+  against the wire assertions that passed in three independent unit bodies.
+- Excluded the presenter and the strobe monitor as candidate mechanisms by
+  reading the landed bench and the committed monitor interface.
+- Classified the red as **§15 D1** and authored
+  `agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md`
+  (MAJOR, `OPEN`, dv_lead → rtl_lead, VERBATIM relay).
+- Appended `## DISPOSITION — dv_lead, 2026-08-11` to `WO-0080`'s verdict log:
+  the rev-B repair proven effective by the run, the class table walked entry by
+  entry, the route, the promotion prohibition, what the run did and did not
+  establish, the `RV-` verdict explicitly **not** issued, and
+  `FINDING WO-0080-5` against §15 itself.
+- **No git write of any kind**: no `git add`, no `git commit`, no `git push`.
+- **Nothing under `test/**`, `libs/**` or `docs/**` was staged, edited or
+  created.** An adjudication judges; it does not repair the thing it judges.
+
+### Evidence
+
+**1. Precheck, at this seat.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # cbbeb76650f3b471d0ecc1bf85db4001cb907ec1
+
+**2. The CI run, externally verifiable.** `build` run **31476319884**,
+`head_sha` `cbbeb76650f3b471d0ecc1bf85db4001cb907ec1`, branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`, `run_attempt` **1**, conclusion
+**`failure`**, created 09:07:56Z. Job `build` id **93730745511**. The `Build` step
+produced no error and `Run tests` executed — the first execution of this bench
+against this design.
+
+**3. The failure, verbatim from that job log** (un-escaped from the expect
+machinery; identical at all three sites but for the row id):
+
+```
+(Failure
+   "M04-B4/B5 (P=1): strobe monitor unclean:
+  [M04 tx strobes] cycles=35 expected=0 high-cycles=1
+    high cycles per strobe (C-23, never edges): error_underflow=1
+    observed: error_underflow@2
+    ERROR: cycle 2: M04 tx pulsed \"error_underflow\" and no expected event claims it — a strobe the stimulus did not create (requirements.md §0.6, REQ-008)")
+```
+
+Raise sites, from the same log's backtraces: `bench.ml:368` (characters 4–106) in
+`assert_instruments_clean`, via `Base__List0.iter`, from `test_m04_b.ml:298`,
+`test_m04_c.ml:112` and `test_m04_c.ml:288`.
+
+**4. The promotion block's exact extent, measured from the log rather than
+assumed.** Two `--- FILE` entries: `test/xgmii_tx_64/test_m04_b.ml` (sha256
+`1178cec5680f4f7b74026a823a801aa4e7ad47d655eeb3da9b756eb70021333b`) and
+`test/xgmii_tx_64/test_m04_c.ml` (sha256
+`10e7d0b6a03518233e3be3e646095cb713fc6267c4c4f0961187ad64dad3d294`) — the
+runner-local promoted bodies, which never entered history. Three corrected
+`%expect` blocks in total, at `test_m04_b.ml` line 296 and `test_m04_c.ml` lines
+110 and 286 of the pre-image. `test_m04_a.ml` and `test_m04_scaffold.ml` do not
+appear at all.
+
+**5. Nothing was promoted into the repository**, checked at this SHA:
+
+```sh
+sha256sum test/xgmii_tx_64/test_m04_b.ml test/xgmii_tx_64/test_m04_c.ml
+# 465a8b911e8cbe187e35ad190aa8a1f107470da8155de88d0ca8d1d610c243f3  test/xgmii_tx_64/test_m04_b.ml
+# f127ff136091df100b898339d06f259daedfe8849311d62a2340998b8c056cc9  test/xgmii_tx_64/test_m04_c.ml
+grep -rc "expect.uncaught_exn\|expect.unreachable" test/xgmii_tx_64/
+# 0 in all seven files
+```
+
+Both committed digests differ from the promoted ones in item 4, and no
+`uncaught_exn` payload exists anywhere in the directory.
+
+**6. The window derivation, reproducible from committed text alone.**
+`requirements.md` REQ-206 (line 765): *"on any cycle **after** the transmitter has
+emitted a frame's start character and **before** it has accepted that frame's
+`tlast` word"*. `docs/specs/modules/xgmii_tx_64.md` §6.2 `Preamble` row: *"entered
+when a first source word is accepted … emits the REQ-201 word"*; §6.1's table
+places the preamble at `C+1` against an acceptance at `C`. `Bench.source_words`
+cuts `content_octets ~p:1` into `⌈1/8⌉ = 1` word with `tkeep = (1 lsl 1) − 1 =
+0x01` and `tlast = true`. Therefore, at `P = 1`: `tlast` accepted at `C`; start
+character no earlier than `C+1`; window `(C+1, C]` — **empty**.
+
+**7. The wire at `P = 1`, from assertions that passed before the raise.** U5:
+terminate cycle `= C + 2 + ⌊F/8⌋` with `F = 64` → `C+10`; terminate lane
+`= F mod 8` → 0; control bit set on that lane of that word; `List.length
+frame.octets = 64`; `List.take octets (F−4) = pad_to_60(content_octets ~p:1)`.
+U7: `List.length octets = 64`; `List.take octets 1 = content`; the 59-octet pad
+region from index 1 all `0x00`. U10: accepted source word count `W = 1`;
+terminate lane 0; 64 octets; prefix = content; pad region all `0x00`. All three
+raised only afterwards, at `bench.ml:368`.
+
+**8. The bench guards that did not fire, quoted by site.** `bench.ml:267–283`
+(liveness bound, 16 cycles) and `bench.ml:284–303` (`P-ACCEPT`: accepted cycles
+must equal `List.init w ~f:(fun m -> c + m)`, i.e. exactly `[C]` at `W = 1`).
+Their silence is what excludes candidate (b) on evidence.
+
+**9. The adjudicated-clean stimulus set, and the unadjudicated remainder.** Green:
+U1, U2 (`P = 60`), U3 (`P = 60`), U4 (`P = 20`), U6 (`P = 20`), U8 (`P = 20`),
+U9 (`P = 20`). Never adjudicated: every member after `P = 1` in
+`[1; 20; 59; 60; 61; 64; 67; 1514]` (U5), `[1; 59; 60; 61]` (U7) and
+`[1; 20; 59]` (U10) — driven, then abandoned by the `List.iter` at the first
+raise.
+
+**10. Independence.** `git status --short` at return lists exactly three paths:
+`agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md` (new),
+`agents/handoffs/WO-0080_tb-m04-first-bench.md` (modified), and this journal.
+**No file under `libs/**`, `top/**`, `rtl_snapshots/**` or `test/third_party/**`
+was opened in this round**, and nothing under `test/**`, `tools/**` or `docs/**`
+was staged, edited or created.
+
+### Outcome
+
+**DoD for an adjudication round: met.**
+
+- **Classification**: `WO-0080` §15 class **D1** — a **design** defect. Not a
+  bounce. The competing bench-lane classes (D4b, D4d) and the instrument reading
+  are excluded by derivation, each with its exclusion recorded.
+- **Route**: `agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md`,
+  **MAJOR**, `OPEN`, dv_lead → rtl_lead via the orchestrator, **VERBATIM** relay
+  class (PROTOCOL §3). **The M04 era's first bug packet.** It carries the
+  reproducing member and command at `cbbeb76`, the CI run and job ids, the
+  emptiness derivation, both exclusions, the observables a fix must satisfy, the
+  `M04-G5` neighbour a fix must not break, the severity argument with its
+  reachability analysis, and the re-test protocol including the `W = 2` point.
+- **Promotion**: **PROHIBITED**, stated in both artefacts, with the standing rule
+  restated for later rounds and the non-promotion verified at this SHA.
+- **Not issued**: the rev-B `RV-` verdict; any `SO-`; any `AP-xgmii_tx_64` status
+  move; any claim about `P ∈ {59, 61, 64, 67, 1514}`; any statement about
+  `tx_tready`'s value; any FCS claim at `P = 1`.
+- **Findings minted**: `FINDING WO-0080-5` (MINOR, mine) — §15 has no class for a
+  defect in a standing instrument other than the decoder. Recorded, not acted on,
+  because it did not fire.
+- **Handoff**: the two artefacts above, to the orchestrator, for commit and for
+  verbatim relay of `BUG-0004` to rtl_lead.
+
+**No harvest note is owed.** ADR-0018 attaches one to every `SO-` and every phase
+gate, and this round is neither. The span tiles unbroken from `J-dv_lead-0174`
+to the next sign-off, where the three-instance quantifier pattern
+(`J-dv_lead-0174` Open-questions item 2) remains the carried candidate — now with
+a second candidate beside it, item 3 below.
+
+### Open-questions
+
+1. **`W = 2` is untested and it is the measurement that sets this bug's true
+   severity.** `W = 1` fails, `W = 3` and `W = 8` are clean, and the Phase-1
+   composed chain cannot produce anything below `W = 2` (M07 prepends 14 header
+   octets). If `W = 2` also strobes, `BUG-0004` converts to CRITICAL on
+   reachability. **Route**: mine, as a bench point in the round that next opens
+   `test/xgmii_tx_64/**` — and held over rtl_lead's fix return if that return
+   claims a mechanism whose domain is wider than `W = 1`.
+2. **`AP-xgmii_tx_64` has no row for the `W = 1` collapse**, and this is the
+   defect the plan should have named before the bench found it incidentally.
+   Family G's `M04-G4` names the cycle *after* the `tlast` acceptance at `P = 60`;
+   nothing names the shape where that cycle **is** the start-character cycle.
+   **The plan repair debt is now EIGHT**, all editorial or additive, all riding
+   the round that next opens `test/attack_plans/**`: the seven at
+   `J-dv_lead-0174` Open-questions item 3, plus a new family-G row for `W = 1`
+   with `M04-G5` named as its opposite-verdict neighbour.
+3. **A second harvest candidate, banked for the next `SO-`.** The rows that
+   caught this defect (`B4`, `C2`, `C5`) were commissioned for the **pad**
+   boundary, and the strobe that convicted the design was checked by a
+   **standing** instrument attached to every elaboration rather than by any row's
+   own assertion. Provisional observable: *a defect found by an instrument that
+   runs on every stimulus, on a stimulus commissioned for an unrelated property,
+   is evidence about the instrument's placement and not luck.* LH1's incident
+   commit is `cbbeb76`; LH2/LH3 to be discharged at the next sign-off, where a
+   second instance may exist to test the grade against.
+4. **The rev-B `RV-` verdict on `WO-0080` is owed and unissued**, deliberately
+   (Reasoning item 11). Nothing in `BUG-0004` blocks it. **Route**: orchestrator,
+   as scheduling.
+5. **Standing and untouched by this round**: `DVC-1a`; the M04 census in
+   `tools/dv_checks.sh`; the transmit-side conservation monitor (`AP-M04` §7
+   `T-2`); `AP-ip_eth_rx_64`'s `M14-F1`/`F2`/`F3`; the three `BAR T1` work orders;
+   `FINDING ABS-1`'s §0.6 sentence (architect_docs_lead's to rule);
+   `SO-xgmii_rx_64.md`'s Stage-3 gate table; family D as the next bench round.
+
+### Files-in-this-commit
+- agents/handoffs/BUG-0004_m04-underflow-strobe-on-a-single-word-frame.md
+- agents/handoffs/WO-0080_tb-m04-first-bench.md
