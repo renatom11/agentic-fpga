@@ -1848,3 +1848,675 @@ in the round's return, which is the relay-class artefact; this entry is its tamp
    `-0019` Open-question 3 stated the same structural gap for the harvest.
 ### Files-in-this-commit
 - (none)
+
+## [J-auditor-0021] 2026-08-11T17:50Z | task:none | Both clauses countersigned and neither blocked: (b.2) is my own G1-b returned unwidened and costs a re-run the record has not yet paid, (b.3) is sharpened twice and drops the one guard its two neighbours carry — plus the debt accepted and found bigger than the paragraph it was named as
+### Trigger
+Orchestrator dispatch, one round, one act: **act 2 of `ADR-0020` §9.2** — this seat's
+countersignature on clauses **(b.2)** and **(b.3)** of the `PROTOCOL` §7 **Mutation record**
+paragraph the ADR carries as source text. The ADR is the §11(1) instrument for the amendment
+my own `G-1` adjudication commissioned at `J-auditor-0020` §9, and it landed **PROPOSED** at
+`8264183`. Nothing is in force; my act is one of the three countersignatures §9.2 routes
+before the orchestrator's acceptance act (act 5).
+
+**Abort-first precheck, before any file was opened.**
+
+    git status --short              # empty
+    git rev-parse HEAD              # 82641833837e2d1245f3f7c4ef2865a9e1024c20
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 17:37:57 UTC 2026
+
+HEAD byte-equal to the dispatched `8264183`, tree clean, so neither branch of the abort
+procedure was reached. Three siblings declared (dv_lead and rtl_lead on parallel
+countersignature rounds, each in its own journal with a possible `v03` rotation for rtl; the
+orchestrator on journal/board/site).
+
+**Two of the three fired, after this entry was appended to the working tree and before it was
+committed.** HEAD moved `8264183` → `62ad337` → `95c5e2a`: rtl_lead's act-4 countersignature
+opening its `v03`, and dv_lead's act-3 countersignature. `git diff --name-only 8264183 95c5e2a`
+returns **exactly two paths**, both journals, both the declared lanes. **I ran the
+re-verification clause rather than reasoning about it**: `git diff --stat` across the move over
+`agents/PROTOCOL.md`, `docs/adr/`, `docs/gates/`, `docs/reports/audit/`, `agents/handoffs/`,
+`agents/charters/`, `scripts/`, the architect's `v04` and my own `v02` returns **empty** —
+every surface this round read is byte-identical across the move, the instrument I countersigned
+included, and my own volume is untouched at HEAD so this append remains a clean prefix-append
+against the new HEAD. **This paragraph replaces one that said the clause was armed and unused,
+written when that was true; it is an edit to an entry not yet committed, and HEAD's 130,066
+committed bytes of this volume are untouched by it** (`R3` binds the staged file against HEAD's
+version — the same disclosure `J-architect_docs_lead-0045` made for the same reason).
+
+**I did not read the siblings' verdicts before finishing mine, and I have not amended a word of
+my two countersignatures against them.** Their subject lines are visible in `git log` and that
+is all I have taken from them; act 2 is independent of acts 3 and 4 by design, and a
+countersignature adjusted to agree with a concurrent one is not a second reading of the clause.
+
+**Honest stamp**: `date -u` at authoring — `Tue Aug 11 17:50:26 UTC 2026`. No spawn short-id
+was minted for this round, so there is no token to quote, and per my own `-0020` §3 finding
+none would have been a clock if there were.
+
+**No rotation.** `v02` stands at 130,066 bytes before this append against `JOURNAL_SOFT_MAX`
+= 262,144 (ADR-0017 §5, `R10`). Volume 01's sha256 re-verified against this volume's
+`Previous-volume-sha256` header field at Evidence — equal, chain intact.
+
+### Inputs
+- `agents/charters/auditor.md` and `agents/PROTOCOL.md` **in full**, before any other file
+  (§3 packet classes and the auditor exception, §4/§4.1 grammar, §4.2 set-equality, §5
+  `R1`–`R9`, §6 write scopes, §7 gates, §8 escalation, §10 independence and the
+  mutation-discipline bullet, §11 amendment procedure).
+- `docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md` **whole**, §3's hunk 2
+  and §6 read twice.
+- `agents/journals/claude_architect_docs_lead_agent.v04.md`: `J-architect_docs_lead-0045`
+  **whole**, including its ledger rows 78–80 and its four Open-questions.
+- `agents/journals/claude_auditor_agent.v02.md`: my own `J-auditor-0020` **whole** — the
+  `G-1` adjudication at Reasoning §9, its four-defect specification, and Open-questions 3–6.
+- `agents/journals/claude_orchestrator_agent.v02.md`: `J-orchestrator-0259` Act 3 (the CI-run
+  reading that closed my Open-question 3) at lines 4693–4703.
+- `agents/handoffs/WO-0041_family-d-mutation-campaign.md` §3 **whole** (the `D-M3`
+  equivalence proof and its three consequences) and its §4/§5 verdict text.
+- `docs/reports/audit/WO-0041-mutations/README.md` — **my own seeder artefact**, §3.3
+  whole, §5.2, §6, and a word-level search of the entire file.
+- `agents/handoffs/SO-xgmii_rx_64.md`: `SC-5` at rounds 2/3/4 (lines 280, 351, 511), §2.2-M's
+  five-column ground and named non-kill list (lines 716–746), and line 791's `WO-0041` row.
+- `docs/gates/P1-module-ready-checklist.md` lines 179–181, 211, 229, 256, 502, 517, 525, 537.
+- `docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md` and the other thirteen
+  `docs/reports/audit/WO-*-mutations/README.md` files, searched for equivalence exclusions.
+- `docs/reports/audit/WO-0055-mutations/g-c4.diff` — re-checked for applicability at HEAD,
+  **`--check` only, never applied**.
+- **No `libs/**`, `top/**`, `bin/**` or `test/**` source read for content.** The only RTL
+  bytes I opened are the two hunks quoted inside my own `WO-0041` README §3.3 and the
+  ten-line `g-c4.diff`, read as diffs for identity, not as designs for correctness.
+- **No `Essenceia/Nasdaq-HFT-FPGA` material consulted.**
+
+### Reasoning
+
+#### 1. What I was asked to check, and the test I applied
+
+`ADR-0020` §7.2 mints the standard my own act is measured by, and it is the right one: a
+countersignature's value *"is not arithmetic, which the filing already did, but whether the
+guard is **exactly** the rule rather than wider than it — and that is a question only the
+constrained party can answer."* §9.2 act 2 names why these two clauses are mine: they bind
+this seat's own future acts — (b.2) the survivor evidence form I specified, (b.3) the
+seeder-records limb of the equivalence standard.
+
+So I did not read for whether I like the clauses. I read each against three questions.
+**(i) Where the ADR says it adopts my specification, is the adoption faithful?**
+**(ii) Where it says it adapts — and it names every adaptation — does the adaptation stand on
+its stated ground?** **(iii) Is the guard exactly the rule, or wider, or narrower than the
+rule it guards?** The third is the one only I can answer and the one that produced this
+round's two substantive findings.
+
+#### 2. (b.2) — my `G1-b` returned unwidened, checked limb by limb
+
+My specification at `J-auditor-0020` §9 said the clause must state **when** it is measured
+(the suite as it stands at the gate SHA) and must require, for any mutation that survived its
+own campaign, *"exactly the evidence form `G-c4` already has: the **unmodified** committed
+diff replayed against the current bench at a run id, with the killing unit named. Anything
+weaker lets a survivor be argued dead."*
+
+| limb I specified | (b.2) as drafted | verdict |
+|---|---|---|
+| measured **when** — the suite at the gate SHA | *"killed by the suite at the gate SHA"*, and again *"replayed against the bench as it stands at the gate SHA"* | **faithful**, and stated twice rather than once |
+| the **unmodified** committed diff | *"the **unmodified** committed diff"* | **faithful, verbatim** |
+| replayed against the current bench | *"replayed against the bench as it stands at the gate SHA"* | **faithful, and sharper than my words** — *current* was ambiguous between "now" and "at the gate"; the draft pins it to the gate |
+| at a run id | *"at a **run id**"* | **faithful, verbatim** |
+| with the killing unit named | *"with the **killing unit named**"* | **faithful, verbatim** |
+| my ground sentence | *"anything weaker lets a survivor be argued dead"* | **my own sentence, carried verbatim** |
+
+**Two things (b.2) adds that I did not specify, and both survive the width test.** The first
+sentence generalises my `G1-c` into the disposition rule (*"no non-kill is folded into a kill,
+and no ratio stands in for the dispositions"*), which is the same rule §4's `PROTOCOL` §10
+hunk carries and is therefore a restatement rather than an extension. The last sentence — *"the
+campaign's own `survived` count keeps what it measured; the two facts are recorded side by side
+and never folded into one"* — is dv_lead's frozen-score rule, which I had already adopted as
+the **first** of the two independent reasons the clause could not be read into compliance
+(`-0020` §9). It constrains nothing I asked for and forbids a thing I want forbidden. **Neither
+addition widens the guard.**
+
+**What (b.2) does not do, and I checked for it specifically.** It does not make a
+still-surviving mutation unreportable. Read carefully, the first sentence sets the duty —
+every seeded mutation killed **or named individually with its disposition** — and the second
+sets the *form a rehabilitation must take*. A mutation that still survives at the gate SHA has
+no such evidence, is therefore undispositioned, and clause (b) is unsatisfied: the gate fails,
+which is the correct outcome. **Reporting that a survivor is still alive is not offering a
+weaker disposition; it is reporting the absence of one.** I state the reading because a later
+party under gate pressure could try the other one — "the clause admits only the replay form,
+so an open survivor cannot be written down" — and that reading would convert an evidence rule
+into a silencing rule. It is available to no one now.
+
+#### 3. The cost (b.2) imposes is real, unpaid today, and measured
+
+This is the finding I could only make by being the constrained party, and it bites my own
+future act. **(b.2) says *as it stands at the gate SHA*. The `G-c4` evidence the record holds
+was measured against a bench and an RTL that have both moved a long way since.**
+
+    git diff --stat e7657e3 HEAD -- test/xgmii_rx_64/
+      → 15 files changed, 8505 insertions(+), 151 deletions(-)
+    git diff --stat e7657e3 HEAD -- libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+      → 1 file changed, 248 insertions(+), 9 deletions(-)
+
+`e7657e3` is the base of `mut/wo-0056-gc4-replay` = `c95c9f4`, whose CI run `30852220315` is
+the record's proof that the repaired bench kills `G-c4`. **That run measured a bench that no
+longer exists.** Under the clause as written — under *my own* specification — citing it at a
+future gate SHA does not discharge (b.2); a re-run does. I asked for a present-tense
+measurement and I got one, and the price of a present-tense measurement is that it expires.
+
+**I checked that the price is payable rather than merely stating it.** `git apply --check -v
+docs/reports/audit/WO-0055-mutations/g-c4.diff` at `8264183` returns **exit 0** against the
+current `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, so the mutation still renders at HEAD and
+the replay is mechanically re-runnable. **`--check` only; nothing was applied and the tree was
+empty before and after** — applying a manifest is the orchestrator's act under `PROTOCOL` §10
+and never mine. So (b.2) costs a CI run at the gate, not a redraft, and I sign it knowing the
+run is owed. It becomes a MAJOR finding the moment any gate record cites run `30852220315` as
+(b.2)'s discharge at a gate SHA later than `e7657e3` without a fresh replay (**F-0021-5**).
+
+#### 4. (b.3) — adopted, sharpened twice, and both sharpenings judged on their grounds
+
+My `G1-d` asked for one thing: `PROTOCOL` has no equivalent-mutant clause while the record
+already contains an exclusion made under one (`WO-0041`'s `D-M3`), so supply the clause and
+require the exclusion **proven in a committed artefact**. (b.3) supplies it and adds two limbs
+I did not ask for. The ADR names both as adaptations (§1.3, §6.1) rather than presenting them
+as mine, which is the disclosure that makes them judgeable.
+
+**Limb 2 — the proof quantifies over the specification's legal stimulus space, never over a
+bench. ADOPTED, and it is the limb that does the work.** §6.1's argument is that *"equivalent
+mutant"* is unfalsifiable from the losing side — a blind bench and an equivalent mutant emit
+identical evidence — so the clause must be a proof standard rather than a definition. That is
+correct and the record contains one clean instance of each side: `D-M3`'s proof computes a
+margin over *"every legal combination"* of terminate lane, start lane, length and gap **down
+to the DIC floor of 9 octets, not merely the nominal 12 the bench drives**, and concludes
+*"across the whole legal stimulus space"*; `G-c4` was argued at the bench and turned out to be
+a real coverage gap in my own `AP-M03` §4.G text. The limb converts most misuse attempts into
+coverage gaps **by their own wording**, which is a guard that works on the party trying to
+evade it. It constrains me more than my own specification did and I adopt it for that reason.
+
+**Limb 3 — the exclusion takes effect only once the seeder records it in the seeder's own
+committed artefact. ADOPTED, and the width test is where it earns the signature.** This limb
+is about me: it makes an exclusion's effect turn on an act inside `docs/reports/audit/**`,
+which is this seat's exclusive scope and nobody else's. Three checks.
+
+1. **Is it faithful to what I said?** I named the standard *by pointing at my own `IC-M5` §3.5
+   declaration* — an artefact of the seeder's. The architect read the pointer as naming the
+   artefact class and not merely the proof form. That is a fair reading of my own sentence and
+   I do not disown it.
+2. **Is the guard wider than the rule?** No, and the distinction is exact: limb 1 requires the
+   proof *in a committed artefact* — **any** committed artefact, so a third party may prove —
+   while limb 3 requires only that the **seeder record** the exclusion. Had it required the
+   seeder to *author the proof*, it would have been wider than its own ground, because
+   admission-against-interest needs only the record. It does not. **The guard is exactly the
+   rule.**
+3. **Is the ground sound?** Yes, and the record is the argument. `D-M3`'s exclusion was
+   authored by **the graded party**, in its own campaign packet, and it shrinks **my** measured
+   yield; my artefact never carried it. Limb 3 puts the act in the artefact of the party whose
+   yield it costs and in the tree the gate reads. That is the independence property my charter
+   exists to supply, applied to me.
+
+**The interaction I looked for and did not find fatal.** Limbs 1–3 create a state where a
+mutation is provably equivalent but not yet excluded — proof exists, seeder has not recorded —
+and in that state (b.2)'s survivor form applies and cannot be met, because no bench can kill an
+equivalent mutant. That is a deadlock on paper. It is not one in practice: the cure is one
+paragraph by a seat the orchestrator spawns, the incentive to write it is the whole design, and
+the alternative — letting the graded party's own packet effect the exclusion — is precisely the
+failure the record already exhibits. **I name it as an operational precondition rather than a
+defect**: a gate whose reading depends on an equivalence exclusion must be preceded by a seeder
+round, and that is the orchestrator's sequencing act, not a redraft of the clause.
+
+#### 5. The one thing (b.3) does not say, which its two neighbours both say — FINDING F-0021-3
+
+**(b.1) requires every member of `sealed − seeded` to be *"named at the tally with its
+ground"*. (b.4) requires the unreachable set *"beside the tally"*. (b.3) — the clause the ADR
+itself calls at §12.3 *"the clause most likely to be misused, because it is the only one that
+removes something from a denominator"* — requires publication nowhere.** Its three guards
+(§12.3) are the stimulus-space quantifier, the seeder's record, and the floor measured before
+exclusions. None of them puts the exclusion in front of the reader who reads the number.
+
+The asymmetry runs the wrong way and the ADR's own reasoning says so. §12.5 defends the
+publication requirement for the **cheaper** `UNSCOREABLE` ground in terms that apply a fortiori
+here: *"The ground must be named at the tally, so the claim is in front of the reader who reads
+the number rather than in a packet appendix."* And §6.4(i) rejects dv's offered clause for
+leaving a class *"in no column"*, on the diagnosis that the defect is a record a reader
+**cannot recover**. An equivalence exclusion published only in the seeder's campaign report and
+the prover's packet is recoverable only by walking every campaign artefact — which is the state
+`REC-3` convicted, reached by a different road.
+
+**Why this is a finding and not a refusal.** The text supports the cure by construction:
+(b.3) operates on *the denominator*, a counting object, while (b.2)'s naming duty runs over
+*every seeded mutation*, a historical fact about what was rendered and run that an equivalence
+ruling cannot retroactively undo — undoing it would be the retro-edit §12.6 and (b.2)'s own
+last sentence forbid. **So an excluded equivalent mutant is still named individually with its
+disposition under (b.2); what it leaves is the count, not the record.** I countersign under
+that reading, state it here so a later gate cannot discover the other one, and route the cure
+to where it costs nothing: **the gate-record form already owed at ADR §10 item 2 and carried on
+the architect's ledger as row 78** — the same touch that lands (b.1)'s itemised difference and
+(b.4)'s unreachable set can carry the equivalence exclusions beside the tally, without a §11
+round. Blocking `PROTOCOL`'s first equivalent-mutant standard over a construction I can state
+in one sentence would leave the record in exactly the condition my own `G1-d` convicted —
+sound practice, unauthorised protocol — and would be disproportionate.
+
+#### 6. The refusal to merge (b.3) and (b.4) — SUSTAINED, on three grounds
+
+The dispatch asks me to adjudicate the architect's refusal (ADR §5, final paragraph;
+`J-architect_docs_lead-0045` Reasoning §5) to merge the equivalent-mutant clause with the
+unreachable-assertion clause, given that `M03-J4` is a case where they meet — *"from the
+mutation's end nothing distinguishes mutant from original, from the assertion's end no
+mutation can reach the row."*
+
+**The refusal is correct and I sustain it.** Three grounds, only the first of which the ADR
+states:
+
+1. **Different objects, different operations.** (b.3) subtracts a **mutation** from a
+   denominator; (b.4) denies an **assertion** any contribution to a coverage claim while
+   preserving its requirement discharge. One is a counting act on the seeded set, the other a
+   bar on what a numerator may include.
+2. **Different proof burdens, and a merge would break in whichever direction it went.** Merged
+   upward, (b.3)'s whole-stimulus-space proof burden would fall on unreachable assertions,
+   which make no equivalence claim and owe no such proof — a guard wider than its rule. Merged
+   downward, equivalent mutants would ride (b.4)'s publication-only requirement, gutting all
+   three of §12.3's guards. **A merged clause is either wider than one rule or weaker than the
+   other; there is no third result.**
+3. **One relieves and one raises.** ADR §9.3 names the asymmetry itself: (b.4) raises the bar,
+   (b.3) can relieve a record. Fusing a relieving clause and a raising clause into one text
+   means a contest against either is heard against both, and a party wanting relief argues from
+   the clause that raises. That is a structural reason to keep them apart which is independent
+   of the subject-matter reason.
+
+`M03-J4` does not argue for unification; it argues that one fact can satisfy two clauses. The
+ADR's handling — dispositioned in both registers, counted in neither — is the right treatment
+and I verified it is not a second denominator exclusion in disguise: the family-J campaign
+still scored its classes, and `M03-J4` is a qualification row rather than a seeded class.
+
+#### 7. The route correction the dispatch needs — FINDING F-0021-1
+
+**The dispatch describes (b.3) as carrying *"your G-9 adaptation (unreachable assertions
+excluded from the mutation-coverage claim ONLY, still discharging requirement rows)"*. It does
+not. (b.4) carries it, and (b.4) is not mine to countersign.** The ADR is unambiguous three
+times over: §0's table says of §5's `G-9` reading *"it is (b.4) and rides §3 exactly"*; §5 says
+*"(b.4) therefore says both halves in one sentence"*; and §9.2 routes (b.4) to **dv_lead** at
+act 3, while act 2 names my two clauses with their ground — *"the survivor evidence form, and
+the seeder-records limb of the equivalence standard"*, i.e. `G1-b` and `G1-d`. Had I
+countersigned to the dispatch's description rather than to the instrument, act 2 would have
+been recorded as paid over a clause the route does not assign to me and act 3 would have been
+partly pre-empted by the wrong seat. **I countersign the ADR's clauses, not the dispatch's
+description of them**, and I record the divergence so the orchestrator's transcription cannot
+inherit it.
+
+**On (b.4) itself I am the offering seat, not a countersigner, and I say only this**, labelled
+as fidelity confirmation and **not** as any part of act 2 or act 3: the adaptation is faithful
+and it improves my text. My offered reading was *"it does not [count], and the gate record
+should carry the unreachable set beside the tally so that no N/N figure is ever read as
+coverage"* — whose object was explicitly a **coverage** claim. §5 splits the flat *"it does not
+count"* into (i) contributes nothing to a mutation-coverage claim and (ii) is worth less as
+verification, adopts (i), rejects (ii) as false, and **puts the discharge half first**. My
+sentence never said the discharge half at all. An amendment that demoted five landed green
+assertions by accident would indeed have been a worse defect than the one it repairs, and the
+draft says so before it says anything else. **dv_lead's act 3 signature on (b.4) remains
+wholly owed and nothing here pays any part of it.**
+
+#### 8. My own stamp compliance, per `-0020` Open-question 5 — compliant, and the dispatch's figure is off
+
+My Open-question 5 asked the next spawn to check this seat's own compliance rather than take
+it, on the ground that the round which measured 234 wrong dates cannot exempt its own author.
+Measured:
+
+| | |
+|---|---|
+| `J-auditor-0020` header stamp | **2026-08-11T16:52Z** (Trigger records `date -u` = 16:52:25Z) |
+| commit `60c1ccf` author time | **2026-08-11T16:59:13Z** |
+| drift | **+6 min 48 s**, stamp **before** commit, same date |
+
+**Compliant, in the honest direction, and inside the ±60-minute band my own `-0020` §7 sized.**
+The rule I proposed would not have fired on me. Open-question 5 asked whether it landed "more
+than an hour after 16:52Z"; it landed in under seven minutes; the question closes.
+
+**And the dispatch's figure for it is wrong — `-0021`'s only reason to say so is that this is
+the timestamp round.** The dispatch states my `-0020` was *"committed 16:57Z"*. The commit is
+`60c1ccf` at **16:59:13Z**, two minutes and thirteen seconds later. Nothing turns on it: both
+figures support the same verdict. It is recorded because a dispatch figure inside the item that
+exists because figures about time went unchecked should be exact, and because the whole point
+of `-0020` was that a summarised figure is not a measured one (**F-0021-2**).
+
+**One more compliance datum, taken since I was measuring anyway.**
+`J-architect_docs_lead-0045` is stamped 17:28Z against its commit `8264183` at 17:37:22Z —
+**+9 min 22 s, honest direction, same date, compliant**. The post-`-0251` band remains
+unbroken across every entry I have measured.
+
+#### 9. The debt at ADR §10 item 4 — ACCEPTED, and it is larger than the paragraph it was named as
+
+The ADR measured `WO-0041`'s `D-M3` short of the new standard on limb 3 and named the missing
+act as mine: *"one paragraph recording the `D-M3` equivalence exclusion in the seeder's own
+artefact"*, owner **auditor**, *"that path is its exclusive scope and nobody else's"*.
+
+**I accept the debt.** Three reasons, and the second is the one that matters. It is in my
+exclusive scope and nobody else can pay it. It is an admission against my own interest —
+`D-M3` was my seeded mutation and its exclusion is what turned the `WO-0041` campaign from a
+five-mutation yield into *"4 / 4 on the killable set"*, which is exactly the property limb 3
+exists to buy, and a seat that accepts a limb binding others while declining the one instance
+that binds itself has countersigned nothing. And the exclusion is **load-bearing on a live
+figure in a verbatim-class packet**: `SO-xgmii_rx_64.md` `SC-5` reports the pre-class era as
+*"**15 of 15**, with `D-M3` ruled an equivalent mutant and excluded from the denominator"* at
+three separate rounds (lines 280, 351, 511), and `docs/gates/P1-module-ready-checklist.md`:211
+carries the same figure. A denominator exclusion supporting a `15 of 15` headline is not a
+clerical omission.
+
+**And the debt is bigger than one paragraph, which I found by reading my own artefact rather
+than the ADR's description of it.** `docs/reports/audit/WO-0041-mutations/README.md` §3.3 —
+mine, committed at `fb49b80` under `Agent: auditor`, `J-auditor-0005` — states at **:325–326**
+*"On a lone frame this is indistinguishable from correct; **on two frames close together it is
+not**, because §6.1 re-seeds the register in `Preamble`"*, and elaborates at **:354–360**
+*"They diverge exactly when another frame's start character makes `begins` true … the register
+then holds the seed 0 or the next frame's running value, neither of which is the residue, and a
+**good** frame is reported bad."* **That claim is what the equivalence proof refutes.** The
+proof shows the margin `next_frame_start_cycle − tlast_cycle` is never negative down to the DIC
+floor — tightest value exactly 0 — so a register update at cycle X being visible only from
+X + 1 means the late read *always* sees the frame's own residue. There is no "two frames close
+together" case. My artefact's only self-correction on `D-M3` is §5.2's, and it corrects a
+different thing (the floorless reading of the intent), pre-run.
+
+**So the paragraph I owe records two facts, not one**, and its form matters: it is an **added
+note, never an edit of §3.3**. §3.3 is a frozen pre-run blind manifest, and repairing its text
+to match what the campaign later learned is precisely the retro-edit §12.6 and (b.2)'s last
+sentence forbid. The note will: record the equivalence exclusion and where it was proven
+(`agents/handoffs/WO-0041_family-d-mutation-campaign.md` §3, dv_lead's artefact, not mine);
+record that §3.3's divergence claim at :325–326 and :354–360 is falsified by that proof and
+stands unedited as written; and state my own verification posture explicitly — **either I
+re-derive the margin over the stated stimulus space myself, or I record the proof as cited and
+not re-derived and say which**. My own `-0020` §10 rule binds me here: *an inherited universal
+is a premise I own at the moment I rely on it*, and recording another seat's proof in my
+artefact is relying on it.
+
+**Two bounds on the acceptance.** It is a future round, as the dispatch says and as ADR §10
+item 4 says (*"trigger: its next round; not a precondition of anything here"*), and **this
+round's writes are confined to my journal**, so it cannot land now. And the note does not
+retroactively apply (b.3) to `D-M3`: §6.3 makes the clause prospective and the exclusion
+**stands** on its own merits regardless; the note makes the record recoverable, it does not
+cure a defect that voids anything. I say so in advance so no later reader can cite my paragraph
+as limb 3 satisfied retroactively — the ADR closes the grandfathered set at exactly one member
+and my paying the debt does not reopen it (**F-0021-4**).
+
+#### 10. The sampling frame, stated so it can be reconstructed
+
+**In the window**: one ADR (1,052 lines), one architect journal entry (633 lines), and the
+countersignature act on two named clauses. **Sampled**: the ADR whole; every sentence of (b.2)
+and (b.3) against my own `-0020` §9 specification word by word; §5, §6.1–§6.4, §7.3, §9.2–§9.4
+and §12.2–§12.6 read for the grounds behind the adaptations; the architect's entry whole
+including its ledger. **Measured at the sources rather than taken from the ADR**: the `D-M3`
+equivalence proof, my own `WO-0041` README (word-level search plus §3.3 and §5.2 read whole),
+all fourteen `docs/reports/audit/WO-*-mutations/README.md` files searched for equivalence
+exclusions, the `SO-`'s three `SC-5` rounds, the gate checklist's `G-1`/`G-9` rows, the
+orchestrator's CI-run reading, the bench and RTL movement since the replay base, the hunk
+apply-check at this HEAD, and the two commit timestamps.
+
+**Deliberately not sampled, and why.** I did not re-walk the ten campaign packets to
+reconcile `sealed`/`seeded` — that is dv_lead's score and ADR §13 says the ADR publishes no
+figure, so it is not in this round's frame and my `-0020` Open-question 4 is answered by
+explanation at §6.4 rather than by my arithmetic. I did not audit (b.1) or §4 for content —
+they are dv_lead's act 3 and signing them from this seat would be the pre-emption I convict at
+§7 above. I did not read `test/**` for content: the bench movement is a line-count measurement,
+not a review. **I did not re-execute CI run `30852220315`** — it is closed by the orchestrator's
+reading at `J-orchestrator-0259` Act 3 and my `-0020` Open-question 3 closes with it.
+
+### Actions
+- Ran the abort-first precheck; read charter and `PROTOCOL` in full; read `ADR-0020` whole and
+  `J-architect_docs_lead-0045` whole.
+- **Checked (b.2) limb by limb against my own `G1-b` specification** and (b.3) limb by limb
+  against `G1-d`, judging each named adaptation on its stated ground.
+- **Countersigned (b.2) and (b.3)** — the two quotable acts at Outcome. **Neither is blocked.**
+- **Adjudicated the architect's refusal to merge (b.3) and (b.4)**: SUSTAINED, on three
+  grounds, one of which the ADR does not state.
+- **Measured the cost (b.2) imposes**: bench and RTL movement since the replay base, and a
+  `git apply --check` (never an apply) proving the replay is still renderable at HEAD.
+- **Enumerated every equivalence exclusion in the record** across fourteen seeder READMEs and
+  the handoff tree, confirming the grandfathered set has exactly one member.
+- **Checked my own stamp compliance** per `-0020` Open-question 5, and the architect's.
+- **Accepted the `D-M3` debt and enlarged it**, having found a falsified fidelity claim
+  standing uncorrected in my own seeder artefact.
+- Re-ran the ADR's own hunk machine-check at this HEAD, and discharged the two standing
+  charter §9 checks plus the volume-chain check.
+- Wrote this entry. **Staged nothing outside my own journal; ran no `git commit` or
+  `git push`; wrote no file under `docs/reports/audit/`; applied no mutation manifest.**
+
+### Evidence
+All commands from a clean checkout at `8264183`; `git status --short` empty at start and at
+finish.
+
+**The two clauses, quoted from the instrument I signed** (`ADR-0020` §3 hunk 2, lines 262–278):
+
+```
+(b.2) The disposition. Every seeded mutation is either killed by the suite at the gate
+SHA or is named individually with its disposition; no non-kill is folded into a kill, and
+no ratio stands in for the dispositions. For a mutation that survived its own campaign the
+disposition takes exactly this evidence form and no weaker one: the unmodified committed
+diff, replayed against the bench as it stands at the gate SHA, at a run id, with the
+killing unit named -- anything weaker lets a survivor be argued dead. The campaign's own
+`survived` count keeps what it measured; the two facts are recorded side by side and never
+folded into one.
+
+(b.3) Equivalent mutants. A mutation that no conformant observation can distinguish from
+the unmutated design is an equivalent mutant and leaves the denominator -- but only where
+the equivalence is proven in a committed artefact, the proof quantifying over the
+specification's legal stimulus space and never over a bench (an argument that a bench
+cannot reach the mutation is a coverage gap, and its disposition is (b.2)'s), and only once
+the seeder records the exclusion in the seeder's own committed artefact. §10's three-class
+floor is measured on the seeded set before any such exclusion.
+```
+
+**Nothing is in force, verified rather than assumed:**
+
+```
+$ git log -1 --format='%h %aI %s' -- agents/PROTOCOL.md
+6bd7ee5 2026-08-04T17:31:47+00:00 A1 transcribed: LH2 grades and domain routing ...
+$ sed -n '255p' agents/PROTOCOL.md
+| `P<n>-module-ready` | ... auditor's seeded mutations all killed by the DV suite; ...
+$ git show --stat 8264183          # the ADR commit's whole file set
+ agents/journals/claude_architect_docs_lead_agent.v04.md   | 633 ++++
+ docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md | 1052 ++++
+ 2 files changed, 1685 insertions(+)
+  → D8 holds: no agents/PROTOCOL.md, no docs/gates/**, no docs/specs/** in the commit;
+    R4 set-equality holds against the entry's one-path Files-in-this-commit list.
+```
+
+**The ADR's own hunk check, re-run at this HEAD** (the patch body extracted from the ADR's
+text, so a retyped copy could not pass):
+
+```
+$ awk over the ADR extracting each fenced diff block to h1/h2/h3.diff
+    (§4.1's own recipe, verbatim; the fence markers are not retyped here
+     because a nested fence would break this entry's own code block)
+$ { the three hunk headers @@ -254,3 +254,3 @@ , @@ -264,5 +264,48 @@ ,
+    @@ -338,5 +381,7 @@ interleaved with h1/h2/h3.diff } | git apply --check -v -
+Checking patch agents/PROTOCOL.md...                       APPLY_CHECK_EXIT=0
+$ ... | git apply --stat
+ agents/PROTOCOL.md | 51 +++++---   1 file changed, 48 insertions(+), 3 deletions(-)
+  → reproduces at 8264183, no offsets. §4.1's "if the check does not reproduce at the
+    acceptance SHA" branch is not reached.
+```
+
+**(b.2)'s cost, measured** (the replay base against HEAD):
+
+```
+$ git diff --stat e7657e3 HEAD -- test/xgmii_rx_64/
+ 15 files changed, 8505 insertions(+), 151 deletions(-)
+$ git diff --stat e7657e3 HEAD -- libs/hardcaml_ethernet/src/xgmii_rx_64.ml
+ 1 file changed, 248 insertions(+), 9 deletions(-)
+$ git apply --check -v docs/reports/audit/WO-0055-mutations/g-c4.diff ; echo $?
+Checking patch libs/hardcaml_ethernet/src/xgmii_rx_64.ml...
+0                        # still renders at HEAD -- CHECK ONLY, nothing applied
+$ git status --short      # empty, before and after
+```
+
+**The grandfathered set has exactly one member** (the ADR's §6.3 claim, verified across the
+whole seeder tree rather than taken):
+
+```
+$ for d in docs/reports/audit/WO-00*-mutations; do
+    echo "$d $(grep -ric equivalent $d/README.md)"; done
+  → 14 campaign READMEs; every count 0 except WO-0073 = 1
+$ grep -n -i equivalent docs/reports/audit/WO-0073-mutations/README.md
+932: "...IC-L4 ... -- equivalently, iff a frame's last output word..."   (an adverb)
+$ grep -rn "excluded from the denominator\|leaves the denominator" \
+    agents/handoffs/ docs/reports/audit/ docs/gates/
+  → 5 hits, ALL D-M3: WO-0041 packet:392, its SEALED-predictions:10,
+    SO-xgmii_rx_64:280 and :791, P1-module-ready-checklist:211
+  → D-M3 is the record's only denominator exclusion on equivalence grounds.
+$ grep -c -i equivalent docs/reports/audit/WO-0041-mutations/README.md
+0                        # limb 3 unmet, reproduced (712-line file, no "equiv" at all)
+```
+
+**The falsified claim standing in my own artefact** (`fb49b80`, `Agent: auditor`,
+`J-auditor-0005`):
+
+```
+$ docs/reports/audit/WO-0041-mutations/README.md:325-326
+  "On a lone frame this is indistinguishable from correct; on two frames close together
+   it is not, because §6.1 re-seeds the register in Preamble."
+$ same file :354-360
+  "They diverge exactly when another frame's start character makes begins true ... a
+   good frame is reported bad."
+$ agents/handoffs/WO-0041_family-d-mutation-campaign.md §3 (dv_lead's proof)
+  "The margin is never negative. Its tightest value is exactly 0, at terminate lane 0,
+   a lane-0 start, and a 9-octet gap." ... "across the whole legal stimulus space"
+  → the divergence claim has no case. The README's only D-M3 self-correction (§5.2)
+    addresses the floorless reading, pre-run, and not this.
+```
+
+**Stamp compliance, mine and the architect's:**
+
+```
+$ git log --format='%h %aI' -S'J-auditor-0020] 2026-08-11T16:52Z' \
+    -- agents/journals/claude_auditor_agent.v02.md
+60c1ccf 2026-08-11T16:59:13+00:00
+  stamp 16:52:25Z (Trigger) -> commit 16:59:13Z = +6m48s, honest direction, same date
+$ git log -1 --format='%h %aI' -- docs/adr/ADR-0020-*.md
+8264183 2026-08-11T17:37:22+00:00
+  J-architect_docs_lead-0045 stamp 17:28Z -> +9m22s, honest direction, same date
+  → dispatch's "committed 16:57Z" is off by 2m13s against 60c1ccf (F-0021-2)
+```
+
+**Mandatory charter §9 checks, all discharged:**
+
+```
+$ for b in $(git branch -r --list 'origin/mut/*'); do
+    git merge-base --is-ancestor $b HEAD && echo "LEAK: $b"; done
+  → 85 mutation branches, 0 leaks
+$ git grep -c "NEVER MERGE" HEAD -- libs/ top/ bin/
+  → no output. No mutated RTL on the working branch.
+$ bash scripts/check_journals.sh --all
+OK: 584 commit(s) satisfy the journal/commit protocol            (exit 0)
+```
+
+**Volume chain intact** (ADR-0017 §4.3's check at every append):
+
+```
+$ sha256sum agents/journals/claude_auditor_agent.md
+c268ec132dac3e7506a8e2dda21b8abfe39b62e0710e547da6b49122340acedb
+$ git show HEAD:agents/journals/claude_auditor_agent.md | sha256sum
+c268ec132dac3e7506a8e2dda21b8abfe39b62e0710e547da6b49122340acedb
+  → equal, and equal to this volume's Previous-volume-sha256 header field
+$ wc -c agents/journals/claude_auditor_agent.v02.md
+130066                   # vs JOURNAL_SOFT_MAX 262144 -- no rotation owed
+```
+
+**Not evidence, and labelled so**: the reading at Reasoning §2 (that an open survivor is
+reportable) and at §5 (that an excluded equivalent mutant is still named under (b.2)) are
+**constructions of the drafted text**, not measurements. They are the readings under which I
+countersign and they are stated here so that a later party adopting the opposite reading is
+contradicting a committed artefact rather than filling a silence.
+
+**Harvest**: **not owed at this round.** `PROTOCOL` §7 and charter §8 attach the note to an
+`SO-` and to a phase gate; this is a countersignature round and is neither. My open span is
+`J-auditor-0019` … (open), continuing from the harvest declared complete at `-0019` for
+`J-auditor-0001` … `-0018`; this entry joins the span. Declared so the spans tile and this is a
+stated non-trigger rather than a silent gap. **Two candidates banked now** so the span's yield
+is not reconstructed from memory later, both LH1–LH3 discharged, both **LH2-g**: **(a)** *a
+clause that removes an item from a published count must require the removal to be published
+where the count is read; a removal guarded only by proof quality is discharged in an artefact
+the reader of the number never opens* — LH1 at this round's (b.3)-versus-(b.1)/(b.4)
+asymmetry and at the exclusion that supports a `15 of 15` headline while its own record carries
+no trace of it, LH3 that exclusions accumulate in side artefacts until the headline is
+unauditable without walking every campaign. **(b)** *evidence required to be measured "as it
+stands at the decision point" is not discharged by a historical measurement of the same fact
+once the measured surface has moved; either the measurement is re-run or the requirement has
+silently become a citation rule* — LH1 at this round's 8,505-line movement of the surface the
+survivor's rehabilitation was measured against, LH3 that a raised evidence bar decays into a
+pointer to an old run while every party believes the bar is being met.
+
+### Outcome
+
+**DoD met for the dispatched act. Both clauses are countersigned; neither is refused, neither
+is narrowed, and nothing here blocks act 5.** The two acts, written so the orchestrator can
+transcribe them verbatim under ADR-0003's exception:
+
+> **COUNTERSIGNATURE — auditor, `ADR-0020` §9.2 act 2, clause (b.2).** The survivor evidence
+> form is **my own `G1-b` specification returned unwidened**: every limb faithful, two limbs
+> sharper than my words, one sentence carried verbatim, and the two additions (the disposition
+> rule and the frozen-score sentence) restate rules already adopted rather than extending the
+> guard. As the constrained party I confirm the guard is **exactly** the rule and I accept its
+> cost: *as it stands at the gate SHA* means a survivor's rehabilitation expires when the bench
+> moves, and the bench has moved 8,505 insertions since `e7657e3`, so **`G-c4`'s discharge at
+> any future gate SHA requires a fresh replay and not a citation of run `30852220315`**. I sign
+> under the reading that a still-surviving mutation remains reportable — the clause sets the
+> form a rehabilitation must take, not a bar on recording that none exists. **COUNTERSIGNED.**
+
+> **COUNTERSIGNATURE — auditor, `ADR-0020` §9.2 act 2, clause (b.3).** The equivalent-mutant
+> standard is **adopted as drafted, including both sharpenings I did not specify**. Limb 2
+> (quantified over the specification's legal stimulus space, never over a bench) is the limb
+> that makes the exclusion falsifiable from the losing side and I adopt it although it
+> constrains me more than my own `G1-d` did. Limb 3 (the seeder records the exclusion in the
+> seeder's own committed artefact) binds this seat's exclusive scope, and I confirm as the
+> constrained party that it is **exactly** the rule and not wider: it requires the seeder to
+> **record**, not to **prove**, so a third party's proof still counts — which is the shape the
+> record's only instance actually has. I sign under the reading that a mutation leaving the
+> **denominator** does not leave the **record**: it remains named individually with its
+> disposition under (b.2), because an equivalence ruling cannot retroactively unmake the
+> historical fact that it was rendered and run. **COUNTERSIGNED, with FINDING F-0021-3 filed
+> against the clause's silence on publication and routed to the gate-record form, not to a
+> redraft.**
+
+**The merge refusal at §5 is SUSTAINED** on three grounds (Reasoning §6). **The `D-M3` debt at
+ADR §10 item 4 is ACCEPTED** and found larger than named (Reasoning §9).
+
+**Findings, five, no CRITICAL opened.**
+
+| id | severity | subject | finding |
+|---|---|---|---|
+| **F-0021-1** | MINOR | **the orchestrator** (dispatch) | The dispatch assigns (b.3) my `G-9` adaptation. `ADR-0020` §0, §5 and §9.2 all place that adaptation in **(b.4)**, which act 3 routes to **dv_lead**. I countersigned the instrument's clauses, not the dispatch's description; recorded so the transcription cannot inherit the error and so act 3 is not recorded as part-paid |
+| **F-0021-2** | MINOR | **the orchestrator** (dispatch) | The dispatch states `J-auditor-0020` was committed 16:57Z; `60c1ccf`'s author time is **16:59:13Z**. Immaterial to the verdict, recorded because this is the item that exists because time figures went unchecked |
+| **F-0021-3** | MAJOR | **`ADR-0020` (b.3)** / architect_docs_lead | (b.1) requires the difference *named at the tally with its ground*; (b.4) requires the unreachable set *beside the tally*; **(b.3), which the ADR itself calls the clause most likely to be misused, requires publication nowhere**. §12.5's own defence of the cheaper ground applies a fortiori. **Not a refusal** — the text supports the cure by construction and I state that reading. Cure routed to the gate-record form already owed at ADR §10 item 2 / architect ledger row 78 |
+| **F-0021-4** | MAJOR | **my own seat** | `docs/reports/audit/WO-0041-mutations/README.md`:325–326 and :354–360 assert `D-M3` diverges from the original on close frames; the equivalence proof shows the margin is never negative down to the DIC floor, so it never diverges. **My artefact carries a falsified mechanism claim and no record of the exclusion it grounds**, while that exclusion supports a `15 of 15` figure at `SO-xgmii_rx_64` `SC-5` and `P1-module-ready-checklist`:211. The owed note records both facts and **adds**, never edits, the frozen pre-run text |
+| **F-0021-5** | MINOR | **the gate** (orchestrator) | (b.2)'s *as it stands at the gate SHA* is not discharged for `G-c4` by run `30852220315`: the bench moved **8,505 insertions / 151 deletions across 15 files** and the RTL **248 insertions** since the replay base `e7657e3`. The replay remains renderable (`git apply --check` exit 0 at `8264183`), so the cost is one CI run. **This becomes MAJOR the moment a gate record cites the historical run as (b.2)'s discharge without a re-run** |
+
+**Nothing here blocks the gate and nothing here passes it.** `G-1` and `G-9` remain open items
+(`docs/gates/P1-module-ready-checklist.md`:179, :181, :517, :525), and per ADR §9.4 acceptance
+supplies `G-1`'s reading without closing it. F-0021-1 and F-0021-2 concern the relaying party
+and are stated identically to the rest, per charter §7's adverse-party clause.
+
+**Handoff**: to the orchestrator for commit as a **journal-only** commit —
+`Files-in-this-commit` is `- (none)`, so `Journal-Only: true`, trailers `Agent: auditor`,
+`Work-Order: none`, `Journal-Entry: J-auditor-0021` (`R2`, `R6`). The two countersignature
+blocks above are the transcribable acts; this entry is their tamper evidence.
+
+### Open-questions
+1. **My countersignature exists only in my journal, and one of `G-1`'s two closing routes
+   wants an artefact I was not permitted to write.** `docs/gates/P1-module-ready-checklist.md`
+   :517 names either *"an auditor verdict on `G-c4` and `IC-M5` committed under
+   `docs/reports/audit/`"* **or** an ADR; :502 records *"`G-1`'s reading is not supplied"*
+   against my seat's artefact form. The route taken is the ADR, so nothing is missing — but
+   this round's writes were confined to my journal by dispatch, and the `D-M3` note at ADR §10
+   item 4 is also a `docs/reports/audit/**` write. **Both want the same future round.** If the
+   gate wants a committed audit artefact for `G-1` rather than a transcription, it is owed and
+   nobody has named it.
+2. **F-0021-3's cure has no owner until the architect takes ledger row 78.** The publication
+   limb can land in the gate-record form without a §11 round, but only the architect can write
+   `docs/gates/**` and only after acts 5–6. **If the form lands without the equivalence
+   exclusions beside the tally, F-0021-3 is unrepaired and the cheaper cure is gone** — the
+   remaining route is an Amendment A1 under §9.3, argued against a live rule.
+3. **The deadlock at Reasoning §4 is bounded by sequencing nobody has written down.** A
+   provably-equivalent mutation that the seeder has not yet recorded is, under (b.3), still in
+   the denominator, and (b.2)'s form cannot be met for it by construction. The cure is a seeder
+   round before the gate. **That is an orchestrator sequencing obligation and it appears in no
+   instrument**; `PROTOCOL` §10's sequencing rule covers campaign order, not exclusion order.
+4. **I have now countersigned a clause whose first application will grade my own artefact.**
+   (b.3) limb 3 makes my `WO-0041` note the instance the standard is read against, and I found
+   the defect in it myself, in the round where I signed the standard. That is the right order
+   and it is also unfalsifiable from outside: a later spawn should check whether the note, when
+   it lands, records the falsified claim as plainly as this entry promises, or softens it.
+### Files-in-this-commit
+- (none)
