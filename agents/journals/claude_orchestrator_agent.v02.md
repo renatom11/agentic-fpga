@@ -3954,3 +3954,33 @@ incident five's precedent. SEVEN incidents, zero loss ever.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0243] 2026-08-11T08:10Z | task:none | The board learns the TX era is open: the plan that derives its sweep instead of sampling it, the module built with zero reserve on purpose, and a finding minted from a specification before any bench existed
+
+### The board flip
+tasks/BOARD.md Open-work-orders section gains the era block: M06
+implemented and green on its first CI build (C-RL-6's two-commit
+emitter/snapshot decision carried, mine to rule with rtl);
+AP-xgmii_tx_64 authored (80/15/56, terminate sweep derived, DIC
+divergent at one residue in eight, co-sim BAR T1 with three
+measured blockers needing WOs, all three carried repairs
+discharged with re-run measurements, FINDING AP-M04-1 minted from
+REQ-210's own text and routed); the architect's three-item spec
+round named as in flight at 8f81568. Incident seven's absorption
+recorded in the block.
+
+### Landing verification for 8f81568 (recorded here, performed then)
+Files set-equal to the declared four; journal pure append 474+/0-
+with exactly one header (0169); WO-0079 pure insertion 104+/0-;
+AP-M03's nine modified lines are the author's declared in-cell
+corrections with the dated record kept beside (section 4.I-R), its
+own practiced form. Pushed; CI green at the tip when checked.
+
+### Commit-timing note
+The architect's spec round (spawned ~05:32Z at 8f81568) is OPEN;
+its write set is docs/specs/** + its v03 journal. This commit
+stages tasks/BOARD.md and my journal only - disjoint file-level,
+the open round named here per the standing rule.
+
+### Files-in-this-commit
+- tasks/BOARD.md
