@@ -1012,3 +1012,345 @@ normative sentence moved. **Handoff**: the orchestrator, for commit under
 
 - docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md
 - docs/specs/SPEC-TEMPLATE.md
+
+## [J-architect_docs_lead-0048] 2026-08-11T19:56Z | task:none | The governance flip its own round could not take is taken on the routed authority, the pointer lands as a pointer rather than a second copy — and the sponsor gets the document the rules were always missing: every mechanism beside the failure it exists against
+
+### Trigger
+
+Orchestrator dispatch, **one round, three acts**: the two follow-ups this seat's
+act-7 return named at `J-architect_docs_lead-0047` Open-questions 1 and 3, plus a
+**sponsor commission relayed through the orchestrator** — a project-agnostic
+process document describing the whole organisation, its artifacts and its
+disciplines, with **every mechanism carrying the class of failure it exists to
+prevent**. The commission's stated diagnosis of why the sponsor's earlier
+framework exports did not take: *rules without case law read as ceremony.*
+
+**Abort-first precheck, run before any file was opened.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # 64d8c1126a6a1936952905b4f601d782cedf53ca
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 19:39:34 UTC 2026
+
+HEAD is `64d8c11` — this seat's own act-7 commit and the SHA the dispatch
+expected — and the tree is clean, so neither branch of the abort procedure was
+reached and no forensic refusal was owed. **One declared sibling: the
+orchestrator.** Nothing else was declared and nothing else was dirty. **HEAD did
+not move during this round** (re-checked at hand-off, `64d8c11` still), so unlike
+the last two rounds there was no mid-round sibling landing to verify.
+
+**Honest stamp**: `date -u` at authoring — `Tue Aug 11 19:56:52 UTC 2026` — the
+header stamp being that reading truncated to the minute, per the program-wide
+ruling at `J-orchestrator-0251`.
+
+**Rotation check, made and not needed**: volume 05 stood at 65,511 bytes before
+this append, against a 262,144-byte soft threshold (ADR-0017 D4). No rotation.
+
+### Inputs
+
+Read this round, in order, at `64d8c11`:
+
+- `agents/charters/architect_docs_lead.md` and `agents/PROTOCOL.md` (whole) —
+  mandatory first actions. The protocol was read **with** the §7 Mutation record
+  applied, which is the text act 1's correction had to describe accurately.
+- `docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md` — §0 whole,
+  §7.4, §9.2, §9.5, §10.
+- `docs/adr/ADR-0015-…` §0 — the status-flip precedent the dispatch named.
+- `J-architect_docs_lead-0047` whole — this round's two follow-ups are its own
+  Open-questions 1 and 3, including the ready-to-paste `Status` line.
+- `docs/specs/requirements.md` §13 preamble and the `C-43` rows; the landed
+  `SPEC-TEMPLATE.md` §13 rule the pointer points at.
+- `docs/gates/P1-module-ready-checklist.md` §0.1, §0.2, §9 — read to establish
+  what acceptance did **not** close, and read-only.
+- For act 3, the record itself: `ORG_CHART.md`, `docs/SPONSOR.md`,
+  `agents/handoffs/README.md`, `docs/gates/lessons-harvest-block.md`,
+  `docs/gates/P1-module-ready-checklist.md`, the headers of ADR-0002, -0016,
+  -0017, -0018, -0019, `scripts/policy.sh`, and the generic shell at
+  `/workspace/generic-agentic-fpga-org/` (`README.md`, `BOOTSTRAP.md`,
+  `docs/LESSONS.md`, the six packet templates). The shell is **outside this
+  repository and was read only** — nothing was written there and nothing from it
+  was copied in.
+- For the museum's provenance: `J-orchestrator-0251` (the stamp ruling),
+  `J-orchestrator-0260` (the one-commit lesson), `J-auditor-0022` §7-8 (the
+  warning-versus-refusal reasoning), ADR-0019 §5-6, ADR-0020 §6.4-§6.5 and
+  §12.8, and the harvest yield in `docs/federation/outbox/SO-xgmii_rx_64.md`.
+
+### Reasoning
+
+**1. Act 1 — the flip, and why it needed a fourth element the precedent did not.**
+The dispatch routed the act and named its authority, so the objection that stopped
+it last round (Reasoning 8c at `-0047`: an unrouted governance flip performed in a
+round about routing would refute the round) is discharged. I verified both acts at
+their own commits before editing rather than accepting the dispatch's summary:
+`dde0511` carries `Journal-Entry: J-orchestrator-0261` journal-only, `a76e485`
+carries `-0262` and stages `agents/PROTOCOL.md` at 69 insertions / 3 deletions.
+
+`ADR-0015`'s form supplied three of the four elements: state the flip with its
+authority; state **what the acceptance decided**; state **what it did not decide**
+and was never the accepting party's to decide; and name where the file was
+proposed, so the prior status is preserved rather than erased. All four are in the
+new `Status` line, and the "did not" list is the substantive half — §7's rule takes
+force from its template landing and not from acceptance, §8 binds only this seat,
+and the gate row is untouched.
+
+**The fourth element is mine and is marked as an addition.** `ADR-0015` had a
+`Status` line and no §0; this file has a **status table** and a **signature-traffic
+table**, both written in the present tense at earlier moments, both now stale. The
+tempting move is a sweep. I refused it: rewriting §9.5's *"The delta, marked rather
+than assumed paid"* table would retro-edit an accurate record of what was owed at
+the moment it was written, which is the exact act this instrument's own §7
+Mutation record forbids of a campaign score. So instead the `Status` line says the
+deltas are paid, names the two entries and commits that paid them, and states one
+reading rule: **every other status sentence in this file is dated to its own
+landing, and §0 is the only place the current status is stated.** One rule beats
+a sweep because a sweep has to be repeated at every future flip, and the round
+that forgets it produces exactly the defect being repaired.
+
+**2. Why §0's table is preserved and the prose beneath it is corrected.** They are
+different objects. The table states, per clause, a status *at a named landing*
+together with the act that would change it — every row of which is publicly
+checkable, so the table is honest as history and I marked it as history rather
+than rewriting it. The prose beneath was unconditional present tense (*"§7 clause
+(b) **still** reads …"*) and was falsified by `a76e485`; there is no reading under
+which it survives. The correction carries an **italic marker recording what the
+paragraph used to say and what falsified it** — the form this seat established at
+`docs/gates/lessons-harvest-block.md` (ledger item 44, `J-architect_docs_lead-0043`)
+and at `requirements.md` §13's date caveat. A governance file whose status prose
+can go stale without a mark is this file's own §1.2 conviction one level up.
+
+**3. What act 1 deliberately does not claim.** The `G-1` gate row is **still
+open** and the corrected prose says so in stronger terms than the original: not
+closed by a proposing ADR, nor a countersigned one, **nor an accepted and applied
+one**. I also state that the gate checklist's §0.1 still quotes the pre-amendment
+cell verbatim — measured, not assumed — and that repairing it is an act on that
+file. Both owed acts (§10 items 1–2) stay owed and visible. **I did not open
+`docs/gates/**`**: it is inside my write scope but outside this dispatch's named
+paths, and the narrowing is legitimate. A debt carried visibly for one more round
+beats a debt discharged outside the permission that commissioned it — the same
+ruling I made at `-0047` about this round's act 2, which the dispatch then opened.
+
+**4. Act 2 — the pointer lands as a pointer, and the deviation is declared.**
+§7.4's source text promised `requirements.md` §13 *"a one-line pointer"*. What
+landed is a short paragraph, and the excess is deliberate: a bare cross-reference
+would not carry the **ground** that makes the rule bind here (this document is not
+a module specification, and its own preamble is what establishes that a row is the
+requirements-side counterpart of a spec diff), nor name the operative test. I
+record the deviation rather than claiming compliance with the word.
+
+**What I refused to do is the more important half: I did not restate the rule.**
+The pointer names the rule's home, names the `C-43` test the table already applies,
+and says in terms that the rule is *deliberately not restated here, since two
+copies of one rule drift while each stays internally consistent*. That is this
+program's own second-oldest harvested lesson, and a pointer that quietly becomes a
+second normative copy is how the drift starts. §7.4's ground for the pointer — *a
+rule that binds one and not the other would be discovered the hard way* — is
+satisfied by a reference; it does not require a duplicate.
+
+**5. Act 3 — the commission, and the one thing that makes it different from what
+already exists.** A generic shell already exists outside this repository with the
+charters, the protocol, the scripts and a 931-line `LESSONS` file. The commission
+is not a second copy of any of those. `LESSONS` is a rules-with-incidents index
+whose entries are permalinked into this program and whose header says *"nothing
+here is normative"*; the protocol is normative and carries almost no case law. The
+gap between them is exactly the artefact the sponsor described: **a document in
+which each mechanism appears beside the class of failure it exists against**. So
+the failure class is not commentary in this document, it is structural — every
+mechanism in all six parts carries one, and §6.3 says out loud that the failure
+classes *are* the export.
+
+**6. The anonymisation standard I applied, and how it was checked.** The commission
+forbids project content. I took that further than ids: **seats are named by
+function** (specification lead, implementation lead, verification lead,
+orchestrator, auditor, worker, sponsor) rather than by this program's seat names,
+because a seat name like the ones in this repository is itself domain-flavoured and
+would read to an adopter as a role they must have rather than a function they must
+separate. Concrete episodes appear only in the anonymised-pattern register the
+dispatch prescribed. The result was **measured, not asserted**: a census for domain
+nouns, packet ids, requirement ids, entry ids, seat names and commit SHAs returns
+**zero**, and a second net caught six occurrences of a verification-domain noun
+(*bench*) plus one of *mutation manifests*, all rewritten to `suite` / `defect
+manifests`. The escalation-class labels `E1`–`E6` are the only identifier-shaped
+tokens left, deliberately: they are process, the dispatch's own structure names
+them, and they carry no project content.
+
+**7. The museum: seven items verified at the record, one restated, two added.**
+The dispatch named seven generalised lessons. I did not transcribe the phrasings —
+I went to the artefacts and wrote each from what actually happened, which changed
+one of them.
+
+- *Remedies decay without mechanical checks* — grounded in the stamp decay and the
+  measurement that followed it, and I kept the auditor's honest bound: the warning
+  does not buy honesty, it buys **latency**.
+- *A column's name is not its definition* — grounded in `FINDING REC-3`/`REC-4` and
+  the `sealed`/`scoreable` split, with the cure that generalises (open list of
+  grounds, closed naming duty) rather than the third patch.
+- *A relay can demonstrate the hazard it reports* — the dropped word in the relay
+  of a fidelity finding, kept precisely because nothing turned on it.
+- *Timestamps are testimony, not sequence* — the eight divergent dated rows, with
+  the two rulings that came out of it (no row edited; honest stamps even when they
+  read early).
+- **Restated.** The dispatch's *"a guard that forecloses conduct is **blocked**
+  differently than one that routes traffic"* is written as *"is **enforced**
+  differently"*. *Blocked* presupposes the answer for one of the two families,
+  and the lesson's whole content is that you must ask which family a rule belongs
+  to **before** choosing a mechanism — a routing rule cannot be blocked at all,
+  because its failure mode is silence, and silence needs an owner, a trigger and a
+  visible debt. **This is the museum's weakest-grounded item and I say so in
+  Open-questions**: I derived it from the enforcement-posture design across several
+  rounds rather than from one convicted episode.
+- *Repairs that verify each other belong in one commit* — the closing lesson of the
+  arc at `J-orchestrator-0260`, with the neighbouring-state evidence rule beside it.
+- *The author grading its own homework is the root class* — written as the root and
+  given **six disguises**, because the plain form is easy to prevent and the
+  disguises are what actually occur. It closes with the general test: ask who is
+  made worse off when a control fires and whether that party controls whether it
+  fires.
+
+**Two added** (§5.8), both from this record and both cheap to state: *a
+qualification drawn from an author's own practice describes the author* — the
+hazard I flagged against my own gloss last round — and *an absolute prohibition is
+crossed in a task's opening moves, by habit, before its text has been read*, which
+is why prohibitions belong at the top and their enforcement at the boundary.
+
+**8. One structural addition to the commissioned outline, with grounds.** The
+dispatch gave five parts and invited adaptation. I added a sixth, *Adopting this*,
+because the commission's own diagnosis — that earlier exports failed — implies the
+question *what actually transfers?*, and a reference that answers every "how does
+it work" and not that one leaves the adopter to import the whole rule set on
+faith. §6.1 therefore separates what transfers directly from what must be
+re-earned, and states the one thing that must never be imported as a claim: any
+statement that a control is mechanically enforced. Check it in your own machinery
+before repeating it.
+
+**9. What this round did not touch.** No `agents/PROTOCOL.md`, no
+`docs/gates/**`, no frozen specification's normative sentence, no gate signature,
+no enforcement script, and nothing in the external shell. Three files, all inside
+this seat's write scope. **No harvest note is owed**: this is neither a module
+sign-off nor a phase gate (charter §8, ADR-0018), and the span since `-0047` will
+be mined at the next trigger.
+
+### Actions
+
+- Ran the abort-first precheck; verified `dde0511` and `a76e485` at their own
+  commits before opening any editable file.
+- **Act 1**: replaced `ADR-0020`'s `Status` bullet with the accepted-and-in-force
+  statement in `ADR-0015`'s form, plus the reading rule for the file's other
+  tense-bearing sections; marked §0's table as dated to this file's landing and
+  changed its column header accordingly; replaced the two falsified paragraphs
+  beneath it with the current state, an italic marker recording what they said,
+  and the restated statement of what acceptance did **not** close.
+- **Act 2**: landed the `docs/specs/requirements.md` §13 preamble pointer,
+  attached to the sentence that grounds it, naming the rule's home and the `C-43`
+  test and deliberately not restating the rule.
+- **Act 3**: authored `docs/PROCESS.md` — 1,445 lines, six parts, every mechanism
+  carrying its failure class; ran the anonymisation census twice and rewrote the
+  seven occurrences the second net caught.
+- **No `git add`, no `git commit`, no `git push`.** This seat does not operate git
+  and did not.
+
+### Evidence
+
+All commands from a checkout of `claude/fpga-hardcaml-agent-orchestration-37ceyf`
+at `64d8c11`; HEAD did not move during the round.
+
+1. **The two acts act 1 cites, verified before the flip:**
+
+       git log -1 --format='%(trailers)' dde0511   # Agent: orchestrator / J-orchestrator-0261 / Journal-Only: true
+       git show --numstat --format='' a76e485      # 69  3  agents/PROTOCOL.md
+       git log -1 --format='%(trailers:key=Agent)%(trailers:key=Journal-Entry)' 78f83d6   # auditor / J-auditor-0022
+       git log -1 --format='%(trailers:key=Agent)%(trailers:key=Journal-Entry)' 6019846   # dv_lead / J-dv_lead-0186
+
+2. **The corrected §0 prose is true of the constitution as it stands** — each
+   claim measured rather than transcribed:
+
+       grep -c "the auditor's seeded mutations dispositioned per \*\*Mutation record\*\* below" agents/PROTOCOL.md   # 1
+       grep -c "the disposition of every seeded mutation, each" agents/PROTOCOL.md                                   # 1
+       grep -c "auditor's seeded mutations all" agents/PROTOCOL.md                                                   # 0
+
+3. **The two things act 1 declines to claim, also measured:**
+
+       grep -c "auditor's seeded mutations all" docs/gates/P1-module-ready-checklist.md   # 1  (§0.1 still quotes the pre-amendment cell — owed act 1)
+       git diff --name-only -- docs/gates/ | wc -l                                        # 0  (that file untouched this round)
+
+4. **Act 2's pointer, and the rule it points at:**
+
+       grep -c "Countersignature on a post-freeze diff" docs/specs/SPEC-TEMPLATE.md   # 1  (the home, landed at -0047)
+       grep -c "Countersignature on a row of this table" docs/specs/requirements.md   # 1  (the pointer, this round)
+
+5. **`docs/PROCESS.md` anonymisation census — zero hits, run over the whole file:**
+
+       grep -cioE "hardcaml|fpga|\bNIC\b|\bRTL\b|ethernet|xgmii|\bUDP\b|\bITCH\b|verilog|REQ-[0-9]|WO-[0-9]|ADR-[0-9]|J-[a-z_]+-[0-9]|dv_lead|rtl_lead|architect_docs_lead|tb_writer|auditor_agent|\b[0-9a-f]{7,40}\b" docs/PROCESS.md
+       # 0
+
+   A second net (`stress|rx-|cycle|line-rate|latency|replay|golden model|co-sim|
+   hardware|synthes|waveform|simulat|bench|mutation`) returned seven substantive
+   hits, all rewritten; the four survivors are `replayed`/`replays` in their plain
+   English sense, `lifecycle`, and `latency` used to mean *delay before detection*.
+
+6. **Sizes and scope:**
+
+       wc -l -c docs/PROCESS.md                                    # 1445  82167
+       wc -c agents/journals/…v05.md                               # 65511 before this append (soft max 262144 — no rotation)
+       git status --porcelain | awk '{print $NF}'
+       # docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md
+       # docs/specs/requirements.md
+       # docs/PROCESS.md
+
+7. **Working tree at hand-off**: exactly three paths, all inside this seat's write
+   scope; `agents/PROTOCOL.md` and `docs/gates/**` read and never opened for
+   writing.
+
+### Outcome
+
+**All three acts discharged.**
+
+| act | delta | re-owes |
+|---|---|---|
+| 1 — the status flip | `ADR-0020`'s `Status` is **ACCEPTED and IN FORCE** with both authorising acts cited; §0's table marked as dated to this file's landing and preserved unedited; the two falsified paragraphs replaced, marked with what they said, and the un-closed items restated more strongly than before | nothing — the authority is `J-orchestrator-0261` and `-0262`, and the flip transcribes rather than decides. §9.5's table is left as written, per the reading rule the `Status` line now states |
+| 2 — the `requirements.md` §13 pointer | landed; §10 item 3 is now **fully discharged** — the residue named at `-0047` is paid | nothing — it points at a rule already countersigned and landed; it adds no normative text of its own |
+| 3 — `docs/PROCESS.md` | new, 1,445 lines: org shape and separation of duties; constitution and enforcement; artifact grammar; operating disciplines; failure museum; adopting. Every mechanism carries its failure class; zero project content, measured | nothing normative — the file is descriptive and amends nothing. Its **claims about this program's mechanisms** are open to correction by the seats that own them |
+
+**DoD**: three files, all in scope; the journal entry appended before the commit
+with a files list set-equal to the staged set; no protocol, gate checklist, frozen
+spec sentence, script or signature moved; no git operated. **Handoff**: the
+orchestrator, for commit under `Agent: architect_docs_lead`.
+
+### Open-questions
+
+1. **`docs/PROCESS.md` §5.5 is the museum's weakest-grounded item.** *A guard that
+   forecloses conduct is enforced differently from one that routes traffic* is
+   written from the enforcement-posture design across several rounds — the
+   review-enforced declarations, the warning-versus-refusal reasoning, the
+   owner-and-trigger form of the owed-acts ledgers — rather than from one incident
+   a reader can open. Every other museum item names a shape that happened. This one
+   names a design principle I believe is right and cannot pin to a single
+   conviction. **It is the item to attack first**, and the two seats best placed to
+   do it are the ones that argued both sides of the posture question.
+2. **The document asserts things about seats other than mine.** Its accounts of the
+   campaign discipline, the sign-off form, the seeding separations and the auditor's
+   structural position are drawn from those seats' own committed artefacts, but they
+   are *my* summaries and nobody has countersigned them. This is not a normative
+   instrument, so the countersignature rule does not bite — and a reference document
+   that misdescribes a seat's discipline is a defect whether or not a rule names it.
+   **I would rather have it read by the seats it describes than not.**
+3. **§7.4's word was not met and the deviation is declared, not cured.** It
+   promised `requirements.md` a *one-line* pointer and a short paragraph landed.
+   Either §7.4's word should be corrected to what the act actually requires, or the
+   pointer should be cut to a line. It is not worth a round on its own; it is worth
+   carrying until a round opens one of the two files anyway.
+4. **Carried, and now one round older**: `F-0022-2`'s Amendment `A1` remains
+   undrafted on disk by design (`-0047` Open-question 2), and item 70's
+   second-instance test (`-0046` Open-question 4) took a third exhibit this round —
+   act 1 moved text inside an in-force instrument as a *status correction* and took
+   no ADR for it. If that limb is a licence rather than a rule, this entry is now
+   the third exhibit rather than the second.
+5. **`SPEC-TEMPLATE` §13 still has no countersignature column** (`-0047`
+   Open-question 5), unchanged by this round. The pointer landed today makes the
+   requirements side explicit and leaves the module-spec side carrying the
+   discipline in prose above a table that records nothing about it.
+
+### Files-in-this-commit
+
+- docs/PROCESS.md
+- docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md
+- docs/specs/requirements.md

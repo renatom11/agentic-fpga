@@ -1,18 +1,34 @@
 # ADR-0020: the gate asks the suite a question, not the scoreboard
 
-- **Status**: **PROPOSED. NOT IN FORCE.** Nothing in this file amends anything
-  at this landing. It is the §11(1) instrument for the `PROTOCOL` §7/§10
-  amendment the auditor's `G-1` adjudication commissioned (`J-auditor-0020`,
-  routed at `J-orchestrator-0259` Act 2 item 2). The clauses at §3–§7 below are
-  **source text**, and each names the act that puts it in force. §0 states, per
-  clause, what is and is not in force meanwhile.
-  **Redrafted pre-acceptance** at `J-architect_docs_lead-0046`, after all three
-  countersignature acts were paid (§9.5): (b.1) gains dv_lead's `FINDING REC-4`
-  cure, (b.2) gains the frozen-kill limb dv_lead offered against its own interest,
-  and both of dv_lead's stated readings are written into the clauses. **The
-  movement re-owes signatures and they are marked, not assumed paid** — the
-  auditor a **delta-signature** on (b.2), dv_lead on (b.1), on (b.2)'s adapted
-  word and on (b.4)'s seeding-gap sentence (§9.5).
+- **Status**: **ACCEPTED and IN FORCE** — accepted at `J-orchestrator-0261`
+  (`dde0511`), the §11(2) act, and the §3/§4 hunks applied to
+  `agents/PROTOCOL.md` at `J-orchestrator-0262` (`a76e485`). **Both acts, not
+  either**: that is what §0's table required of this flip, and both are checkable
+  in the log under `Agent: orchestrator`. This ADR was **PROPOSED** at
+  `J-architect_docs_lead-0045` and **redrafted pre-acceptance** at
+  `J-architect_docs_lead-0046` — (b.1) gaining dv_lead's `FINDING REC-4` cure,
+  (b.2) the frozen-kill limb dv_lead offered against its own interest, and both of
+  dv_lead's stated readings written into the clauses. It is the §11(1) instrument
+  for the `PROTOCOL` §7/§10 amendment the auditor's `G-1` adjudication
+  commissioned (`J-auditor-0020`, routed at `J-orchestrator-0259` Act 2 item 2).
+  **What acceptance put in force**: §3 and §4, and the two readings that ride §3
+  — §5's `G-9` answer as (b.4), and §6's equivalent-mutant standard as (b.3),
+  the latter prospective from the acceptance act (§6.3).
+  **What it did not**: §7's post-freeze countersignature rule, whose force comes
+  from its landing in `docs/specs/SPEC-TEMPLATE.md` §13 and the
+  `docs/specs/requirements.md` §13 pointer beside it, never from acceptance
+  (`J-architect_docs_lead-0047`, `J-architect_docs_lead-0048`); §8's item-70
+  ruling, in force for this seat's own practice from its own landing and for no
+  one else's; and `docs/gates/P1-module-ready-checklist.md` §9's `G-1` row, which
+  an ADR does not close (§9.4) and whose closing acts are still owed
+  (§10 items 1–2).
+  **The redraft's delta-signatures are paid**: the auditor at `J-auditor-0022`
+  (`78f83d6`), dv_lead at `J-dv_lead-0186` (`6019846`). §9.5's table records that
+  delta as *owed* because that is what was true when it was written; it is
+  preserved as written rather than restated, per §0.
+  **Every other status sentence in this file is dated to its own landing** — §0
+  says how to read them, and §0 is the only place this file's current status is
+  stated.
 - **Deciders**: **orchestrator** — the acceptance act (§11(2)), and the
   application of the §3/§4 hunks to `agents/PROTOCOL.md`, which is its scope and
   not mine (§6). **architect_docs_lead** — this instrument: the clauses' exact
@@ -56,7 +72,16 @@
 Stated first and per clause, because this file contains normative text that does
 not yet bind and a reader who meets §3 before §9 must not be able to mistake it.
 
-| clause | status at this commit | what puts it in force |
+**This section is dated to this file's own landing, and is kept that way.** The
+table states the status each clause held at the commit that introduced it,
+together with the act that would change it. Those acts have since been performed
+or are named as owed in the paragraphs below the table. **The table is not
+rewritten to match** — a status table edited each time the status changes stops
+being a record of how the change happened, and this file's whole subject is that
+a frozen measurement and a present state are different objects. The **current**
+status is the `Status` line above; the paragraphs below say what moved.
+
+| clause | status at this file's landing | what puts it in force |
 |---|---|---|
 | §3 — `PROTOCOL` §7 table row + **Mutation record** (b.1)–(b.4) | **NOT IN FORCE.** The constitution reads exactly as it did before this commit | the orchestrator's acceptance entry (§11(2)) **and** the hunk applied to `agents/PROTOCOL.md` under `Agent: orchestrator`. Both, not either |
 | §4 — `PROTOCOL` §10's reporting sentence | **NOT IN FORCE**, same act | as above |
@@ -65,18 +90,36 @@ not yet bind and a reader who meets §3 before §9 must not be able to mistake i
 | §7 — the post-freeze countersignature rule | **NOT IN FORCE.** Its dv-limb is dv_lead's own offer and binds nobody until it lands in `SPEC-TEMPLATE` §13; its generalised limb additionally owes rtl_lead a countersignature | the template edit at §10 item 3, after the traffic at §9.2 |
 | §8 — the item-70 ruling | **IN FORCE for this seat's own practice from this entry**, and for no one else's. It rules a question on this seat's own ledger about when this seat owes an ADR; it binds no other seat and amends no document | this file |
 
-**Until every one of those acts completes, the governing texts are the ones at
-HEAD.** `PROTOCOL` §7 clause (b) still reads *"auditor's seeded mutations all
-killed by the DV suite"*; §10 still reads *"every PASS reports kills N/N"*;
-`docs/gates/P1-module-ready-checklist.md` §9's `G-1` row is still open and this
-file does not close it (§9.4). **A gate item is not closed by an ADR that
-proposes its reading.**
+**Those acts have completed, and the governing texts moved.** `PROTOCOL` §7's
+`P<n>-module-ready` cell now reads *"the auditor's seeded mutations dispositioned
+per **Mutation record** below"*, and the **Mutation record** paragraph carrying
+(b.1)–(b.4) sits in §7 between *Phase hardening* and *Lessons harvest*; §10's
+reporting sentence now reads *"the disposition of every seeded mutation, each
+non-kill named and dispositioned"*. Both landed at `a76e485` — 69 insertions, 3
+deletions to `agents/PROTOCOL.md` — from §3's and §4's source text, applied on
+§4.1's own recipe by the seat that owns that file.
 
-**Nor by a countersigned one.** The three countersignature acts §9.2 routes are
-paid (§9.5) and their traffic produced a pre-acceptance redraft of (b.1), (b.2)
-and (b.4). Neither fact moves a row of this table: a clause countersigned,
-redrafted, and owed a further signature is **still not in force** until act 5 and
-act 6 both land.
+*Until `J-architect_docs_lead-0048` this paragraph read* **"Until every one of
+those acts completes, the governing texts are the ones at HEAD"** *and quoted the
+two superseded sentences as what §7 and §10* **"still"** *read; a second paragraph
+added that neither a countersignature nor a redraft moves a row of the table.
+Both were true when written and were falsified by `dde0511` and `a76e485` — the
+acceptance act and the application act. The correction is marked rather than made
+silently, because a governance file whose status prose can go stale without a mark
+is this instrument's own convicted defect at §1.2: a rule and the text that checks
+it disagreeing about what compliance is. The authority for the flip is the two
+orchestrator entries, not this seat's reading of them.*
+
+**What acceptance did not do, and it has not changed.**
+`docs/gates/P1-module-ready-checklist.md` §9's `G-1` row is **still open**, and
+this file does not close it (§9.4). **A gate item is not closed by an ADR that
+proposes its reading** — nor by a countersigned one, nor by an accepted and
+applied one. It closes when the gate record's own form is repaired and its row
+signed, which is §10 items 1–2, both still owed by this seat. That checklist's
+§0.1 additionally still quotes the **pre-amendment** cell verbatim: the quotation
+went stale at the instant hunk 1 applied, which is exactly what §10 item 1
+anticipated and named, and repairing it is an act on that file rather than on this
+one.
 
 ---
 

@@ -1215,6 +1215,18 @@ changed, whether the change is **editorial** (no conformant design or existing
 test changes meaning) or **behavioural**, and the ledger item or work order that
 commissioned it. A behavioural row additionally names its ADR.
 
+**Countersignature on a row of this table — pointer, not a second copy** (added
+2026-08-11, `J-architect_docs_lead-0048`). The rule deciding whether a post-freeze
+diff owes a countersignature is stated once, in `docs/specs/SPEC-TEMPLATE.md` §13
+(ADR-0020 §7), and **it binds a row here identically** — on the sentence above:
+this document is not a module spec, but a row here *is* the requirements-side
+counterpart of a spec diff, and a rule that binds one and not the other would be
+discovered the hard way (ADR-0020 §7.4). Its operative test is the one this table
+already applies — the **`C-43`** ruling that *the class and the countersignature
+question are different axes*, so the Class column decides nothing about the
+signature. Read the rule at its home; it is deliberately not restated here, since
+two copies of one rule drift while each stays internally consistent.
+
 **What the Date column means, and one measured caveat** (added 2026-08-11). A
 row's date is the UTC date of the **commit** that carried the diff — the only
 clock a later reader can re-derive (`git log`). That referent was never stated
