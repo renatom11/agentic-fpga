@@ -4153,3 +4153,37 @@ this commit's successor HEAD.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0249] 2026-08-11T14:30Z | task:none | The board learns module two's first cycle closed whole: a bug found by a first execution and closed by the next run - and the cycle's honesty ledger has every seat convicting itself of something, which is the design working
+
+### The board flip
+tasks/BOARD.md era block gains the cycle-close: the full chain
+WO-0080 → 13/13 → BOUNCE 15/1 → repair → first execution →
+strobe-monitor catch → D1 under the pre-committed table →
+BUG-0004 → priority-inversion diagnosis + seed fix + two derived
+routes → bench green → snapshots promoted prediction-held →
+CLOSED + ACCEPT 16/16 → thirteen rows discharged, 67/80
+outstanding, mutation-campaign precondition met. The honesty
+ledger written into the block: four seats' self-convictions
+including dv's WO-0080-6 (MATERIAL, its own unapplied repairs)
+and my ninth dispatch error.
+
+### Escalation received and owned
+dv escalated the spawn-prompt allow-list question to me as
+STRUCTURAL: packet section 17.1 allow-lists and my dispatch
+prechecks have twice produced forced violations the worker could
+only meet-and-disclose. The repair is mine to design (the
+dispatch template and the packet template must name the same
+instrument set; a tripwire is pre-committed for the next packet).
+Carried under my name with the next WO- dispatch as the closing
+event.
+
+### Landing verification for 70385cd
+Files set-equal to the declared four; journal pure append, one
+header (0176); BUG-0004 State CLOSED; WO-0080 State ACCEPTED;
+AP-M04 touched only by one appended section 9 change-log row as
+fenced. Incidents this arc: eight and nine, both caught by the
+designed precheck, zero loss ever.
+
+### Files-in-this-commit
+- tasks/BOARD.md
