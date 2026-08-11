@@ -286,3 +286,481 @@ landing and lands this entry as its own commit, ahead of `J-rtl_lead-0015`'s.
 ### Files-in-this-commit
 
 - (none)
+
+## [J-rtl_lead-0015] 2026-08-11T05:10:00Z | task:none | M06 `Eth_axis_rx` written from the frozen batch-C spec and implemented rather than decomposed: one holding register and one output register at ΔC = 3 of 3, the realignment applied to `tkeep` by the same two positions as to `tdata` so the module contains no octet counter at all, and the straddle finding SPEC-M06 §7 still carries named rather than designed around
+
+### Trigger
+
+Orchestrator dispatch, same spawn-head `61e0c76`, act 2 of the same window as
+`J-rtl_lead-0014`: M03 is signed (`SO-xgmii_rx_64.md` **PASS**, fourteen of
+fourteen, at `41fead6`), the sponsor has asked for more RTL, and the next unbuilt
+module is to be opened — implemented in-round or decomposed into a `WO-` packet,
+my call, said out loud.
+
+**Concurrency**: the declared dv_lead round owns
+`test/attack_plans/AP-xgmii_tx_64.md` (new),
+`test/attack_plans/AP-xgmii_rx_64.md`,
+`agents/handoffs/WO-0079_m03-traceability-test-rows.md` and
+`agents/journals/claude_dv_lead_agent.v08.md`. This commit writes three files —
+two under `libs/hardcaml_ethernet/src/` and my own journal — and the sets are
+disjoint. **The confinement claim is over the paths I own and not over the tree
+being otherwise quiet**, which is my own banked candidate 26: `git status
+--short` at the end of this round lists exactly my three files, and says nothing
+about anyone else's.
+
+### Inputs
+
+- `docs/specs/architecture.md` §4's module inventory table and §4's three
+  datapath diagrams — read to establish which module is next **from the record**
+  rather than from the dispatch's sentence (§1 below).
+- **`docs/specs/modules/eth_axis_rx.md` in full** — SPEC-M06, FROZEN at
+  `508eea2`, all thirteen sections including §11's deferred items and §13's two
+  change-log rows.
+- `docs/specs/requirements.md` — **§0.5 in full** (octet time, the front offset
+  h, the word delay ΔC, the deciding input word D, the two arithmetic tests, what
+  a latency monitor may demand on a gapped stimulus), §0.6, §0.7, §1.1's ceiling
+  and currency tables, REQ-003/005/011/013/014/016/019/021 and REQ-401 … REQ-410,
+  and **§13's 2026-08-04 revision row**, which is where SPEC-M06's owed repair is
+  recorded.
+- `docs/specs/ifc_check/eth_axis_rx_ifc.ml` — the compile-checked lift of
+  SPEC-M06 §4.1, read as the surface my `.mli` must present.
+- `docs/specs/traceability.md`'s M06 rows (REQ-401, 402, 403, 407, 408, 409,
+  410) — the REQ set architecture.md §4 maps to this module.
+- `test/attack_plans/AP-xgmii_rx_64.md` **§2's standing obligations and §7's four
+  bars**, read as the qualification era's standing rules and **read only**; the
+  file is the declared sibling's and I did not write it. Bar 3 is the one that
+  binds new RTL: the co-simulation lane is content-comparing and not
+  timing-comparing, so a module's pinned per-octet constant is the programme's
+  only detector of a uniform word-delay regression.
+- `docs/adr/ADR-0005` (CI is the authoritative build surface), `ADR-0010` (the
+  house consumer convention for record opens), `ADR-0017` (this window's
+  rotation), `ADR-0018` §A2.7.
+- The house style, read as the thing I am conforming to: my own
+  `libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, `xgmii_tx_64.ml`,
+  `eth_mac_10g.ml`, `crc32_eth.ml`, `axi64.ml` and their `.mli`s, and
+  `libs/hardcaml_ethernet/src/dune`.
+- **`test/third_party/` was NOT opened this round.** The verilog-ethernet pin
+  (`77320a9`) is MIT and my charter permits reading it freely, and I did not:
+  SPEC-M06 §6.1 states the payload assembly rule in terms, so there was nothing
+  the reference could have told me that the frozen spec does not, and the
+  vendored source is the differential anchor's own subject. `eth_axis_rx.v` is
+  named in SPEC-M06's header as consulted **by the architect** for decomposition
+  and port naming; that consultation is upstream of the freeze and is not
+  repeated here.
+- **No Essenceia/Nasdaq-HFT-FPGA material consulted**, for this or anything in
+  it (charter §8, Inputs honesty).
+
+### Reasoning
+
+#### 1. Which module, established from the record
+
+architecture.md §4's inventory is ordered by datapath position, and its receive
+diagram is explicit: `W → M03 → M06 → M08 → {M10, M14} → M17 → APP`. M01 through
+M05 exist in `libs/hardcaml_ethernet/src/` — `axi64`, `crc32_eth`,
+`xgmii_rx_64`, `xgmii_tx_64`, `eth_mac_10g`, plus the `word_counter` bootstrap —
+so **M06 `Eth_axis_rx` is the next unbuilt module and the next in datapath order
+after the MAC pair.** That is two independent readings agreeing (the inventory's
+order and the directory's contents), which is why I checked both rather than
+taking the dispatch's sentence: an instruction is a summary of the source, and a
+summary that has gone stale is not an authority.
+
+#### 2. Implement or decompose — the call, and the paragraph it owes
+
+**I implemented it, and the reason is that M06 is the first of REQ-021's three
+realignment sites and it has zero latency reserve.** SPEC-M06 §1 says in terms
+that the realignment "has to live somewhere, and this is the first of the three
+places it does (M06 strips 14, M14 strips 20, M17 strips 8)", so the structure
+chosen here is the one M14 and M17 will either copy or contradict; §1.1's
+currency table pins M06 at ΔC = 3 against a ceiling of 3 with **reserve 0**,
+which makes any structural misjudgement a slack release — a spec diff to §7, to
+§1.1 and to architecture.md §4 together (SPEC-M06 §11.2) — rather than a local
+tweak. On top of that, SPEC-M06 §7 and §10 still carry the per-octet-under-
+injection reading that requirements.md §0.5 retired (§5 below), so a worker
+reading the frozen spec end to end would build to a sentence that describes
+something no straddling module can do, or would stop and ask; a packet faithful
+enough to prevent that would have to restate §6.1's assembly rule, §7's pinned
+constants, §0.5's straddle test and the D of every output event — which **is**
+writing the contract out longhand, exactly the ground on which
+`J-rtl_lead-0002` decided the whole MAC layer myself. **And I restate the price
+in the same breath, because that entry did too and my own harvest banked it as
+candidate 3: this module has no independent design review, self-review is not
+review, and war story R14 — the rule that says delegation is bounded by the cost
+of restating counter-intuitive constraints — still has no incident under it,
+because I still have not delegated.** dv_lead's independently written suite is
+the compensating control and it is not the same control.
+
+#### 3. The microarchitecture: what was considered and why the winner won
+
+The module is 14 octets removed from the front of a word-aligned stream. Four
+decisions, each with the alternative I rejected.
+
+**(a) Fixed wiring, not a shifter.** A general realignment stage carries a shift
+amount and a barrel shifter. Rejected: SPEC-M06 §5 has **no parameters** and
+makes 14 a constant of the specification, so the shift amount is not a variable
+and a structure that admits one is logic parameterised on something that cannot
+vary — and it invites the next author to make it vary. The realignment is
+therefore two `select`s and a `concat_msb`:
+
+```text
+    tdata = { current[47:0], previous[63:48] }
+```
+
+**(b) The same shift applied to `tkeep`, which is the decision I most want on the
+record.** The obvious datapath carries an octet count: `popcount tkeep` on the
+`tlast` word, `min(count, 6) + 2` for the last full payload word, `count - 6`
+for the drain word, and a count-to-`tkeep` decode table at the end. I wrote that
+first. It is arithmetic on three cases, and every one of the three is a place to
+be off by one. The formulation that replaced it is:
+
+```text
+    tkeep = { current[5:0], previous[7:6] }
+```
+
+— **the identical two-position shift, applied to the presence bits instead of
+the octets.** An octet's presence then travels with the octet by construction,
+the three cases collapse into one expression, and the drain word's `tkeep` falls
+out of the same wiring with the current word's share masked to zero. The module
+contains **no octet counter, no `popcount`, and no length arithmetic of any
+kind**. It is smaller, but that is not why it won: it won because the property a
+reviewer has to check is now *the same wiring twice* rather than *three
+arithmetic cases agreeing with one wiring*, and I am the author of a module
+nobody else reviews (§2).
+
+The same collapse reaches the two control decisions. Every question this module
+asks about a word's length is one bit of `tkeep`: bit 5 set means the word
+reached frame octet 13, which is "the header is complete" **and** "the frame has
+at least fourteen octets" — one test, two requirements (REQ-401 and REQ-402);
+bit 6 set means the word carries an octet belonging to a payload word whose other
+source word will never arrive, which is the drain condition and nothing else.
+
+**(c) Constant latency beats data availability.** For an input frame of N octets
+with N ≡ 0 or 7 (mod 8) the final payload word's octets are all present on the
+input `tlast` word, and a design keyed to availability would emit it one cycle
+early. Rejected on REQ-005 and on SPEC-M06 §6.1's own paragraph, which works the
+15-octet case explicitly: payload octet 0's input octet time fixes its output
+octet time, "an implementation that emitted it at Ci + 2 because it happened to
+have all the octets would have length-dependent latency". So the drain word is
+assembled on the cycle **after** the input `tlast`, from the holding register
+alone, and leaves one cycle after that. This is the only asymmetry in the module
+and it costs one registered pulse, one captured bit of `tuser`, and no counter.
+
+**(d) Two register levels, placed to hit ΔC = 3 exactly.** Payload word m is
+assembled from input words m + 1 and m + 2 (SPEC-M06 §6.1), so the earliest a
+registered output can present it is one cycle after input word m + 2 — which is
+Ci + m + 3, the cycle §6.1 pins. One holding register (the previous input word:
+data, `tkeep`, `tuser`) plus one output register **is** REQ-019's permitted depth
+of two, and the holding register is the same register the header capture reads,
+so there is one and not two. An elastic buffer was never a candidate: REQ-003
+gives this module no `tready` in either direction, so there is nothing to
+backpressure and nothing that may stall.
+
+**The header capture rides the same register.** On the cycle input word 1
+arrives, the holding register holds word 0, so `dst_mac` is its octets 0–5 and
+the top of `src_mac` its octets 6–7, with the rest of `src_mac` and the ethertype
+taken live from word 1. REQ-012's network-byte-order decode is the concatenation
+order (`concat_msb` over octets, most significant first) and not a reversal
+network.
+
+#### 4. The arithmetic, worked, because zero reserve means it has to be
+
+Input frame of N octets, K = ⌈N/8⌉ input words, M = ⌈(N−14)/8⌉ payload words.
+Payload octet j is frame octet 14 + j, which lies in input word ⌊(14+j)/8⌋ at
+position (14+j) mod 8; payload word m therefore takes positions 6 and 7 of input
+word m + 1 and positions 0 to 5 of input word m + 2.
+
+- **N mod 8 ∈ {1,…,6}**: M = K − 2. The last payload word is index K − 3 and its
+  second source word is the input `tlast` word, so it is loaded on that cycle
+  with `{ tlast_keep[5:0], 11 }` — that is (N mod 8) + 2 octets — and carries
+  `payload_tlast`. **No drain word**; `tkeep` bit 6 of the `tlast` word is 0,
+  which is exactly the condition the design tests.
+- **N mod 8 ∈ {7,0}**: M = K − 1. The word loaded on the `tlast` cycle is full
+  (`{ tlast_keep[5:0], 11 }` = `0xFF` at both residues) and is **not** last; the
+  final payload word's only octets are that word's positions 6 and 7, so it is
+  the drain word, `tkeep` = `{000000, tlast_keep[7:6]}` = `0x01` or `0x03`.
+
+Two worked members against the specification's own figures. The **60-octet**
+stress frame (§8): K = 8, residue 4, M = 6; the last payload word loads on input
+word 7 with `tkeep` = `{001111, 11}` = `0x3F`, six octets, `tlast` = 1, leaving
+at Ci + 8 — §6.1's table row for cycle Ci+8 character for character, and 5×8 + 6
+= **46** payload octets, REQ-408's worked figure. The **1514-octet** maximum
+(§8's directed set): K = 190, residue 2, M = 188 = §7's bound, last `tkeep` =
+`{000011, 11}` = `0x0F`, four octets, 187×8 + 4 = **1500**. The **22-octet**
+directed length that C-17(e) added to cover the `0xFF` pattern: K = 3, residue 6,
+M = 1, one payload word with `tkeep` = `{111111, 11}` = `0xFF` — the one length
+in 14…22 that produces it, as §8 says.
+
+**The three degenerate lengths.** N = 14: the `tlast` word is word 1 with six
+octets, bit 5 set (header complete, `hdr_valid` pulses) and bit 6 clear (no
+drain), and word 1 is not in `Payload`, so **no payload word is emitted at all**
+— requirements.md §0.7's zero-octet payload with no encoding, and no strobe.
+N = 15 and 16: the `tlast` word is word 1 with bit 6 set, so the drain fires and
+one payload word of 1 or 2 octets leaves at Ci + 3 — §6.1's worked 15-octet case.
+N ∈ 1…13: `error_short_frame`, one cycle, on the cycle after the input `tlast`
+(§9's pinned offset), with no header pulse and no payload word.
+
+**REQ-410, back-to-back.** The machine leaves for `Idle` on the input `tlast`
+cycle and the pipeline drains behind it, so a new frame's word 0 on the next
+cycle is accepted while the previous frame's drain word is being assembled. The
+two loads cannot collide, and that is structural rather than lucky: a drain load
+lands on a cycle whose state is `Idle` by construction, so the payload load's
+`in_payload` term is 0 there. Worked at N = 16 with zero idle cycles between
+frames: the drain word loads on the cycle carrying B's word 0 and leaves the
+next; B's own first payload word leaves three cycles after that.
+
+#### 5. The straddle, named rather than designed around
+
+M06's front offset h = 14 is not a multiple of 8, so by requirements.md §0.5's
+**straddle** test every payload word is assembled from two input words and
+**M06's per-octet constant does not survive REQ-016's idle injection**. This is
+not my finding and it is not new: §13's 2026-08-04 revision row names
+**SPEC-M06 (§7, §10)** — beside SPEC-M10 and SPEC-M14 — as still carrying the
+retired reading and owing the same repair, to ride with the next work order that
+opens those specs. The two sentences at issue are §7's *"idle gaps on the input
+delay everything by exactly 8 octet times per cycle and change nothing else"* and
+§10's REQ-016 hook, which commissions *"asserting the per-octet constant rather
+than the cycle formula"* — the assertion §0.5's closing normative paragraph
+forbids a monitor from making at a module failing either test.
+
+**What I did with that.** Not patch around it, not implement to it, and not fix
+it — `docs/specs/**` is outside my write scope and the repair is
+architect_docs_lead's. I implemented to **§0.5 as amended, which governs**, and I
+wrote the consequence into the module's own doc comment so that no later reader
+concludes I built against a live spec sentence in silence (charter §7: a spec
+defect found mid-implementation is a spec-change request, never a silent
+work-around). Concretely, §0.5's gap-invariant quantity is the delay from an
+output event's **deciding input word** D, and this design's are constant because
+each is a registered decision taken on D itself:
+
+| output event | D | delay |
+|---|---|---|
+| payload word m, where the frame's `tlast` word carries no octet at position 6 | input word m + 2 — the word carrying the `tkeep`/`tlast`/`tuser` evidence that fixes it | **1** cycle |
+| the drain word | the input `tlast` word | **2** cycles |
+| `hdr_valid` | input word 1 — the last header octet and the not-short evidence arrive together | **1** cycle |
+| `error_short_frame` | the input `tlast` word | **1** cycle |
+
+On a gapless stimulus these are §6.1's cycle table exactly and §7's pinned
+L = 10 octet times; **no cycle any section of SPEC-M06 pins moves**, which is what
+§13's row says of the whole diff and is why this is a documentation repair and
+not a design one. What changes is what a bench may assert under injection, and
+that is dv_lead's instrument and not mine to write.
+
+**The escalation-shaped part, routed and not decided here.** The repair's stated
+carrier is "the next work order that opens those specs". M06 now exists, so the
+next thing to open SPEC-M06 is its bench — and a REQ-016 wrapper built from the
+un-repaired §10 hook would fail a conformant M06, which is precisely the failure
+this programme has already paid for once (`SCR-M03-I4`, where a monitor built
+from §0.5's unqualified sentence went red against a conformant M03). I raise it
+to the orchestrator as a spec-change request for architect_docs_lead, class **E2
+adjacent but not E2** — no requirement is added or dropped and no constant moves;
+it is the third of the three repairs §13 already commissioned, now due.
+
+#### 6. Line-rate invariant, and what bar 3 makes of it
+
+Charter §5's rx-path clause: one 64-bit word per cycle, zero rx backpressure,
+back-to-back minimum frames. Here it is structural before it is behavioural —
+neither record contains an `Axi64.Dest` and neither contains a `tready`, so a
+design that needed backpressure could not be written without a spec diff to
+SPEC-M06 §4 (REQ-003). Throughput is guaranteed by the shape rather than by
+argument: M06 removes fourteen octets, so it emits **one or two fewer** words
+than it consumes for every frame and the output is never asked to carry two words
+on one cycle.
+
+`AP-xgmii_rx_64` §7's **bar 3** is what makes the latency constant load-bearing
+rather than decorative: the differential co-simulation lane compares *what* is
+delivered and not *when*, so a uniform word-delay regression is invisible to it,
+and the pinned per-octet constant is the programme's only detector. At M06 that
+constant has **no reserve at all** — ΔC = 3 of 3 — so there is no cycle here to
+spend by accident, and I spent none: §4's arithmetic reaches 3 with a registered
+output, which is the argument SPEC-M06 §7 makes and §11.2 defers to
+implementation. **I therefore request no slack release**, and I record that the
+measurement is dv_lead's at the stress bench and not mine.
+
+#### 7. What this round deliberately does not contain
+
+- **No test, no bench, no golden model.** PROTOCOL §10 and charter §3: I never
+  author the tests that gate my own modules. I wrote no smoke sim either — there
+  is no local toolchain to run one on (§Evidence), and a smoke sim carries no DoD
+  weight in any case.
+- **No `bin/generate.ml` change and no `rtl_snapshots/eth_axis_rx.v`.** `bin/**`
+  is inside my charter scope and outside **this round's** dispatched write set,
+  which named `libs/hardcaml_ethernet/src/**` and dune files only. Carried as
+  **C-RL-6** in `J-rtl_lead-0014` §4 rather than mentioned once and dropped
+  (candidate 50). The WO-0024 → WO-0026 pair is this programme's precedent for
+  landing modules and registering their emission in separate rounds, and the
+  snapshot itself is never hand-authored: it is promoted from a CI run
+  (ADR-0005 rule 2), which is why the two must be separate acts anyway.
+- **No `docs/specs/**` edit.** §5's finding is routed as a request.
+- **No dune change, and that is a checked fact rather than an omission.**
+  `libs/hardcaml_ethernet/src/dune` declares no `(modules …)` field, so the
+  library takes every module in its directory and a new `.ml`/`.mli` pair joins
+  it with no edit. No new directory was created, so no dune disposition is owed.
+- **No packet.** This round issues no `WO-` and no `RV-`; there is no worker
+  round to review.
+
+### Actions
+
+1. Read the charter, PROTOCOL, SPEC-M06 in full, requirements.md §0.5–§0.7 and
+   §1.1, architecture.md §4, traceability.md's M06 rows, the frozen `ifc_check`
+   lift, `AP-xgmii_rx_64` §2 and §7, and the four existing library modules for
+   house style.
+2. Established M06 as the next module from architecture.md §4 and the directory
+   contents independently (§1).
+3. Wrote `libs/hardcaml_ethernet/src/eth_axis_rx.mli` **first** — the module
+   surface, matching SPEC-M06 §4.1's record shape — then
+   `libs/hardcaml_ethernet/src/eth_axis_rx.ml`. One module fully on disk; no
+   other module was opened for edit.
+4. Wrote the count-carrying datapath, then replaced it with the shifted-`tkeep`
+   formulation of §3(b) and removed `popcount` and the count-to-`tkeep` decode
+   entirely.
+5. Worked the length arithmetic of §4 against SPEC-M06 §6.1's and §8's own
+   figures — the 60-octet stress frame, 1514, 22, 14, 15, 16 and the 1–13 class
+   — before treating the design as settled.
+6. Ran the parse check of §Evidence, with a negative control, and the line-width
+   check against `.ocamlformat`'s `janestreet` profile.
+7. Attempted a real build, recorded its exact failure, and **claim nothing from
+   it** (§Evidence).
+8. Removed the `_build/` cache that attempt created (134 files, all of them
+   younger than one hour, so all of them mine), leaving the working tree at
+   exactly my three files.
+9. Wrote this entry. **No `git add`, no `git commit`, no `git push`, no git
+   write of any kind.**
+
+### Evidence
+
+Reproducible from a checkout at this commit:
+
+```sh
+git status --short
+#   the three files of this window and nothing else
+
+# the library takes new modules with no dune edit: no (modules) field
+cat libs/hardcaml_ethernet/src/dune
+
+# the surface against the frozen lift, read side by side
+sed -n '/^module I = struct/,/^end/p'  docs/specs/ifc_check/eth_axis_rx_ifc.ml
+sed -n '/^module I : sig/,/^end/p'     libs/hardcaml_ethernet/src/eth_axis_rx.mli
+sed -n '/^module O = struct/,/^end/p'  docs/specs/ifc_check/eth_axis_rx_ifc.ml
+sed -n '/^module O : sig/,/^end/p'     libs/hardcaml_ethernet/src/eth_axis_rx.mli
+
+# no line exceeds .ocamlformat's janestreet margin of 90
+awk 'length>90 {print FILENAME": "FNR}' libs/hardcaml_ethernet/src/eth_axis_rx.ml \
+                                        libs/hardcaml_ethernet/src/eth_axis_rx.mli
+#   (no output)
+```
+
+**The parse check, and its negative control, because a check that reports clean
+without discriminating is not a check** (my own candidates 8 and 14):
+
+```sh
+ocamlc -stop-after parsing -c libs/hardcaml_ethernet/src/eth_axis_rx.ml   # exit 0
+ocamlc -stop-after parsing -c libs/hardcaml_ethernet/src/eth_axis_rx.mli  # exit 0
+printf 'let x = (1 +\n' > /tmp/bad.ml
+ocamlc -stop-after parsing -c /tmp/bad.ml                                 # exit 2, "Syntax error"
+```
+
+**WHAT DOES NOT BUILD HERE, MEASURED RATHER THAN ASSERTED, AND WHAT IT MEANS.**
+The container's `fpga` switch is `ocaml-system.4.14.1` with **zero** hardcaml
+packages installed (`opam list --installed | grep -ic hardcaml` → `0`), which is
+ADR-0005's documented condition — the network policy blocks opam, so CI is the
+authoritative build surface. `dune build libs/hardcaml_ethernet/src` fails at
+**library and ppx resolution on `axi64.pp.ml`**, before any file of mine is
+reached:
+
+```text
+File "libs/hardcaml_ethernet/src/dune", line 4, characters 18-30:
+Error: Library "ppx_hardcaml" not found.
+-> required by _build/default/libs/hardcaml_ethernet/src/axi64.pp.ml
+File "libs/hardcaml_ethernet/src/dune", line 3, characters 21-33:
+Error: Library "hardcaml_axi" not found.
+```
+
+**So: this module has NOT been compiled, NOT been type-checked, NOT elaborated,
+NOT simulated and NOT emitted, and I claim none of those.** The parse check
+establishes that the two files are syntactically well-formed OCaml and nothing
+whatever beyond it — in particular it does not see a width mismatch, a wrong
+field name, an unused binding under the dev profile's warning set, or a
+`Signal` operator that does not exist. **The first real verdict on this module is
+the `build` workflow's, and its run id belongs in whatever entry reads it.** That
+is the same posture every RTL round of mine has taken since `J-rtl_lead-0001`,
+and it is why the DoD below is stated as partially met rather than met.
+
+**Not claimed, stated so the absence does not read as coverage**: that M06
+compiles; that ΔC = 3 is measured (it is derived — §4 — and dv_lead measures it
+at the stress bench, REQ-019's second check); that the line-rate invariant is
+demonstrated (it is designed to and is structural at the record level; the proof
+is dv's back-to-back stress); that any REQ of §10 is verified; that the
+`ifc_check` lift and my `.mli` are byte-identical (they are not and should not
+be — the lift opens `Axi64_ifc` and mine opens the library's `Axi64`, which is
+ADR-0010's consumer convention); that `eth_axis_rx` appears in `rtl_snapshots/`
+(it does not — C-RL-6). **Nothing in this entry is a verification result and no
+DV sign-off is claimed** — `SO-` is dv_lead's to give.
+
+### Outcome
+
+M06 `Eth_axis_rx` is on disk, written from SPEC-M06 as frozen at `508eea2`, with
+its `.mli` first and its `.ml` second, in the house style: `[@@deriving hardcaml]`
+records with `[@rtlprefix]` on the nested ones, an `Always` state machine over a
+three-state `enumerate`d type, `Hierarchy.In_scope` for `hierarchical`, one
+`open! Axi64` and no second record module (ADR-0010).
+
+Charter §5's per-module DoD, honestly scored:
+
+- Implements its frozen spec, every REQ satisfied or escalated — **met on
+  authorship, unproven by execution.** No silent deviation: the one thing I
+  found that the spec says and no conformant design can do is §5's straddle
+  reading, and it is raised rather than absorbed.
+- Compiles and elaborates hierarchically; `bin/generate.exe` emits it
+  deterministically — **NOT met, and deliberately so this round.** No local
+  toolchain (measured above); emission registration and the snapshot are
+  **C-RL-6**, owed to a later round with `bin/**` in its write set.
+- House style holds; `.ocamlformat` clean — **style held by construction and
+  against the four existing modules; `.ocamlformat` is NOT verified**, because
+  `ocamlformat` is not installed in this container. Line width is checked.
+- Rx-path module designed to the line-rate invariant — **met by design and
+  structurally at the record level**; the proof is dv's.
+- Worker modules reviewed line by line — **no instance**: no worker, no `RV-`.
+- Journal entry appended, no DV sign-off claimed — **met.**
+
+Charter §8's harvest-note obligation does not fire this round: PROTOCOL §7 ties
+it to a sign-off and to a phase gate, and this is neither. The span bookkeeping
+is at `J-rtl_lead-0014` §5 — this seat's next harvest opens at `J-rtl_lead-0013`
+under ADR-0018 `A2-D10`.
+
+**Handoff**: to the orchestrator — for commit, and thence (a) to dv_lead as the
+seat that will bench M06 whenever the programme schedules it, with no test
+content from me, and (b) to architect_docs_lead as a spec-change request for
+SPEC-M06 §7 and §10's retired reading (§5), which requirements.md §13 already
+commissioned and which M06's existence now makes due.
+
+### Open-questions
+
+1. **C-RL-6 — M06's emission is unregistered.** `bin/generate.ml` gains an
+   `emit_eth_axis_rx` and `rtl_snapshots/eth_axis_rx.v` is promoted from a CI
+   run, in a round whose write set includes `bin/**`. Note for whoever schedules
+   it: the generator change and the snapshot **cannot** land in one commit here,
+   because the determinism step's diff is what produces the snapshot's bytes —
+   the generator lands, CI prints the promotion block, the snapshot lands next.
+   Registering the emitter without a snapshot in the same window therefore
+   reddens the `build` workflow by design, which is a decision to take
+   deliberately rather than to discover.
+2. **C-RL-7 — SPEC-M06 §7 and §10's retired per-octet-under-injection reading**
+   (§5). Third of the three repairs requirements.md §13's 2026-08-04 row
+   commissioned; architect_docs_lead's, now due because the module exists and its
+   bench is the next thing to open the spec.
+3. **This module has no independent design review** (§2, candidate 3). It is the
+   sixth module in a row in this position. The compensating controls are
+   dv_lead's independently written suite, the auditor's mutation campaigns, and
+   the fact that the whole design is stated in the two `.ml` comments a reviewer
+   can check against SPEC-M06 §6.1 by reading. If the programme ever wants the
+   delegation path exercised, M07 `Eth_axis_tx` is the natural first packet: it
+   is the transmit mirror of a module now written, its constants are ADR-0008's
+   rather than novel, and R14's rule would finally acquire provenance in one
+   direction or the other.
+4. **Carried, unchanged and untouched by this round**: C-RL-2 (the latent
+   `first_v` gating in M03), C-RL-3 (sub-word idle granularity, no row owed).
+   Neither is reachable from anything this round wrote; M03 was not opened.
+
+### Files-in-this-commit
+
+- libs/hardcaml_ethernet/src/eth_axis_rx.ml
+- libs/hardcaml_ethernet/src/eth_axis_rx.mli
