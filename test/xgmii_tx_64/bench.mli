@@ -257,3 +257,69 @@ val wire_octets : sample list -> int list
     checks nothing about frame CONTENT (octet values, pad, FCS), which stays
     each row's own assertion. *)
 val assert_instruments_clean : t -> row:string -> unit
+
+(** {2 WO-0082: the multi-frame continuous presenter}
+
+    Everything below lands with this round (WO-0082 §5.3) and every existing
+    signature above is unchanged byte for byte. *)
+
+(** [run_stream contents] — the multi-frame continuous presenter. Each
+    element of [contents] is one frame's DA-through-payload octet string, in
+    transmission order. Checks EVERY frame's own word list against
+    obligation 6's source contract BEFORE anything is concatenated
+    (concatenating first would demand [tlast] on the run's last word only
+    and reject every earlier frame's own — WO-0082 trap T5), naming the
+    frame index on failure; THEN concatenates the per-frame word lists
+    ([List.map contents ~f:source_words] followed by [List.concat] — kept
+    as two steps, not [List.concat_map], because each frame's own list must
+    be checked before any concatenation happens; the flattened result is
+    the same list [List.concat_map contents ~f:source_words] would produce
+    — the per-frame [tlast]/[tkeep]/poison structure is already right and
+    concatenation preserves it); elaborates ONE FRESH {!t} for the whole run
+    (unlike
+    {!run_frames}, which elaborates afresh per frame — that is the whole
+    point); and drives the concatenated word list through the SAME
+    presenter loop {!run_frames} and {!run_lengths} share, for
+    [cycles_for_run contents] cycles (the internal, unexported
+    [cycles_for_run] — a unit takes its expected run length from §6's
+    tables, not by recomputing it here).
+
+    Enforces the STREAM preconditions rather than [P-ACCEPT], which does
+    NOT generalise to a run of more than one frame: [tx_tready] is 0 on the
+    FCS word and the terminate word (SPEC-M04 §7's C-14.1 bullet), so a
+    stream's acceptance cycles have holes at those cycles in every run of
+    more than one frame, and asserting contiguity fails a conformant M04 at
+    the second frame of every run. What is enforced instead: SP-1
+    (liveness, the same bound {!run_lengths}'s [present] enforces) and SP-2
+    (completeness — the number of accepted samples equals the total word
+    count offered; its failure means every row assertion downstream is
+    meaningless). SP-3: nothing else — no contiguity, no per-frame
+    acceptance shape. Where a row needs an exact acceptance cycle, it
+    asserts it from [samples] in its own unit.
+
+    Returned in the order [contents] was given, with the single instance
+    and the full sample list. *)
+val run_stream : int list list -> int list list * t * sample list
+
+(** [wire_frames samples] decodes [samples]' own [wire] words through a
+    FRESH {!Dv_xgmii.Tx_decoder} instance (the same [~name] discipline and
+    [~ifg:12] {!wire_frame} already uses) and returns EVERY completed
+    frame, in transmission order, with no count constraint — the multi-frame
+    counterpart of {!wire_frame}, which is now [match wire_frames samples
+    with [ f ] -> f | [] -> failwith … | fs -> failwith …], keeping both of
+    its existing failure messages byte for byte. *)
+val wire_frames : sample list -> Dv_xgmii.Tx_decoder.frame list
+
+(** [assert_instruments_clean_n t ~row ~frames] — the conservation rule at
+    [frames] frames: the same four checks {!assert_instruments_clean} makes,
+    with the frame count parameterised. The standing decoder must be clean
+    (obligation 1); the strobe monitor must be clean AND
+    [high_cycles "error_underflow"] must be 0 (obligation 4, both halves);
+    and the standing decoder must report EXACTLY [frames] completed frames,
+    NONE of them underflowed (obligation 3's conservation rule, keyed on the
+    first accepted word of each frame rather than on [tlast] — the keying is
+    unchanged from {!assert_instruments_clean}'s own).
+    [assert_instruments_clean t ~row = assert_instruments_clean_n t ~row
+    ~frames:1] — byte-identical behaviour at [n = 1], witnessed by every
+    unit landed before this round. *)
+val assert_instruments_clean_n : t -> row:string -> frames:int -> unit

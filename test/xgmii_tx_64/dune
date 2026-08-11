@@ -15,6 +15,16 @@
 ;            run_lengths re-expressed over it (§5.3) — the four landed
 ;            test_m04_{scaffold,a,b,c}.ml files unmodified (regression
 ;            witness, §5.2)
+;   WO-0082  F1, F2, G10 ASSERT, F5 NO-ASSERT (family F opened); A3, B3
+;            ASSERT (five ASSERT + one NO-ASSERT rows) — one new file
+;            (test_m04_f.ml, two %expect_test units); bench.mli/bench.ml
+;            extended by three functions (run_stream, wire_frames,
+;            assert_instruments_clean_n), with present/cycles_for/
+;            wire_frame/assert_instruments_clean re-expressed over them
+;            (§5.3) — the four landed test_m04_{scaffold,c,d,e}.ml files
+;            unmodified (regression witness, §5.2), and
+;            test_m04_a.ml/b.ml/g.ml each APPEND-ONLY, one new unit each
+;            (§11.4): A3, B3, G10
 ; When a packet adds rows, add its line — WO-0038's own dune header found
 ; the staleness this rule guards against (see test/xgmii_rx_64/dune's own
 ; history) and this header follows that precedent from its first commit.

@@ -298,3 +298,192 @@ let%expect_test
   run_b4_b5 ();
   [%expect {||}]
 ;;
+
+(* ---- U20: M04-B3 (WO-0082 §5, §6.5) ---------------------------------------- *)
+(* Two runs, both orders. Per-frame length independence: a design whose
+   length counter or CRC register is not re-seeded between frames produces
+   a wrong FCS or a wrong terminate lane on the SECOND frame, and the
+   Kills cell says in terms that a bench driving one order tests one of
+   the two defects: long-then-short is the direction a stale counter
+   produces a conformant-looking SHORT frame, short-then-long the
+   direction it produces a visible OVER-RUN. Driven through
+   {!Bench.run_stream}, WO-0082's own multi-frame continuous presenter.
+   Two elaborations, run length 232 each. This unit does not re-discharge
+   family D: M04-D1 is discharged and stays discharged, nothing here is
+   described as adding to it (BOUNCE BM8). *)
+
+type b3_run =
+  { name : string
+  ; p1 : int
+  ; p2 : int
+  ; t1_cycle_off : int
+  ; t1_lane : int
+  ; s2_off : int
+  ; t2_cycle_off : int
+  ; t2_lane : int
+  }
+
+(* WO-0082 §6.5's own table, transcribed literally. *)
+let b3_runs =
+  [ { name = "long -> short"
+    ; p1 = 1514
+    ; p2 = 20
+    ; t1_cycle_off = 191
+    ; t1_lane = 6
+    ; s2_off = 194
+    ; t2_cycle_off = 203
+    ; t2_lane = 0
+    }
+  ; { name = "short -> long"
+    ; p1 = 20
+    ; p2 = 1514
+    ; t1_cycle_off = 10
+    ; t1_lane = 0
+    ; s2_off = 12
+    ; t2_cycle_off = 202
+    ; t2_lane = 6
+    }
+  ]
+;;
+
+let run_b3_one (r : b3_run) =
+  let row = String.concat [ "M04-B3 ("; r.name; ")" ] in
+  let _, t, samples = run_stream [ content_octets ~p:r.p1; content_octets ~p:r.p2 ] in
+  let c = first_accepted_cycle samples in
+  assert_instruments_clean_n t ~row ~frames:2;
+  let f1, f2 =
+    match wire_frames samples with
+    | [ f1; f2 ] -> f1, f2
+    | fs ->
+      fail
+        row
+        (String.concat
+           [ "wire_frames decoded "; Int.to_string (List.length fs); " frames, expected 2" ])
+  in
+  let f1_expected_len = Int.max r.p1 60 + 4 in
+  let f2_expected_len = Int.max r.p2 60 + 4 in
+  (* Each frame's decoded octet count equals its own F. *)
+  if List.length f1.Dv_xgmii.Tx_decoder.octets <> f1_expected_len
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 1 wire octet count = "
+         ; Int.to_string (List.length f1.Dv_xgmii.Tx_decoder.octets)
+         ; ", expected F1 = "
+         ; Int.to_string f1_expected_len
+         ]);
+  if List.length f2.Dv_xgmii.Tx_decoder.octets <> f2_expected_len
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 2 wire octet count = "
+         ; Int.to_string (List.length f2.Dv_xgmii.Tx_decoder.octets)
+         ; ", expected F2 = "
+         ; Int.to_string f2_expected_len
+         ]);
+  (* Each terminate character is at its own F mod 8. *)
+  if f1.Dv_xgmii.Tx_decoder.terminate_lane <> Int.rem f1_expected_len 8
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 1 terminate lane = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.terminate_lane
+         ; ", expected F1 mod 8 = "
+         ; Int.to_string (Int.rem f1_expected_len 8)
+         ]);
+  if f2.Dv_xgmii.Tx_decoder.terminate_lane <> Int.rem f2_expected_len 8
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 2 terminate lane = "
+         ; Int.to_string f2.Dv_xgmii.Tx_decoder.terminate_lane
+         ; ", expected F2 mod 8 = "
+         ; Int.to_string (Int.rem f2_expected_len 8)
+         ]);
+  (* The run law's own cycles (WO-0082 §6.5's table), cross-checked
+     against the packet's derivation rather than re-derived from a
+     formula here. *)
+  if f1.Dv_xgmii.Tx_decoder.terminate_cycle <> c + r.t1_cycle_off
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 1 terminate cycle = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.terminate_cycle
+         ; ", expected C+"
+         ; Int.to_string r.t1_cycle_off
+         ]);
+  if f1.Dv_xgmii.Tx_decoder.terminate_lane <> r.t1_lane
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 1 terminate lane = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.terminate_lane
+         ; ", expected "
+         ; Int.to_string r.t1_lane
+         ]);
+  if f2.Dv_xgmii.Tx_decoder.start_cycle <> c + r.s2_off
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 2 start cycle = "
+         ; Int.to_string f2.Dv_xgmii.Tx_decoder.start_cycle
+         ; ", expected C+"
+         ; Int.to_string r.s2_off
+         ]);
+  if f2.Dv_xgmii.Tx_decoder.terminate_cycle <> c + r.t2_cycle_off
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 2 terminate cycle = "
+         ; Int.to_string f2.Dv_xgmii.Tx_decoder.terminate_cycle
+         ; ", expected C+"
+         ; Int.to_string r.t2_cycle_off
+         ]);
+  if f2.Dv_xgmii.Tx_decoder.terminate_lane <> r.t2_lane
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 2 terminate lane = "
+         ; Int.to_string f2.Dv_xgmii.Tx_decoder.terminate_lane
+         ; ", expected "
+         ; Int.to_string r.t2_lane
+         ]);
+  (* Each frame's decoded octets equal Frame.with_fcs (Frame.pad_to_60
+     content) for its OWN p — M04-B3's second-frame independence claim: a
+     design whose CRC register or length counter is not re-seeded between
+     frames produces a wrong FCS on frame 2, and the row's Kills cell
+     names exactly that. *)
+  let expected1 = Dv_xgmii.Frame.with_fcs (Dv_xgmii.Frame.pad_to_60 (content_octets ~p:r.p1)) in
+  let expected2 = Dv_xgmii.Frame.with_fcs (Dv_xgmii.Frame.pad_to_60 (content_octets ~p:r.p2)) in
+  if not (List.equal Int.equal f1.Dv_xgmii.Tx_decoder.octets expected1)
+  then
+    fail
+      row
+      "frame 1's decoded octets do not equal Frame.with_fcs (Frame.pad_to_60 content) for its \
+       own P";
+  if not (List.equal Int.equal f2.Dv_xgmii.Tx_decoder.octets expected2)
+  then
+    fail
+      row
+      "frame 2's decoded octets do not equal Frame.with_fcs (Frame.pad_to_60 content) for its \
+       own P"
+;;
+
+let run_b3 () = List.iter b3_runs ~f:run_b3_one
+
+let%expect_test
+  "M04-B3: per-frame length independence, both orders — each frame's own \
+   F octet count and its own terminate lane"
+  =
+  run_b3 ();
+  [%expect {||}]
+;;

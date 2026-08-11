@@ -238,53 +238,67 @@ let check_words (words : Stream_word.t list) =
        List.rev !problems))
 ;;
 
-(* WO-0080 §5.5's reactive presenter: offers word [next] (or idle when the
-   source is exhausted) every cycle, and advances [next] only on acceptance.
-   Never withholds mid-frame (§9.4(1), BOUNCE BM6) — a word is offered on
-   every cycle until it is accepted. Enforces the liveness bound and
-   P-ACCEPT (§5.6) before returning. *)
-let present t (words : Stream_word.t list) ~total : sample list =
+(* WO-0082 §5.3(2): the loop and the liveness bound, split from the
+   postcondition each presenter enforces over it — a re-expression of
+   WO-0080's landed [present], not a behaviour change. [drive] offers word
+   [next] (or idle when the source is exhausted) every cycle and advances
+   [next] only on acceptance; it never withholds mid-frame (§9.4(1), BOUNCE
+   BM6). *)
+let drive t (words : Stream_word.t list) ~total : sample list =
   let w = List.length words in
   let words_arr = Array.of_list words in
-  let rec drive cycle next acc =
+  let rec go cycle next acc =
     if cycle >= total
     then List.rev acc
     else (
       let offered = if next < w then words_arr.(next) else Stream_word.idle () in
       let s = sample_cycle t ~cycle offered in
       let next' = if s.accepted then next + 1 else next in
-      drive (cycle + 1) next' (s :: acc))
+      go (cycle + 1) next' (s :: acc))
   in
-  let samples = drive 0 0 [] in
-  let accepted_cycles =
-    List.filter_map samples ~f:(fun (s : sample) -> if s.accepted then Some s.cycle else None)
-  in
-  (* The liveness bound (§5.6): NOT a timing assertion about C (M04-A5
-     forbids that) — it claims only that the run produced a frame to talk
-     about. A conformant M04 with a word offered from cycle 0 accepts by
-     cycle 2 (SPEC-M04 §6.2's Idle row), so 16 is slack and any firing is
-     real. *)
-  (match accepted_cycles with
-   | [] ->
-     failwith
-       "Bench.present: no word accepted within the liveness bound of 16 cycles — \
-        this is a BENCH-LIVENESS bound, not a timing assertion about C (M04-A5 \
-        forbids asserting C's value); it claims only that the run produced a frame \
-        to talk about, and this run produced none"
-   | c :: _ ->
-     if c > 16
-     then
-       failwith
-         (String.concat
-            [ "Bench.present: first acceptance at cycle "
-            ; Int.to_string c
-            ; " exceeds the liveness bound of 16 cycles — a BENCH-LIVENESS bound, \
-               not a timing assertion about C"
-            ]));
+  go 0 0 []
+;;
+
+let accepted_cycles_of samples =
+  List.filter_map samples ~f:(fun (s : sample) -> if s.accepted then Some s.cycle else None)
+;;
+
+(* SP-1 / the landed liveness bound (§5.6, WO-0082 §5.3(4)): NOT a timing
+   assertion about C (M04-A5 forbids that) — it claims only that the run
+   produced a frame to talk about. A conformant M04 with a word offered
+   from cycle 0 accepts by cycle 2 (SPEC-M04 §6.2's Idle row), so 16 is
+   slack and any firing is real. Shared by every presenter over {!drive}. *)
+let assert_liveness accepted_cycles =
+  match accepted_cycles with
+  | [] ->
+    failwith
+      "Bench.present: no word accepted within the liveness bound of 16 cycles — \
+       this is a BENCH-LIVENESS bound, not a timing assertion about C (M04-A5 \
+       forbids asserting C's value); it claims only that the run produced a frame \
+       to talk about, and this run produced none"
+  | c :: _ ->
+    if c > 16
+    then
+      failwith
+        (String.concat
+           [ "Bench.present: first acceptance at cycle "
+           ; Int.to_string c
+           ; " exceeds the liveness bound of 16 cycles — a BENCH-LIVENESS bound, \
+              not a timing assertion about C"
+           ])
+;;
+
+(* [present] = {!drive} + P-ACCEPT (WO-0082 §5.3(2)): byte-for-byte the
+   landed semantics, used by [run_frames] and therefore by [run_lengths]. *)
+let present t (words : Stream_word.t list) ~total : sample list =
+  let samples = drive t words ~total in
+  let accepted_cycles = accepted_cycles_of samples in
+  assert_liveness accepted_cycles;
   (* P-ACCEPT (§5.6): the accepted cycles are exactly C, C+1, .., C+W-1,
      contiguous. A precondition of every derived constant downstream, not a
      claimed row; its failure is disposition class D3 (routed to dv_lead),
      never a bounce. *)
+  let w = List.length words in
   let c = List.hd_exn accepted_cycles in
   let expected = List.init w ~f:(fun m -> c + m) in
   if not (List.equal Int.equal accepted_cycles expected)
@@ -304,9 +318,86 @@ let present t (words : Stream_word.t list) ~total : sample list =
   samples
 ;;
 
-let cycles_for ~p =
-  let f = Int.max p 60 + 4 in
-  27 + (f / 8)
+(* [present_stream] = {!drive} + the stream preconditions (WO-0082
+   §5.3(4)): SP-1 (liveness, above, unchanged) and SP-2 (completeness — the
+   number of accepted samples equals the total word count offered).
+   Deliberately NOT P-ACCEPT: contiguity is FALSE against a conformant M04
+   at the second frame of every run (trap T4) — [tx_tready] is 0 on the FCS
+   word and the terminate word (SPEC-M04 §7's C-14.1 bullet), so a stream's
+   acceptance cycles have holes at those cycles in every run of more than
+   one frame. SP-3: nothing else is checked here — no contiguity, no
+   per-frame acceptance shape, no claim about which cycles are holes. Where
+   a row needs an exact acceptance cycle, it asserts it in its own unit,
+   from [samples]. *)
+let present_stream t (words : Stream_word.t list) ~total : sample list =
+  let samples = drive t words ~total in
+  let accepted_cycles = accepted_cycles_of samples in
+  assert_liveness accepted_cycles;
+  let expected_total = List.length words in
+  let got_total = List.length accepted_cycles in
+  if got_total <> expected_total
+  then
+    failwith
+      (String.concat
+         [ "Bench.run_stream: SP-2 (completeness) failed — "
+         ; Int.to_string got_total
+         ; " word(s) accepted, expected "
+         ; Int.to_string expected_total
+         ; " (the total word count offered across the run) — every row assertion \
+            downstream of this precondition is meaningless and must not be read"
+         ]);
+  samples
+;;
+
+(* WO-0082 §5.3(3): [frame_words] is the ONE site computing ⌊F/8⌋ — no
+   second copy anywhere in this round (bar M-8). NOT exported: a unit takes
+   its expected values from §6's tables, never by recomputing them from the
+   same helper the runner uses. *)
+let frame_words ~p = (Int.max p 60 + 4) / 8
+
+(* [cycles_for]'s VALUE does not change at any [p] — still 27 + ⌊F/8⌋, now
+   expressed over the shared helper (bar M-6b). *)
+let cycles_for ~p = 27 + frame_words ~p
+
+(* WO-0082 §5.3(3): the per-frame allowance is ⌊F_k/8⌋ + 4, where the 4 is
+   1 (the preamble word) + g_max = 3, the largest g at cfg_ifg = 12
+   (⌈(12+7)/8⌉ = 3). Since the true cadence is 1 + ⌊F_k/8⌋ + g_k and
+   g_k <= 3, the allowance is an upper bound at every terminate lane, with
+   equality at t in {5, 6, 7}. A round that changes cfg_ifg must re-derive
+   this (§5.3(3)'s own warning; that round is stage 3). *)
+let cycles_for_run contents =
+  27
+  + List.fold contents ~init:0 ~f:(fun acc content ->
+      acc + frame_words ~p:(List.length content) + 4)
+;;
+
+(* WO-0082 §5.3(1): the multi-frame continuous presenter — the capability
+   this round builds (WO-0082 §5, §0). Obligation 6's contract check runs
+   PER FRAME, on that frame's own word list, BEFORE anything is
+   concatenated (trap T5: concatenating first would demand [tlast] on the
+   run's last word only and reject every earlier frame's). One SINGLE
+   elaboration for the whole run (unlike {!run_frames}, which elaborates
+   afresh per frame — that is the whole point). *)
+let run_stream (contents : int list list) : int list list * t * sample list =
+  let per_frame_words = List.map contents ~f:source_words in
+  List.iteri per_frame_words ~f:(fun frame_idx words ->
+    match check_words words with
+    | [] -> ()
+    | problems ->
+      failwith
+        (String.concat
+           ~sep:"\n"
+           (String.concat
+              [ "Bench.run_stream: frame "
+              ; Int.to_string frame_idx
+              ; " fails obligation 6:"
+              ]
+            :: problems)));
+  let words = List.concat per_frame_words in
+  let t = create () in
+  let total = cycles_for_run contents in
+  let samples = present_stream t words ~total in
+  contents, t, samples
 ;;
 
 (* WO-0081 §5.3: the general runner. [run_one_length] is gone — its body is
@@ -351,10 +442,20 @@ let first_accepted_cycle samples =
        upstream"
 ;;
 
-let wire_frame (samples : sample list) : Tx_decoder.frame =
+(* WO-0082 §5.3(5): the multi-frame content reader, with no count
+   constraint. Same [~name] discipline and [~ifg:12] {!wire_frame} used
+   before this round. *)
+let wire_frames (samples : sample list) : Tx_decoder.frame list =
   let d = Tx_decoder.create ~name:"M04 tx (content reader)" ~ifg:12 () in
   List.iter samples ~f:(fun (s : sample) -> Tx_decoder.observe d ~cycle:s.cycle s.wire);
-  match Tx_decoder.frames d with
+  Tx_decoder.frames d
+;;
+
+(* [wire_frame] re-expressed over {!wire_frames} (§5.3(5)): both existing
+   failure messages kept byte for byte, so the landed units' failure text
+   is unchanged (bar M-6b). *)
+let wire_frame (samples : sample list) : Tx_decoder.frame =
+  match wire_frames samples with
   | [ f ] -> f
   | [] ->
     failwith
@@ -372,7 +473,11 @@ let wire_frame (samples : sample list) : Tx_decoder.frame =
 
 let wire_octets samples = (wire_frame samples).octets
 
-let assert_instruments_clean t ~row =
+(* WO-0082 §5.3(6): the conservation rule at [frames] frames — the same
+   four checks the landed {!assert_instruments_clean} makes, with the frame
+   count parameterised. The conservation rule lives in exactly this one
+   place (bar M-8, applied to the second re-expression of this round). *)
+let assert_instruments_clean_n t ~row ~frames =
   if not (Tx_decoder.is_clean t.decoder)
   then failwith (String.concat [ row; ": wire decoder unclean:\n"; Tx_decoder.report t.decoder ]);
   if not (Strobe_monitor.is_clean t.strobes)
@@ -387,26 +492,35 @@ let assert_instruments_clean t ~row =
          [ row; ": error_underflow high for "; Int.to_string high; " cycles, expected 0" ]);
   (* Obligation 3 — transmit-side frame conservation, carried by the bench
      (T-2: no monitor exists for this port). Keyed on the first accepted
-     word: every run in this round begins exactly one frame (§1.2's scope
-     rule), so the standing decoder must report exactly one frame, and it
-     must not be underflowed (this round drives no underflow stimulus —
-     family G is excluded). *)
-  match Tx_decoder.frames t.decoder with
-  | [ f ] ->
+     word of each frame, not on [tlast] (unchanged keying): the standing
+     decoder must report exactly [frames] completed frames, and none of
+     them may be underflowed (this round drives no underflow stimulus at
+     [run_stream] — family G's own stall schedule is excluded, §1.4). *)
+  let decoded = Tx_decoder.frames t.decoder in
+  let got = List.length decoded in
+  if got <> frames
+  then
+    failwith
+      (String.concat
+         [ row
+         ; ": conservation: expected exactly "
+         ; Int.to_string frames
+         ; " frame(s) begun and completed on the standing decoder, found "
+         ; Int.to_string got
+         ]);
+  List.iteri decoded ~f:(fun idx (f : Tx_decoder.frame) ->
     if f.underflowed
     then
       failwith
         (String.concat
            [ row
-           ; ": conservation: the one frame begun is reported underflowed — this \
-              round drives no underflow stimulus (family G, WO-0080 §1.2)"
-           ])
-  | fs ->
-    failwith
-      (String.concat
-         [ row
-         ; ": conservation: expected exactly one frame begun and completed on the \
-            standing decoder, found "
-         ; Int.to_string (List.length fs)
-         ])
+           ; ": conservation: frame "
+           ; Int.to_string idx
+           ; " is reported underflowed — this round drives no underflow stimulus \
+              (family G, WO-0080 §1.2)"
+           ]))
 ;;
+
+(* Byte-identical behaviour at n = 1 (bar M-6b) — the 16 landed units are
+   the witness. *)
+let assert_instruments_clean t ~row = assert_instruments_clean_n t ~row ~frames:1
