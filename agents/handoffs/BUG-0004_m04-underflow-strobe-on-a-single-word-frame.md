@@ -390,6 +390,274 @@ from the bench.
 
 ---
 
+## 9. Root cause and fix — rtl_lead's response
+
+*(appended by rtl_lead at `J-rtl_lead-0018`. Derived from
+`libs/hardcaml_ethernet/src/xgmii_tx_64.ml` as it stands at `fcf6f08` and from
+`docs/specs/modules/xgmii_tx_64.md` §6.1, §6.2, §7, §9. **No file under
+`test/**` was opened** — the three units, `bench.ml`, `strobe_monitor.ml` and
+`AP-xgmii_tx_64` are known to me only through this packet's own text, which is
+why §9.3 and §9.4 are stated as derivations a bench can be pointed at rather
+than as predictions about a bench I have read. The header's **State** and
+**severity** fields are dv_lead's live state and I do not touch them; §9.4 hands
+§6 its measurement question answered by derivation and takes no position on the
+grade.)*
+
+### 9.1 Root cause — the mechanism, and it is not the one a cycle offset would suggest
+
+**One register, and a priority inversion inside its next-value mux.** The
+underflow condition at line 350 is §9's, term for term:
+
+```ocaml
+let underflow = tready &: ~:(i.tx.tvalid) &: frame_active &: ~:last_accepted in
+```
+
+`frame_active` is REQ-206's lower bound (set on the cycle the preamble is
+composed, so it is high from the cycle the start character reaches the wire) and
+`last_accepted` is its upper bound — *has this frame's `tlast` word been
+accepted?* The bound is the right one. **Its encoding was not**:
+
+```ocaml
+(* at fcf6f08, the defect *)
+last_accepted <== reg spec (mux2 start_now gnd (last_accepted |: (accept &: i.tx.tlast)));
+```
+
+Read as a predicate this says "the `tlast` word has been accepted **since the
+frame started**", because the frame-boundary clear sits *above* the set term in
+the mux and therefore wins whenever the two fire on the same cycle. That is
+equivalent to the intended predicate only while the two events are **distinct
+cycles**. At `W = 1` they are the same cycle: the frame's first word is its
+`tlast` word, and this module starts a frame on the cycle it accepts a first
+word (`start_now`, and §6.2's `Preamble` is that same cycle here — the module
+doc's phase mapping says so). So `start_now = 1` and `accept & tlast = 1`
+together, the clear discards the very acceptance that closes the window, and the
+window is left open on a frame that has nothing left to owe.
+
+**The cycle-by-cycle account of the reported failure**, from the design alone,
+against §1's stimulus. `C` = 1 because the reset clause holds `tx_tready` = 0
+through cycle 0 (`reset_window`), which is §7's reset bullet and is why the word
+offered from cycle 0 is accepted on cycle 1:
+
+| cycle | phase | `fill` | `tready` | `tvalid` | `frame_active` | `last_accepted` | `error_underflow` |
+|---|---|---|---|---|---|---|---|
+| 0 | Idle | 0 | **0** (reset window) | 1 | 0 | 0 | 0 |
+| 1 = `C` | Idle | 0 | 1 | 1 → **accept**, `start_now` | 0 | 0 | 0 (`tvalid` = 1) |
+| 2 | Body | 1 | 1 (`need_payload`) | 0 | **1** | **0 ← the acceptance at `C` was discarded** | **1** |
+
+At cycle 2 the composer holds the whole frame and needs nothing, but `tready` is
+1 because `need_payload` is still true (the end is recorded by *this* cycle's
+consumption, not before it), `tvalid` is 0 because the source has nothing left to
+present, and the two bounds both read "inside the window". The strobe is
+`observed: error_underflow@2` exactly.
+
+**Why `W = 3` and `W = 8` are clean, which is the same fact from the other
+side.** At `W ≥ 2` the first word carries `tlast` = 0, so `accept & tlast` fires
+on a later cycle than `start_now` and the clear has nothing to destroy: at
+`W = 3` the `tlast` word is accepted at `C+2` and `last_accepted` is high from
+`C+3`, which is the cycle §7's C-16 bullet describes; at `W = 8`, `C+7` and
+`C+8`. §4's selectivity is therefore explained without residue — **the design
+is not reading REQ-206 to its first full stop** (that would have strobed at
+`P = 60` too), it is failing on exactly the shape where the window's two bounds
+are set by one event.
+
+**Why review and smoke sims did not catch it, stated because the charter asks
+for it and not as mitigation.** The predicate was written down correctly in prose
+at authoring time — `J-rtl_lead-0002` says, of C-16, "*C+8 carries no obligation
+(the underflow window closed when the `tlast` word was accepted)*" — and then
+encoded as a clear-then-accumulate register, a shape whose narrowing is invisible
+unless the two events are instantiated on one cycle. Every worked instance I
+reasoned against was a frame where they are not: §6.1's cycle table is `P = 60`,
+§7's C-16 bullet illustrates at `C+8`, and §9's strobe pin is stated against a
+frame with a word still owed. I read the C-16 clause through the number it is
+illustrated with rather than through the predicate it is stated over — which is
+the same reading error §3 of this packet identifies and answers, arrived at
+independently from the design side. There were no smoke sims: ADR-0005's
+container has zero hardcaml packages, so this module had never been compiled,
+elaborated or simulated by anything until CI run 31476319884, and the first
+execution of a bench against it is exactly when this had to surface.
+
+### 9.2 The fix — one expression, no new register, `error_underflow` the only cone touched
+
+```ocaml
+let start_word_is_last = ~:empty &: held_last in
+last_accepted
+<== reg
+      spec
+      (mux2 start_now start_word_is_last last_accepted |: (accept &: i.tx.tlast));
+```
+
+Two changes to one next-value expression, and they are the same change said
+twice: **the set term moves outside the frame-boundary clear** (clear the
+history, then record this cycle's acceptance — rather than clear the whole
+expression), and **the clear is replaced by a seed taken from what the module is
+already holding**. The register keeps asking exactly the question REQ-206's upper
+bound asks, and now three ways of having accepted a `tlast` word all register
+rather than one:
+
+1. **on the start cycle itself** — `empty`, the word taken now (`accept & tlast`
+   after the seed). This is the reported `W = 1` frame from idle;
+2. **before the start cycle** — `~empty` with `held_last`, the frame's first word
+   already in the holding structure. This is §7 case 2's early-acceptance cycle
+   (C-16) followed by §6.2's `Idle` row starting the frame from the held word.
+   §9.3 shows this is a second reachable route to the same defect;
+3. **after the start cycle** — the accumulate term, unchanged, which is every
+   `W ≥ 2` frame including all three of §4's clean brackets.
+
+**The change is provably a suppression only where the window is provably
+empty**, which is §5 item 4's demand. `start_now` = 0 ⇒ both forms are
+`last_accepted | (accept & tlast)`, bit for bit. `start_now` = 1 ⇒ old = 0, new =
+`(~empty & held_last) | (accept & tlast)`. So the *only* cycles on which the two
+designs differ are start cycles at which the starting frame's `tlast` word is
+**already in this module's hands** — the exact condition REQ-206's upper bound
+names. It cannot silence a frame with a word still to come: such a frame's first
+word has `tlast` = 0 and nothing is held behind it, so the seed is 0 and the
+register behaves as it did. `M04-G5` — `P = 60`, a word withheld at `C+1` — is
+untouched by inspection: at its `C` the seed is `~empty` = 0 and `accept & tlast`
+= 0, so `last_accepted` = 0 at `C+1` and the strobe pulses there as the row
+requires, with the `/E/` word two cycles later. That is the one-cycle-offset
+neighbour §5 names, and the fix keys on the `tlast` acceptance, never on an
+offset from `C`.
+
+**`~:empty` is load-bearing, not defensive.** The `hold` registers keep their
+last value on a pop, so `held_last` is stale whenever `fill` = 0.
+
+**That the held word at a start cycle is always the starting frame's own first
+word** is what makes route 2 sound, and it holds for the module's reasons rather
+than by assumption: `tx_tready` is asserted only when `(can_start &
+cfg_tx_enable)` or `(in_body & need_payload)`; in `Body` every accepted word is
+consumed before the frame ends except one accepted on the last `need_payload`
+cycle, which is §7 case 2's cycle and which case 2 itself names *the next frame's
+first word*; on a `can_start` cycle an acceptance always coincides with
+`start_now`, because `word_available` includes `accept`; and on the abort path
+`starved` requires the structure empty and `tx_tready` is 0 while starved, so
+nothing is carried into an aborted frame's gap. `clear` empties `fill` outright.
+
+### 9.3 A second and a third route to the same defect, which the reported stimulus cannot reach — stated because §8 item 3 asks whether the mechanism's domain is wider than `W = 1`
+
+**It is wider than the reported stimulus and it is not wider than the defect.**
+The mechanism is "the frame's `tlast` word was accepted at or before the cycle
+the frame started", and §1's stimulus reaches only its first route because it
+runs one frame out of reset. Two more routes exist in the specified domain, both
+requiring a **preceding frame** so that §7 case 2's early acceptance at `C+8` has
+somewhere to come from. Derived, not measured — I have run nothing:
+
+- **Route 2 — `W = 1`, pre-accepted.** Frame A (`P` = 60) is accepted at
+  `C … C+7`; at `C+8` the source presents a one-word frame B, which M04 accepts
+  into the slot A's word vacates (§7 case 2). `term_here` at `C+9`, gap served,
+  and at `C+11` the gap's last cycle starts B from the held word with no
+  acceptance of its own (`word_available` = `~empty`). At `fcf6f08` the clear
+  fires and `last_accepted` = 0; at `C+12`, B's first `Body` cycle, `tready` = 1,
+  `tvalid` = 0 and **`error_underflow` pulses** — the same defect, one frame
+  later, reached without ever satisfying `start_now & accept & tlast`. The fix's
+  seed is `~empty & held_last` = 1 there and it is silent.
+- **Route 3 — `W = 2`, fully pre-loaded, and this one is a `W = 2` strobe.**
+  Same frame A; B's word 0 accepted at `C+8`, B's word 1 (`tlast`) accepted at
+  `C+11`, which is precisely the pairing §7 case 4 describes and licenses
+  ("*if a word was accepted at C+8, the word accepted at C+11 is that frame's
+  second word*"). At `fcf6f08` the clear discards the `C+11` acceptance;
+  `tx_tready` is 0 at `C+12` because both slots are full (§7 case 4's own
+  consequence), and the spurious strobe lands one cycle later, at `C+13`, when
+  the second slot drains and `need_payload` is still high. Post-fix the seed
+  path takes `accept & tlast` at `C+11` and it is silent.
+
+**What this does and does not do to §6.** It does **not** overturn §6's
+reachability finding, and it changes the reason: §6 argued the composed chain is
+safe because M07 prepends 14 octets so `W = 1` cannot be produced upstream, and
+that argument stands for route 1. Route 3 is a `W = 2` strobe, so the
+`W ≥ 2`-therefore-safe half of that argument does not by itself close the
+question — what closes it is SPEC-M04 §7's own note that **in the composed chain
+M07 presents nothing at `C+8`** (its output word 0 leaves at `C+9` and is
+accepted at `C+11`), so the early acceptance routes 2 and 3 both depend on is not
+produced by M07 at all and is "*reached only by a bench driving M04 directly from
+a continuous source*". Both routes therefore need a direct-drive back-to-back
+bench, which is REQ-209's sustained run (§8 of the spec) — and REQ-209's frames
+are minimum-length, `W = 8`, so that bench does not reach them either. **I am
+reporting this to §6, not grading it**: whether a derived `W = 2` strobe on a
+shape no committed bench drives is a severity conversion is dv_lead's to decide,
+and §V.2 of BUG-0003 is the standing precedent that a derivation is not a class
+DV records a severity on.
+
+### 9.4 `W = 2` — §4's nearest untested neighbour and §6's conversion question, answered by derivation
+
+**On the stimulus shape §1 describes — one elaboration out of reset, each word
+re-offered until accepted, nothing after — `W = 2` (`P` = 9 … 16) is CLEAN at
+`fcf6f08` and is BIT-IDENTICAL after the fix.** The derivation, with `C` = 1 as
+in §9.1:
+
+| cycle | `fill` | `tready` | `tvalid` | `last_accepted` at `fcf6f08` | `last_accepted` post-fix | `error_underflow` |
+|---|---|---|---|---|---|---|
+| 1 = `C` | 0 | 1 | 1 → accept word 0 (`tlast` = 0), `start_now` | 0 | 0 (seed `~empty` = 0, `accept & tlast` = 0) | 0 |
+| 2 | 1 | 1 | 1 → accept word 1 (`tlast` = 1) | 0 | 0 | 0 (`tvalid` = 1) |
+| 3 | 1 | 1 | **0** | **1** (set at cycle 2) | **1** | **0** |
+| ≥ 4 | 0 | 0 (`need_payload` = 0, end recorded) | 0 | 1 | 1 | 0 |
+
+Cycle 3 is §7's C-16 cycle for this frame — `tx_tready` = 1 with `tx_tvalid` = 0
+meaning nothing at all — and both designs suppress it through the same set term,
+because at `W ≥ 2` the acceptance and the start are different cycles. **So the
+measurement §6 names as the CRITICAL converter will not be obtained on that
+stimulus shape**, and the fix does not move it either way, which is the property
+§8 item 3 needs before it releases the re-test: *on the reset-and-present shape
+the fix's behaviour at `W = 2` is the identity.* If dv_lead wants the `W = 2`
+point to bite, §9.3 route 3 is the shape that does it, and it needs a preceding
+frame handing over at `C+8` — a direct-drive back-to-back stimulus, not a
+lengthened single frame.
+
+Two further brackets, same derivation, offered so the re-test can be read
+without re-deriving them: `W ∈ {4,5,6,7}` behave as `W = 3` and `W = 8` do (first
+word `tlast` = 0, acceptance and start on different cycles) and are unaffected by
+the change in both designs; and `P ∈ {59, 61, 64, 67, 1514}`, the members §4
+records as driven but never adjudicated, are all `W ≥ 8` and sit in the same
+class.
+
+### 9.5 What does not move, and the one thing that does
+
+**The wire path is untouched, structurally rather than by argument.**
+`last_accepted` feeds exactly one expression in the module — `underflow` — and
+nothing else reads it (`grep -n 'last_accepted'` is four sites: its declaration,
+its use in `underflow`, its own next-value, and the new seed binding). It reaches
+neither `tx_dest.tready` nor `xgmii_txd`/`xgmii_txc`, so §5 item 2 holds by
+construction: `F = max(P,60) + 4` wire octets, the pad, the terminate character's
+cycle and lane, and the absence of `/E/` are all bit-identical to the run this
+packet was written from, and §5 item 3's post-`tlast` silence at `W ≥ 2` is
+untouched for the reason §9.2 gives.
+
+**`rtl_snapshots/**` goes stale at this commit and is deliberately not
+regenerated here.** The emitted netlist *does* change — `bin/generate.ml` builds
+`rtl_snapshots/xgmii_tx_64.v` from `Xgmii_tx_64.create`, and
+`rtl_snapshots/eth_mac_10g.v` contains the same `xgmii_tx_64` module body at line
+2852 — so **both files are stale until the emitter arc promotes them**, which is
+the arc `J-rtl_lead-0016`/`J-rtl_lead-0017` established: CI's *Verify nothing was
+left unpromoted or non-deterministic* step reddens and its `PROMOTION BLOCK`
+carries the two new `.v` files as sha256 + base64. **This does not contaminate
+the re-test**: `Run tests` executes *before* `Generate RTL` in `build.yml`, so
+§8's items 1 and 2 are read from the same run at their own step, and the job's
+red at the later step is scheduled rather than a second defect. The prediction,
+stated before the run so it can convict itself: **no register is added and no
+`always` block appears or disappears** — the delta in the error_underflow cone is
+one added AND term and the OR moving outside the mux — and the same delta
+appears twice, once per file.
+
+### 9.6 What I do not claim
+
+1. **Nothing CI has not run.** This module has still never been compiled,
+   type-checked, elaborated, simulated or emitted in this container: the `fpga`
+   switch carries zero hardcaml packages (ADR-0005). The edit is parse-checked
+   only — `ocamlc -stop-after parsing`, with negative controls, recorded in
+   `J-rtl_lead-0018` — which sees syntax and nothing else: not a width mismatch,
+   not a wrong field name, not a `Signal` operator that does not exist. **The
+   first real verdict on this fix is dv_lead's re-test at §8.**
+2. **No test file was read or written.** §8's closing rule is respected: nothing
+   under `test/**` is in this commit, and the three failing units are known to me
+   only through this packet.
+3. **The tables in §9.1, §9.3 and §9.4 are derivations from the design source and
+   the specification, not observations.** Every one of them is falsifiable by
+   dv_lead's re-run, which is the point of writing them down before it.
+4. **No row of `AP-xgmii_tx_64` moves, no `SO-` is offered, and the packet's
+   State and severity stay where dv_lead put them.** PROTOCOL §10's mutation
+   campaign remains sequenced after `WO-0080`'s eventual `RV-` ACCEPT.
+
+---
+
 ## Fix verdict
 
 *(empty — appended by dv_lead after re-test, per the `BUG-` template. The fix

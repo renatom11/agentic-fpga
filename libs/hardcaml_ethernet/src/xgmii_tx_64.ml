@@ -349,8 +349,40 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   in
   let underflow = tready &: ~:(i.tx.tvalid) &: frame_active &: ~:last_accepted in
   accept <== (tready &: i.tx.tvalid);
+  (* [last_accepted] answers one question — has *this* frame's `tlast` word been
+     accepted? — and the answer is not always accumulated from [start_now]
+     onwards. Two ways a frame can be wholly accepted at or before the cycle it
+     starts, both inside SPEC-M04's domain, and BUG-0004 is what clearing the
+     register at [start_now] did to them:
+
+     - the frame's first word *is* its `tlast` word (a one-source-word frame,
+       W = 1, P ≤ 8 — §2's not-my-job table records that nothing here knows a
+       length, and REQ-203's pad rule is written to reach any P below 60, so the
+       specification places no lower bound to lean on). Its acceptance and
+       [start_now] are the *same* cycle;
+     - the first word was accepted *before* the frame started, on §7 case 2's
+       early-acceptance cycle (C+8, carry-forward C-16), and §6.2's `Idle` row
+       then starts the frame from the held word with no acceptance of its own.
+
+     So the register is **seeded from what is already held** at [start_now]
+     rather than cleared to 0, and this cycle's own acceptance is OR-ed in
+     **after** the seed rather than nested under it. Clearing first and setting
+     second is the whole repair: the previous form let [start_now] discard the
+     acceptance that closes the window on the one frame shape where the two
+     coincide. REQ-206's window is *empty* there — it opens at the start
+     character (C+1, §6.2's `Preamble`) and closes at the `tlast` acceptance (C),
+     so no cycle of a W = 1 frame can satisfy it, whatever [tready] does.
+
+     Nothing here widens the suppression: the seed is a word this module
+     accepted, and a frame with a word still to come reaches the accumulate term
+     exactly as before — a word required and not presented at C+1 of a W ≥ 2
+     frame still pulses. [held_last] is only meaningful while a word is held (the
+     hold registers keep their value on a pop), hence the [~:empty] guard. *)
+  let start_word_is_last = ~:empty &: held_last in
   last_accepted
-  <== reg spec (mux2 start_now gnd (last_accepted |: (accept &: i.tx.tlast)));
+  <== reg
+        spec
+        (mux2 start_now start_word_is_last last_accepted |: (accept &: i.tx.tlast));
   frame_active
   <== reg spec (mux2 start_now vdd (mux2 (term_here |: starved) gnd frame_active));
   Always.(
