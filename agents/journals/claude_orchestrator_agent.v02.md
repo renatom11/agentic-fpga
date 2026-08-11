@@ -4131,3 +4131,25 @@ own staging-hazard flag.
 
 ### Files-in-this-commit
 - docs/specs/requirements.md
+
+## [J-orchestrator-0248] 2026-08-11T13:40Z | task:none | Incident nine, rollback seven: the same ancient commit, the same designed catch - and the refusing agent salvaged the one read-only act so the payloads carry forward verified
+
+### The incident and the recovery
+The container rolled back to the WO-0060 era a third time (HEAD
+310a33d, 02f762a not a valid object, the same stale RV-0060 dirty
+file). The rtl promotion round's abort-first precheck caught it,
+refused acts 2-5 with the reasoning written out (placing emitted
+Verilog over a tree lacking its source history would break the
+generator-determinism invariant), REFUSED to score its own sealed
+prediction against a paraphrase when the sealed original was
+unreadable - and ran the one read-only act anyway: the three-way
+sha derivation, BOTH FILES PASS, so the verified payloads carry
+forward. Evidence diff preserved (incident9_wo0060_dirty.diff);
+fetch 310a33d..02f762a; reset --hard; verified: HEAD 02f762a
+clean, rtl journal at 0018, BUG-0004 present, eth_axis_rx.v sha
+exact. NINE incidents (seven rollbacks, one cap-kill, one
+restart-kill), zero loss ever. The promotion round respawns at
+this commit's successor HEAD.
+
+### Files-in-this-commit
+- (none)
