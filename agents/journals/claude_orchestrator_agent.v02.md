@@ -3905,3 +3905,52 @@ next commit.
 
 ### Files-in-this-commit
 - agents/handoffs/HT-01_first-harvest-transit.md
+
+## [J-orchestrator-0242] 2026-08-11T07:20Z | task:none | The board learns the gate exists and the era turns: a gate row with two routed findings, the first new RTL in the record since batch B - and incident seven, a worker restart that killed one sibling after the other had already landed
+
+### The board flip
+tasks/BOARD.md Gates table gains the P1-module-ready row: OPEN,
+checklist authored at 61e0c76 (J-architect_docs_lead-0037), M03's
+row supplied (PASS 14/14 at 41fead6), Part B boxes carried, both
+authoring findings routed with owners (G-1 to the auditor's
+ledger; G-4(ii) REQ-904's nonexistent script to dv's next tools
+round), all boxes unchecked and all signature cells empty by the
+architect's own refusal - the sponsor's signature is what the row
+now waits on.
+
+### The landings this entry records
+rtl_lead returned its two-commit round and both landed in order:
+975f321 (J-rtl_lead-0014, journal-only - volume 02 opened, chain
+fields verified BOTH sides against git show HEAD: at dispatch and
+landing, sha 51e64632.../270152, Previous-volume a repo-relative
+path) and 0753735 (J-rtl_lead-0015 - M06 Eth_axis_rx implemented:
+.mli+.ml, delta-C 3 against a ceiling of 3 with zero reserve, the
+contract written longhand because SPEC-M06 section 7/section 10
+still carry the reading requirements.md section 0.5 retired). The
+split landing used the pure-append proof: commit 1 staged the
+0014-only prefix, commit 2 verified the full file is a suffix
+extension before staging. rtl carried out: C-RL-6 (emitter +
+snapshot cannot land in one commit - the determinism step's
+promotion block IS the snapshot's bytes; a scheduling decision,
+mine to make with rtl); C-RL-7 (SPEC-M06 stale sentences - the
+2026-08-04 section 13 row commissioned the repair "with the next
+work order that opens those specs", now DUE; architect round
+owed). M06's first real verdict is CI's build at 0753735.
+
+### Incident seven
+The session's worker process restarted mid-window. rtl's round had
+RETURNED AND LANDED before the restart - zero loss there. dv's
+declared-sibling round (AP-xgmii_tx_64 opener, J-dv_lead-0169) was
+mid-write: its task record is gone (ListAgents: none reachable),
+its only tree write was the new AP file (714 lines, mtime 04:33),
+its other three write-set files untouched (verified by diff-stat).
+Playbook applied: partial preserved to scratchpad as
+AP-xgmii_tx_64_partial_incident7.md, tree cleaned, respawn with
+the identical dispatch follows this commit (spawn-head moves to
+this commit's SHA; the sibling clause is dropped because the
+sibling has landed). The partial is evidence, not input - the
+respawned round starts fresh for authorship integrity, per
+incident five's precedent. SEVEN incidents, zero loss ever.
+
+### Files-in-this-commit
+- tasks/BOARD.md
