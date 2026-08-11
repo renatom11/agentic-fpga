@@ -74,7 +74,7 @@ carries one of these, with the posture-list row that decides it:
 | `[CORRECTED · C-nn]` | This text replaces a claim the posture list found **false**. What the first edition said, and what refuted it, is stated in the margin. |
 | `[UNANCHORED · C-nn]` | An exhibit whose incident could not be located in the committed record. Kept, marked, and owed an anchor or removal. |
 
-Three properties of the stamps, so they are not over-read:
+Four properties of the stamps, so they are not over-read:
 
 - **A stamp is a measurement at one commit, not a promise.** `[MC]` says a
   refusal exists today in the machinery that was audited. Your machinery is not
@@ -88,6 +88,17 @@ Three properties of the stamps, so they are not over-read:
   so they were outside the audit's frame and are outside the stamping. This is
   deliberate and is the one place a reader will see unstamped normative-sounding
   text.
+- **A claim added after the measurement carries no row, and says so.** The
+  posture list is a frozen measurement of the text as it stood when it was
+  taken. A claim added afterwards has no row to cite, and citing a row that does
+  not decide it would be worse than citing none — so such a claim is marked
+  *(no posture row — added after the measurement)*, states its posture in prose,
+  and is owed a row at the next audit (**Annex B**). Exactly **two rules** are
+  added that way: the fifth separation of §1.4(e) and one element of §3.8's
+  list, both on the correction of the seat those rules bind. Added and corrected
+  **exhibits** — claims about episodes rather than about controls — carry no row
+  either; each says in its own margin which seat's confirmation produced it, and
+  **Annex B** lists the round that filed them.
 
 ### The dialect
 
@@ -292,7 +303,8 @@ not the implementation lead's alone.
 the measurements, and issues the **sign-off** packets (§3.8) that are a
 precondition of merge. Derives everything from the specification, never from the
 implementation `[RE · C-14]` — see §1.4(c) for why this one cannot be mechanized
-and what carries it instead.
+and what carries it instead. The reference models this seat owns are themselves
+graded before they may grade: §1.4(e).
 
 **Workers.** Spawned per packet, given exactly the context that packet carries,
 returning exactly what it asks for. They share a journal template per **role**,
@@ -363,12 +375,16 @@ charter review is the highest-value single act in the founding sequence and its
 own evidence was the weakest in the record** — if you run it, run it into
 committed artifacts. §1.7 states the sequence this belongs to.
 
-### 1.4 Separation of duties — four separations, each drawn against a specific temptation
+### 1.4 Separation of duties — five separations, each drawn against a specific temptation
 
 *(The first edition's header said "three lines" over a list of four. It was a
 count of the organization's three working lines — specifying, building,
 verifying — sitting over a list of four separations, only two of which are drawn
-between those lines. Four is the count that matches the list.)*
+between those lines. Four was the count that matched the list, until this
+revision added **(e)** on the verification lead's own correction: a separation the
+constitution draws, the one sign-off in the record executes, and this document
+carried nowhere — not in this list, not in the sign-off form of §3.8, not
+anywhere. The seat that found it is the seat the separation constrains.)*
 
 **(a) No seat reviews its own work.** Every output is accepted by a seat that did
 not produce it `[RE · C-20]`. Where the producing seat is the only competent
@@ -454,6 +470,44 @@ recurs as the first disguise in §5.7. **An unanchored exhibit is a different
 defect from an unanchored rule, and collapsing the two is how good rules get
 deleted with their bad exhibits.**
 
+**(e) The thing that grades is itself graded, against something the organization
+did not write.** A reference model may not judge an artifact until it has been
+shown to agree with an **external anchor**: an independent implementation of the
+same specification, obtained from outside the organization that produced both the
+artifact and the model. The agreement is established **per stimulus class**, and
+what the anchor does *not* cover is stated in the same place as what it does.
+**The obligation is an ordering one, which is what makes it checkable**: the
+agreement has to be committed *before* the first verdict the model issues, so a
+later reader audits it from the order of the record rather than from anyone's
+testimony.
+*(No posture row — added after the measurement. Its posture is **review-enforced**:
+in this program the rule is constitutional, it is a named precondition in the
+verification lead's charter — which also makes the ordering a duty of the
+independent seat to check — and it is a numbered criterion of the one sign-off in
+the record. No script reads any of the three.)*
+
+*Failure class, and it is the one this document came closest to exporting.* A
+model and an artifact built inside one organization, from one specification, by
+parties who read that specification the same way, **agree with each other exactly
+where both are wrong** — and that agreement is reported as a pass. The other four
+separations keep the grader away from the thing it grades; this one stops the
+grader's own correctness from resting on the same reading that produced the
+subject. Without it every mechanism in §3.9 still runs, the sign-off form of §3.8
+is still filled in honestly, and the apparatus certifies an artifact against an
+oracle nobody ever checked. Note what this costs: an external anchor is something
+you must *obtain*, and the rule is therefore the one separation here that can be
+defeated by a schedule rather than by a temptation.
+
+*Anonymized pattern, and the honest half is the useful one.* The single sign-off
+in this record reports the anchor **per stimulus class** — each anchored class at
+its own build and run identifiers, the *absolute* half of the check named
+separately from the *agreement* half, and each class's "does **not** anchor" list
+carried in the same cell as its claim. It then states, in terms, that the anchor
+is **undischarged at the level of the whole artifact**, and it bars the sentence
+*"the comparison anchors this artifact"* from appearing anywhere in the packet.
+The form worth copying is not the passing anchor; it is the refusal to let five
+passing classes be summed into an artifact-level claim nobody measured.
+
 ### 1.5 The auditor is a different kind of seat
 
 The auditor is not a stricter reviewer. It is structurally distinct in four ways,
@@ -514,6 +568,16 @@ necessarily documented — it becomes a finding like any other. The first editio
 said the instances "never are" documented, which contradicted the finding route
 in the next clause.)
 
+*And a note about where that correction had to land, because the shape recurs.*
+The same contradicted sentence stood, in almost the same words, in the
+sponsor-facing guide that this program's holder of the canary power actually
+reads. The last revision cured it **here**, in the document describing the
+mechanism, and left it standing **there**, in the document operating it. An
+independent seat found the pair and filed it. **A contradiction cured in the copy
+and left in the source is not cured**: the source is what its own audience reads,
+and the next document derived from it inherits the defect with the copy's
+correction nowhere in sight. Both now say the same thing (**Annex B**).
+
 *Failure class.* An auditor is the one seat whose failure is invisible by
 construction: a silent auditor and a clean program produce identical output. The
 canary is the only instrument that distinguishes them.
@@ -533,10 +597,16 @@ entirely in committed files:
   the entry point of the recovery sequence below, and the only artifact that
   tells a fresh reader which seats exist at all;
 - **a journal index** — one row per log with its last entry and a one-line
-  summary, refreshed at boundaries as a navigation aid `[CORRECTED · C-32]`.
+  summary, designed as a boundary-refreshed navigation aid and, in this record,
+  **written once at the founding and never refreshed since** `[CORRECTED · C-32]`.
 
 *Margin note on both aids, and it is the same note.* The first edition described
-the index as a maintained navigation aid. **It was written once, at ratification,
+the index as a maintained navigation aid — and until this revision the running
+line above still described it as *refreshed at boundaries*, with the whole
+correction left to this margin. That is its own small defect and it was caught by
+the census that re-read every marker: **a `[CORRECTED]` marker means the running
+line has been repaired and the first edition's claim preserved beside it, or it
+means nothing.** The correction itself: **it was written once, at ratification,
 and never updated**: at the audit it still listed two leads as "not yet
 activated" while one of them was eleven volumes deep, and named an entry id some
 nineteen entries stale. It was letter-compliant — one boundary had passed — and
@@ -741,7 +811,7 @@ What is actually true, and what an adopter should carry:
 
 - **One journal append per commit is the mechanical invariant** `[MC · C-59]`.
   That is what the machinery holds, in every case, for every seat.
-- **One *agent* per commit is emergent only where the two seats' scopes are
+- **One agent per commit is emergent only where the two seats' scopes are
   disjoint**, which is a property of your scope table, not of the rule. Compute
   it: for every pair of seats, intersect their scopes. Every non-empty
   intersection is a pair for which attribution is review-enforced.
@@ -917,7 +987,11 @@ absence is written down.
 *Corollary, adopted after a measurement.* If a check exists on one surface — the
 local commit path — and not on the other — the re-check over pushed history — the
 asymmetry is itself the defect. Both surfaces or neither.
-`[P1 · 2026-08-04 · C-55]`
+`[P1 · 2026-08-03 · C-55]` *(This stamp read 2026-08-04 until the date census
+re-anchored all of them: the commit that mirrors the rule into the pushed-history
+re-check is dated the third. One day, and the correction is worth the line —
+§5.4's whole lesson is that a date in a record is testimony, and a date nobody
+re-anchored is testimony nobody tested.)*
 
 *And it was applied once, to one rule, in the act that minted it.* A large-file
 gate was mirrored into the pushed-history re-check and given its own numbered
@@ -1027,7 +1101,8 @@ by inspecting the diff. Both are force-push protected. The campaign references o
 therefore not a violation of "one working branch" — the rule is about where
 *history* accumulates, not about how many references exist. State that
 distinction in your own version; a rule that says "one branch" while the
-repository has ninety references is a rule an adopter cannot apply.
+repository carries **eighty-six** marked references — the figure measured at this
+revision's own commit, none of them merged — is a rule an adopter cannot apply.
 
 **The files-list rule deserves its own note**, because it is the least obvious and
 the most load-bearing. Each entry declares the exact set of files that commit
@@ -1117,9 +1192,9 @@ dispatch text alone. The audit that produced this edition's stamps was itself
 such a round, and so is this revision. The class is real, it is used for exactly
 the rounds where the commissioning seat is also the committer, and naming it
 costs nothing while pretending it does not exist costs an adopter the ability to
-audit for it. **The honest rule is not "everything is a file" but: *every
+audit for it. **The honest rule is not "everything is a file" but:** *every
 commission is a file, or the round says in its own reasoning log that it was
-dispatch-only and why*** — which converts an invisible exception into a countable
+dispatch-only and why* — which converts an invisible exception into a countable
 one.
 
 **The failure class that governs this whole section.** A task, verdict, finding or
@@ -1563,11 +1638,20 @@ row signed.
 
 A **sign-off** is the verification line's verdict on one artifact: pass or fail,
 with the suite named, the exact commands to reproduce it, the requirement-to-test
-mapping with gaps declared, the stress-test results, the seeded-defect dispositions, and
-open defects. It is a merge precondition and it is relayed verbatim.
+mapping with gaps declared, the stress-test results, the seeded-defect
+dispositions, **the external anchor's disposition per stimulus class — with what
+the anchor does not cover named beside what it does, and no artifact-level claim
+assembled out of passing classes (§1.4(e))** — and open defects.
+**This list is a floor, not a description of any packet.** It is the least a
+sign-off may contain; the one in this record carries elements it does not name,
+and the anonymized pattern below is one of them. A sign-off is a merge
+precondition and it is relayed verbatim.
 `[P1 · 2026-08-11 · C-94]` — **the described form is real and the sample size is
 one.** Exactly one sign-off exists in this program's record; it carries every
-element named above. An adopter should read this section as a form that has been
+element named above, the anchor element included — that element was added to this
+list **after** the measurement behind the stamp, on the verification lead's own
+correction, and was checked against the packet in the same act *(no posture row;
+**Annex B**)*. An adopter should read this section as a form that has been
 executed once, well, rather than as a form worn smooth by repetition.
 
 **A sign-off may say FAIL, and a FAIL is preserved.** Failing verdicts are not
@@ -1622,13 +1706,24 @@ than a periodic exercise.
 are applied **transiently** — in a working state that is reverted. Both are wrong
 against this program's record, and the second is wrong in a way worth carrying,
 because the constitution still says it too. Every campaign in this program ran as
-**ordinary commits pushed to marked references that are never merged** — some
-ninety of them — for a reason that is a substrate fact, not a preference: *the
-only environment that can run the suite runs on pushed references*. There is no
-local run to revert. The first edition contradicted itself on this within
-twenty-five lines, describing the transient model here and the pushed-reference
-model below. The rule-and-its-check disagreement of §2.4, in a document, about
-its own mechanism.
+**ordinary commits pushed to marked references that are never merged** —
+**eighty-six such references at this revision's own commit, none merged, grouped
+under fifteen campaign prefixes and two probes** — for a reason that is a
+substrate fact, not a preference: *the only environment that can run the suite
+runs on pushed references*. There is no local run to revert. The first edition
+contradicted itself on this within twenty-five lines, describing the transient
+model here and the pushed-reference model below. The rule-and-its-check
+disagreement of §2.4, in a document, about its own mechanism.
+
+*(The figure read "some ninety" until an independent seat re-measured it, and the
+imprecision mattered more here than its size suggests, for two reasons. This is
+the one section that **rules a reference population cannot be a denominator** —
+and a section that rules so may not quote its own reference count loosely, or the
+next reader will divide by it. And the count is of *references*: not of
+campaigns, of which there are fifteen, and still less of defect classes, which is
+the unit every rule below insists on. The shape an adopter will actually find in
+this record is a run of campaigns against one artifact, interleaved with defect
+packets and their repairs — not one campaign sitting in one gap.)*
 
 The sequencing and the separations matter more than the technique:
 
@@ -1685,7 +1780,7 @@ closed.
 
 **What is sealed is not the existence of the campaign but the discriminating
 part**: which units must go red, which must stay green, and the exact expected
-failure messages `[RE · C-103]`. **The *set* of units that turns red rarely
+failure messages `[RE · C-103]`. **The set of units that turns red rarely
 distinguishes one seeded class from another** — two unrelated defects routinely
 light the same units — **so the seal that discriminates is the expected message
 text**, taken from whichever assertion speaks first. A seal that predicts only
@@ -1704,6 +1799,19 @@ wrong number is a reader who knows what each is for. That is why the referents
 below are spelled out rather than left as the shorthand the originating rounds
 used: **a rule you cannot picture failing is a rule you will apply to the wrong
 object.**
+
+*And a boundary on that instruction, stated by the seat these rules bind, because
+without it the instruction reads across into two things it does not govern.*
+**These are the properties the record must be able to answer for, not a reporting
+form.** The form is the reporter's, and it is expected to move when a campaign
+shows it insufficient — in this record the reporting schema moved twice in nine
+days, once because the reporter found a column insufficient and once because the
+clause being codified forced it. An adopter who imports the bullets and freezes a
+column set has imported the rule and lost the calibration. Nor does the
+instruction reach the **figures** the rules govern: the standing discipline there
+is the opposite one — *a figure carried across rounds is re-derived by the method
+its carrier claims, or the carrier states that it was quoted.* **Import the
+rules; re-derive the numbers.**
 
 The rules that transfer:
 
@@ -1739,21 +1847,38 @@ The rules that transfer:
   it. Leaving the openness implicit is how a normative property nobody wrote down
   comes into being.
 - **A ground that turns on what the seal disclosed holds only where the disclosure
-  was frozen before the run**, never on what the run returned.
+  was frozen before the run**, never on what the run returned. Grounds 2 and 3
+  are both of that kind, and naming which they are is the difference between a
+  rule and a rule a reader has to reconstruct.
 - **The unit of the record is the defect class**, not the branch or file that
   delivered it. A ref population grows by infrastructure accident and cannot be a
   denominator.
 - **Every non-kill is named individually**; no non-kill is folded into a kill and
   no ratio stands in for the dispositions.
-- **A defect that survived its own campaign** and was later caught is dispositioned
-  in exactly one evidence form: the *unmodified* committed diff, replayed against
-  the suite as it stands now, at a run id, with the killing unit named. Anything
-  weaker lets a survivor be argued dead.
+- **A defect that survived its own campaign** — meaning its seal predicted a kill
+  and no unit killed it — and was later caught is dispositioned in exactly one
+  evidence form: the *unmodified* committed diff, replayed against the suite as it
+  stands now, at a run id, with the killing unit named. Anything weaker lets a
+  survivor be argued dead. The asymmetry with the next bullet is the reason for
+  the strictness: **a rehabilitation reverses the record's own measurement and so
+  needs a new one, while a kill's disposition preserves that measurement and needs
+  only that its instrument still stands.**
 - **A campaign kill is a frozen measurement too**, so it is dispositioned by its
   campaign record *together with the named killing unit, present and green now*.
-  That form catches a killing check deleted or disabled since; it does not catch
-  one weakened, and the clause says so rather than leaving the limit to a
-  footnote.
+  That form catches a killing check deleted or disabled since. **It does not catch
+  one weakened, nor a class whose rendering no longer applies to the artifact, nor
+  a record whose unit names no longer exist in the suite** — and the distinction
+  between those three is the part worth importing: the first is disclosed in the
+  clause itself, and **the other two were found afterwards, by applying the
+  clause.** In this record five of thirty-seven committed renderings no longer
+  apply to the artifact they were scored against — the survivor form replays a
+  patch and so self-checks against that drift, while the kill form asks only that
+  a unit be present and green and cannot notice that the class's rendering has
+  stopped existing — and the unit names the older campaign records carry were
+  later retired wholesale, so a literal application of *the named killing unit,
+  present and green* fails at every class of four campaigns for a reason that is
+  not a missing instrument. **A form whose limits you inherit as complete is more
+  dangerous than a form you know to be partial.**
 - **Equivalent defects leave the denominator only on a proof.** A defect no
   conformant observation can distinguish from the correct artifact is *equivalent*
   — but only where the equivalence is proven in a committed artifact, the proof
@@ -1775,27 +1900,57 @@ The rules that transfer:
   mechanical-shaped bar in the discipline cannot be cleared by subtraction.
 
 *Three anonymized patterns, because the bullets above are rulings and a ruling
-without its case is a rule nobody can apply.*
+without its case is a rule nobody can apply. Two of them are defects the rule was
+written **against**; the middle one is a practice the rule was written **from**,
+which is the better kind of exhibit and the rarer one — and reading a set like
+this as three failures is how the middle one came to be written up as a lapse
+that never happened.*
 
 **The column that was not its label.** A tally published a column headed
 *sealed*. It **excluded** an item the record had itself declared sealed, and
 **included** one that had never been rendered at all, on two grounds that had
 never been stated together anywhere. The verdict lines then qualified themselves
-with a word — *of the scoreable classes* — that appeared in no normative
-document. The defect surfaced only because someone was writing a rule to codify
-the practice, and would have frozen the wrong definition: the draft was taken
-from the practice's **columns**, while the operative word lived in its **verdict
-lines**. It then happened again, at a third item, in the same round. This is why
-the naming duty is closed while the list of grounds is open (§5.2).
+with a single word — *scoreable* — that appeared in no normative document. The
+defect surfaced only because someone was writing a rule to codify the practice,
+and would have frozen the wrong definition: the draft was taken from the
+practice's **columns**, while the operative word lived in its **verdict lines**.
+A third instance then surfaced by a **different route**, in a later round: not by
+walking the record again, but by reading the **drafted clause** against it — the
+codification finding one more case of the defect it was being written to cure.
+The exact route is the sharper telling and the one worth carrying: **two of the
+three were found by looking at the record, and the third by writing against it.**
+This is why the naming duty is closed while the list of grounds is open (§5.2).
 
-**The survivor argued dead.** A defect that its own campaign recorded as
-surviving was later said to be handled, on the strength of a suite that had grown
-since. Every weaker evidence form permits this: a re-run of a *rewritten* patch,
-a claim that some unit "would now" catch it, a ratio that no longer names it. The
-form the rule demands is the narrow one that cannot be argued — the **unmodified
-committed patch**, replayed against the suite as it stands at the gate, at a run
-identifier, with the **killing unit named**. And the campaign's own recorded
-`survived` count is kept beside it, unedited: two facts, never folded into one.
+**The survivor whose rehabilitation expires.** *(Corrected, and the correction is
+the exhibit's whole point. This passage previously opened on a defect "later said
+to be handled, on the strength of a suite that had grown since" — an event this
+record does not contain. Both seats confirming this section returned that
+correction independently, one of them the seat whose campaigns the exhibit
+describes: no weaker form was ever used here. The one defect that survived its
+own campaign was rehabilitated in the strict form from the first statement of it,
+and **the rule was written from that practice, not against a lapse.** Crediting a
+record with a fault it did not have is the same class of false claim this edition
+exists to remove, and it is the worst kind to find, because it is attached to a
+rule that is correct.)*
+
+The form the rule demands is the narrow one that cannot be argued — the
+**unmodified committed patch**, replayed against the suite as it stands at the
+gate, at a run identifier, with the **killing unit named** — and the campaign's
+own recorded `survived` count is kept beside it, unedited: two facts, never
+folded into one. Every weaker form permits a survivor to be argued dead: a re-run
+of a *rewritten* patch, a claim that some unit "would now" catch it, a ratio that
+no longer names it.
+
+**And the record's real hazard is the mirror image of the one this exhibit used
+to describe.** The replay that rehabilitated this program's one survivor was
+taken against a suite that has since moved by nearly twenty thousand added lines
+across forty-five files. The patch still applies, so the repair costs a single
+run — but an independent seat filed the point before anyone needed it: **a
+rehabilitation is good only at the state it was taken at, and citing an aged run
+identifier is the same defect wearing the approved form.** That is the failure an
+adopter will actually meet, because the strong form looks identical on the day it
+stops being true. **When you adopt an evidence form because it cannot be argued
+with, record its expiry conditions in the same clause.**
 
 **The killing unit that had no unique referent.** A clause required a kill to be
 dispositioned by naming *the* killing unit — singular — against a record in which
@@ -1805,11 +1960,16 @@ of them must still stand*, which is wider than the hazard, or *any one suffices*
 which lets the disposition pick the most durable unit at gate time. The seat that
 found it filed against a clause it had itself signed, routed the fix to the seat
 the width would fall on, and the one-word repair was **stopped** rather than
-applied, because by then the word was live constitutional text and curing it in
-the record alone would have left authority and constitution disagreeing (§4.8).
-The general form: **a singular noun inside a counting rule is a specification of
-uniqueness, and if the record's instances are plural the rule has already been
-applied to something it does not fit.**
+applied. Two grounds, and the second is the stronger one: by then the word was
+live constitutional text, so curing it in the record alone would have left
+authority and constitution disagreeing (§4.8) — **and the constitution was not
+the drafting seat's file to stage**, a refusal the scope check performs
+mechanically and the commission forbade in its own words. **A refusal a machine
+also enforces is a different exhibit from a refusal someone chose**, and the
+weaker reading was the one this passage carried. The general form:
+**a singular noun inside a counting rule is a specification of uniqueness, and if
+the record's instances are plural the rule has already been applied to something
+it does not fit.**
 
 **The failure classes, collected.** *Without the campaign:* "the tests pass" is
 unfalsifiable and a suite silently rots into a syntax check. *Without the sealing:*
@@ -1947,6 +2107,17 @@ relayed. Protected-class packets have existed since, in quantity, and **no
 spot-check followed**. This is the same dormancy as §1.1's residue, and it is the
 control that the exhibit below exists to justify.
 
+*What that sentence does not say, on the correction of the seat that owns the
+traffic.* It names **one instrument** — the auditor's sampling of the protected
+classes — and not the whole subject. Two fidelity checks have in fact fired in
+this record, **both by receiving seats** reading a relay against its source
+artifact — the discipline stated two paragraphs below, and a different control
+with a different failure mode: it fires only where a receiver happens to look,
+and it cannot sample the relays nobody contested. **The owed instrument stays
+owed; the record is not empty.** Both readings are worth having, because an
+adopter who hears only the first will build the sampling round and drop the
+receiving-seat habit, which is the one that has actually caught things here.
+
 Where a relaying seat adds anything of its own — an interpretation, a
 generalization, a gloss that makes a quoted test operable — it is **marked as the
 relayer's**, so it can be attacked rather than absorbed.
@@ -1962,12 +2133,42 @@ version: the relayer's own reasonable-sounding gloss becomes, one hop later,
 indistinguishable from the original filer's words and acquires the filer's
 authority.
 
-*Anonymized pattern, and it is the sharpest one in the record.*
+*Anonymized patterns — the benign case first, and then the two that were not.*
 `[P1 · 2026-08-11 · C-110]` A finding about record fidelity was relayed with one
 word dropped — the relay of a fidelity complaint itself demonstrating the
-fidelity hazard. Nothing turned on the word,
-which is exactly why it is worth keeping: the mechanism failed in the benign case
-and was therefore visible before it failed in a case that mattered.
+fidelity hazard. Nothing turned on the word, which is exactly why it is worth
+keeping: the mechanism failed where it cost nothing, and was visible there.
+
+*(Corrected: this passage previously closed by saying the mechanism failed in the
+benign case "and was therefore visible before it failed in a case that mattered."
+That is no longer true of the record, and the seat on the receiving side of both
+later failures is the seat that said so. Note what the false half was doing: it
+made a real exhibit carry a **reassurance** the record does not support, which is
+how a document acquires a claim nobody ever filed.)*
+
+**An unmarked relayer addition.** The same relay reported a killing unit as
+**present** under the name the suite uses today, for classes whose campaign
+record names that unit in a **retired namespace**. The mapping was correct; it
+was performed silently, by the seat least likely to get it wrong; and it is
+invisible in the artifact. That is an addition absorbed rather than attacked —
+precisely the second-order failure the marking rule above exists to prevent. And
+what it silently closed was not a triviality: under a literal reading of the very
+clause the relayed finding was about, that namespace difference fails the
+disposition of **every class of four campaigns** — a major finding in its own
+right, which is what it became once a seat had to state it out loud instead of
+absorbing it.
+
+**A faithful relay that omitted three findings.** A later relay in the same round
+quoted the committed act accurately and **carried three of its findings not at
+all**. Nothing was altered; something was left out — compression removing what
+nobody had asked for, which is this section's own failure class in its non-benign
+form.
+
+Both were caught the same way, and it is the way the two rules above prescribe:
+**a receiving seat read the committed source instead of reasoning from the
+relay.** Neither was caught by the relayer, and neither would have been caught by
+a sampling instrument that does not exist. The marking rule and the source-check
+rule had carried no exhibit at all until this revision; these are theirs.
 
 ### 4.4 Push at every landing
 
@@ -2175,12 +2376,13 @@ normative property nobody wrote down.
 *sealed*. It excluded an item
 the record itself had declared sealed, and included one that had never been
 rendered at all — on two grounds that had never been stated together anywhere. The
-verdict lines used a qualifier ("of the *scoreable* classes") that appeared in no
+verdict lines used a single qualifying word — *scoreable* — that appeared in no
 normative document. The defect was found only when a rule was being written to
 codify the practice: the codification would have frozen the wrong definition,
 because it was drafted from the practice's **columns** while the operative word
-lived in its **verdict lines**. It then happened a second time, at a third item,
-in the same round.
+lived in its **verdict lines**. A third item then turned up by the other route,
+in a later round — found by reading the **drafted clause** against the record
+rather than by walking the record again.
 
 **The cure that generalizes.** When the same defect appears three times, stop
 patching instances. The operative sentence — *every member of the difference is
@@ -2313,7 +2515,10 @@ It appears in many disguises, and the disguises are the useful part, because the
 obvious form is easy to prevent and the disguised forms are what actually happen.
 *Four of the six below are anchored to incidents in this program's record; two
 are marked, because an audit of this document could anchor the codification but
-not the episode `[P1 · C-125]`:*
+not the episode `[P1 · 2026-08-11 · C-125]` — the date being the anchoring
+measurement's own, not any one episode's, and the stamp carried none at all until
+the census that reads every stamp against its row noticed that this one had
+skipped the field its own grammar requires:*
 
 - **The graded party as its own reviewer.** A residual risk routed to "ordinary
   review" where the ordinary reviewer is the party the rule measures.
@@ -2411,8 +2616,9 @@ not exist yet** and is the most useful thing an adopter could build first.
 table; the commit rules and the coupling of work to reasoning; append-only journals
 with chained volumes; the packet forms and the work-order state machine; the
 countersignature discipline; the decision-record and amendment route; gates as
-signed, diffable checklists; sealed predictions; seeded-defect campaigns; the
-escalation classes; and the harvest cadence.
+signed, diffable checklists; sealed predictions; seeded-defect campaigns; **the
+external anchoring of any model that grades** (§1.4(e)); the escalation classes;
+and the harvest cadence.
 
 **Has to be re-earned:** the judgment about which rules in a given program need to
 be machine-enforced, which are review-enforced, and which should not exist. That
@@ -2624,16 +2830,43 @@ that names this program's own artifacts.*
 disciplines in the specification lead's words. Each seat confirms the description
 of its own discipline; the round runs before the next review of this text.
 
-| Text | Owes confirmation from | On what |
-|---|---|---|
-| §3.9 whole, incl. the seeder seating in §1.5 and the per-artifact placement | **auditor** | that the manifest-authoring reading of its scope is stated correctly, and that the placement and separations match its practice |
-| §3.9 scoring block and its three rebuilt exhibits | **dv_lead** | that the rebuilt referents say what the rulings say, and that no exhibit misstates a campaign |
-| §3.8 sign-off form; §4.3 relay classes | **dv_lead** | that the described form matches the one sign-off in the record |
-| §2.6 rule table incl. the new *enforced where* column and the two added rules | **orchestrator** | that the surface attribution is right for every row |
-| §2.1 commit handoff description (steps 1–5) | **orchestrator** | that this is what the committing seat actually does |
-| §1.7 genesis sequence | **orchestrator**, **auditor** | the founding sequence and the retro-audit's self-description |
-| §6.0 kit table | **orchestrator** | that each named original exists where the table says, and the shell's stated contents |
-| Every `[MC]`, `[RE]`, `[P1]`, `[PLANNED]` stamp | **auditor** | transcription fidelity against its own posture list |
+| Text | Owes confirmation from | On what | Status |
+|---|---|---|---|
+| §3.9 whole, incl. the seeder seating in §1.5 and the per-artifact placement | **auditor** | that the manifest-authoring reading of its scope is stated correctly, and that the placement and separations match its practice | **CONFIRMED** `J-auditor-0025`, with six MINOR findings |
+| §3.9 scoring block and its three rebuilt exhibits | **dv_lead** | that the rebuilt referents say what the rulings say, and that no exhibit misstates a campaign | **CONFIRMED** `J-dv_lead-0190`, with two corrections and two precisions |
+| §3.8 sign-off form; §4.3 relay classes | **dv_lead** | that the described form matches the one sign-off in the record — and, added after the answer and marked as such, that §4.3's classification and its two rules match the practice this seat exercises and polices | **CONFIRMED** `J-dv_lead-0190`, with two corrections, one of them the ship-blocker below |
+| §2.6 rule table incl. the new *enforced where* column and the two added rules | **orchestrator** | that the surface attribution is right for every row | owed |
+| §2.1 commit handoff description (steps 1–5) | **orchestrator** | that this is what the committing seat actually does | owed |
+| §1.7 genesis sequence | **orchestrator**, **auditor** | the founding sequence and the retro-audit's self-description | auditor half **CONFIRMED** `J-auditor-0025`; orchestrator half owed |
+| §6.0 kit table | **orchestrator** | that each named original exists where the table says, and the shell's stated contents | owed |
+| Every `[MC]`, `[RE]`, `[P1]`, `[PLANNED]` stamp | **auditor** | transcription fidelity against its own posture list | **CENSUSED** `J-auditor-0025`: 135 stamp occurrences against 128 rows, all 26 dated stamps re-anchored; three defects, all cured in the correction round |
+
+*What the two confirmation rounds returned, since a confirmation that returns
+nothing is a signature and not a check.* **Sixteen filed items** — four
+corrections and six routed recommendations from the verification lead, six
+findings from the auditor, all six MINOR — plus three referents the auditor would
+have carried and one figure the committing seat found repeated in a second place.
+**All twenty were applied; none was declined.** Every applied one lands as a
+repair of a **running line**, with the superseded text preserved beside it and
+the confirming seat named. Two are worth naming here. The
+**ship-blocker** was an omission rather than an error: the external-anchor
+separation, constitutional and executed in the one sign-off, appeared **nowhere**
+in this document — §3.8 therefore exported a sign-off form under which an
+unanchored oracle may grade an artifact. It is now §1.4(e), an element of §3.8's
+list, and a line of §6.1. And **both** confirming seats independently returned the
+same correction on the same exhibit — §3.9's survivor — each reading it as
+describing an incident this record does not contain; the anticipated disagreement
+between them did not exist, and one written round settled it.
+
+*Two claims in this edition have no posture row*, both added by the round above
+after the posture list was measured: §1.4(e) and the anchor element in §3.8's
+list. They are marked in place, their posture is stated in prose, and they are
+owed rows at the next audit. *Two existing rows have referents that grew after
+they were measured*, which changes no posture and is recorded so a later reader
+does not mistake the row for the text: `C-104` was measured over thirteen scoring
+bullets and the block now carries fifteen, and `C-94` was measured against a
+§3.8 element list that has since gained the anchor element. Both rows belong to
+the auditor and are its to re-measure.
 
 **B.2 — Routed, not performed here.** Each is an edit to a file outside the
 specification lead's write scope, or an amendment requiring its own instrument.
@@ -2653,6 +2886,22 @@ They are named so the debt is countable; none is applied in this edition.
    plural killing units) remains stopped and owed, as recorded in the round that
    stopped it; it joins the same amendment batch, and §3.9's third exhibit is its
    anonymized form.
+5. **Two cures the auditor filed against its own artifact** at `J-auditor-0025`,
+   recorded here because this document cites that artifact on every stamp and a
+   debt is only enforceable where a later reader is obliged to see it (§5.5).
+   Row `C-126`'s evidence cell states "12 FALSE and 4 PLANNED" against a recount
+   of 15 and 8; row `C-117`'s anchor points at an entry whose *sixth* item is the
+   sixth check of a countersignature rather than the sixth cure of a cure basket,
+   a text-similarity match the row's author says it did not falsify at the time —
+   **the stamp in this document is correct and the row's anchor is wrong.** Both
+   cures are **appended dated notes, never rewritten cells**, by §5.4's own rule
+   and by the precedent §1.7 cites; and both are the auditor's to make, in the
+   auditor's scope. Named, not performed.
+6. **The relay-fidelity sampling instrument of §4.3 (`C-109`)** stays owed and is
+   listed here as well as stamped there, because it is the one instrument whose
+   absence was argued about in the confirmation round: two receiving-seat checks
+   have fired and neither is the sampling duty. A control that has a partial
+   substitute is the kind most likely to be quietly written off.
 
 **B.3 — Instruments named in the text and not in force.** `ADR-0021` is
 **PROPOSED** at `287b5ee` and its route completes per subject. Subject 1
@@ -2667,12 +2916,25 @@ and the identical first disguise in §5.7 (`C-24`, NOT SAMPLED); the incident
 behind §5.7's third disguise. Both are kept, marked, and owed.
 
 **B.5 — A discrepancy in this edition's own source, flagged rather than
-propagated.** The posture list's summary table and its collected-false table both
-give **15 FALSE and 8 PLANNED** of 127 rows; the evidence cell of row `C-126`
-states "12 FALSE and 4 PLANNED". This edition uses the summary figures, which the
-row-by-row tables support. The discrepancy is the auditor's to resolve; it is
-recorded here rather than silently averaged, per §4.3's rule that the receiving
-seat checks the source rather than reasoning from the relay.
+propagated — and now resolved.** The posture list's summary table and its
+collected-false table both give **15 FALSE and 8 PLANNED** of 127 rows; the
+evidence cell of row `C-126` states "12 FALSE and 4 PLANNED". This edition used
+the summary figures, which the row-by-row tables support, and recorded the
+disagreement rather than silently averaging it, per §4.3's rule that the
+receiving seat checks the source rather than reasoning from the relay.
+
+*Resolved for 15 and 8*, by the seat that owns the artifact and against its own
+cell: a mechanical recount, posture cell by posture cell, over all 128 rows,
+agreeing with the summary table, the per-section table, the collected-FALSE table
+and the PLANNED table, with the row-total identity closing at 128. The wrong
+figure is in the auditor's own row and its cure is an **appended dated note**
+(B.2, item 5) — not an edited cell, because the record already names in-place
+correction by an author as a weakness of exactly this artifact class (§1.7, §5.4).
+The provenance of "12/4" could not be established and is not reconstructed; the
+seat that could not find it said so rather than inventing one. **The general form
+is the part to carry: a discrepancy between a document and its source is resolved
+by the source's owner, in the source's own idiom of correction, and the copy
+records the resolution rather than performing it.**
 
 **B.6 — Debts this document still owes its own process.** It has never been
 through the packet lifecycle it describes: the first edition landed with no work
@@ -2681,5 +2943,31 @@ dispatch-only (`C-70`) — an instance of the class it names in §3. The
 countersignature round of B.1 is the first half of the repair; a review verdict
 recorded as a packet would be the second. And the drift check between this
 document's §2.6 table and the shell's rule set (§6.0) does not exist.
+
+**B.7 — The correction round, item by item.** Every item the two confirmations
+filed, where it landed, and its disposition. It is here rather than in the
+margins because the margins name the *correcting seat* by function, as the rest
+of the document does, and a finding identifier is a program noun. Nothing below
+was refused; where a repair went further than the item asked, the row says so.
+
+| Item | Filed by | Landed at | Disposition |
+|---|---|---|---|
+| `F-0025-A` | auditor | §2.4 corollary | Applied. Stamp date 2026-08-04 → **2026-08-03**, re-anchored to the mirroring commit; the superseded date is kept in the margin beside it. |
+| `F-0025-B` | auditor | §5.7 disguise list | Applied. `[P1 · C-125]` → `[P1 · 2026-08-11 · C-125]`, the date being the anchoring measurement's own; the omission is named where it happened. |
+| `F-0025-C` | auditor | §1.6 index bullet | Applied. The correction moves into the **running line**; the first edition's claim stays in the margin. Extended beyond the item: the margin now states the general rule a `[CORRECTED]` marker implies. |
+| `F-0025-D` | auditor | §3.9 margin | Applied. *"some ninety"* → **eighty-six** references, fifteen campaign prefixes, two probes, **none merged**, re-measured at this revision's own commit. Extended: the reference/campaign/class distinction is stated, because this is the section that rules a reference population cannot be a denominator. |
+| — second instance of the same figure | committing seat, mid-round | §2.6 branch topology | Applied. Same measurement, same cure. Recorded because a round that repairs one instance of a figure and passes another has repaired nothing. |
+| `F-0025-E` **and** `J-dv_lead-0190` correction 1 | auditor **and** dv_lead, independently | §3.9 exhibit 2 | Applied as one repair. Both seats read the exhibit as describing an incident this record does not contain; the anticipated disagreement between them did not exist. The exhibit is rebuilt on the filed hazard — a rehabilitation expires when the bench moves — and keeps every element of the evidence form. |
+| `F-0025-F` | auditor | §1.5 canary clause, and the sponsor guide itself | Applied **in the source**, not rowed as a debt: the guide is inside the specification lead's write scope, the contradiction was live in the document its own audience reads, and routing a cure one can perform is how a copy stays corrected while a source stays wrong. |
+| `J-dv_lead-0190` correction 2 | dv_lead | §3.9 frozen-kill bullet | Applied. One disclosed limit → **three**, with which were disclosed and which were found by applying the clause. |
+| `J-dv_lead-0190` correction 3 | dv_lead | §1.4(e); §3.8 element list; §1.2; §6.1 | Applied — the round's ship-blocker, and an omission rather than an error. Four sites, because a separation that exists only in the sign-off form is a separation an adopter will not build. |
+| `J-dv_lead-0190` correction 4 | dv_lead | §4.3 exhibit | Applied. The false reassurance is dropped, the benign exhibit keeps its opening, and the marking rule and the source-check rule get the two exhibits they had never had. |
+| Precision A (*"in the same round"*) | dv_lead | §3.9 exhibit 1; §5.2 | Applied at **both** accounts of the episode. A document that corrects one of its two tellings has manufactured a contradiction. |
+| Precision B (the italicised qualifier) | dv_lead | §3.9 exhibit 1; §5.2 | Applied at both. The record's word is the single word. |
+| Import-as-rules boundary | dv_lead | §3.9 import paragraph | Applied in the filer's own words: properties, not a reporting form; import the rules, re-derive the numbers. |
+| §3.8 element list is a floor | dv_lead | §3.8 | Applied, and stated as a sentence rather than the four words asked for, because the stamped claim beside it reads at speed as a description of the packet. |
+| Exhibit 3's second ground | dv_lead | §3.9 exhibit 3 | Applied. The stop was also **mechanically** refused, which is a different exhibit from a chosen refusal. |
+| `C-109` precision | dv_lead | §4.3 | Applied. The owed instrument stays owed; two receiving-seat checks have fired; different control, different failure mode. |
+| Three referents the auditor would have carried | auditor | §3.9 bullets | Applied. Which grounds turn on the seal's disclosure; what *survived its own campaign* means; the rehabilitation asymmetry under the frozen-kill limb. Filed as carried-forward observations rather than findings, and cheap enough that declining them would have been an economy against the reader. |
 
 

@@ -40,8 +40,14 @@ You may occasionally plant a deliberate process violation — e.g. hand-edit a
 journal line in a commit, or ask the orchestrator to relay an altered packet —
 to test whether the auditor catches it. Tell no one in advance, including the
 auditor (its charter tells it canaries exist but never when). A missed canary
-is a CRITICAL finding against the auditor. This page documents the mechanism;
-never document the instances.
+is a CRITICAL finding against the auditor. This page documents the mechanism:
+**no instance is ever announced in advance, and none is discoverable before it
+is caught.** Once it *is* caught it becomes a finding like any other and is
+documented as one — that route is the whole point of planting it.
+
+*(This line previously ended "never document the instances", which contradicted
+the finding route it depends on. Corrected 2026-08-11 on an audit finding, in
+the same act as the matching sentence in `docs/PROCESS.md` §1.5.)*
 
 ## How to spot-check the org yourself (any time)
 

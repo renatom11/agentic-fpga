@@ -2163,3 +2163,438 @@ round is neither an `SO-` nor a phase gate (charter §8, ADR-0018).
 ### Files-in-this-commit
 
 - docs/PROCESS.md
+
+## [J-architect_docs_lead-0051] 2026-08-11T22:58Z | task:none | Two independent confirmations folded in: twenty items applied and none declined, the ship-blocker was an omission — a sign-off form under which an unanchored oracle may grade an artifact — and the exhibit both seats independently convicted described a lapse this record never had
+
+### Trigger
+
+Orchestrator dispatch, **one round, dispatch-only** (`task:none`, the class §3 of
+the document under revision now names), following the two Annex B.1 confirmation
+rounds. The commission: fold the correction sets of `J-dv_lead-0190` (landed
+`680689c`) and `J-auditor-0025` (landed `d502aa1`) into `docs/PROCESS.md`, and
+decide one routed item that could be cured in `docs/SPONSOR.md` instead of rowed.
+The dispatch enumerated the items as a checklist and said in terms that **the
+sources control**; both were therefore read at their committed text, not at the
+dispatch's account of them — which is §4.3's own rule applied to a relay of two
+findings sets, and the round that follows a round about relay fidelity is the
+wrong one to reason from a summary in.
+
+Two mid-round messages from the orchestrator, both marked as its own and both
+addressed before returning: (1) `F-0024-A` is **WITHDRAWN IN FULL** by run
+`31541276523`, so nothing here may be written as pending; (2) a second instance of
+`F-0025-D`'s figure at `docs/PROCESS.md`:1030, found while the orchestrator
+performed its own §2.6 confirmation, left to my judgment.
+
+**Abort-first precheck (§4.1), before any file was opened:**
+
+    git rev-parse --abbrev-ref HEAD  # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    git rev-parse HEAD               # d502aa14c7fac8ec70828a1e14678b2d4691170a
+    git status --porcelain           # zero lines
+    date -u                          # Tue Aug 11 22:39:24 UTC 2026
+
+Byte-equal to the dispatched expectation, tree clean, `docs/PROCESS.md` unchanged
+since `2f32e45` (`git log -- docs/PROCESS.md` → `2f32e45`, `f67a57a`). **Neither
+branch of the abort procedure was reached.**
+
+**Declared siblings.** At entry: none in flight. Mid-round the orchestrator
+declared **dv_lead on `RV-0082`**, scoped to `agents/handoffs/**` and its own
+`v11` journal, with my two files declared to it. At authoring the tree carries
+exactly that: `agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md`
+modified, **a declared path of a declared sibling** — not an undeclared dirty path
+and not an abort. It is not mine and **must not be staged with this commit** (`R1`,
+`R7`). Inward check (§4.2): **HEAD did not move across the round** — re-verified
+`d502aa1` at authoring — so no measurement here was taken against a state that has
+since moved.
+
+**Honest stamp**: `date -u` at authoring — `Tue Aug 11 22:58:13 UTC 2026`.
+
+**No rotation.** `v05` stands at **137,252 bytes** before this append against
+`JOURNAL_SOFT_MAX` = 262,144.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` and `agents/PROTOCOL.md`, **both in
+  full** (mandatory first actions). §10's second bullet — *golden models must
+  agree with an external anchor before they may judge RTL* — is the text
+  correction 3 is about, and it was read at the constitution rather than through
+  the finding's account of it.
+- `agents/journals/claude_dv_lead_agent.v11.md`:1802–2400 — `J-dv_lead-0190`
+  whole: the four corrections with their grounds, the six routed
+  recommendations, §5 (*what I did not do*), the transcribable act, and all five
+  open questions.
+- `agents/journals/claude_auditor_agent.v03.md`:704–1029 — `J-auditor-0025`
+  whole: the sampling frame, the seven numbered findings-bearing paragraphs,
+  the nine evidence items, the Outcome's `F-0025-A`…`F` and the residue, and the
+  four open questions.
+- `docs/PROCESS.md` at `d502aa1`, all 2,685 lines, read straight through before
+  any edit — not only the cited sites, because two of the corrections have
+  second instances elsewhere in the file and a correction round that only visits
+  its checklist finds only its checklist.
+- `docs/SPONSOR.md` whole (62 lines) — the source half of `F-0025-F`.
+- `agents/handoffs/SO-xgmii_rx_64.md`:196–213 (`SC-6` in terms), :281, :352,
+  :512, :3576 — the anchor criterion read **at the packet**, because correction 3
+  is the round's ship-blocker and its exhibit is quoted into the document.
+- `agents/charters/dv_lead.md`:3, :23, :56, :64, :99 — the external-anchor rule as
+  a charter precondition, its DoD checkbox, and the ordering criterion the auditor
+  is charged with checking.
+- `docs/reports/audit/PROCESS-claims-posture.md` rows `C-30`, `C-32`, `C-55`,
+  `C-94`, `C-104`, `C-109`, `C-110`, `C-125` — read as the instrument that decides
+  each stamp I touched. **Not written to**; it is the auditor's scope.
+- `scripts/policy.sh`:167–180 — my own write scope, re-read before deciding the
+  `F-0025-F` route rather than asserted from memory.
+- `site/build.py`:555–625 — the minimal markdown converter that renders this file
+  on the site, re-read **before** writing and executed against the result after.
+- **No RTL read. No mutation reference fetched. No `Essenceia` material.**
+
+### Reasoning
+
+#### 1. The one decision the dispatch left open, and it is decided against routing
+
+`F-0025-F` is the only item with a choice in it: cure `docs/SPONSOR.md`:43–44, or
+row the contradiction in Annex B. **Cured.** Three grounds, in order of weight.
+
+The path is inside my scope — `scripts/policy.sh`:174–178, `docs/*` allowed with
+only the audit and latency report directories carved out — so **routing would have
+been a refusal I was not entitled to**. §4.8 makes refusal first-class *with
+grounds*; "outside my scope" is a ground and it would have been false here. The
+second: the defect is a **live instruction to a human**. The sponsor guide told the
+canary's own holder *never document the instances*, while the finding route it
+depends on documents every instance that is ever caught. A contradiction in the
+copy is a documentation defect; the same contradiction in the operating document
+is an instruction nobody can follow. Third: this is a **cure inside an
+already-ruled rule** (§3.6's own test — a repair applying a rule already decided),
+so it owes no decision record, and the seat the rule constrains is the auditor,
+which is the seat that filed it. There is no seat left to countersign that has not
+already asked for it.
+
+What I did **not** do: change what the canary power *is*. The repaired sentence
+says what §1.5 already said and what `agents/charters/auditor.md`:36/:61 already
+carry — nothing announced in advance, nothing discoverable before it is caught, a
+missed canary a CRITICAL against the auditor. And the guide carries a dated note
+saying what the line used to read, because a sponsor-facing page that changes its
+instruction silently is the same defect one level down.
+
+The general form went into §1.5 as a margin, since it is the transferable half:
+**a contradiction cured in the copy and left in the source is not cured.** The
+last revision — mine — is the one that cured the copy and left the source. That
+sentence is in the document under my own name and it should be.
+
+#### 2. Correction 3 is the round, and it is an omission rather than an error
+
+Everything else on the list repairs a sentence that says something wrong. This one
+repairs a document that says **nothing** where the constitution has a
+non-negotiable. I verified the gap myself rather than inheriting it: no treatment
+of oracle anchoring anywhere in 2,685 lines, and §1.4's separations do not draw
+it. Then I verified the rule's three anchors at their own files rather than at the
+finding — constitution §10, charter §3 (*no Phase 1 sign-off without it*, plus the
+ordering criterion at :64), and `SC-6` at the packet.
+
+The dispatch's minimum was *one element in §3.8's list and one sentence wherever
+the separations need it*. I spent more than that, deliberately, and the ground is
+the document's own form: **a rule stated without its failure class is the half
+this document exists to argue is droppable.** An adopter meeting the anchor only
+as a line item in a sign-off checklist drops it at the first schedule crunch,
+which is exactly the class §6.1 warns about. So it landed as:
+
+- **§1.4(e)**, a fifth separation with its rule, its posture, its failure class
+  and its exhibit — the failure class being the one no other separation covers: a
+  model and an artifact built by the same organization from the same specification
+  **agree exactly where both are wrong**, and the agreement reports as a pass.
+- **§3.8's element list**, with the disposition stated *per stimulus class* and
+  the artifact-level claim explicitly barred.
+- **§1.2** (half a clause, so the verification lead's own description carries it)
+  and **§6.1's transfers list** (four words, because that list is what an adopter
+  reads to decide what to take).
+
+Two judgments inside it worth recording. First, I made the **ordering** property
+explicit — the agreement must be committed before the first verdict the model
+issues — because that is what makes an otherwise review-enforced rule auditable
+from the record's order rather than from testimony, and it is the one part of the
+anchor discipline an adopter can check without domain competence. Second, the
+exhibit is built on the **honest half** of this program's own record: the one
+sign-off reports the anchor per class and then states *in terms* that the
+artifact-level anchor is undischarged, and bars the summing sentence from its own
+text. A passing anchor would have been a weaker exhibit than a refusal to
+aggregate one.
+
+#### 3. Exhibit 2 — where two independent seats convicted the same sentence
+
+Both confirming seats returned the same correction without coordination: the
+survivor exhibit describes an event this record does not contain. The auditor
+anticipated a disagreement with dv_lead and flagged it as its open question 2;
+there was none, and one written round settles it. I applied dv_lead's repair as
+specified — open on the **hazard** rather than on an invented incident, keep every
+element of the evidence form, and add the perishability sentence — and cited both
+confirmations at the site in the margin.
+
+One figure I re-derived rather than quoted, under the very rule this round imports
+into §3.9 (*a figure carried across rounds is re-derived by the method its carrier
+claims, or the carrier states that it was quoted*). The filed finding measured the
+bench movement at 8,505 insertions across 15 files at its own commit; at `d502aa1`
+the suite tree has moved **19,990 insertions / 662 deletions across 45 files**
+since the replay base `e7657e3`. I wrote my own measurement ("nearly twenty
+thousand added lines across forty-five files"), not the finding's — the direction
+of the point is unchanged and the number is mine.
+
+#### 4. The item the dispatch left to my judgment, and why the second instance had to go too
+
+`F-0025-D` names `:1626`. The same figure sat at `:1030` in §2.6's branch-topology
+note — a descriptive use, not a denominator context. The orchestrator raised it
+mid-round and left the call to me. **Both cured**, on a ground the round itself
+supplies: this document's most-repeated lesson is that one figure living in
+several places gets updated in some of them (§2.7's parameter rule, and §5.1's
+census). A correction round that repairs a number in the section that rules
+*a ref population cannot be a denominator* and leaves the same number two hundred
+lines away has manufactured exactly the disagreement §2.7 exists to prevent.
+
+I re-measured rather than accepting either seat's figure: **86 references, 0
+merged into HEAD, 15 `wo-00NN` campaign prefixes plus 2 probe prefixes**, at
+`d502aa1`. That agrees with the auditor's evidence item 3 at `2f32e45` — which is
+itself worth one line of the record, because the population is the one thing in
+this program that grows for reasons nobody controls, and it did not move across
+these two commits. The §3.9 cure also states the reference/campaign/class
+distinction, because the imprecision is worse in that section than its size
+suggests: it is the section that rules a reference population cannot be a
+denominator.
+
+#### 5. Applied and declined, item by item
+
+**Nothing was declined.** Twenty items, twenty applied. I state that plainly
+because a correction round that accepts everything is a round worth checking, so
+here is the check I ran on myself: for each item I asked whether the filing seat
+was reasoning about **its own** discipline (all of dv's were; all six of the
+auditor's were measurements against its own posture list) and whether the repair
+could be verified at a file rather than argued. Every one could. The three items
+that were *judgment* rather than measurement — the exhibit-2 framing, the C-109
+reading, and the F-0025-F route — are the three I reasoned about above at length.
+
+| Item | Filed by | Disposition and ground |
+|---|---|---|
+| Correction 1 (survivor exhibit) | dv_lead | **Applied** as specified, jointly with `F-0025-E`. Figure re-derived, not quoted. |
+| Correction 2 (frozen-kill limits) | dv_lead | **Applied.** One disclosed limit → three, with which were disclosed and which were found by applying the clause — that distinction is the transferable part. |
+| Correction 3 (external anchor) | dv_lead | **Applied** across four sites; see §2. Ship-blocker. |
+| Correction 4 (§4.3 exhibit) | dv_lead | **Applied.** False reassurance dropped; the marking rule and the source-check rule get the two exhibits neither had. |
+| Precision A (*in the same round*) | dv_lead | **Applied at both accounts** (§3.9 exhibit 1 and §5.2). Correcting one telling of a two-telling episode manufactures a contradiction. |
+| Precision B (the qualifier) | dv_lead | **Applied at both.** The record's word is the single word; the auditor's evidence item 8 and dv's two verdict lines agree on that. |
+| Import-as-rules boundary | dv_lead | **Applied** in the filer's own words. It is the seat whose schema moved twice; the calibration argument is its to state. |
+| §3.8 element list is a floor | dv_lead | **Applied**, as a sentence rather than four words — `C-94`'s stamped clause reads at speed as a description of the packet, which is what the item is about. |
+| Exhibit 3's second ground | dv_lead | **Applied.** The stop was mechanically refused as well as chosen, and I am the seat that stopped it: the weaker reading flattered me. |
+| `C-109` precision | dv_lead | **Applied.** Owed instrument stays owed, two receiving-seat checks named as a different control. Both halves, because an adopter who hears only the first builds the sampling round and drops the habit that has actually caught things. |
+| `F-0025-A` (stamp date) | auditor | **Applied**, 08-04 → 08-03, re-anchored by me at `a0454b4`; superseded date preserved. |
+| `F-0025-B` (dateless stamp) | auditor | **Applied**, dated to the anchoring measurement with that stated, since the claim is a measurement and not an episode. |
+| `F-0025-C` (correction left to the margin) | auditor | **Applied** in the direction the finding points, plus the general rule it implies: a `[CORRECTED]` marker means the running line was repaired, or it means nothing. |
+| `F-0025-D` (*some ninety*) | auditor | **Applied**, both instances, re-measured. See §4. |
+| `F-0025-E` (exhibit 2) | auditor | **Applied** as one repair with dv's correction 1; both cited at the site. |
+| `F-0025-F` (canary contradiction) | auditor | **Applied in the source.** See §1. |
+| Three carried-forward referents | auditor | **Applied.** Filed as observations rather than findings and each costs a reader one inference; two of the three sat in bullets this round was already rewriting. Declining a one-clause repair to preserve a category boundary would be an economy against the reader. |
+| §2.6's second figure instance | orchestrator | **Applied.** See §4. |
+
+**Not mine, and untouched**: the auditor's own-artifact cures (`C-126`'s figures,
+`C-117`'s anchor). Both are *rowed* in Annex B.2 with the cure form the filing
+seat specified — appended dated notes, never rewritten cells — because this
+document cites that artifact on every stamp and §5.5 says a debt is enforceable
+only where a later reader is obliged to see it. Rowing a debt is not performing
+it, and `docs/reports/audit/**` was neither opened for writing nor staged.
+
+#### 6. `F-0024-A`'s withdrawal, and what I wrote about it: nothing
+
+The orchestrator classified the finding **withdrawn in full** on run
+`31541276523`, by the finding's own pre-committed terms. I checked whether the
+document anywhere states or implies that the equivalence bullet's instance is
+contested or pending: it does not — the bullet states the proof standard and names
+no instance, and §5.7's third disguise is about an exclusion recorded by the
+benefiting party, a different claim, already marked as owed an anchor in B.4. **So
+the correct action was to write nothing**, and I did. No sentence in this revision
+says the finding pends, and none says it was withdrawn either: the disposition of
+another seat's CRITICAL belongs in that seat's reconciliation round, not in a
+documentation edit that would be quoting an operator classification as a document
+claim.
+
+#### 7. Two things the round found that nobody filed
+
+**Presentational, and I fixed them.** Running the site's own converter
+(`site/build.py`) over the result turned up three **pre-existing** emphasis
+defects that render literal asterisks — or, worse, an unclosed bold that corrupts
+the rest of a paragraph — on the published page: `**One *agent* per commit…**`
+(§2.1), `**…but: *every commission is a file…***` (§3), `**The *set* of units…**`
+(§3.9). The converter's bold pattern admits no interior asterisk. All three are
+from earlier editions, two of them from my own last revision. Fixed by removing
+the **inner emphasis only** — not one word of any of the three sentences changed —
+and declared here and in the return rather than absorbed silently, because a
+correction round that quietly widens its own scope is the §3.2 failure class it
+describes. The one remaining stray asterisk in the render is `docs/gates/**`
+inside a code span, which is correct.
+
+**Structural, and I did not fix it.** Annex B.1's second dv_lead row stated a
+criterion for §3.8 and none for §4.3 — dv_lead's open question 5, and it is right:
+an unstated criterion is how a countersignature comes to mean whatever a later
+reader needs it to mean. I did **not** silently rewrite the cell to match the
+answer that came back, because retro-fitting a question to its answer is a defect
+of exactly the class this document polices. The criterion is now stated **and
+marked as added after the answer**, with what the confirming seat actually
+answered against named beside it.
+
+#### 8. Harvest
+
+**Not due, declared rather than skipped** (charter §8, `PROTOCOL` §7): this round
+is neither a sign-off nor a phase gate. The span opened at my last harvest stays
+open and this entry joins it, continuous with `J-architect_docs_lead-0047`…`-0050`.
+**Two candidates banked**, both LH1–LH3 discharged, both **LH2-g**:
+
+- **(h)** *A correction that lands in the copy and not in the source is not a
+  correction; the source is what its own audience reads, and every later document
+  derived from it inherits the defect with the copy's repair nowhere in sight.*
+  **LH1** this round's canary contradiction, cured in the describing document one
+  revision before the operating one. **LH3** without it, a program accumulates
+  documents that disagree with each other in the direction of whichever one was
+  cheapest to edit, and the disagreement is invisible from inside either.
+- **(i)** *When a document corrects a figure, the correcting round enumerates every
+  occurrence of that figure before it stops; repairing the instance a finding
+  names and leaving its siblings converts a single wrong number into two documents
+  that disagree, which is strictly worse than the original defect.* **LH1** the
+  second instance of this round's reference count, which the finding did not name
+  and a second reader found. **LH3** without it, each correction round leaves a
+  residue that reads as a contradiction to the next reader, who cannot tell which
+  figure was corrected and which was merely older.
+
+### Actions
+
+- Ran the abort-first precheck; read charter and constitution in full; read both
+  confirmation entries **at their committed text**; read the target document
+  straight through before editing.
+- Verified at their own files, rather than through the findings: `SC-6` in the
+  sign-off packet; the anchor rule in the constitution and in the verification
+  lead's charter; my own write scope in the policy module; the posture rows behind
+  every stamp I touched.
+- Re-derived three figures myself: the marked-reference population and its
+  decomposition; the date behind `C-55`'s stamp; the suite movement since the
+  survivor's replay base.
+- Applied twenty items across `docs/PROCESS.md` (nineteen) and `docs/SPONSOR.md`
+  (one), each as a repair of a **running line** with the superseded text preserved
+  beside it and the confirming seat named by function.
+- Added `§1.4(e)`; extended the stamp-property list to four so that a claim added
+  after the measurement is marked rather than mis-cited; added `Annex B.7`, the
+  item-by-item ledger where the finding identifiers live, keeping program nouns out
+  of the exported prose and inside the annex that already carries them.
+- Updated `Annex B.1` (status column, what the rounds returned, the two rowless
+  claims, the two grown referents), `B.2` (items 5 and 6), `B.5` (resolved).
+- Ran the site converter over both files and fixed three pre-existing emphasis
+  defects; verified every markdown table's column count.
+- **No `git commit`, no `git push`, no staging. No stop-hook commit demand
+  arrived; the standing refusal holds either way.**
+
+### Evidence
+
+All at `d502aa1` on `claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+
+**Precheck and stamps:**
+
+    $ git rev-parse HEAD          # d502aa14c7fac8ec70828a1e14678b2d4691170a (entry and authoring)
+    $ git status --porcelain      # zero lines at entry
+    $ date -u                     # entry 22:39:24Z; authoring 22:58:13Z
+
+**`F-0025-A`, re-anchored by me rather than accepted:**
+
+    $ git log -S'R11' --date=iso --format='%h %ad' -- scripts/check_journals.sh
+    a0454b4 2026-08-03 20:20:04 +0000        # the stamp read 2026-08-04
+    $ git log -1 --date=iso --format='%h %ad' 678948b
+    678948b 2026-08-04 01:12:48 +0000        # the only scripts/ commit on the 4th, a different fact (C-54)
+
+**`F-0025-D`, re-measured at this commit:**
+
+    $ git ls-remote --heads origin 'refs/heads/mut/*' | wc -l
+    86
+    $ # merge-base --is-ancestor over each of the 86 against HEAD
+    total=86 merged_into_HEAD=0
+    $ # distinct wo-00NN prefixes -> 15 ; remaining refs under two probe prefixes
+
+**The survivor's expiry, re-derived (correction 1's figure is the filer's; this
+is mine):**
+
+    $ git diff --shortstat e7657e3..HEAD -- test/
+    45 files changed, 19990 insertions(+), 662 deletions(-)
+
+**Correction 3's three anchors, quoted at their files:**
+
+    agents/PROTOCOL.md:393        "Golden models must agree with an external anchor
+                                   before they may judge RTL"
+    agents/charters/dv_lead.md:23  "must agree with an external reference
+                                   implementation ... BEFORE it may judge RTL";
+                                   "no Phase 1 SO- PASS without it"
+    agents/charters/dv_lead.md:64  anchor evidence at a SHA earlier than the first
+                                   verdict — "Auditor checks the ordering"
+    agents/handoffs/SO-xgmii_rx_64.md:200-209   SC-6 in terms
+    agents/handoffs/SO-xgmii_rx_64.md:3576      "UNDISCHARGED as a module-level anchor"
+
+**My write scope for the `F-0025-F` route, re-read not recalled:**
+
+    scripts/policy.sh:172-178   architect_docs_lead: docs/* allowed, with
+                                docs/reports/audit/* and docs/reports/latency/*
+                                refused. docs/SPONSOR.md -> allowed.
+
+**Render and structure checks after editing** (the document is published through
+`site/build.py`'s minimal converter):
+
+    $ # md_to_html over both files, grep the output for surviving '*'
+    docs/PROCESS.md   stray-asterisk blocks: 1   -> `docs/gates/**` inside <code>, correct
+    docs/SPONSOR.md   stray-asterisk blocks: 0
+    $ # per-table pipe-count uniformity over all 7 tables
+    lines 68-75 OK; 1064-1078 OK; 1164-1171 OK; 2211-2218 OK; 2583-2594 OK;
+    2828-2837 OK (B.1, 4 cols); 2948-2966 OK (B.7, 4 cols)
+    $ grep -o '\[P1 · [^]]*\]' docs/PROCESS.md | sort -u
+    -> every P1 stamp carries a date; the one bare `[P1 · C-125]` remaining is the
+       quotation of the superseded stamp inside B.7's own row
+
+**Sibling state at authoring** (§4.2, and it is a declared path, not an abort):
+
+    $ git status --porcelain
+     M agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md   <- dv_lead, RV-0082
+     M docs/PROCESS.md
+     M docs/SPONSOR.md
+
+**Ephemeral**: nothing in this entry rests on an ephemeral artifact. Run
+`31541276523` is cited only as the operator's stated ground for a withdrawal I did
+not write into the document.
+
+### Outcome
+
+**DoD met.** The two confirmation rounds are folded in: **twenty items, twenty
+applied, none declined**, each cited to its filing seat in `Annex B.7` and each
+landing as a repair of a running line with the superseded text preserved. The
+ship-blocker is closed at four sites. `docs/SPONSOR.md` was cured rather than
+rowed, on scope and on the ground that the contradiction was live in the document
+its audience actually operates from. Two claims added after the posture
+measurement are marked as rowless and owed rows; two rows whose referents grew are
+recorded as the auditor's to re-measure. Nothing outside `docs/` was touched, no
+git write command was run, and the sibling's dirty packet is not mine to stage.
+
+**Handoff**: to the orchestrator for commit, `Agent: architect_docs_lead`,
+`Work-Order: none`, `Journal-Entry: J-architect_docs_lead-0051`. Council round 2
+convenes on the text as it now stands; `Annex B.7` is the round's audit surface.
+
+### Open-questions
+
+1. **Three confirmations remain owed and they are all the orchestrator's** —
+   §2.6's rule table, §2.1's commit handoff, §6.0's kit table, plus the
+   orchestrator half of §1.7. B.1 now carries them as `owed` with the paid rows
+   marked; the §2.6 round was declared in flight to me mid-round and is **not**
+   recorded as paid, because it has not landed.
+2. **The rowless claims need rows.** §1.4(e) and §3.8's anchor element are
+   normative text with no posture-list row, marked as such. Until the posture list
+   is re-run they are the only two claims in the document whose posture rests on my
+   prose rather than on an independent measurement — which is precisely the
+   arrangement §1.4(a) exists to distrust, and it is why they are marked rather
+   than quietly stamped.
+3. **`C-104` and `C-94` now cite referents larger than the ones measured.**
+   Substance unchanged in both cases and the rows are the auditor's; recorded in
+   B.1 so the drift is countable rather than discovered later.
+4. **The exhibit at §5.7's third disguise and the `C-24` episode remain
+   unanchored** (B.4), untouched by this round.
+5. **The document has still never been through the packet lifecycle it
+   describes** (B.6): two revisions, both dispatch-only, both by the seat that
+   owns the file. The confirmations paid half of the countersignature debt; a
+   review verdict recorded as a packet would pay the rest.
+
+### Files-in-this-commit
+- docs/PROCESS.md
+- docs/SPONSOR.md
