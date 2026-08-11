@@ -4091,3 +4091,43 @@ both, both named here per the standing rule. tb liveness verified
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0247] 2026-08-11T12:40Z | task:none | The transcription act, fourth of its kind: the span restriction enters force proven three ways - and the countersigning round corrected two of its own recitals while paying, which is what the two-key form exists to buy
+
+### What this entry records
+dv's rotation+countersignature round landed as two journal-only
+commits: 75a528d (J-dv_lead-0172, v09 opened, chain cde9c506.../
+353776 verified both sides, staged as the 20301-byte prefix with
+exactly one header) and e1faaed (J-dv_lead-0173 - REQ-901/108/110
+span restriction COUNTERSIGNED [proved by exhaustive cases AND a
+differently-built 2,441,405-trace enumeration, zero mismatches,
+plus a containment theorem; the FI-4/FI-6 release read STRONGER
+than the ruling claimed - narrowing now barred by the rule itself];
+AP-M04-2's added prohibition NOT CONTESTED; the section 0.6 fourth
+clause COUNTERSIGNED on the rule with FINDING ABS-1 MINOR minted
+against its ground [the same misreading convicted in dv's own
+M04-G7 row, on the record]; two of dv's own prior recitals
+corrected while paying - the struck class-(f) lift selected
+nothing, and the equivalence needs part (ii)'s open-ended reading).
+
+### The transcription (this commit, mine, clerical)
+Rows D and E lifted verbatim from J-dv_lead-0173's Outcome into
+docs/specs/requirements.md section 13, last column filled
+J-orchestrator-0247. Row D is the normative one: the REQ-901/108/
+110 span-restriction diff is IN FORCE from that row and not
+before. Row E records the section 0.6 countersignature paid with
+ABS-1 outstanding. dv_checks green at the tree before staging.
+Consequences now live: the one-sentence comparing-run rule binds
+both co-sim producers when next opened; dv's FI-4/FI-6 self-
+binding is released with narrowing barred; ABS-1 routes to the
+architect's next spec round; M04-G7's ground repair rides dv's
+next plan round with the other AP-M04 editorial repairs.
+
+### Commit-timing note
+tb_writer's WO-0080 round remains OPEN (write set test/
+xgmii_tx_64/** + workers v03 - disjoint from this commit's two
+files; round named here). Staged by explicit path only, per dv's
+own staging-hazard flag.
+
+### Files-in-this-commit
+- docs/specs/requirements.md
