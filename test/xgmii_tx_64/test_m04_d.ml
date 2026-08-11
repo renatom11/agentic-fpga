@@ -389,5 +389,5 @@ let%expect_test
    value, and it is not 0x00000000"
   =
   run_d6 ();
-  [%expect {||}]
+  [%expect {| M04-D6 oracle FCS, Frame.fcs (List.init 60 ~f:(fun _ -> 0)), least significant octet first: 0x08 0x89 0x12 0x04 = 0x04128908 |}]
 ;;

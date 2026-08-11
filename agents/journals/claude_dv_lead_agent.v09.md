@@ -3497,3 +3497,378 @@ joins it; **five** candidates now wait for the next sign-off.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md
+
+## [J-dv_lead-0179] 2026-08-11T13:50Z | task:WO-0081 | The promotion adjudicated by recomputing the number instead of trusting it — the printed FCS re-derived against two oracles outside this repository before it was allowed to become an expectation; RV-0081 ACCEPT on twenty bars, two of the worker's three reported defects upheld against my own packet and the third refuted on measurement, and the tripwire that armed this round never had to fire
+
+### Trigger
+
+Orchestrator dispatch, **one round, two acts on one packet**: the class-P
+promotion `WO-0081` §15 pre-committed and §19.2 item 6 assigned to me, and the
+`RV-0081` review of tb_writer's landing at `aabae58`. The dispatch supplied its
+own observations about the CI red and said in terms that they were its, "for you
+to independently verify, not to adopt" — which is the right way to hand a
+reviewer a reading, and I have verified every load-bearing one of them from the
+source rather than quoting them.
+
+**Abort-first head check, before reading anything.**
+
+    git status --short   # zero lines
+    git rev-parse HEAD   # cddad51f479ab1656222e94fb9264e7040d761f1
+
+Byte-equal to the dispatched head, tree clean. Neither branch of the abort
+procedure was reached.
+
+**A substrate condition arose DURING the round. It is not an abort, it resolved
+on its own, and I record it because a hazard that did not fire is still a hazard
+that was live.** The precheck was clean. By the time my promotion landed on disk,
+three files under `docs/specs/` were modified in the working tree, none by me:
+`docs/specs/modules/eth_axis_tx.md` (mtime 13:44:04Z),
+`docs/specs/modules/ip_eth_tx_64.md` (13:45:17Z) and `docs/specs/requirements.md`
+(13:46:00Z), +281/−65 lines across the three. `docs/**` is architect_docs_lead's
+write scope and outside mine; I did not touch them, I did not read the diff as
+evidence for anything here, and I judged this round entirely against **committed**
+state, which an uncommitted edit cannot reach. **While it lasted, the hazard was
+at commit time**: a `git add -A` or `git commit -a` pairing my journal entry with
+those three paths would have violated R1 (one agent per commit), R4 (files-list
+set-equality) and R7 (path isolation) in a single act.
+
+**It resolved while I was writing this entry**, and the resolution is worth as
+much as the flag: the sibling's work landed as `0b7be1f` (architect_docs_lead,
+those same three files) and the orchestrator then committed `4d163ee`
+(`site/**`), so **the branch head moved twice underneath a round whose dispatch
+pinned it once**. Neither commit touches my surface —
+`git diff cddad51 HEAD -- test/ agents/handoffs/ test/attack_plans/` is empty,
+my four working-tree edits survived both untouched, and the placed promotion
+still verifies at its CI-printed digest. So nothing in this round changes. **What
+I will not do is let that luck read as a property of the arrangement**: an
+abort-first precheck establishes the substrate at one instant and says nothing
+about the next, and two of this program's commit rules are violable by a
+committer who reaches for `-a` in a tree a sibling is writing into. My
+`Files-in-this-commit` list below is exact and is the authority for what to
+stage. Raised to the orchestrator in my return, since a concurrent sibling
+writing into this tree was not declared in my dispatch — the declared-sibling
+convention `J-dv_lead-0172` used exists precisely for this.
+
+### Inputs
+
+`agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, both in full.
+`agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md` in full at `cddad51`
+(1 837 lines: §0–§19 and the worker's `RETURN` section), and its §6.1 master
+table additionally at `6291947`, the commit it issued at, because defect (b)
+below is a claim about what the packet said when the worker read it and a
+current-tree reading could not settle it. `test/attack_plans/AP-xgmii_tx_64.md`
+— §9's change log for the discharge convention, §4.D/§4.E/§4.G's rows, and a
+status-cell pass over all 82. `test/xgmii_tx_64/test_m04_e.ml` and
+`test_m04_g.ml` in full; `test_m04_d.ml` in full, twice — once as the tree file
+and once as the decoded promotion payload. `test/xgmii_tx_64/bench.mli` at
+`2a0a2b1` and `aabae58` (the `val` census), `bench.ml` and `dune` as diffs.
+`agents/journals/workers/claude_tb_writer_agent.v03.md`, entry
+`J-tb_writer-0044` — header, Trigger, Inputs, Files-in-this-commit.
+`agents/journals/claude_dv_lead_agent.v09.md`'s own entry headers, to confirm my
+chain head is `0178` and that this file (232 862 bytes) is below ADR-0017 §4.4's
+rotation threshold, so `0179` belongs in this volume.
+
+**CI, read at the source and not from a badge**: run `31494947078` job
+`93790202820` (`aabae58`) and run `31495302673` job `93791378385` (`cddad51`),
+both via the Actions API — the run records, the per-step name/status lists, and
+the failing step's log, which at `cddad51` I read **in full** from its `##[group]`
+header to its `##[error]` exit line.
+
+**Not read**: `libs/**`, `top/**`, `rtl_snapshots/**`, `bin/**`,
+`test/third_party/**`. No RTL reached this round. The one thing this round needed
+that is not in this repository is an *independent* CRC-32 — see Reasoning — and
+it came from Python's `zlib` and from a routine I wrote from the published
+polynomial, never from the design and never from the repository's own oracle.
+
+### Reasoning
+
+**Act one, and the only part of it that was hard.** Reconstructing a file from a
+CI promotion block is the `L-D01` arc and is mechanical: strip timestamps,
+concatenate, decode, check the digest. What is *not* mechanical is deciding
+whether the reconstructed thing may become an expectation. Three questions had to
+be separated, and conflating any two of them is how a promotion launders a defect.
+
+*Is it the file CI produced?* Two channels, deliberately built to be independent.
+Channel (i) is the payload: sixty base64 lines transcribed out of the log,
+concatenated, decoded. Channel (ii) is constructive: the tree file with **one
+line** substituted at line 392. Both land on 17 953 bytes at sha256
+`e1f8e9f0…f72979`, which is the figure CI itself printed. **Channel (ii) is the
+one that earns its place**, and I did not plan it — I built it after my first
+transcription failed to decode. It turns out to be the stronger instrument by a
+wide margin: a single-line substitution that hashes to CI's own figure *cannot*
+carry a second difference anywhere in the file, so "the only delta is U13's
+block" stops being an inspection I performed and becomes an arithmetic
+consequence. Reading a 393-line diff carefully is fallible; this is not.
+(My transcription had two slips of my own — one wrong character and one
+mis-copied line. They are the reason channel (ii) exists, and I record them
+because a reviewer who reports only the channel that worked is reporting a
+method he did not use.)
+
+*Is it printed data or is it crash text?* `L-B08` and ADR-0003-d2 exist because
+ppx_expect renders an uncaught exception **into** the corrected block, so the
+mechanism that offers a promotion candidate is the same mechanism that offers a
+crash. The discrimination is therefore not optional and not by eye: I read the
+block's whole content and it is the `Stdlib.print_string` output of `run_d6` —
+no exception message, no `Raised at`, no backtrace. The same fact does a second
+job I want on the record: sixteen `[%expect]` blocks in that directory, exactly
+one changed, none containing exception text, and `dune promote`'s own
+`git diff --name-only` naming exactly one file across the whole repository.
+**That is the measurement that all six of this round's units ran and none of
+their OCaml assertions fired**, and it is available only because §16.2 rule 2
+made the print data and the assertions the verdict. Had U13 been written the
+other way round, my promotion would have manufactured a test that can never fail.
+
+*Is the number right?* This is the question I would most like a later auditor to
+check that I asked. The value is now committed evidence, and a promoted number
+nobody recomputed is a snapshot of whatever produced it. Checking it against
+`Dv_golden.Crc32_ref` would be circular — that is the oracle the test already
+consulted. So I went outside: Python's `zlib.crc32`, and a bit-serial routine
+written from the reflected IEEE 802.3 polynomial `0xEDB88320` with init and final
+XOR `0xFFFFFFFF`. Both reproduce REQ-303's published check value
+`CRC32("123456789") = 0xCBF43926`, which is what licenses them as oracles here,
+and both give `CRC32` of sixty zero octets as **`0x04128908`** — `0x08 0x89 0x12
+0x04` least significant octet first, which is exactly the promoted text. It is
+also not `0x00000000`, so `M04-D6`'s anti-vacuity half is now non-vacuous on
+measured arithmetic rather than on §6.4's assurance that it would be. **Two
+oracles rather than one** because `zlib` and the repository's `Crc32_ref` could
+in principle share a table-driven ancestry; a bit-serial loop over the polynomial
+shares nothing with either.
+
+**Act two, and the thing I got wrong.** The review is twenty bars and they pass,
+which is not the interesting part. The interesting part is that the worker
+reported three defects in my instructions instead of adopting them, and **two of
+the three are mine**. Worse than that: they are the same defect. §6.2 assertion
+6 tells the worker that wire octet 59 at `P = 60` is *"pad octet 59 (`0x00`)"* —
+in a packet whose own §6.1 table says `pad = 0` on that row, and against a
+content builder whose docstring says in its own words that never emitting `0x00`
+*"is what keeps a padding claim honest"*. **I specified the one value that octet
+provably cannot hold.** And `bench.mli`'s value count is stated as eleven at four
+sites where a status pass measures twelve, the root cause visible in my own
+enumeration, which lists `decoder`/`strobes` slash-joined and so enumerates
+twelve while counting eleven.
+
+The common form is worth naming precisely, because "be more careful" is not a
+lesson: **each of these is a figure I asserted about a document I had open,
+inside a packet whose §9.1 forbids exactly that** — *a sentence asserting a
+census is not the census*. The rule was in front of me. What defeats it is that a
+count feels like a recollection rather than a claim, so it does not trip the
+instinct that a *quantified* statement needs re-measuring. The operational form
+that would have caught all four is narrow and mechanical: **a numeral describing
+a file is re-derived at the moment of writing, from the file, or it is not
+written**. I applied it here and it produced a fifth site the worker's own report
+missed (§5.2), which is the evidence that it works and that the worker's census
+— though correct in substance — was itself a partial one.
+
+**Why I refuted the third rather than accepting it out of symmetry.** The worker
+reported the §6.1 `P = 67` FCS cell as a duplicate of the `P = 63` row's. Read at
+`6291947`, that cell says *"lanes 3–6 of `C+10`"* — correct, and byte-for-byte
+what the worker's own M-9 derivation produced. It misattributed the neighbouring
+row. **A reviewer who upholds a refutable report to look even-handed has stopped
+reviewing**, and the packet would then carry an instruction to "fix" a correct
+table. No sanction attaches and none should: the worker derived before it read,
+as M-9 instructs; its arithmetic was right; and its code computes every placement
+from `Int.rem`/`/` at run time and never reads the table's text, so no assertion
+was ever exposed to the misreading. The asymmetry in cost is the whole argument
+for the reporting discipline — reporting a non-defect costs me a paragraph;
+adopting a real one costs a bench that fails a conformant design.
+
+**What I refused to do, and it is the harder call of the round.** The dispatch
+told me to discharge twelve rows on ACCEPT, and §19.1 pre-committed the same. But
+`M-2`'s pass condition wants a **green** *Run tests*, and today that step is
+`failure` at both commits and *Verify nothing was left unpromoted* is `skipped`
+behind it — the green run is the one that carries the promotion I have just
+placed and it does not exist yet. Two bad options presented themselves: withhold
+the discharge (which would strand a round that did everything asked of it behind
+an event only the committer can produce), or discharge and let the count stand as
+if the completing run had been read. I took neither. **The discharge is recorded
+with its completing event named and a void condition attached**, in the verdict
+and again in `AP-M04` §9: if that run is not green at both steps, the ACCEPT is
+void and the twelve rows reopen. This is deliberately the same discipline
+`J-dv_lead-0177` used when it refused to count `M04-G9` as discharged by a run
+that would have passed it — the difference being that here the units exist, ran,
+and did not fire, which is a measurement, whereas there the row did not exist
+when the run happened, which is not.
+
+**`BM17`, and the one genuinely good outcome.** I armed a tripwire in this packet
+that would have made a further instrument violation a bounce on its own,
+disclosed or not. Condition (b) I verified by reading §17.1 item 4; condition (a)
+is the orchestrator's and I refused to infer it, which is why §18 item 9 made the
+worker state it — it did, quoting its spawn prompt's first line. So `BM17` was
+armed. **And it did not fire, because there was nothing to fire at.** Six rounds
+of this chain met a rule that forbade an instrument its own dispatch mandated,
+disclosed the forced violation, and were credited for it. This round unified the
+two instrument sets and the conflict simply stopped happening. That is the
+correct shape of a fix: the tripwire's value was in making the arming condition
+*measurable*, not in punishing anyone with it.
+
+### Actions
+
+1. **Class-P promotion placed** at `test/xgmii_tx_64/test_m04_d.ml` — verbatim,
+   the file reconstructed from run `31495302673`'s promotion block, one line
+   changed (line 392, U13's `[%expect]`), digest verified against CI's own figure
+   under four instruments, printed value independently re-derived under two
+   external oracles before placement.
+2. **`RV-0081-VERDICT` appended** to `WO-0081`'s Return log: **ACCEPT**, twenty
+   bars of twenty, the three reported defects adjudicated (two upheld against me,
+   one refuted), `BM17`'s arming verified and recorded as not tripped, and §6's
+   list of what the ACCEPT does not carry.
+3. **`WO-0081`'s header state moved** `ISSUED` → `ACCEPTED` per PROTOCOL §3's
+   lifecycle. *This is one edit beyond the dispatch's literal "Return-log
+   append", inside the same file and inside my scope; I made it rather than leave
+   a packet whose Return log says ACCEPTED above a header that says ISSUED, which
+   is the self-contradiction I convicted in this plan's own repair round. Flagged
+   in my return rather than done quietly.*
+4. **Twelve rows discharged** in `test/attack_plans/AP-xgmii_tx_64.md` via a §9
+   change-log row: `M04-D1`…`D6`, `E1`…`E5`, `G9`. Outstanding **69 → 57 of 82**.
+   No row added, no status cell moved, counts re-measured by a status-cell pass
+   before and after the edit.
+5. **This entry.**
+
+**Not done, deliberately**: no `SO-` opened or offered; no RTL read; no
+`docs/**` file touched; no commit, no push.
+
+### Evidence
+
+**Precheck.** `git status --short` → empty; `git rev-parse HEAD` →
+`cddad51f479ab1656222e94fb9264e7040d761f1`.
+
+**The promotion, reproducible at this SHA.** The corrected file's digest, and the
+proof that the delta is one line:
+
+    python3 -c "import hashlib; d=open('test/xgmii_tx_64/test_m04_d.ml','rb').read().split(b'\n'); \
+      d[391]=b'  [%expect {||}]'; print(hashlib.sha256(b'\n'.join(d)).hexdigest())"
+    # -> 0d60c49d1849b7d47f9182d8e86a83675cf22518740d0249dbd5a53e6f147235  (the pre-promotion file)
+    sha256sum test/xgmii_tx_64/test_m04_d.ml
+    # -> e1f8e9f0b4abbfa2af7a9b8743cc2e1f9427632e16bb41569397a08496f72979
+
+the second figure being the one CI printed beside `--- FILE
+test/xgmii_tx_64/test_m04_d.ml` in run `31495302673`'s promotion block, and
+reproduced here under `sha256sum`, `openssl dgst -sha256`, Python `hashlib` and
+`shasum -a 256`. The decoded base64 payload from that block is byte-identical to
+the placed file.
+
+**The independent oracle check** (no repository code involved):
+
+    python3 -c "import zlib; print(hex(zlib.crc32(b'123456789')), hex(zlib.crc32(b'\x00'*60)))"
+    # -> 0xcbf43926 0x4128908
+
+`0xCBF43926` is REQ-303's published check value, which licenses the oracle;
+`0x04128908` is the promoted value, and its little-endian octets are
+`0x08 0x89 0x12 0x04`, which is the promoted text. A bit-serial routine over
+`0xEDB88320` (init/final XOR `0xFFFFFFFF`) reproduces both figures exactly.
+
+**Bars, raw figures.** `let%expect_test` over `test/**/*.ml`: **149** at
+`2a0a2b1`, **155** at `aabae58` (+6). `git ls-tree aabae58 test/xgmii_tx_64/`:
+**10** files. `git diff --name-status 714178d aabae58`: **8** paths, exactly
+§11.2's six plus the Return log plus the worker journal. `git diff 714178d
+aabae58 -- test/xgmii_rx_64/`: **0** hunks; same over the four landed
+`test_m04_{scaffold,a,b,c}.ml`: **0** hunks. `M04-` census over `test/**/*.ml` at
+`aabae58`: the 13 commissioned ids, 2 bare tokens, and this round's 12 — **zero
+others**. Per-file `let%expect_test`: d **3**, e **2**, g **1**; scaffold/a/b/c
+**1/1/3/5**. `[%expect` blocks in the directory: **16**, all `{||}` at the
+landing, exactly one non-empty after my promotion. Infix ` mod `: **3**, all
+non-expression (`bench.mli:151`, `test_m04_b.ml:255`, `test_m04_e.ml:14`).
+`print`/`Stdio`: **one** call site, `test_m04_d.ml:362`. `tready`: four base read
+sites unchanged in `sample_cycle`, five new hits all in comments. `bench.mli`
+`val` count: **12** at `2a0a2b1`, **13** at `aabae58`, every base signature
+byte-identical.
+
+**CI, read by name and status.** Run `31494947078` job `93790202820` (`aabae58`):
+*Build* `success`, *Run tests (expect tests, waveform snapshots)* `failure`,
+*Generate RTL* / *Verify nothing was left unpromoted or non-deterministic* / *DV
+mechanical checks* / *Abort-bit availability quantifier* `skipped`; `cosim` job
+`success`. Run `31495302673` job `93791378385` (`cddad51`): identical step
+pattern; the failing step's log read **in full**, one diff hunk, one promoted
+file, zero `uncaught_exn`, zero compile errors. `git diff aabae58 cddad51 --
+test/` is **empty**, so the second reading is a reading of the same test tree.
+
+**Attack-plan census, before and after my edit, by a status-cell pass over every
+row table**: **82 rows, 82 distinct ids, 58 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS,
+5 STRUCTURAL, 1 GAP, 0 RULING** — unchanged in both directions. The twelve
+discharged measure **10 ASSERT + 2 NO-ASSERT** (`D5`, `E5`), which is `WO-0081`
+§2's own figure.
+
+**Not reproducible from a checkout, and said so** (ADR-0003/F5): the CI job logs
+are GitHub-hosted artefacts reachable by the run and job ids above, not by a
+command in this repository. My scratch reconstruction files are ephemeral and
+outside the repository; nothing in this entry depends on them, because the placed
+file's own digest is the evidence.
+
+### Outcome
+
+**DoD met** for both acts. The promotion is placed and independently validated;
+`RV-0081` is ACCEPT on twenty bars with all three reported defects adjudicated
+and `BM17`'s arming verified; twelve rows are discharged with the plan's counts
+re-measured; families D and E are the first two families to close at this module.
+**One limb is outstanding by construction and is named rather than assumed**:
+`M-2`'s green *Run tests* cannot exist until the commit carrying this promotion
+runs, and both the ACCEPT and the discharge carry an explicit void condition on
+it.
+
+Handoff: `agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md` (`RV-0081-VERDICT`),
+`test/attack_plans/AP-xgmii_tx_64.md` §9. No `SO-` is opened or offered.
+
+**Lessons-harvest note** (ADR-0018, PROTOCOL §7). Span `J-dv_lead-0178` …
+`J-dv_lead-0179`; the five candidates banked at `0178` items 7(a)–(e) are carried
+forward unchanged. **One new candidate, LH1–LH3 discharged:**
+
+- **`LH-0179-1`** — *A numeral that describes a document is re-derived from that
+  document at the moment it is written, or it is not written.* **LH1**: this
+  round's §4(a) and §4(c), where four sites of one work order asserted counts and
+  values about files open in front of their author — a padding claim about an
+  octet the generator provably never emits, and a value count off by one because
+  an enumeration joined two names with a slash — inside a document whose own rule
+  says a sentence asserting a census is not the census. **LH2-g**: no proper noun;
+  the observable is that every quantity attributed to an artefact traces to a
+  derivation performed against that artefact, not to recall or to a prior copy.
+  **LH3**: without it, specifications accrete figures that were true once or never,
+  and the reader who trusts one builds a check that fails correct work — the
+  failure then presenting as a defect in the work rather than in the instruction.
+  *Note the sharper form: the general rule "re-measure set claims" was already in
+  force here and did not fire, because a bare count does not feel like a
+  quantified claim. The candidate is stated over the **numeral** for that reason.*
+
+**Nil yield on war stories this span.**
+
+### Open-questions
+
+1. **The completing CI run.** Both the ACCEPT and the twelve-row discharge are
+   conditional on the commit carrying this promotion being green at *Run tests*
+   **and** at *Verify nothing was left unpromoted or non-deterministic*. If it is
+   not, both void and the round reopens. **This is the orchestrator's to report
+   back to me**; I cannot observe a run that does not yet exist.
+2. **A concurrent writer in this tree, undeclared in my dispatch, and a head that
+   moved twice under a round that pinned it once.** Three `docs/specs/**` files
+   were modified mid-round by a seat that is not me, then landed as `0b7be1f`;
+   the orchestrator then committed `4d163ee`. Nothing of mine is affected
+   (`git diff cddad51 HEAD -- test/ agents/handoffs/ test/attack_plans/` empty),
+   and I left every one of those paths untouched. **Two things I want decided
+   rather than left to recur.** (a) Whether concurrent sibling seats should be
+   declared in dispatches, as the declared-sibling convention at `J-dv_lead-0172`
+   did — the orchestrator's call. (b) Whether the abort-first precheck should be
+   paired with a **pre-commit** head re-check, since a precheck establishes the
+   substrate at one instant and R1/R4/R7 are all violable afterwards by a
+   committer reaching for `git add -A` in a shared tree. My
+   `Files-in-this-commit` list is exact and is the authority for staging.
+3. **`docs/specs/requirements.md` moved at `0b7be1f`**, inside `WO-0081`'s own
+   spec basis. It cannot reach a verdict about work committed at `aabae58` and
+   this round's figures are unchanged, but the **next** packet of this chain must
+   re-pin its spec references against it rather than inherit mine — recorded here
+   so the re-pin is an act rather than an assumption.
+4. **Two defects of mine are open against `WO-0081`** — §4(a)'s pad-octet claim
+   (MATERIAL, two sites) and §4(c)'s value count (MINOR, four sites). They are
+   repaired in the next packet of this chain, not here; the packet is issued and
+   its Return log is closed, and editing an issued packet's body to erase a defect
+   the verdict convicts would remove the evidence the verdict rests on.
+5. **`M04-G9`'s terminate placement is read through the decoder**, where family
+   E's rows read the raw lane and use the decoder only as a cross-check. Nothing
+   is uncovered — family E carries the raw-lane claim at all eight lanes — but the
+   asymmetry is recorded so a later round decides it rather than inherits it.
+6. **`DVC-1a` is still unbuilt** and every M04 count in this round remains a hand
+   count with its method stated. It should land before any `SO-` quotes an M04
+   coverage fraction.
+
+### Files-in-this-commit
+- test/xgmii_tx_64/test_m04_d.ml
+- test/attack_plans/AP-xgmii_tx_64.md
+- agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md
