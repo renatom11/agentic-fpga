@@ -494,3 +494,29 @@ let%expect_test
    M03-L6 (a compile-time witness), M03-D4 has no stimulus of its own
    (AP-xgmii_rx_64.md's Stimulus cell is "—") and nothing else to assert in
    its place. *)
+
+(* ---- DM3-FALSIFIER (F-0024-A, J-auditor-0024) — TRANSIENT ONLY, NEVER
+   MERGE. Three back-to-back 65-octet good frames at lane 0: the witness
+   schedule the re-derived proof says distinguishes D-M3 from the design.
+   A conformant design emits no error strobe anywhere in this run. If the
+   proof's refutation is right, D-M3 pulses error_bad_fcs once on a good
+   frame (the late register read lands on a re-seeded crc_reg). Green here
+   withdraws F-0024-A in full; red confirms it. *)
+
+let%expect_test "DM3-FALSIFIER: three 65-octet good frames at lane 0 -- no \
+                 error strobe of any kind"
+  =
+  let octets = directed_frame_octets ~length:65 in
+  let sched = frames_at ~lane:0 ~fcs_valid:true [ octets; octets; octets ] in
+  let bench = create () in
+  let samples = run bench sched ~drain:8 () in
+  (match error_pulses samples with
+   | [] -> ()
+   | pulses ->
+     failwith
+       (String.concat
+          ~sep:"; "
+          ("DM3-FALSIFIER strobes observed:"
+           :: List.map pulses ~f:(fun (c, n) -> n ^ "@" ^ Int.to_string c))));
+  [%expect {||}]
+;;
