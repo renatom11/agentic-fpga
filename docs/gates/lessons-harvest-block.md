@@ -1,13 +1,21 @@
 # Gate block: lessons harvest (ADR-0018)
 
 **Reusable — this file is a template, not a gate.** Every phase-gate checklist in
-`docs/gates/` and every `SO-<module>.md` sign-off section instantiates §3's block
-verbatim, filling the bracketed fields. **A gate is not passed while any box in
+`docs/gates/` instantiates §3's block **verbatim**, filling the bracketed fields.
+Every `SO-<module>.md` sign-off section instantiates the same block with **one
+prescribed substitution**: Part B's four collation boxes are replaced by the
+deferral line §3 carries for that purpose. **A gate is not passed while any box in
 the instantiated block is unchecked** (PROTOCOL §7). **A module sign-off
 instantiates Part A only** — the seven mining boxes — **and is not complete while
 any of them is unchecked**; Part B's four collation boxes are the collator's acts
 at the gate that ratifies the harvest, and appear in an `SO-` as a named deferral
-line, never as boxes (ADR-0018 §A2.2).
+line, never as boxes (ADR-0018 §A2.2). *Until 2026-08-11 the first sentence said
+"and every `SO-<module>.md` sign-off section instantiates §3's block verbatim",
+which the sentence three lines below it contradicts: an `SO-` that copied the
+block verbatim would render four boxes ADR-0018 §A2.2 forbids it to render, and
+would be incomplete on all four for the life of the packet. "Verbatim" is true of
+a gate and false of a packet, and it is now said of each separately* (ledger item
+44, `J-architect_docs_lead-0043`).
 
 Nothing here is signed. This file never records a harvest; instantiations do.
 

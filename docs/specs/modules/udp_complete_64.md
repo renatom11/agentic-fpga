@@ -402,6 +402,25 @@ Anything not listed here is constrained by this specification.
   first payload word). The measurement events are the children's; M19 introduces
   none of its own, because a wire is not a measurement event.
 
+  **The two directions are not equally convertible, and this section pins no
+  per-octet constant across M19's transmit ports.** The receive figures above are
+  a word delay and a front offset and stand as stated: that port pair only
+  strips, so its output offset is q = 0 (requirements.md §0.5), the conversion is
+  the one §0.5 has always licensed there, and the 10 cycles are what §1.1 and
+  REQ-006 consume. The transmit figures above are **event delays** — each pinned
+  to a word its own child inserted, which is what SPEC-M16 §7 says of the three it
+  sums — and a monitor may **not** convert them into a per-octet latency, a front
+  offset or an output offset. The composite *is* derivable from the children, and
+  the derivation is not free: M19's transmit port pair inserts 42 octets ahead of
+  the frame through M18 and M16, so it carries **q = 2** (requirements.md §0.5,
+  *a structural wrapper inserts through its children*), and the same composition
+  performed without q returns a quarter-cycle word delay and convicts a conformant
+  M19. That is **`FINDING Q-3`**, filed 2026-08-11 against §0.5's output-offset
+  default at this module among three and repaired there the same day; the
+  composite figures are derived in requirements.md §13's `FINDING Q-3` rows and
+  are deliberately **not pinned here**, which is the same disposition SPEC-M16 §7
+  takes one level down.
+
   Consequently M19 consumes **none** of requirements.md §1.1's allocation: the
   (3 + 1 + 5) + 4 = **13** cycles allocated to `Eth_axis_rx`, `Eth_demux`,
   `Ip_eth_rx_64` and `Udp_ip_rx_64` are charged against (3 + 1 + 4) + 2 = **10**
@@ -587,9 +606,9 @@ Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
 interface change is counted against post-freeze churn (charter §6). §4.1's
 records are byte-for-byte unchanged since the freeze SHA, so the `ifc_check`
 evidence of §12 witnesses this revision's interface and
-`tools/check_records_vs_appendix.sh` re-passes on every commit. This
-specification has no post-freeze change yet.
+`tools/check_records_vs_appendix.sh` re-passes on every commit. The row below is
+this specification's first post-freeze change.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-11 | **§7's latency bullet gains the guard its transmit half had never carried — M19 is one of the three modules `FINDING Q-3` was filed against, and dv_lead's concurrence ranked it among the two *unguarded* ones.** §7 stated M19's receive constants (word delay 10 cycles, front offset 42 octets) and then its transmit chain as its children's cycle figures, with no sentence saying what a reader may do with either. The receive half is convertible and always was — that port pair only strips, so its q is 0. The transmit half is not: M19's transmit port pair inserts **42 octets** ahead of the frame through M18 and M16, so it carries **q = 2** (requirements.md §0.5, *a structural wrapper inserts through its children*), and composing the children's per-octet constants without q returns a **quarter-cycle** word delay and convicts a conformant M19. §7 now names the transmit figures as **event delays**, forbids their conversion into a per-octet latency, front offset or output offset, states the q, and points at requirements.md §13 for the composite — which is derived there and deliberately **not pinned here**, the disposition SPEC-M16 §7 already takes one level down. **Why the guard is added now rather than with the finding**: `FINDING Q-3` was filed on 2026-08-11 and the same round guarded SPEC-M16 §7 only, because that file was open for a different repair — repairing the instances in front of you and leaving the siblings is precisely what `FINDING Q-1` convicted eleven rows earlier in requirements.md §13, and dv_lead's countersignature (`J-dv_lead-0181` §6) measured the residue and inverted the exposure ranking to say so: M16 guarded, M19 and M20 not | no — **editorial**. No port, record, state, cycle, cycle figure, allocation, throughput or reset statement moves; the receive figures §1.1 and REQ-006 consume are untouched, and no constant is added — **the transmit composite is named as derived elsewhere and is not pinned here**, deliberately, because pinning it in a round whose governing §0.5 diff is itself awaiting countersignature would be the worse of the two errors. What changes is a **permission**: a monitor may no longer convert M19's transmit cycle figures into a per-octet quantity. Nothing was built on that permission — no committed test names this module, and dv_lead measured at `J-dv_lead-0181` §6 that no committed instrument computes a wrapper composite at all | none — the quantity applied is requirements.md §0.5's output offset, ruled at `J-architect_docs_lead-0041`; this row states it at a port pair and chooses nothing | `J-architect_docs_lead-0043` |

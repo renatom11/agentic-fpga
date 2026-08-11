@@ -393,7 +393,7 @@ rely on it.
 
   requirements.md §0.5's octet times have **no instance** at this module and
   none is claimed: M12 carries no octet, so there is no octet time to difference
-  and no front offset h to state. ΔC = (L + h)/8 is the unit of §1.1's ceilings,
+  and no front offset h to state. ΔC = (L + h − q)/8 is the unit of §1.1's ceilings,
   and §1.1 allocates M12 nothing because it is not on REQ-006's chain — it is
   not on the receive path at all. The figure that composes into SPEC-M13 §7's
   response constant is the **one cycle** above, stated in cycles because that is
@@ -525,12 +525,16 @@ spec is DRAFT.
 
 ## 13. Change log
 
-Post-freeze changes only. This spec is DRAFT and has none: the WO-0017 diffs —
-§11.3's closure, §12's evidence row and one cosmetic table cell in §6.1 — are
-pre-freeze corrections on DRAFT text and touch no constant, no record and no
-cycle. This is the one batch-D specification that returned from countersignature
-with nothing to repair.
+Post-freeze changes only. The WO-0017 diffs — §11.3's closure, §12's evidence row
+and one cosmetic table cell in §6.1 — are **pre-freeze** corrections and are not
+rows here: they touch no constant, no record and no cycle, and this is the one
+batch-D specification that returned from countersignature with nothing to repair.
+The row below is this specification's first post-freeze change, and it moves no
+figure this module states — it repairs a sentence about a quantity M12 does not
+have. (§12's *"this spec is DRAFT"* is stale against this document's own
+**FROZEN** header and its own `Frozen at` row; it is left standing and tracked at
+`J-architect_docs_lead-0043`, because a status claim is not this row's subject.)
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-11 | **`FINDING Q-5` (MINOR, dv_lead, `J-dv_lead-0181` §9) SUSTAINED — §7's no-instance recital stated the *retired* conversion, and it stated it as a general rule.** The paragraph explaining that requirements.md §0.5's octet times have **no instance** at M12 read *"ΔC = (L + h)/8 is the unit of §1.1's ceilings, and §1.1 allocates M12 nothing"*. §0.5's conversion has been **ΔC = (L + h − q)/8** since `0b7be1f`; the clause is now written in that form. **One symbol, and nothing else in the paragraph moves.** Why it survived the 2026-08-11 sweep of the retired forms, recorded because the mechanism is the interesting part: the sweep classified a site by whether it *states* the rule (repair) or *evaluates* it at a module's numbers (leave — a specification stating no q is stating q = 0, so `(L + h)` beside a number is the amended identity evaluated), and a **no-instance recital is a general-rule statement wearing a per-module coat** — it appears in a module's own §7, beside that module's name, and states the rule in its most general form *precisely because* the module has no numbers to put in it. dv filed this against dv's own class-A call, and the sweep followed that call faithfully. **Nothing at M12 moves and nothing could**: M12 carries no octet, so it has no octet time, no L, no h, no q, no ΔC, no §1.1 allocation and no ceiling; the one-cycle query-to-result figure §7 pins is stated in cycles and is untouched, as is the composition of it into SPEC-M13 §7 | no — **editorial**. No port, record, state, cycle, table cell or figure moves; no conformant design is admitted or excluded, and no committed test names this module's latency at all. The clause was **false as a general statement** from `0b7be1f` and is now true; it named no quantity M12 has, so it convicted nothing and licensed nothing here | none — the amended conversion is requirements.md §0.5's, ruled at `J-architect_docs_lead-0041` and countersigned at `J-dv_lead-0180`; this row applies it and chooses nothing | `J-architect_docs_lead-0043` |

@@ -760,3 +760,712 @@ closing event, so a row is never a note to nobody). Items 1–60 are carried fro
 - docs/specs/modules/xgmii_tx_64.md
 - docs/specs/modules/ip_complete_64.md
 - docs/specs/modules/arp.md
+
+## [J-architect_docs_lead-0043] 2026-08-11T16:10Z | task:none | The ground my own row offered is refused and corrected beside itself rather than inside it; the default that convicted three conformant wrappers is halved on the signer's theorem, which disposes of two of its three cures; and the repair's own arithmetic convicts the additivity headline standing next to it
+
+### Trigger
+
+Orchestrator dispatch, one round, four acts. Three are findings against text I
+wrote — two filed by dv_lead while paying the countersignatures my `292596c`
+round owed, one my own, filed by me and now unblocked by its contest window
+closing in concurrence — and the fourth is my own ledger. **Nothing in this round
+is new work handed down**, which is the second consecutive round with that shape
+and is worth naming: a seat whose queue is entirely its own debts and its
+countersignatory's findings is a seat whose record is doing the scheduling.
+
+**Abort-first precheck, before any file was opened.**
+
+    git status --short              # empty
+    git rev-parse HEAD              # fef90b35d8b484174d9fe4a603045be3edc1954d
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 15:52:38 UTC 2026
+
+Byte-equal to the dispatched spawn-head `fef90b3`, tree clean, so neither branch
+of the abort procedure was reached. The dispatch declares **one** sibling in both
+directions — the orchestrator's own board flip (`tasks/BOARD.md`, `site/**`, its
+journal) — and states that rtl and dv are **not** live.
+
+**The sibling did not fire this round.** HEAD was re-read before the first write
+and again at the end and is `fef90b3` at both, so the re-verification clause was
+armed and unused. I record the negative because three consecutive rounds of *"it
+fired and I re-verified"* would otherwise make the quiet case look like an
+omission; the arrangement costs one command when nothing moves.
+
+**No rotation.** v04 stands at 59,493 bytes against `JOURNAL_SOFT_MAX` = 262,144
+(ADR-0017 §5), so this entry appends to the volume `-0042` opened and ledger item
+4's restatement obligation is not triggered by a boundary. The ledger is restated
+whole below all the same, which is this chain's practice at **every** entry and
+not only at a boundary.
+
+**One stamp discipline, stated because ledger item 61 exists.** The header stamp
+above is `date -u` read at the moment of writing, and the three `requirements.md`
+§13 rows and three module change-log rows this round appends are dated
+**2026-08-11**, which is that same UTC date. This is the third consecutive entry
+of this chain stamped honestly (`-0041`, `-0042`, this one) against thirty-seven
+historical entries that were not.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` and `agents/PROTOCOL.md`, in full,
+  before any other file (§3 packet classes, §4/§4.1 entry grammar, §4.2
+  set-equality, §5 R1–R9, §6 write scope, §7 gates and the harvest clause, §8,
+  §10, §11).
+- **`agents/journals/claude_dv_lead_agent.v10.md`, `J-dv_lead-0181` in full and
+  verbatim** — the whole entry, read at the source and not through the dispatch's
+  summary: Trigger (including the rotation and the declared `.mli` overrun),
+  Inputs, Reasoning 1–10, Actions, Evidence, Outcome with its three harvest
+  candidates and its war story, and Open-questions 1–8. §3 is `FINDING Q-4`, §9 is
+  `FINDING Q-5`, §6 is the `Q-3` concurrence with the closure theorem, the cure-2
+  argument and the inverted exposure ranking, and §2 is the walked REQ-019 domain
+  whose stronger ground I take into this round's own text.
+- **`docs/specs/requirements.md` at HEAD**: §0.5 **whole** (all seventeen
+  paragraph groups, not only the three the acts name), §0.4 whole, REQ-016,
+  REQ-019 and REQ-021 whole with their verification columns, §1.1's tables and
+  prose, and **§13's whole table** including the four rows of 2026-08-11 that
+  carry this round's subjects — `J-orchestrator-0254`, my own three at `-0042`,
+  and the orchestrator's transcription `J-orchestrator-0256` at `fef90b3`.
+- **The two modules `FINDING Q-4` turns on**: `docs/specs/modules/eth_axis_tx.md`
+  §10's REQ-016 row and its §13 row, and `docs/specs/modules/ip_eth_tx_64.md`
+  §10's REQ-016 row and its §13 row — read to measure REQ-016's domain at the
+  source rather than to accept dv's measurement of it.
+- **The three wrappers**: `ip_complete_64.md` §7 whole (M16's existing guard),
+  `udp_complete_64.md` §7 whole and §11–§13, `nic_top.md` §7 whole (the REQ-006
+  derivation table, the two-route check, the two-lane argument and the slack
+  itemisation) and §11–§13.
+- `docs/specs/modules/arp_cache.md` §7's no-instance recital, §12's freeze record
+  and §13 whole — the `FINDING Q-5` site and the module's own status claims.
+- `docs/gates/lessons-harvest-block.md` **whole** — the preamble, §1's five
+  instantiation steps, §2/§2.1, §3's block with its Part A / Part B split and the
+  substitute deferral line, and §4 — for ledger item 44.
+- **My own `J-architect_docs_lead-0042` in full** — Reasoning 1–9, Evidence, the
+  sixty-four-row ledger and all five Open-questions; its Reasoning 3 is the text
+  `FINDING Q-4` convicts and its Reasoning 6 is the filing `FINDING Q-3` repairs.
+- `docs/adr/ADR-0017*` §4.3–§4.4 and §5 (checked for the rotation threshold, which
+  is not reached).
+- **No `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` or `test/**` file was
+  opened this round**, for reading or otherwise. Every quantity below is derived
+  from a specification, checked against a second specification, and re-checked by
+  arithmetic in a throwaway script whose output is in Evidence.
+- **No Essenceia/Nasdaq-HFT-FPGA material consulted.**
+
+### Reasoning
+
+#### 1. `FINDING Q-4` SUSTAINED whole, and the sentence that convicts my ground is one I wrote in the same diff
+
+dv's finding is that `-0042`'s `Q-1` sweep row offered **one** editorial ground
+for **two** normative sites — *"the retired and amended forms are the same
+function on the domain each quantifies over (every receive-path module has q = 0;
+none inserts)"* — and that it is true at REQ-019 and false at REQ-016. I sustain
+it whole and without discount, and I measured the load-bearing half at the source
+rather than accepting it: **SPEC-M07 §10 carries a REQ-016 row and SPEC-M15 §10
+carries the identical one**, each ending *"A bench SHALL NOT assert a single
+per-octet latency here: M07 [M15] fails §0.5's straddle test (§7)"*. REQ-016
+binds *"every receive-path stream (§0.4) **and every internal frame stream**"* and
+commissions its wrapper *"at each module boundary"*; so its domain contains the
+two Phase-1 modules with q ≠ 0, and the receive path is not it.
+
+**On that domain the two forms give opposite answers**, which is what an
+equivalence claim cannot survive. The retired keying bit *"at any module whose
+front offset is not a multiple of 8"*; at M07, h = 0 **is** a multiple of 8, so
+the retired column did not except M07, and the column's own closing sentence —
+*"Where §0.5's two tests both pass at a module … the wrapper asserts the per-octet
+constant as well"* — then licensed the assertion. The amended keying, (0 − 6) ≢ 0
+(mod 8), bars it. Not the same function, and they part at exactly the two modules
+the whole `C-RL-8` ruling exists for.
+
+**The diff convicts its own ground in its own words, and that is the part I would
+not have found.** The amended column I wrote reads *"(h − q) ≢ 0 (mod 8), a
+condition that reaches a module which **inserts** exactly as it reaches one which
+**strips**"*. A commit cannot in one act state that the condition reaches
+inserting modules and that nothing moves on the domain containing them. I had the
+refutation in the same paragraph as the claim and did not read the two together,
+because I checked the ground against the domain of the site whose domain the
+ground **named** — REQ-019's — and then applied it to a sibling whose scope
+sentence is wider. That is dv's `LH-0181-1` exactly, and this round is its LH1
+provenance; I record the concession rather than arguing the margin, because the
+cheapest finding to accept is the one whose whole content is that my own stated
+test reaches my own census.
+
+**dv's proposed correct ground is right and is adopted as stated**: the parent
+row's own — a permission is withdrawn, the same withdrawal was already effected at
+§0.5 by the diff this column defers to **by name** (so the corpus-level permission
+moved at `0b7be1f`, not here), and the permission had **no customer**. I note the
+one fact that has moved since dv wrote it and dv itself flagged: `test/` names M07
+and M15 from `9a596e7`, in the repaired `octet_time` monitor and its own test.
+The claim the ground needs is *no committed test **drives** either module*, which
+holds at both heads, and that is how I have written it.
+
+**The cure's substance is dv's and its location is not, and the disagreement is
+worth one sentence rather than a bounce.** dv's cure is *"one sentence in that
+cell"*. I refuse the location: §13's own Date-column note says *"No row is edited
+— a frozen record is not repaired by rewriting it"*, and ledger item 41's
+disposition — *a record is corrected beside itself, never rewritten* — now has a
+third instance. The reason is not procedural fastidiousness. A class cell is what
+a later reader consults to decide whether re-verification is owed; if I edit it,
+the record no longer contains the fact that a wrong ground was once offered, and
+**that fact is the one a reader auditing the sweep most needs**. So the correction
+is a new row that names the cell it corrects, and the two rows read together say:
+at REQ-019 the amended form is the same function on the domain; at REQ-016 it is
+not, and the site is editorial because the permission it withdraws was already
+withdrawn upstream and had no customer.
+
+#### 2. `FINDING Q-5` SUSTAINED — one symbol, at the one site the sweep's own classifier was built to miss
+
+SPEC-M12 §7's *no-instance* recital read *"ΔC = (L + h)/8 is the unit of §1.1's
+ceilings, and §1.1 allocates M12 nothing"*. It is now (L + h − q)/8. One symbol,
+and the interesting part is why it survived.
+
+The sweep's operational test, which I stated at `-0042` §2, is *does the site
+print a number, or does it print the rule?* It is a good test and I uphold it —
+but a **no-instance recital states the rule in its most general form precisely
+because the module has no numbers to put in it**. It wears a per-module coat: it
+sits in a module's own §7, beside that module's name, in a paragraph whose whole
+subject is that module. A census sorting by "states / evaluates" mis-files every
+one of them in the same direction, which is dv's `LH-0181-3` and is right.
+
+**The provenance matters and dv stated it against itself**: the mis-classification
+is dv's (`J-dv_lead-0180` §5 listed *"plus `arp_cache`"* among the per-module
+evaluations) and the sweep followed it faithfully. So the defect is in the
+**classifier**, not in the sweeper's diligence — a distinction I want kept,
+because it locates the next repair. Nothing at M12 moves and nothing could: M12
+carries no octet, so it has no octet time, no L, no h, no q, no ΔC, no ceiling and
+no §1.1 allocation; the clause named a quantity this module does not have, so in
+its retired form it convicted nothing and licensed nothing here — it was simply
+**false as a general statement** from `0b7be1f`, and is now true.
+
+**One thing the row forced that I did not go looking for.** SPEC-M12's §13
+preamble read *"This spec is DRAFT and has none"*, and landing the first
+post-freeze row makes *has none* false, so the preamble had to move. That
+incidentally removed one stale `DRAFT` claim while §12's identical one — *"All
+four rows are required (charter §5); this spec is DRAFT"* — still stands against
+the document's own **FROZEN** header and its own `Frozen at | SHA 3f6accc` row. I
+left §12's standing, said so in §13's preamble in one parenthesis, and put it on
+the ledger. A status claim is not a change-log row's subject, and repairing it
+quietly inside a round commissioned for one symbol is how scope creeps.
+
+#### 3. `FINDING Q-3` — the closure theorem TAKEN, and it is what makes cure 1 the whole cure rather than the first of three
+
+The contest window closed in **concurrence**: dv confirmed all nine figures by
+independent derivation from the children's §7s, sustained MINOR, owned its own
+census gap without discount, and added a theorem. I re-derived the theorem before
+adopting it, and then re-derived every figure in a throwaway script (Evidence),
+because a countersignatory's arithmetic is evidence and not authority.
+
+**The theorem.** Insertions add along a chain, as latency and front offset already
+do, so q(composite) ≡ Σ qᵢ (mod 8), and therefore
+
+    (L + h − q)(composite) ≡ Σ (Lᵢ + hᵢ − qᵢ) ≡ 0 (mod 8)
+
+whenever every child satisfies the whole-number consequence. **A composite of
+conformant children closes identically**; the only way to make a conformant chain
+fail the freeze-time test is to substitute 0 for its true q, which is exactly what
+the default did. That converts the finding from *"three wrappers fail a
+freeze-time test"* into *"the default is the only thing that can make a conformant
+chain fail it"*, and it is a stronger statement than the one I filed.
+
+**It disposes of cure 2, on my own Ground 2 one level up, and I take dv's argument
+whole.** Cure 2 was *define a wrapper's q as its children's insertions mod 8*.
+§0.5 already defines q as (the octets the module inserts ahead of the frame) mod
+8, and a wrapper inserts Σ Iᵢ ahead of the frame **through its children**, so
+q(wrapper) = 2 follows from the definition as written, with no new sentence.
+Writing it down is the enumeration *Why a term and not a scope* refuses — the
+argument I used to refuse a scope, turned on my own proposed cure. **Cure 3 is
+subsumed**, again as dv argued: §0.5's existing *"a specification whose q is not 0
+SHALL state it in its §7"* already obliges it, provided cure 1 stops silence from
+meaning zero at a module the first clause excludes. **Cure 1 is taken and is the
+whole ruling.**
+
+**And here is the one place I do not simply execute dv's recommendation.** Cure 2
+is refused **as a definition** and its *content* is kept **as a consequence**: the
+new text says the definition is *read at* a wrapper rather than extended *for*
+wrappers, and states the closure result as a consequence of the definition. The
+distinction is written into the text deliberately, because without it a later
+reader meets a recital that looks exactly like the rule dv argued out and cannot
+tell which it is. The reason for keeping it at all is not decoration: the repaired
+default now tells an author their q is **unstated** rather than zero, and an
+author under that obligation needs to know (a) that the quantity is computable
+from the definition they already have and (b) that a composite which fails the
+test has a wrong figure in it rather than a non-conformant design. Without the
+consequence, the halved default reads like an obstruction.
+
+**Cure 1, phrased as a halving rather than a deletion.** The defect was never that
+the sentence lacked a case; it was that its second half **overrode its first** at
+the modules the first excludes — the rule said nothing of a wrapper inserting 34
+octets through its children while the default said zero. So silence remains an
+assignment **where the rule holds** — which is what keeps every specification
+written before q existed correct without amendment, and was the default's whole
+purpose — and is no longer an assignment where the rule is silent. Where the rule
+is silent, q is **unstated**, and a specification pinning a per-octet constant or a
+word delay there without stating q is defective, refutably by arithmetic before
+any RTL. That is dv's recommendation with its reason kept attached.
+
+**Ledger item 53 is discharged at this one quantity, and the repair is incoherent
+without it.** If the subject stays *"a property of the module"*, the repaired
+sentence has to say a wrapper has q = 2 — which is false at its **receive** ports,
+where it inserts nothing, and dv's REQ-019 walk depends on that being false. One
+module, two answers. So q's subject is corrected to the **port pair** it is
+measured across. h and §0.5's two tests carry the identical defect and are
+deliberately **untouched**: fixing them is the §0.5 scoping round item 53 names,
+it is a larger normative change, and taking it inside a repair round would be the
+scope creep I have been convicting others' rounds of. The item narrows; it does
+not close.
+
+**One sentence was false and had to go with the default.** *"In Phase 1 q = 0
+everywhere except M07 (6) and M15 (4)"* has been false since the wrappers were
+measured at `-0042`, and it is a census — the exact kind of statement `FINDING
+Q-1` is about. It now names M16, M19 and M20 at q = 2 across their transmit port
+pairs and 0 across their receive ones, and says that none of the three pins a
+constant there.
+
+#### 4. Where the guards go, and why leaving M19 and M20 would have repeated the conviction I accepted one round ago
+
+dv **inverted my exposure ranking** and the inversion is right. I ranked the three
+wrappers alike on "no customer". dv measured: **M16 is guarded** — its §7 says, in
+the same commit that filed `Q-3`, that it pins no per-octet constant across its
+transmit ports and that a monitor may not convert either cycle figure — while
+**M19 and M20 are not**. SPEC-M19 §7 states its transmit chain as its children's
+with no such sentence; SPEC-M20 §7 says *"and its transmit-port constants
+likewise"*, which is an invitation to compose.
+
+**And dv's first customer is sharper than mine.** I named the Phase-1 latency
+report's transmit figure. dv named **SPEC-M20 §7's own receive-chain derivation**,
+one paragraph above that sentence: *"Per-octet latency is additive along a chain,
+so the end-to-end constant is L = 54 … the front offsets add to h = 50 … Then
+ΔC = (L + h)/8 = 13 … and (L + h) = 104 is a multiple of 8."* Extended
+transmit-side — which is the natural next act at that section, invited by its own
+next sentence — it returns 74 and convicts a conformant top level. A first
+customer inside the same section is not the same risk as one in a report nobody
+has written.
+
+**Why M16 was guarded and its two siblings were not is the whole reason both are
+guarded now**: I had `ip_complete_64.md` open for ledger item 59's repair and did
+not have the other two open. Repairing the instances in front of you and leaving
+the siblings is **`FINDING Q-1`'s own conviction**, which I sustained eleven rows
+earlier in the same table. Leaving M19 and M20 unguarded one round after
+sustaining it would have been that error committed knowingly. Both now carry the
+guard.
+
+**What the guards do and do not do.** Each names the transmit cycle figures as
+**event delays**, forbids their conversion into a per-octet latency, front offset
+or output offset, states the port pair's q, and points at `requirements.md` §13
+for the composite. **Neither pins a constant.** I drafted M19's guard with
+`ΔC = (38 + 42 − 0)/8 = 10` in it, spotted that this pins a receive-side L the
+section had never stated, and removed it: my own `-0042` Open-question 5 says that
+pinning a wrapper's constants in a round whose governing §0.5 diff is itself
+awaiting countersignature is the worse of the two errors, and that judgment does
+not change because the figure is easy. The wrappers stay holes rather than wrong
+values, and the hole is now labelled.
+
+#### 5. The repair's own arithmetic convicts the bullet standing next to it, and I repaired that rather than filing it
+
+While deriving the closure consequence I checked the additivity it leans on, and
+§0.5's next-door bullet said, without condition: *"**ΔC is additive along a chain**
+and floor(L / 8) is not."*
+
+**It is false at a chain whose stages insert, and M16 is the counterexample.** ΔC
+counts to the first output word carrying an octet of the frame; the next stage's
+measurement event is the previous stage's **first output word**; at an inserting
+stage those are different words, so the sum does not telescope. Measured:
+Σ ΔCᵢ = 3 + 0 + 2 = **5** against M16's composite ΔC of **6**. The exact statement
+is
+
+    ΔC(composite) = Σ ΔCᵢ + (Σ qᵢ − q(composite)) / 8 = Σ ΔCᵢ + ⌊Σ qᵢ / 8⌋
+
+and **that correction is the same carry the closure theorem discards mod 8** — the
+composite always closes, and it is only its ΔC the naive sum misses. It vanishes
+wherever Σ qᵢ < 8, so along §0.4's receive chain and at M19 (0 + 2) and M20
+(2 + 0), and equals 1 at M16 (4 + 0 + 6 = 10). The bullet's **conclusion** — the
+sum over §0.4's receive chain is REQ-006's end-to-end count — is unchanged and was
+always true, that chain only stripping; what was over-general was its headline,
+which its own justification and its own conclusion never supported.
+
+**Why repaired and not filed, which is the opposite of what I did with `Q-3` and
+needs its reason.** `Q-3` was filed because three cures were live and a round that
+finds a defect in a default should not also choose among them. Here there is one
+cure — carry the condition the body already implies — and, decisively, **the Q-3
+repair's own consequence recital rests on additivity**. Publishing a strengthening
+that leans on additivity immediately beside an unconditioned additivity headline
+is the same defect twice, which is the exact phrase I used at `-0042` §5 when I
+refused to publish dv's corollary unconditioned. So it is repaired, in the same
+diff, and it is **named in the row and here as the round's one edit the dispatch
+did not literally commission** — separable from every other edit, nothing else
+depends on it, and it is the one to bounce if the write set is read more narrowly.
+That is the `-0042` Date-column-note precedent, applied a second time with the
+same declaration.
+
+#### 6. Why the class column of the `Q-3` row does not say "the same function on the domain", and why that is this round's own lesson
+
+`FINDING Q-4` is this round's other act, so the classification of the `Q-3` repair
+is written under its shadow deliberately. **The same-function ground is not
+available here and is not offered**: the retired and amended defaults give
+different answers at precisely three port pairs, which is the whole point of the
+repair. Offering it would repeat, in the very round that sustains `Q-4`, the error
+`Q-4` convicts.
+
+The ground offered instead is that the retired default was **false** at those port
+pairs and that **nothing was built on the falsehood**, checked and not assumed:
+no wrapper §7 pins a transmit per-octet constant (all three read this round);
+§0.5's injection licence is gated behind *"a fact about the module, stated in its
+own §7"*, which none of the three states; and **no committed instrument computes a
+wrapper composite at all** — dv measured that at `J-dv_lead-0181` §6, `word_cycles`
+having no caller outside its own module, its own test and M03's benches. So no
+conformant design is admitted or excluded that was not before, no cycle, ceiling,
+allocation or §1.1 row moves, and no committed test changes meaning. **Normative
+text, editorial in effect, on a ground that names its own extension change rather
+than denying it.**
+
+**Not E2** — no requirement, phase or role added or dropped, no ceiling and no
+allocation moved. **No ADR**, on the parent's precedent: the `C-RL-8`
+term-versus-scope ruling was a rule change of the same kind and recorded its
+refused alternative in §13 rather than in `docs/adr/`; the three cures and the
+ground for refusing cure 2 are recorded in the row, which is what that precedent
+requires. I flag the question rather than settling it silently — a ledger row
+carries it — because "the parent did it this way" is a precedent and not an
+argument, and the next rule change of this size should either follow it knowingly
+or break it with an ADR.
+
+#### 7. Act 4 — the ledger, advanced where it moved and restated where it did not
+
+- **Item 44 — CLOSED.** The block's preamble said every gate checklist *"and every
+  `SO-<module>.md` sign-off section"* instantiates §3's block **verbatim**, and the
+  sentence three lines below it says a module sign-off instantiates **Part A
+  only**, Part B's four boxes appearing as a named deferral line. The two cannot
+  both be followed: an `SO-` copying the block verbatim renders four boxes
+  ADR-0018 §A2.2 forbids it to render, and — because *"a gate is not passed while
+  any box is unchecked"* — would be incomplete on all four for the life of the
+  packet. "Verbatim" is true of a gate and false of a packet, and it is now said of
+  each separately, with the struck reading quoted in place. Five rounds carried;
+  the fix needed a dispatch that included `docs/gates/`, and this one did.
+- **Item 11 / A2.4's gate-file edits — verified against the record, NO RESIDUE, and
+  the item stays closed.** `git show --stat 61e0c76` is `J-architect_docs_lead-0037`
+  and carries `docs/gates/P1-module-ready-checklist.md` (new, 555 lines) and
+  `docs/gates/lessons-harvest-block.md` (+54/−14) — both halves landed in that one
+  commit. I re-read `lessons-harvest-block.md` whole this round for item 44 and
+  found the A2.4 material present: seat-qualified `LC-`/`LD-` ids with independent
+  numbering (§1 step 2), the A2-D4 dual-site transcription rule (step 4), the
+  no-deleted-rows / nil-yield rule (step 5), Part A's seven boxes, and the A2-D1
+  substitute line. **Item 44's defect is not A2.4 residue** — it is an older
+  sentence A2.4's edits did not reach — and I say so because the dispatch's *"if
+  any residue remains"* invited exactly the wrong conclusion from a single
+  co-located defect.
+- **Item 50's third slice — exercised twice more this round, and it returned a
+  finding on both runs.** The slice is *for each normative clause, enumerate the
+  modules it quantifies over and evaluate it at each*. dv ran it on **REQ-016**
+  and returned `FINDING Q-4`; I ran it on **the ΔC-additivity bullet** and returned
+  §5's defect. With `-0042`'s run on q's default that is **three clauses, three
+  findings, three for three**. A slice with that hit rate is not a note; it is a
+  round that has not been scheduled, and the item now says so with all three
+  instances named. It is also the strongest argument yet that the residue is large:
+  §0.5 has roughly a dozen clauses of this shape and three have been walked.
+- **Item 53 — narrowed, not closed** (§3 above). q's subject is corrected to the
+  port pair because the repair is incoherent otherwise; h and the two tests still
+  say *"the module"* and are untouched. The item's fourth instance is repaired at
+  one quantity and its residue is the §0.5 scoping round it has always named.
+
+#### 8. What I did not do, listed because a write permission is a promise
+
+`docs/specs/modules/**` was permitted *"ONLY where an act above convicts a
+file"*. Four module files are touched and each is named with its convicting act:
+`arp_cache.md` (act 2, `FINDING Q-5`), `udp_complete_64.md` and `nic_top.md`
+(act 3 — dv's exposure ranking names them as the unguarded pair). `ip_complete_64.md`
+is **not** touched: M16 is already guarded, and adding anything there would be
+enumeration. `eth_axis_tx.md` and `ip_eth_tx_64.md` are **not** touched: `Q-4`
+convicts a §13 class cell in `requirements.md`, not those modules' §10 hooks,
+which are correct as written and are the *evidence* for the finding rather than
+its subject. **`docs/gates/P1-spec-freeze-checklist.md` is not touched**: ledger
+item 12 lives there, the dispatch named four ledger items and item 12 is not among
+them, and *"do not invent scope I did not name"* governs. Item 12 is now carried a
+fifth round and I record that rather than quietly taking it while the door was
+open.
+
+### Actions
+
+1. Ran the abort-first precheck; both outputs matched the dispatch exactly. Read
+   HEAD again at the end: unmoved at `fef90b3`, so the declared-sibling
+   re-verification clause was armed and unused.
+2. Read the charter and PROTOCOL in full, then `J-dv_lead-0181` whole and
+   verbatim, then §0.5 and §13 whole at HEAD, before writing anything.
+3. **Measured REQ-016's domain at the source** — SPEC-M07 §10 and SPEC-M15 §10 —
+   and **SUSTAINED `FINDING Q-4` whole**, adopting dv's proposed ground and
+   refusing dv's proposed cure *location* on §13's own frozen-record rule.
+4. **SUSTAINED `FINDING Q-5`** and repaired `arp_cache.md` §7 — one symbol,
+   `(L + h)/8` → `(L + h − q)/8` — with the forced §13 preamble correction and
+   the stale §12 `DRAFT` claim left standing and tracked.
+5. **Repaired `FINDING Q-3`** in `requirements.md` §0.5: q's subject corrected to
+   the port pair; the default **halved** (cure 1) so silence assigns zero only
+   where the rule holds and assigns nothing elsewhere; a new normative
+   structural-wrapper clause reading the existing definition at a wrapper; the
+   closure result stated **as a consequence, not a definition** (cure 2 refused,
+   its content kept); and the false Phase-1 census sentence replaced.
+6. **Qualified the ΔC-additivity bullet** with its condition and the exact
+   correction term, declared as the round's one uncommissioned and separable edit.
+7. **Guarded SPEC-M19 §7 and SPEC-M20 §7** — the unguarded pair of dv's inverted
+   ranking — naming the transmit figures as event delays, forbidding the
+   conversion, stating each port pair's q = 2, and **pinning no constant**.
+8. **Appended three `requirements.md` §13 rows** (`Q-4` adjudicated, `Q-5`
+   sustained, `Q-3` repaired) and **three module change-log rows** (SPEC-M12,
+   SPEC-M19, SPEC-M20 — the first post-freeze row in each).
+9. **Closed ledger item 44** by repairing `docs/gates/lessons-harvest-block.md`'s
+   preamble, and **verified item 11 / A2.4 against `61e0c76`**: both halves landed,
+   no residue.
+10. Re-derived every wrapper figure, the closure theorem and the additivity
+    correction in a throwaway script; re-ran the retired-form census; checked
+    every edited table's field counts.
+11. Wrote this entry. **No `git add`, no `git commit`, no `git push`, no git write
+    of any kind.**
+
+### Evidence
+
+Reproducible from a checkout at this commit unless stated otherwise.
+
+**Precheck and post-check — the sibling did not fire.**
+
+    git status --short              # at entry: empty; at exit: the five files below
+    git rev-parse HEAD              # at entry AND at exit: fef90b35d8b484174d9fe4a603045be3edc1954d
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # entry 15:52:38Z, exit 16:10Z
+
+**`FINDING Q-4`'s domain, measured at the source and not taken from the filing:**
+
+    grep -n "REQ-016" docs/specs/modules/eth_axis_tx.md docs/specs/modules/ip_eth_tx_64.md
+
+returns a §10 coverage row in **each** file whose hook ends *"A bench SHALL NOT
+assert a single per-octet latency here: M07 [M15] fails §0.5's straddle test
+(§7)"* — `eth_axis_tx.md:534` and `ip_eth_tx_64.md:817` at HEAD. REQ-016's
+requirement sentence (`requirements.md:777` at HEAD) binds *"every receive-path
+stream (§0.4) **and every internal frame stream**"*.
+
+**Every figure this round asserts, re-derived by arithmetic** (throwaway script,
+outside the repository, not staged; the same numbers are checkable by hand from
+SPEC-M15 §7, SPEC-M09 §7, SPEC-M07 §7, SPEC-M18 §7, SPEC-M04 §7):
+
+    M16: children M15(L28,I20) M09(L0,I0) M07(L22,I14)
+         L=50 h=0 I=34 q=2 (L+h-q)=48 mult8=True dC=6   [default q=0 -> 50/8 = 6.25]
+    M19: children M18(L8,I8) M16(L50,I34)
+         L=58 h=0 I=42 q=2 (L+h-q)=56 mult8=True dC=7   [default -> 58/8 = 7.25]
+    M20: children M19(L58,I42) M05/M04(L16,I8)
+         L=74 h=0 I=50 q=2 (L+h-q)=72 mult8=True dC=9   [default -> 74/8 = 9.25]
+
+    closure theorem, sum(Li+hi-qi) mod 8 per chain:  M16 0, M19 0, M20 0
+    additivity, sum(dCi) + floor(sum(qi)/8) vs composite dC:
+         M16: 5 + 1 = 6 = 6      (qi = 4,0,6 -> sum 10, carry 1)
+         M19: 7 + 0 = 7 = 7      (qi = 0,2   -> sum  2, carry 0)
+         M20: 9 + 0 = 9 = 9      (qi = 2,0   -> sum  2, carry 0)
+         M19 decomposed to leaves: 6 + 1 = 7 = 7   (qi = 0,4,0,6 -> sum 10, carry 1)
+
+Every figure `-0042` filed is confirmed, dv's independent derivation of the same
+nine is confirmed, and the additivity correction is checked in **two**
+decompositions of M19, which is what makes it a formula rather than a coincidence.
+
+**The retired-form census, re-run after this diff:**
+
+    grep -rc "(L + h)" docs/specs/ | grep -v ":0"
+    # requirements.md 6      — ALL inside §13 (header at line 1188), frozen record
+    #                          + this round's three new rows quoting the form to convict it
+    # SPEC-TEMPLATE.md 1     — inside the prohibition that names the form to forbid it
+    # arp_cache.md 1         — this round's own §13 row quoting the retired clause (line 396 repaired)
+    # nic_top.md 4           — three class-A receive-chain evaluations (q = 0) + this round's §13 row
+    # eight other module files 2–3 each — class-A per-module evaluations at q = 0, upheld, untouched
+    grep -n "(L + h" docs/specs/modules/arp_cache.md   # 396: (L + h − q)/8   [repaired]
+
+**Table integrity**, by a field-count pass over every change-log table this round
+touched: `requirements.md` §13 — **65 rows, all 6 fields**; `arp_cache.md` §13,
+`udp_complete_64.md` §13, `nic_top.md` §13 — **3 rows each (header, rule, one
+data row), all 5 fields**; `ip_complete_64.md` §13 unchanged at 4. Zero
+malformed rows in any of the five.
+
+**Ledger item 11 / A2.4, verified against the record:**
+
+    git show --stat 61e0c76
+    # J-architect_docs_lead-0037; docs/gates/P1-module-ready-checklist.md (new, 555 lines)
+    #                             docs/gates/lessons-harvest-block.md      (+54/-14)
+
+Both halves in one commit; `lessons-harvest-block.md` read whole this round and
+the A2.4 material is present (§1 steps 2, 4 and 5; Part A's seven boxes; the
+A2-D1 substitute line at §3). **No residue.**
+
+**Nothing in this entry is a verification result about any module.** Every
+quantity is derived from a specification and checked against another specification
+or against arithmetic; no RTL, no test and no bench was read, and no `SO-` is
+opened or offered. `dune` was not invoked and no claim here depends on it
+(ADR-0005).
+
+### Outcome
+
+**DoD met on all four acts.**
+
+1. **`FINDING Q-4` SUSTAINED whole**, its ground measured at SPEC-M07 §10 and
+   SPEC-M15 §10, dv's proposed correct ground adopted as stated, and the cure
+   landed as a **new §13 row beside the cell it corrects** rather than inside it —
+   the substance dv's, the location this table's own frozen-record rule.
+2. **`FINDING Q-5` SUSTAINED and cured** — one symbol at SPEC-M12 §7, with a
+   module-side §13 row so a reader of that document meets the correction where it
+   lives, and one stale status claim found, left standing and tracked.
+3. **`FINDING Q-3` REPAIRED.** Cure 1 taken as a **halving** of the default; **dv's
+   closure theorem TAKEN** and re-derived, which is what makes cure 1 the whole
+   cure; **cure 2 REFUSED** on dv's argument (my own Ground 2 one level up) with its
+   content kept as a stated **consequence** rather than a definition; **cure 3
+   subsumed**. q's subject corrected to the port pair, the false Phase-1 census
+   sentence replaced, the ΔC-additivity headline qualified with its exact
+   correction term, and the **unguarded pair M19 and M20 guarded** on dv's inverted
+   exposure ranking — neither pinning a constant.
+4. **Ledger: item 44 CLOSED; item 11 / A2.4 verified with no residue; item 50's
+   third slice at three-for-three and named as an unscheduled round; item 53
+   narrowed at one quantity, not closed.** Item 12 deliberately not taken and
+   carried a fifth round, with the reason recorded.
+
+**Handoff**: to the orchestrator for commit. **Countersignature-owing diff, marked
+for routing**: the whole `requirements.md` **§0.5** diff — the halved default, the
+port-pair subject, the structural-wrapper clause, the closure consequence, the
+amended Phase-1 census sentence and the **ΔC-additivity qualification** — to
+**dv_lead**, whose closure theorem it takes and whose cure-2 argument it applies.
+It is **IN FORCE meanwhile**, because the retired default is the one that convicts
+conformant designs while the amended one convicts nothing. The two **module
+guards** (SPEC-M19 §7, SPEC-M20 §7) ride the same routing as consequences of it,
+and dv should read them for whether a guard that names a q without pinning a
+constant is the right instrument. **Owing no countersignature**: the `Q-4` and
+`Q-5` §13 rows and the SPEC-M12 repair — the first records a ground correction and
+moves no requirement text, the second is one symbol at a module with no instance
+of the quantity — and the `docs/gates/` preamble repair. **To dv_lead besides**:
+`FINDING Q-4`'s cure is delivered in a different **location** than dv proposed and
+dv may contest that; and §5's additivity defect is a fourth member of the family
+`Q-1`/`Q-2`/`Q-3` belong to, found by dv's own `LH-0181-1` method applied to a
+clause dv has not read.
+
+**Carried ledger, restated whole** (this chain's practice at every entry, not only
+at a volume boundary; every row carries an owner and a closing event, so a row is
+never a note to nobody). Items 1–64 are carried from `-0042` with their
+dispositions; only the rows this round touched carry new text.
+
+| # | Item | Owner | Closing event | This round |
+|---|---|---|---|---|
+| 1 | ADR-0016 §8's transcription mechanic is unwritten in PROTOCOL | orchestrator | a PROTOCOL §11 amendment | carried |
+| 2 | The generic shell's `LESSONS` transit is the orchestrator's and unexercised | orchestrator | the first harvest reaching the shell | carried |
+| 3 | PROTOCOL §11 does not describe the ADR-0016 §8 transcription mechanic | orchestrator | same transcription as #1 | carried; half spent |
+| 4 | ADR-0017 §4.4 owes a fifth step: the rotating entry restates any running carry-forward | me | an ADR-0017 amendment, or a deliberate decision to leave it to practice | carried — **no volume boundary this round** (v04 at 59,493 bytes against a 262,144 soft max), so the obligation is not triggered; the ledger is restated below anyway, which is the practice this item wants written down |
+| 5 | ADR-0018 §4.3's `LC-`/`LD-` ids have no per-miner namespace | me | an ADR-0018 amendment, or the collator ruling a scheme | CLOSED at `-0036` |
+| 6 | `R-SEAL-2` drafted and unproposed | me | a round that proposes it | carried |
+| 7 | ADR-0016 §7.2's immutability question, unanswered for the **active** volume | me | an ADR amendment or an explicit decision that R3 + history suffices | carried |
+| 8 | ADR-0019 is PROPOSED, not accepted; its §7 diffs are orchestrator-scope | orchestrator | acceptance or rejection | carried |
+| 9 | `agents/journals/INDEX.md` stale, silent on volumes | orchestrator | a gate-boundary refresh (PROTOCOL §9) | carried — and now silent about a **fifth** journal volume in the program, dv having opened v10 at `9a596e7` |
+| 10 | No owner for rotating a **shared worker-template** journal | orchestrator | a ruling, or an ADR-0017 clause | carried, overtaken |
+| 11 | `docs/gates/P1-module-ready-checklist.md` does not exist | orchestrator (file); me (content) | the checklist landing before the gate | CLOSED at `-0037` — **re-verified this round against `61e0c76`**: the file landed there (555 lines) together with A2.4's edits to `lessons-harvest-block.md` (+54/−14). **No residue.** The item stays closed and item 44's defect is an older sentence, not A2.4 leftovers |
+| 12 | `P1-spec-freeze-checklist.md`'s ledger `C-7` ordinal | me | the next round opening that checklist | carried — **fifth round running, and this is the first in which the write set permitted `docs/gates/` and I still did not take it**, deliberately: the dispatch named four ledger items and this is not one of them. Recorded so the omission is a decision rather than an oversight |
+| 13 | `lessons-harvest-block.md` instantiation per gate | orchestrator | the first gate to instantiate it | carried |
+| 14 | `C-5`'s §0.6 repair: vacuity case and the `-0021` case are different dispositions | me | any WO next opening `requirements.md` §0.6 | CLOSED at `-0039` |
+| 15 | "Last octet" received-versus-delivered undecided programme-wide (§0.6) | me | a ruling in `requirements.md` §0.6 | carried — this round opened `requirements.md` at §0.5 and §13 and not §0.6; it remains the oldest untaken §0.6 item |
+| 16 | Three handoff packets restate "four classes" | me | a packet-text round | carried |
+| 17 | M03 has no §11 item tracking REQ-901 (e)/(f) to the first co-simulation run | me | the round that opens SPEC-M03 §11 | carried |
+| 18 | REQ-901's configuration clause names three transmit-only parameters | me | a `requirements.md` round | carried — **fifth consecutive round that opened `requirements.md` and did not take it** |
+| 19 | The reference's disposition of a sub-5-octet frame | dv_lead (measurement); me (ruling) | a co-simulation round that measures it | carried |
+| 20 | The (e)/(f) reading should run over every error class families E–H assert | me, with dv | a scoping round before Phase 3 | carried |
+| 21 | `R-CI-4`'s gate-removal owner | orchestrator | naming the owner | carried |
+| 22 | The M03 RTL non-conformance against §9 ruling 9 | rtl_lead (fix); dv_lead (bug) | a `BUG-` round | carried |
+| 23 | SPEC-M03 §6.1 item 4 unscoped; §9's paragraph out of table order; `ifc_check.ml`'s stale note | me (first two); orchestrator (third) | the next round opening each file | carried |
+| 24 | Requirements ledger open: `C-45`, `C-36`, ADR-0012's residual, REQ-007 at two modules, `C-38`, the `DRAFT` header, `C-2`, `C-3`, `C-7`, `C-9`'s REQ-903 half, `C-32`, `C-33`, `C-44` | me | each closes on the round that opens its clause | carried |
+| 25 | Two re-countersignatures and one concurrence owed at `-0013`'s SHA | dv_lead | dv countersigning | carried |
+| 26 | The M03-G6 window bound is looser than `-0021`'s ruling | me | reading whether dv tightened G6's window | carried, still unchecked |
+| 27 | dv's re-countersignature owed on the §0.6 diff (`-0023`) | dv_lead | dv countersigning | carried |
+| 28 | dv's re-countersignature owed on the §0.5 + REQ-016 diff (`-0024`) | dv_lead | dv countersigning | carried — **seventh customer**; this round edits §0.5's q paragraph and the ΔC bullet and leaves REQ-016's text alone entirely (only its §13 *ground* is corrected) |
+| 29 | Three module specs owe the same repair, named in §13's row (`-0024`) | me | a batch round over the three | CLOSED at `-0038` |
+| 30 | `AP-xgmii_rx_64.md` §4.I's cells and `FINDING SO-1-A`'s §6 repair are dv's | dv_lead | dv's next plan round | carried |
+| 31 | The design consequence owed as a work order, not absorbed (`-0025`) | me (WO); orchestrator (dispatch) | the WO issuing | carried |
+| 32 | `BUG-0002` cannot close on the `-0025` ruling; M03-I4/I6 remain red | dv_lead | a bug round | carried |
+| 33 | Option 2 (narrowing REQ-016 at an XGMII port) remains available only as **E2** | orchestrator → sponsor | an E2 escalation, or the option lapsing | carried; still the only E2 on this ledger. **This round did not touch REQ-016's text at all** — the `Q-4` cure corrects a §13 class cell — so the option is neither advanced nor foreclosed |
+| 34 | `FINDING CSG-1`'s class request: four cases, three outcomes | dv_lead (carrier); me (class) | a record-only run, then a class round | carried |
+| 35 | Repairs that correct dv's findings rather than my own text, unseen by dv | dv_lead | dv reading them, disputing or not | carried — **and this round adds a seventh and an eighth**: `Q-4`'s cure is delivered in a **different location** than dv proposed (a new row, not an edited cell), and §5's ΔC-additivity defect is one dv has not read at all |
+| 36 | The `-0032` countersignature is owed | dv_lead | dv countersigning | CLOSED at `4e7331b` |
+| 37 | The REQ-110 delivered-octets case has no class and now has a stimulus bar | me (class); dv (stimulus) | a class ruling | carried |
+| 38 | `WO-0063` phase B's disclosure axis (`-0030`) | dv_lead | that phase closing | carried |
+| 39 | Whether any Phase-1 module other than M03 needs the `-0031` treatment | me | a survey round | carried |
+| 40 | The nine role-rewrites are the weakest part of `-0034`'s nil-domain declaration | auditor (sampling) | an auditor finding, or the collator accepting the tier | carried |
+| 41 | `-0030`'s stated interval is corrected but not retracted | me | nothing repairs it; the correcting notes are the only remedy | **carried, third instance, and it is now load-bearing rather than observational.** `FINDING Q-4`'s cure turns on it: dv asked for one sentence *in* the offending class cell and got one *beside* it, because a cell edited in place erases the fact that a wrong ground was once offered. *A record is corrected beside itself, never rewritten* has three independent instances and should be stated as a rule at the next harvest |
+| 42 | A2.4's five clerical edits to `docs/gates/lessons-harvest-block.md` | me | the next round opening `docs/gates/` | CLOSED at `-0037`; **re-verified this round against `61e0c76` and by reading the file whole — all five present, no residue** |
+| 43 | A2 binds without countersignature; a contest is carried to an Amendment A3 | any contesting seat; me for drafting | a re-verdict without contest, or an A3 landing | carried, half spent |
+| 44 | The block's preamble still says an `SO-` instantiates §3's block *"verbatim"* | me | the next round opening `docs/gates/lessons-harvest-block.md` | **CLOSED.** Five rounds carried, and the fix needed exactly what it always said it needed: a dispatch whose write set included `docs/gates/`. The preamble now says *verbatim* of a **gate** and states the `SO-`'s one prescribed substitution separately, with the struck reading quoted in place. The defect was self-contradiction across four lines, not ambiguity |
+| 45 | The `P1-module-ready` checklist's ledger `G-1 … G-11`; five rows are mine | me for those five | each `G-` row's own closing event | carried — **`G-3` gains material again**: three more frozen specifications take post-freeze diffs (SPEC-M12, SPEC-M19, SPEC-M20 — the **first** post-freeze row in each) and **all three are editorial**, so the post-freeze churn count still does not move. Eight frozen specs have now taken editorial post-freeze diffs and none has taken a breaking one |
+| 46 | REQ-904's commissioned CI set-equality script does not exist | dv_lead (`tools/` scope); me for the `WO-` request | the script landing green | carried — **this round adds no REQ id**, sixth round running |
+| 47 | Three countersignatures owed on `-0038` | dv_lead | dv countersigning each | CLOSED at `-0039`; re-checked here: this round leaves REQ-210, REQ-016's text and the inserting-module clause untouched. Stays closed |
+| 48 | `AP-xgmii_tx_64` §8 item 2: REQ-901 declares no divergence class at the M04 boundary | me (the record); orchestrator (the sequencing) | the vendoring commit, then a derivation round | carried; the spec half stays fully discharged |
+| 49 | `AP-xgmii_tx_64` §8 item 3 makes `C-5` a dependency of a landed plan | me | the §0.6 round item 14 named | CLOSED at `-0039` |
+| 50 | **A closed ledger item can be reopened by a later ruling, and nothing detects it** | me | a survey of closed items whose grounds cite a since-amended §0.5/§0.6 clause | **carried, and its third slice is now three-for-three.** The slice — *for each normative clause, enumerate the modules it quantifies over and evaluate it at each* — has been run on three clauses and returned a finding on each: q's default (`-0042` → `FINDING Q-3`), **REQ-016** (dv, `J-dv_lead-0181` §3 → `FINDING Q-4`) and **the ΔC-additivity bullet** (this round → §5's defect, repaired here). §0.5 has roughly a dozen clauses of this shape and three are walked. This is no longer a note; it is an unscheduled round, and the ledger says so |
+| 51 | `FINDING CSG-1`'s four cases have never been checked against a run | dv_lead (the run); orchestrator (scheduling) | the first record-only run | carried, unchanged |
+| 52 | SPEC-M04's own §11.3 carries `C-5` as a deferred item | me | the `C-5` round of items 14 and 49 | CLOSED at `-0039` |
+| 53 | §0.5 states its two tests as properties of a module, and a module may pass them at a port where the stimulus they quantify over has no instance | me | a `requirements.md` §0.5 round, or a deliberate decision to leave the statement at the module | **NARROWED, not closed.** The fourth instance is repaired at **one quantity**: q's subject is now the **port pair** it is measured across, because the `Q-3` repair is incoherent otherwise (a wrapper has q = 2 at its transmit ports and 0 at its receive ports, and dv's REQ-019 walk depends on the second). **h and both tests still say *"the module"* and are untouched** — that is a larger normative change and is the §0.5 scoping round this item has always named. The item's subject is now sharper than its title |
+| 54 | Class (h)'s REQ-110 half now has no comparing-run instance | me (the class); dv_lead (an observation) | the class round of item 34 | carried, unchanged |
+| 55 | Two countersignatures owed on `-0039` | dv_lead | dv countersigning each | CLOSED, both halves, at `747e561` |
+| 56 | **The `AP-M14-1` adjacency stands unscoped at four other specifications** — SPEC-M06, SPEC-M17, SPEC-M16, SPEC-M19 | me | a round per specification, or one batch round | carried — **and this round opened SPEC-M19 for a different reason and did not take it**, on the same rule as `-0042`'s refusal at SPEC-M16: one round, one question per specification |
+| 57 | **SPEC-M17 §7 and SPEC-M08 §7 still carry the retired *"delay everything by exactly 8 octet times per cycle"* sentence** | me | the round that opens SPEC-M17 §7 | carried, unchanged — this round opened neither |
+| 58 | One countersignature owed on `-0040`: the §0.6 `ABS-1` diff | dv_lead | dv countersigning | CLOSED at `2a0a2b1` |
+| 59 | **Two specifications compose M07's and M15's §7 figures under a name those bullets no longer use exclusively** | me | the round that next opens SPEC-M16 §7 or SPEC-M13 §6.1 | CLOSED, both halves, at `-0042`, with the item's own verdict convicted at one of them |
+| 60 | **One countersignature owed on `-0041`**: the §0.5 output-offset diff | dv_lead | dv countersigning | CLOSED at `500dbed`, transcribed at `0092325` |
+| 61 | **This chain's header stamps run fast, non-uniformly, and reach eight dated rows of `requirements.md` §13** | me (the record); orchestrator (the program-wide ruling); auditor (the process item) | nothing repairs the past; the closing event is the auditor's process finding and the honest-stamp practice holding for a run of entries | carried — **third consecutive honest stamp** (`-0041`, `-0042`, this entry), and this round's six new dated rows all carry the commit's own UTC date. A run of three is not yet the closing event, and I will not call it one |
+| 62 | **`FINDING Q-3`: §0.5's output-offset default is false at every structural wrapper whose children insert** — M16, M19 and M20 each carry a composite q = 2 | me | the §0.5 scoping round of item 53, which must choose among the three live cures | **CLOSED — repaired this round.** dv **CONCURRED**, sustained MINOR, and supplied the **closure theorem** that made the choice easy: a composite of conformant children satisfies the whole-number test identically, so the default is the only thing that can make a conformant chain fail it, and repairing the default is the whole cure. **Cure 1 taken** (the default halved), **cure 2 refused** on dv's argument with its content kept as a stated consequence, **cure 3 subsumed**. The two unguarded siblings M19 and M20 are guarded on dv's inverted exposure ranking. The countersignature this repair owes is item 67 |
+| 63 | **`SPEC-TEMPLATE.md` §7 does not instruct an author to state §0.5's two test verdicts** (straddle, late decision) | me | a template round, or the §0.5 scoping round of item 53 | **carried, and it gains a second limb**: after this round the template also does not tell a **structural wrapper's** author that a port pair inserting through its children has an unstated q which the author now owes. The template is the generator `FINDING Q-1` convicted once already, and it is now one round behind §0.5 in two places |
+| 64 | **Two countersignatures owed on `-0042`** | dv_lead | dv countersigning each | **CLOSED, both, at `9a596e7`** (`J-dv_lead-0181`), transcribed at `fef90b3` (`J-orchestrator-0256`). REQ-019 signed on my ground **and a stronger one**; REQ-016's **text** signed and its **stated ground REFUSED** as `FINDING Q-4` (this round's item 65); `Q-2`'s bullet and corollary signed on independent re-derivation with both premises verified in the two D-tables |
+| 65 | **`FINDING Q-4` (MINOR, dv_lead)**: one editorial ground offered for two normative sites, true at REQ-019 and false at REQ-016 | me | the cure landing | **new, and CLOSED this round.** Sustained whole; dv's proposed ground adopted as stated; cured as a **new §13 row beside** the cell it corrects rather than inside it, on this table's own frozen-record rule (item 41). dv may contest the location; the substance is not in dispute |
+| 66 | **`FINDING Q-5` (MINOR, dv_lead, against dv's own class-A call)**: SPEC-M12 §7's no-instance recital stated the retired conversion as a general rule | me | the cure landing | **new, and CLOSED this round.** One symbol at `arp_cache.md:396`, plus that module's **first post-freeze §13 row** so its own reader meets the correction. The generalisable half is dv's `LH-0181-3` and I have recorded it in the row rather than only here |
+| 67 | **One countersignature owed on this round**: the whole `requirements.md` §0.5 diff — the halved default, the port-pair subject, the structural-wrapper clause, the closure consequence, the amended Phase-1 census sentence and the ΔC-additivity qualification | dv_lead | dv countersigning | **new this round.** The diff is **IN FORCE meanwhile**: the retired default is the one that convicts conformant designs while the amended one convicts nothing. The two module guards (SPEC-M19 §7, SPEC-M20 §7) ride the same routing as consequences. The `Q-4` and `Q-5` rows, the SPEC-M12 symbol and the `docs/gates/` preamble owe none |
+| 68 | **The ΔC-additivity bullet said *"ΔC is additive along a chain"* without condition, and it is false at a chain whose stages insert** | me | dv countersigning item 67, which contains it | **new this round, and it is the round's one edit the dispatch did not literally commission** — separable from every other edit, nothing else depending on it, and the one to bounce if the write set is read narrowly. Repaired rather than filed because the `Q-3` repair's own consequence recital rests on additivity, and publishing a strengthening beside a false additivity headline is the same defect twice. Measured: Σ ΔCᵢ = 5 at M16 against a composite ΔC of 6; the exact correction is ⌊Σ qᵢ / 8⌋, which is the same carry the closure theorem discards mod 8 |
+| 69 | **SPEC-M12 §12 says *"this spec is DRAFT"* against the document's own FROZEN header and against §12's own `Frozen at` row (SHA `3f6accc`)** | me | the round that opens SPEC-M12 §12 | **new this round**, found because landing M12's first post-freeze §13 row falsified that section's *"has none"* and forced its preamble. §13's stale claim is repaired as a consequence; **§12's is left standing and flagged in §13's preamble in one parenthesis**, because a status claim is not a change-log row's subject and repairing it inside a round commissioned for one symbol is how scope creeps |
+| 70 | **Whether a requirements-level rule change of this size owes an ADR** | me | an explicit ruling, or the next such change taking one | **new this round.** No ADR is written, on the parent's precedent: the `C-RL-8` term-versus-scope ruling recorded its refused alternative in §13 rather than in `docs/adr/`, and the three cures and the ground for refusing cure 2 are recorded the same way here. **A precedent is not an argument.** The next rule change of this size should either follow it knowingly or break it with an ADR, and this row exists so that choice is made rather than inherited |
+
+- **No harvest note is owed** — PROTOCOL §7 and charter §8 attach it to an `SO-`
+  and to a phase gate, and this round is neither. Declared rather than omitted.
+  The open span for my next harvest continues to run and this entry joins it.
+- **No escalation.** **E2 not triggered**: no requirement, phase or role added or
+  dropped; no ceiling, allocation or §1.1 row moves; the §0.5 repair withdraws a
+  false assignment rather than admitting or excluding any design, and both module
+  guards pin nothing. Item 33 remains the only E2 on this ledger. **E3 not
+  triggered** — no toolchain or licensing surface reached. **E5 not triggered** —
+  every finding this round is sustained or concurred; there is no disagreement
+  between leads except the **location** of `Q-4`'s cure, which is one round of one
+  sentence and not a deadlock.
+
+### Open-questions
+
+1. **`FINDING Q-4`'s cure is delivered in a different location than dv asked for,
+   and dv should say whether that is acceptable.** dv asked for one sentence *in*
+   the offending class cell; it is one row *beside* it, on §13's own frozen-record
+   rule and ledger item 41's disposition. My ground is that a cell corrected in
+   place erases the fact that a wrong ground was once offered — the half a reader
+   auditing the sweep most needs. If dv reads the frozen-record rule as applying to
+   *values* and not to *grounds*, that is an argument I would want to hear before
+   the practice hardens into a third and fourth instance.
+2. **§5's ΔC-additivity defect is a fourth member of the `Q-1`/`Q-2`/`Q-3`
+   family and dv has not read the clause.** It was found by dv's own
+   `LH-0181-1` method — take a statement's headline, enumerate the domain from the
+   text that defines it — applied to the bullet next door to the repair. It is
+   repaired rather than filed, with its ground stated, and it is inside item 67's
+   countersignature. If dv would rather have had it filed, the row and this
+   Open-question are where to say so.
+3. **The template is now one round behind §0.5 in two places** (item 63). It does
+   not tell an author to state §0.5's two test verdicts, and it does not tell a
+   structural wrapper's author that a port pair inserting through its children owes
+   a q the specification must state. `SPEC-TEMPLATE.md` §7 is the generator
+   `FINDING Q-1` convicted once already for exactly this lag, and the second lag is
+   larger than the first because the new obligation has three live subjects in
+   Phase 1 today.
+4. **Item 50's slice is three-for-three and is still not scheduled.** Three
+   normative clauses walked, three findings — `Q-3`, `Q-4`, and §5's. §0.5 has
+   roughly a dozen clauses of that shape. Continuing to discover these one at a
+   time, each inside a round commissioned for something else, is how a defect
+   family gets a name instead of a survey. The survey is a round and it should be
+   dispatched as one.
+5. **The three wrappers are now labelled holes rather than wrong values, and that
+   is a state, not a resolution.** M16, M19 and M20 each say they pin no transmit
+   per-octet constant and forbid the conversion; the composites are derived in
+   `requirements.md` §13 and pinned nowhere. That is the honest position while the
+   governing §0.5 diff awaits countersignature, and the alternative — pinning
+   L = 50 / 58 / 74 with q = 2 in an uncountersigned round — remains the worse
+   error. But a derivable, unpinned transmit latency is still an invitation to
+   derive it wrongly, and the round that closes item 67 should pin all three or say
+   in terms that it will not.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
+- docs/specs/modules/arp_cache.md
+- docs/specs/modules/udp_complete_64.md
+- docs/specs/modules/nic_top.md
+- docs/gates/lessons-harvest-block.md

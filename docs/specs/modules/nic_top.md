@@ -476,6 +476,23 @@ Anything not listed here is constrained by this specification.
   The measurement events are the children's; M20 introduces none of its own,
   because a wire is not a measurement event.
 
+  **"Likewise" reaches the transmit constants' *values*; it does not licence the
+  receive derivation's *method* transmit-side, and this section pins no per-octet
+  constant across M20's transmit ports.** The derivation below composes L, h and
+  ΔC along requirements.md §0.4's receive chain, and it is sound there **because
+  that chain only strips**. The transmit chain inserts — 50 octets ahead of the
+  frame through M19 and M05 — so M20's transmit port pair carries **q = 2**
+  (requirements.md §0.5, *a structural wrapper inserts through its children*), and
+  the same two-route derivation extended transmit-side **without** q returns a
+  quarter-cycle word delay and convicts a conformant top level. That extension is
+  the foreseeable first customer of the defect **`FINDING Q-3`** names (dv_lead,
+  `J-dv_lead-0181` §6), filed 2026-08-11 against §0.5's output-offset default and
+  repaired there the same day; the transmit composite is derived in
+  requirements.md §13's `FINDING Q-3` rows and is deliberately not pinned here. A
+  monitor may **not** derive a per-octet latency, a front offset or an output
+  offset from the children's transmit cycle figures, which are **event delays**
+  pinned to words those children inserted (SPEC-M16 §7, SPEC-M19 §7).
+
 - **REQ-006's end-to-end budget, derived — this is where the receive chain
   closes.** REQ-006 measures from the XGMII word carrying a frame's start
   character to the first word of that frame's UDP payload on the application
@@ -829,9 +846,9 @@ Post-freeze changes only. Each row cites the ADR that authorised it; a breaking
 interface change is counted against post-freeze churn (charter §6). §4.1's
 records are byte-for-byte unchanged since the freeze SHA, so the `ifc_check`
 evidence of §12 witnesses this revision's interface and
-`tools/check_records_vs_appendix.sh` re-passes on every commit. This
-specification has no post-freeze change yet.
+`tools/check_records_vs_appendix.sh` re-passes on every commit. The row below is
+this specification's first post-freeze change.
 
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 2026-08-11 | **§7's *"and its transmit-port constants likewise"* is bounded — this section performs the receive-chain derivation that, extended one direction further, convicts a conformant top level.** dv_lead's concurrence in `FINDING Q-3` (`J-dv_lead-0181` §6) named **this section's own derivation** as the finding's foreseeable first customer, sharper than the latency report: §7 already states *"Per-octet latency is additive along a chain, so the end-to-end constant is L = 54 … the front offsets add to h = 50 … Then ΔC = (L + h)/8 = 13 … and (L + h) = 104 is a multiple of 8"*, and the sentence above it invites the same treatment transmit-side. That derivation is sound **only because §0.4's receive chain strips and never inserts**. The transmit chain inserts **50 octets** ahead of the frame through M19 and M05, so M20's transmit port pair carries **q = 2** (requirements.md §0.5, *a structural wrapper inserts through its children*); the two-route derivation run transmit-side without q returns a **quarter-cycle** word delay, which is `FINDING Q-3`'s shape at the top level. §7 now states that *likewise* reaches the transmit constants' **values** and not the receive derivation's **method**, that this section pins no per-octet constant across M20's transmit ports, and that the children's transmit cycle figures are **event delays** a monitor may not convert (SPEC-M16 §7, SPEC-M19 §7). The receive derivation, its table, its 13-cycle result, its two-lane argument and its eleven-cycle slack itemisation are **untouched and remain correct**: every stage in them has q = 0, so `(L + h)/8` there is requirements.md §0.5's amended conversion evaluated, not the retired one. **Why now**: `FINDING Q-3` was filed 2026-08-11 with only SPEC-M16 §7 guarded, that file having been open for another repair; leaving the siblings is the defect `FINDING Q-1` convicted, and dv_lead measured the residue and inverted the exposure ranking — M16 guarded, M19 and M20 not | no — **editorial**. No port, record, strobe, configuration field, cycle, budget figure, ceiling, reserve or allocation moves; the REQ-006 derivation and its 83.2 ns result are byte-unchanged and no constant is added — the transmit composite is named as derived in requirements.md §13 and deliberately **not pinned here**. What changes is a **permission**: a monitor may no longer convert M20's transmit cycle figures into a per-octet quantity, and a reader may no longer read *likewise* as licensing the receive method transmit-side. Nothing was built on either: no committed test names this module's transmit latency, and no committed instrument computes a wrapper composite (`J-dv_lead-0181` §6, measured) | none — the quantity applied is requirements.md §0.5's output offset, ruled at `J-architect_docs_lead-0041`; this row bounds a sentence and chooses nothing | `J-architect_docs_lead-0043` |
