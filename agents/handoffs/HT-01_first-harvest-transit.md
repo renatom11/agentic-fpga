@@ -1,6 +1,6 @@
 # HT-01 — The first harvest transit (collation record)
 
-- **State**: OPEN — census and method fixed; collation in progress
+- **State**: COLLATION COMPLETE — §3/§4 filled; the shell PR is the remaining act (§5)
 - **Author**: orchestrator, as collator (ADR-0018 §4.1; Amendment A2 in force at
   `41fead6`, acceptance act `J-orchestrator-0235`)
 - **Feeds**: the programme's first shell write under ADR-0018 §4.2 — the generic
@@ -62,14 +62,71 @@ notes' own and are re-measured at extraction (§3) before any statement moves.
 7. **One shell commit** (A2-D5). Several harvests at one gate would be several
    commits; this PR carries exactly this harvest's one.
 
-## 3. The collation
+## 3. The collation — executed
 
-OPEN — built seat by seat under §2. Nothing below §2 is citable until this
-artifact's State says so.
+1. **Extraction** (§2.6): seven parallel instrument passes, one per chain, each
+   byte-verifying its own output against `git show <landed-sha>:` at the
+   source; then the collator's independent check — fourteen statements sampled
+   across all seven seats, each verified against the source directly:
+   **14 of 14 identical**. Measured counts matched every note's stated count
+   (353 total: dv 94+1, architect 94, auditor 54, rtl 50, tb_writer 28,
+   orchestrator 18, data_wrangler 14).
+2. **Cross-seat merge walk**: TF-IDF similarity over all cross-seat pairs,
+   calibrated on the top 25 — every top pair thematically adjacent, none
+   stating the same rule. **Zero cross-seat merges** beyond the seats' own
+   in-note routing (dv §4.7, auditor M8, tb `SELFWALK-28`). The proposal list
+   is `clusters_proposed.md`/`pairs.json` in the session scratchpad (ephemeral,
+   ADR-0003/F5 — stated as such).
+3. **Seeded-corpus merge walk**: provenance-intersection sweep (candidate LH1
+   entry-ids × seeded `L-` provenance ids; 28 collisions, all auditor-seat)
+   plus a rule-text similarity sweep of all 353 against the 44 seeded rule
+   statements (16 pairs above threshold). Judged one by one: **four true
+   merges** — `ADL-45`→`L-B15`, `rtl H1-8`→`L-D03`, `AUD-14`→`L-C15`,
+   `AUD-10`→`L-E06`; in each the seeded statement survives (A2-D8) and the
+   candidate's provenance joins it. Everything else: shared incidents or
+   adjacent themes, distinct rules — transits as new.
+4. **Hide test** (§2.4): mechanical project-noun scan over all 353 —
+   **zero hits**; the tier-1 gradings hold at transcription. Twenty
+   version-control-noun flags: eighteen false positives ("branch" as control
+   flow, "commit" as the protocol act — vocabulary the seeded general corpus
+   itself uses); the two real ones are exactly `OBSERVATION SO-O1`'s
+   (`LC-orchestrator-H1-2`, `-8`). **Disposition, recorded as bound at
+   J-orchestrator-0236**: both transit as general — the shell's operating
+   substrate is git-native and its seeded general lessons already carry the
+   vocabulary (L-A01, L-B03); grades stay the miner's as minted; A1.4's
+   later-harvest regrade stays available; the sponsor can refuse either on
+   the PR. dv's `LD-SO-xgmii_rx_64-1` keeps its miner's domain grade, marked
+   domain-tier in the transit file, outside the general body.
+5. **War stories do not transit** — refused candidates are not admissible
+   (§4.2 transits admissible candidates); ADR-0018 §3.5 keeps them local and
+   re-offerable. Counts recorded in the transit file header.
+6. **Source anomalies preserved, not repaired** — each disclosed by extraction
+   and carried into the transit file's anomaly register verbatim (architect's
+   62-vs-94 self-contradiction; rtl's 12-vs-11 war-story accounting and stale
+   section pointer; tb's `SELFWALK-28` bank-row-vs-prose tension; auditor's
+   `-AUD-52`/`-AUD-33` provenance-placement quirks; dv's dup-label markers on
+   61/64).
 
 ## 4. `LC-`/`LD-` → `L-` pairs
 
-OPEN — recorded as §3 closes each seat.
+**Deterministic rule** (renumbers nothing): `L-H1-<TAG>-<n>` where TAG ∈
+{DV, ADL, AUD, RTL, TBW, ORCH, DW} and `<n>` is the candidate's own number —
+e.g. `LC-SO-xgmii_rx_64-7` ⇄ `L-H1-DV-7`, `LC-orchestrator-H1-5` ⇄
+`L-H1-ORCH-5`, `LC-tb_writer-SELFWALK-12` ⇄ `L-H1-TBW-12`.
+
+**Exceptions, exhaustively**:
+
+| candidate | pairs to | why |
+|---|---|---|
+| `LC-SO-xgmii_rx_64-ADL-45` | seeded `L-B15` | merge (§3.3) |
+| `LC-rtl_lead-H1-8` | seeded `L-D03` | merge (§3.3) |
+| `LC-SO-xgmii_rx_64-AUD-14` | seeded `L-C15` | merge (§3.3) |
+| `LC-SO-xgmii_rx_64-AUD-10` | seeded `L-E06` | merge (§3.3) |
+| `LD-SO-xgmii_rx_64-1` | `L-H1-DV-D1` | domain tier (pack `version-control`) |
+
+The full 353-row pairing is enumerable from the rule plus this table, and every
+row is printed in the transit file itself (each entry's header carries both
+ids).
 
 ## 5. The shell commit
 

@@ -3751,3 +3751,44 @@ section 3. The shell PR happens only when HT-01's State flips.
 
 ### Files-in-this-commit
 - agents/handoffs/HT-01_first-harvest-transit.md
+
+## [J-orchestrator-0238] 2026-08-11T05:10Z | task:none | The collation executed: 353 statements moved without one being edited - fourteen sampled and fourteen identical, four merges to the seeded corpus, zero cross-seat merges beyond the notes' own, and the hide test clean on every candidate
+
+### What this entry records
+HT-01 sections 3 and 4 filled; State flipped to COLLATION COMPLETE.
+The full record is in the artifact; the shape of it: seven parallel
+extraction instruments (scratchpad-only, each byte-verifying against
+git show <landed-sha>:), then MY independent fidelity check - 14
+statements sampled across all seven seats, verified directly against
+the sources, 14/14 identical; counts matched every note's stated
+count, 353 total. Two mechanical merge sweeps (cross-seat TF-IDF
+calibrated on its top 25; seeded-corpus by provenance intersection
+plus rule-text similarity), every proposed pair judged by me: FOUR
+true merges to the seeded corpus (ADL-45 to L-B15, rtl-H1-8 to
+L-D03, AUD-14 to L-C15, AUD-10 to L-E06 - the seeded statement
+survives in each per A2-D8), ZERO cross-seat merges beyond what the
+notes routed themselves. Hide test 353/353 clean on project nouns;
+SO-O1's two candidates dispositioned as bound at 0236 (transit as
+general, reasoning recorded in HT-01 section 3.4 and in the transit
+file itself, A1.4 regrade named, sponsor refusal preserved). War
+stories stay local (refused candidates are not admissible). Source
+anomalies preserved in an anomaly register, not repaired. The
+transit file is assembled in the scratchpad (2658 lines, 353
+entries, each carrying both its seat-qualified id and its
+deterministic L-H1- pair).
+
+### My two candidates, handled as any others
+LC-orchestrator-H1-2 and -8 were tested by the same mechanical scan
+as the other 351, flagged by it, and dispositioned with the
+reasoning written BEFORE the shell write, in the collation record
+the sponsor reviews. I am the miner and the collator for these two;
+the protection is the transparency, and both dispositions are
+refusable on the PR.
+
+### Next
+The shell write: branch, ONE commit (docs/LESSONS-H1-SO-xgmii_rx_64
+.md + a pointer paragraph in docs/LESSONS.md), inbox PR. Then HT-01
+section 5 and the State flip to EXECUTED.
+
+### Files-in-this-commit
+- agents/handoffs/HT-01_first-harvest-transit.md
