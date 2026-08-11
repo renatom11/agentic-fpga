@@ -4936,3 +4936,75 @@ document's contents anchors.
 - site/public/org-chart.html
 - site/public/process.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0265] 2026-08-11T21:05Z | task:none | The council's first verdict lands verbatim: four false enforcement claims proven against the machinery, the document convicted of skipping its own process - and the one thing to do first is the auditor the record went ten days without
+
+### Trigger
+
+The sponsor commissioned three rounds of council review on
+docs/PROCESS.md (three reviewers — Charlie cold, Bob record-checked,
+Bill adoption — into a five-advisor council, a chairman verdict in the
+sponsor's exact structure, revisions from each verdict). Round one ran
+as a nine-agent workflow and completed 9/9. This entry pairs with the
+verbatim landing of all nine artifacts at
+docs/reports/process-council/round-1/.
+
+### The verdict's spine (the file is the record; this is the index)
+
+AGREES: the failure museum is the certified asset; the mechanical
+layer cannot be built from the document; FOUR MATERIALLY FALSE
+enforcement claims (Bob F1-F4: §3.7's write-scopes ground false
+against policy.sh and four commits; §2.5's every-rule-CI false at the
+journal size cap; §1.6's recovery drill asserted-as-performed, never
+performed; §3.3's seal self-hash impossible and disclaimed by the
+record's own seals); the purity rule overshot (deleted mechanism and
+substrate nouns that are not project); rule/report/aspiration never
+distinguished — the document invented §5.5's posture stamping and
+did not apply it to itself.
+
+BLIND SPOTS: the seeder riddle (cold reader provably misled — only
+visible in stereo between Charlie and Bob); THE DOCUMENT NEVER WENT
+THROUGH THE PROCESS IT DESCRIBES (one seat, no work order, no
+countersignature — §5.7 at the document level; this council was its
+first review and the first review found false claims); the theory of
+transfer falsified by the org's own history (reasons did not
+regenerate mechanisms even for the people who owned them — twenty
+ADRs and a 42-case self-test stand between); two export vehicles that
+never reference each other.
+
+RECOMMENDATION: seven prioritized edits (correct the four claims by
+name; stamp every enforcement claim with §5.5's own postures; split
+the purity rule into domain-vs-substrate with a measured annex; name
+the shell as the export's other half with a load-ordered §6.2; add
+the genesis section; seat the seeder and repair §3.9; pay the dialect
+debt) — landed through the org's own machinery with countersignatures
+by the seats the document describes.
+
+ONE THING FIRST: commission the auditor — before any text moves — to
+re-execute every enforcement/performed-event sentence against
+policy.sh, the scripts, and the record, returning the per-claim
+verified posture list.
+
+### Sequencing rulings
+
+1. The One Thing is honored as written: the auditor's claim-
+   verification round dispatches the moment its in-flight
+   D-M3/record round returns (one seat, one round at a time).
+2. The architect's revision round follows WITH the posture list in
+   hand — the verdict's edits 1-3 consume it directly.
+3. The countersignature demand merges with the already-queued
+   read-and-confirm round (same seats, same object) — one round, not
+   two.
+4. Round two of the council runs against the REVISED document, cold.
+
+### Files-in-this-commit
+
+- docs/reports/process-council/round-1/verdict.md
+- docs/reports/process-council/round-1/charlie.md
+- docs/reports/process-council/round-1/bob.md
+- docs/reports/process-council/round-1/bill.md
+- docs/reports/process-council/round-1/contrarian.md
+- docs/reports/process-council/round-1/first-principles.md
+- docs/reports/process-council/round-1/expansionist.md
+- docs/reports/process-council/round-1/outsider.md
+- docs/reports/process-council/round-1/executor.md
