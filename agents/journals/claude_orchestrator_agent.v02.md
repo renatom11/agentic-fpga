@@ -3715,3 +3715,39 @@ out by name in the result.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0237] 2026-08-11T04:15Z | task:none | The transit opens: census fixed from HEAD, method bound before any statement moves - and the collation's first rule is that extraction is an instrument while every judgement stays the collator's
+
+### What this entry records
+agents/handoffs/HT-01_first-harvest-transit.md created: the local
+collation record ADR-0018 4.1/4.2 requires before the programme's
+first shell write. Census of the seven minting chains fixed from
+git show HEAD: and git log --grep at be4de65 (nine rows - dv's
+packet-carried note plus its round-4 declared nil; the orchestrator's
+walk note and its successor admissibility record are two rows over
+one span per A2's own k-counts-spans reading). Method section 2 is
+binding: A2-D8 verbatim-survivor merges with the seeded shell corpus
+as a merge partner; ids seat-qualified unrenumbered; tier routing
+(LH2-g to shell LESSONS, LH2-d listed separately for the shell to
+home, project-tier never leaves); the hide test at transcription
+with SO-O1's two candidates tested by name; permalinked provenance
+per entry; extraction verified against git show <landed-sha>: before
+use; ONE shell commit (A2-D5) as an inbox PR (4.4 refusal preserved
+- ruled at 0236).
+
+### FETCH FIRST - discharged
+The shell repo was fetched before any collation step: local main ==
+FETCH_HEAD == 295f268 (the sponsor's second session has advanced it
+through C13, "standing disciplines woven into all nine charters").
+The seeded LESSONS corpus read in full at that SHA: 44 entries
+L-A01..L-F08, entry form and citation form noted; the transit
+collates against that form. My only shell write remains the one
+transit commit; the shell is otherwise feature-frozen to me.
+
+### Next
+Per-seat extraction (instrument-grade, scratchpad-only, verified
+against the landed SHAs) then the collation seat by seat into HT-01
+section 3. The shell PR happens only when HT-01's State flips.
+
+### Files-in-this-commit
+- agents/handoffs/HT-01_first-harvest-transit.md
