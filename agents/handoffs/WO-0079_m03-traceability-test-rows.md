@@ -162,6 +162,109 @@ of them in full, once. A reader checking a cell reads the row id in the plan, th
   behavioural test.
 - **`GAP: <reason>`** — the form `traceability.md` itself prescribes.
 
+### 2.1-P AN APPENDED PRECISION TO §2.1's CITATION RULE — `P-1` discharged at its named carrier (2026-08-11, `J-dv_lead-0169`)
+
+> **DATED ANNOTATION. §2.1 above is this packet's own text of 2026-08-11 and is
+> left UNEDITED.** A landed record is annotated beside itself, never rewritten
+> into its own correction. **No cell of §3 moves, no row is re-statused, no
+> status changes, and `docs/specs/traceability.md` is not touched by this block**
+> — that file is architect_docs_lead's and the transcription it carries is
+> **correct as transcribed**, which is the finding's own conclusion.
+
+**The precision, and whose it is.** `P-1` is **architect_docs_lead's**, returned
+at §8.1's transcription verdict: `M03-M10 → test_m03_f.ml:492` names a unit whose
+title carries **`M03-F2`** and not `M03-M10`, against §2.1's rule that a cited
+line names *"the unit whose title carries that row id"*. It was **UPHELD and
+refined** at `SO-xgmii_rx_64.md` §2.8-R, which ruled *"the cell is substantively
+right and stays unchanged … what is imprecise is `WO-0079` §2.1's generalisation,
+not the transcription"*, and named its carrier: **the same round that repairs
+`AP-M03` §6's homing under `FINDING SO-1-A`.** That round is this one, and the
+repair lands beside it (`AP-xgmii_rx_64.md` §6.1, same commit).
+
+**What §2.1 got wrong, in one sentence.** It generalised from the common case and
+did not carry **§2.2's own exception into its own words**. §2.2 — the very next
+subsection — says a landed row is cited in the cell of the REQ that `AP-M03` §6
+homes it under, and §6 may home a row on **another row's unit**: it homes
+`M03-M10` *"ON `M03-F2` ALONE"* (`AP-M03` §4.M's qualification record). **The two
+subsections were right together and only §2.1 was read alone.**
+
+**THE RULE AS IT SHOULD HAVE BEEN WRITTEN, in this round's voice and replacing
+nothing above:**
+
+> `<path>:<line>` names the **`let%expect_test` unit that DISCHARGES the row** —
+> which is the unit whose **title carries the row id**, **except** where
+> `AP-M03` §6 homes the row on **another row's unit**, in which case it is *that*
+> unit and the row id is **not** in its title. §2.2 is the tie-break, and §3's
+> provenance column names §6's homing for every row, so the exception is always
+> traceable from the cell.
+
+**MEASURED AT THIS TREE — the reach of the imprecision, in both dimensions,
+because *"false at one of 49"* is a set claim and §0.1's rule binds the round
+that quotes it:**
+
+```
+$ python3 - <<'PY'
+import re
+tx = open('docs/specs/traceability.md').read()
+cells = re.findall(r'(M03-[A-Z]+\d+)\s*→\s*(test/[\w/]+\.ml):(\d+)', tx)
+allc  = re.findall(r'(test/[\w/]+\.ml):(\d+)', tx)
+src = {}
+def lines(p):
+    if p not in src: src[p] = open(p).read().split('\n')
+    return src[p]
+def title(p, n):
+    L, out = lines(p), []
+    for k in range(n-1, min(n+39, len(L))):
+        out.append(L[k])
+        if k > n-1 and re.search(r'=\s*$', L[k]): break
+    return '\n'.join(out)
+nonunit = [(p,n) for p,n in sorted(set(allc), key=lambda t:(t[0],int(t[1])))
+           if 'let%expect_test' not in lines(p)[int(n)-1]]
+false_atoms = [(r,p,n) for r,p,n in cells
+               if 'let%expect_test' in lines(p)[int(n)-1] and r not in title(p,int(n))]
+print("distinct citations                :", len(set(allc)))
+print("  not on a let%expect_test        :", len(nonunit), nonunit)
+print("citation atoms (row -> path:line) :", len(cells))
+print("  atoms whose title lacks the row id:", len(false_atoms), false_atoms)
+print("  distinct citations among them   :", len({(p,n) for _,p,n in false_atoms}))
+PY
+distinct citations                : 49
+  not on a let%expect_test        : 1 [('test/xgmii_rx_64/test_m03_f.ml', '811')]
+citation atoms (row -> path:line) : 110
+  atoms whose title lacks the row id: 2 [('M03-M10', 'test/xgmii_rx_64/test_m03_f.ml', '492'),
+                                         ('M03-M10', 'test/xgmii_rx_64/test_m03_f.ml', '492')]
+  distinct citations among them   : 1
+```
+
+**Read the two dimensions apart, because they are different numbers and the
+finding stated only the first.**
+
+- **Distinct citations: 49**, of which **48** land on a `let%expect_test` and one
+  — `test_m03_f.ml:811` — is the `M03-F5` *discharged-by-citation* comment, which
+  **the cell declares in its own text** rather than passing off as a unit. That
+  is §2.8-R's figure, reproduced.
+- **The literal rule is false at exactly ONE distinct citation** —
+  `test_m03_f.ml:492` — **and at exactly TWO of the 110 citation atoms**: the two
+  whose left-hand row id is `M03-M10`, in REQ-104's cell and in REQ-107's.
+- **The same line is cited three further times as `M03-F2`** — in REQ-007's,
+  REQ-008's and REQ-107's cells — where the rule is **true**. **REQ-107's cell
+  therefore carries `test_m03_f.ml:492` under both ids at once**, which is the
+  sharpest available illustration of why the rule needs its exception: **one unit
+  legitimately discharges two rows**, and a rule keyed on titles can only ever
+  name one of them.
+- The unit at `:492` is titled *"M03-F2: 0, 1 and 4 octets between start and
+  terminate …"*, and the string `M03-M10` occurs in that file **exactly once**, at
+  line **324**, inside the prose of a different unit — so the id is in the file
+  and not in the cited unit, exactly as §2.8-R measured.
+
+**WHAT THIS BLOCK DOES NOT DO.** It does **not** change a `Test(s)` or `Status`
+cell here or in the matrix: the cell is right and §2.8-R already ruled it so. It
+does **not** re-open §8.1's transcription verdict, which accepted the delivery in
+full. It does **not** re-status any `AP-M03` row or move any count. And it does
+**not** claim the citation set is otherwise sound beyond the two properties the
+command above measures — resolution to a `let%expect_test` line, and the
+title-carries-the-id property — which are the only two §2.1 asserts.
+
 ### 2.2 The homing rule, stated because it decides what is NOT in a cell
 
 **A landed row is cited in the cell of the REQ that `AP-M03` §6 homes it under, and its
@@ -630,3 +733,4 @@ after **both** acts, which is not this round and not mine to call.
 |---|---|---|
 | 2026-08-11 | **TRANSCRIBED AND ACCEPTED — §8.1.** All 34 `Test(s)`/`Status` cells landed in `docs/specs/traceability.md` cell for cell; nothing refused, nothing altered, the 76 rows outside the slice verified untouched by measurement over all 110. Matrix now **34 populated / 76 empty, 13 `COVERED` / 97 `OPEN`**. `OPEN` kept for the 21 tier-B/C rows and **no `PARTIAL` minted** — the vocabulary question ruled, with the reason written into the matrix's own `Status` bullets. Two precisions returned, neither changing a cell: **P-1**, `M03-M10 → test_m03_f.ml:492` is substantively right but is the one citation whose unit title does not carry the row id §2.1 promises; **P-2**, §1.2's ground reaches 19 of its 21 rows — `REQ-901` and `REQ-903` are process rows outside both cited ranges and hold `OPEN` on the process-row ground instead. `COVERED` re-underwritten at the transcription SHA: `test/` and `docs/specs/` byte-identical `2183d71..c55c754`, so run `31444471834` covers the suite as it stands. | architect_docs_lead, `J-architect_docs_lead-0035` |
 | 2026-08-11 | **Packet created.** The 34-row M03 slice of `docs/specs/traceability.md` delivered as transcribable `Test(s)` and `Status` cells, in three tiers (13 M03-owned → `COVERED`; 16 programme-invariant restatements and 5 hooked-but-owned-elsewhere rows → `OPEN` with an `M03:`-prefixed cell), with a 56-unit register printing every cited unit's full title, an 18-item bound register, and **`FINDING SO-1-A`** — six `AP-M03` rows reachable from §6's coverage map by neither name nor range, two of them landed green units whose omission would have understated REQ-103, REQ-011 and REQ-105. **Nothing re-statused, nothing lifted, no `docs/**` byte touched, nothing run.** | dv_lead, `J-dv_lead-0166` |
+| 2026-08-11 | **`P-1` DISCHARGED AT ITS NAMED CARRIER — §2.1's citation rule gains an appended precision (new **§2.1-P**) and nothing above it is edited.** The carrier `SO-xgmii_rx_64.md` §2.8-R named — *"the same round that repairs `AP-M03` §6's homing under `FINDING SO-1-A`"* — is this round, and that repair lands beside this one in the same commit (`test/attack_plans/AP-xgmii_rx_64.md` §6.1). **The transcription is not at fault and no cell moves**: §2.1 generalised from the common case and failed to carry **§2.2's own exception** into its own words — `AP-M03` §6 may home a row on *another row's unit*, and it homes `M03-M10` on `M03-F2` alone. The corrected rule is stated in §2.1-P in this round's voice. **The reach is re-measured at this tree in both dimensions, the second of which the finding did not state**: the literal rule is false at **one** of **49** distinct citations (`test_m03_f.ml:492`) and at **two** of **110** citation atoms (the two whose row id is `M03-M10`); the same line is cited three further times as `M03-F2`, where the rule holds, and **REQ-107's cell carries it under both ids at once** — one unit legitimately discharging two rows, which is why a title-keyed rule cannot be universal. **Nothing re-statused, no `Test(s)` or `Status` cell changed, no `docs/**` byte touched, §8.1's verdict untouched.** | dv_lead, `J-dv_lead-0169` |

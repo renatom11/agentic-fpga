@@ -3525,3 +3525,477 @@ only that the previous note was recent.
 ### Files-in-this-commit
 
 - agents/handoffs/SO-xgmii_rx_64.md
+
+## [J-dv_lead-0169] 2026-08-11T05:55Z | task:none | The transmit era opens with the receive era's rules already inside its plan — and the converse-homing rule I carried forward convicted its author twice before the commit, once on five unhomed rows of my own draft and once on a check that broke by being quoted
+
+### Trigger
+
+Orchestrator dispatch, with a **declared sibling** (rtl_lead, which implemented M06
+`Eth_axis_rx` at `0753735` and whose write set is `libs/**` plus its own journal —
+disjoint from mine). Two acts in one round: **Act 1**, the M04 attack plan, whose
+qualification era opens with it; **Act 2**, the three owed repairs that named *"the next
+round opening `AP-M03`"* as their carrier, which is this round.
+
+**Abort-first head check, before reading anything.** `git rev-parse HEAD` →
+`1968bea1332135a60e5968a124d00822d0c2e4c1`, byte-equal to the dispatched spawn-head
+`1968bea`; `git status --short` returned **zero lines**. Exact match, so neither branch of
+the abort procedure was reached.
+
+**Entry id checked at the file rather than taken from the dispatch.** The chain's tail at
+HEAD is `J-dv_lead-0168`; R5 admits `-0169` and that is what this is. The dispatch
+nominated the same id and I checked it anyway, for the reason this programme recorded
+against itself once: a stale id has been dispatched here before and the check costs one
+`grep`.
+
+**Incident seven, and what I did about it: nothing, deliberately.** The dispatch records
+that a prior spawn of this round died in a worker restart mid-write, that its partial was
+preserved **outside** the repo and the tree cleaned. I did not look for it and did not
+reconstruct from it. The tree at `1968bea` is the whole of my input; a partial I cannot
+see at a SHA is not evidence, and reading one would have made every derivation below
+unciteable.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` in full (§3's attack-plan mandate and the external-anchor
+  rule, §5's DoD checklist — including the rx-path stress line that M04 is **not** in —
+  §6's write scope, §8's attack-table and harvest clauses); `agents/PROTOCOL.md` in full
+  (§3 packet classes, §4 grammar and §4.2 files-list equality, §5 R1–R9, §6 scopes, §7
+  gates and the harvest paragraph, §10 independence and R-SEAL-1).
+- **`docs/specs/modules/xgmii_tx_64.md` (SPEC-M04) in full** — all thirteen sections,
+  including §11's five deferred items and §13's five change-log rows (C-14.1, C-14.2,
+  C-14.5, C-16, C-31). Frozen `f78766e`, my own countersignature `J-dv_lead-0005`.
+- `docs/specs/requirements.md` — **§0.3 in full** (the frame-length and gap conventions and
+  the *Against deficit idle count* paragraph, whose receive and transmit halves are one
+  paragraph apart and describe opposite behaviours), **§0.5 in full** (octet time, the
+  front offset `h`, the word delay ΔC, the deciding input word `D`, the causality test, the
+  straddle and late-decision tests, and what a latency monitor may demand), §0.6's window
+  and reference-word clauses, §0.7, §9.1, §11, **REQ-201 … REQ-210 verbatim**, REQ-901
+  **whole** (its configuration clause and all eight lettered divergence classes), and the
+  §13 rows for `SCR-M03-I4` and its re-ruling.
+- `docs/specs/modules/axi64.md` (SPEC-M01) §6.1's `tkeep` rules and §6.3 item 5's
+  don't-care positions; `docs/specs/architecture.md` §4's inventory row for M04 (counterpart
+  `axis_xgmii_tx_64.v`, REQs 201–210) and §5's deviations table with its provenance note.
+- `test/attack_plans/AP-xgmii_rx_64.md` — §0/§0.1, §1, §2, §3, §4.A, §4.I (the M03-I4 and
+  M03-I5 cells whole), §4.M's M03-M10 record, §5, §6 whole, §7's banner (the `WO-0077-A1`
+  census rule, `RV-0078-S2-13`'s polarity rule, bar 1's four lift cells and X-1's row) and
+  §9's change log.
+- `agents/handoffs/SO-xgmii_rx_64.md` — §2.8-R whole (the `P-1` and `P-2` precisions),
+  §3.9's standing table, §4.5's yield table, §4.6's war stories.
+  `agents/handoffs/WO-0079_m03-traceability-test-rows.md` — §2.1, §2.2, §2.3, §3's tiers,
+  §6.1 (`FINDING SO-1-A` whole), §8.1, §9.
+  `agents/handoffs/BUG-0002_…md` — the *"Two of my own attack-plan cells are now FALSE"*
+  section and the countersignature block's point 4.
+- `agents/journals/claude_architect_docs_lead_agent.v02.md` — `J-architect_docs_lead-0024`'s
+  closing bullets (the carry-forward that made the §4.I cells mine) and `-0025`'s owed
+  items; `…v03.md`'s ledger rows 30 and 32 at their three restatements.
+  `agents/journals/claude_rtl_lead_agent.v02.md` — **`J-rtl_lead-0015` §5 in full**, the
+  sibling's straddle note, read for where frozen specs and §0.5 diverge.
+- `docs/adr/ADR-0018…` §A2's decisions `A2-D10` … `A2-D12` (the span convention, read to
+  decide whether a harvest note is owed at this round).
+- **The machinery surfaces, read to answer §7's capability questions by measurement rather
+  than by inference**: `test/xgmii/tx_decoder.mli`, `test/golden/crc32_ref.mli`,
+  `test/xgmii/frame.mli`, `test/monitors/octet_time.mli`, `test/axi64_probe/axi64_driver.ml`,
+  `test/cosim/canonical.mli`, `test/cosim/dune`, `tools/` and `tools/cosim/` listings,
+  `.github/workflows/build.yml`'s `cosim` job, and a **listing** of
+  `test/third_party/verilog-ethernet/` with `PROVENANCE.md` read in full.
+- **No `libs/**` and no `rtl_snapshots/**` path was opened**; `top/` does not exist at this
+  SHA, which I checked rather than assumed. In particular
+  `libs/hardcaml_ethernet/src/xgmii_tx_64.ml` exists and **was not read** — the module this
+  plan attacks has been implemented since `WO-0024` and the plan is derived from SPEC-M04
+  alone (PROTOCOL §10). **The two vendored `.v` files were not opened either**, for a
+  different reason: the module this boundary would compare against is not among them.
+- **No Essenceia/Nasdaq-HFT-FPGA material consulted.**
+
+### Reasoning
+
+**1. What a first attack plan for a transmit module is, and why it is not `AP-M03` with the
+arrows reversed.** The M03 plan's spine is a *receive* spine: a wire arrives and cannot be
+slowed down, the module's output is an `Axi64` stream, the protocol monitor watches that
+stream, REQ-016 permits idles inside a frame and family I is built on them. **Every one of
+those four is false at M04.** The output is not a stream but a lane pair that carries a
+value on every cycle; the stream monitors therefore do not apply and the standing
+obligation that replaces them is the **wire decoder**; the module sets its own pace, so the
+line-rate invariant has no instance and §8 says so in terms; and **REQ-016's idle tolerance
+does not extend to this interface at all** — a missing word on a required cycle is an
+*underflow*. So the largest family in `AP-M03` (I, idle injection, and the whole
+`SCR-M03-I4` apparatus behind it) has **no counterpart** here, and the largest family in
+`AP-M04` is **G**, which asserts the opposite thing: that the module does *not* tolerate the
+gap. I wrote that asymmetry into §6's REQ-016 line rather than leaving it to be inferred,
+because the natural error is to port family I across and discover at the first red that the
+specification forbids it.
+
+**2. The identity, derived once, that four families rest on.** With the preamble occupying
+exactly one word and frame octet 0 in lane 0 of the next, frame octet `i` is at lane
+`i mod 8` of cycle `C + 2 + ⌊i/8⌋`; the terminate character is at octet index `F` and
+therefore lane `F mod 8`; and the next start character is `g = ⌈(cfg_ifg + t)/8⌉` words
+after the terminate word, an actual gap of `8g − t`. **I checked it against §6.1's own
+cycle table at the one length that table states** — `P = 60` gives `t = 0`, terminate at
+`C + 10`, `g = 2`, next start at `C + 12`, gap 16, spacing 11 — and every one agrees. That
+cross-check is the whole of the corroboration the specification offers, and §4 says so
+rather than presenting the formulae as self-evident.
+
+**3. The identity is what makes two rows non-arbitrary, and both would have been sampled
+otherwise.** §10's REQ-205 hook says *"frame lengths placing the terminate character in
+each of the eight lanes"* and does not say which lengths. From the identity they are
+`F ∈ {64 … 71}`, i.e. `P ∈ {60 … 67}` — **derived, not chosen**. And the same sweep is
+where the gap convention is decided: I worked §0.3's rejected reading (twelve *idle* octets
+*after* the terminate character) against this specification's (twelve *from it inclusive*)
+at every residue, and **they agree at seven of the eight and differ only at `t = 4`**, where
+this specification gives 12 octets and the rejected reading gives 20. **A bench that samples
+that sweep has a seven-in-eight chance of missing the one member that distinguishes the two
+conventions**, and §6.1's own numbers — *"16 octets for t = 0 and 12 octets for t = 4"* —
+name that member without saying why it is the interesting one. M04-F2 says why.
+
+**4. `FINDING AP-M04-1`, and it is the round's substantive find.** REQ-210 opens *"Measured
+per octet in octet times (§0.5)"* and then names two **events** — the acceptance handshake
+and the word whose lane 0 carries `/S/` — which SPEC-M04 §7 pins at **1 cycle = 8 octet
+times**. But §0.5's per-octet latency is (output octet time) − (input octet time) **for the
+same octet**, and frame octet `j` enters at `8C + j` and leaves at `8C + 16 + j`: **`L = 16`
+octet times, for every frame octet of every frame at every length.** Both figures are
+constants; they are different constants; and **a monitor built from REQ-210's opening clause
+together with §7's pinned value asserts 8 per octet and fails a conformant M04 at every
+octet.** That is `SCR-M03-I4`'s shape at a new module — a monitor built from a sentence no
+conformant design can satisfy — reached this time **from the specification's side, by a
+plan, before a bench existed to go red**, which is exactly what §0.5's own *"checkable by
+arithmetic at spec freeze"* clause promises and did not deliver here. The second half is
+narrower and may be answered separately: §0.5's front offset `h` is defined as *octets the
+module removes from the front*, and M04 **removes none and prepends eight**, so ΔC's
+*"first output word for a frame"* is ambiguous at a prepending module — the preamble word is
+a word M04 emits for the frame that carries none of its octets. **I routed both and decided
+neither**, and M04-J1/J3 are written so that nothing moves on the ruling: J1 asserts the
+event delay, which is exact and unambiguous because §7 names both events, and J3 reports 16.
+
+**5. Where the sibling's entry sharpened this.** `J-rtl_lead-0015` §5 records SPEC-M06 §7
+and §10 still carrying the retired per-octet-under-injection reading that requirements.md
+§0.5 replaced, and names the failure mode: a worker building from the frozen spec end to end
+builds to a sentence describing something no straddling module can do. **The class is the
+same one I found at REQ-210, one document up.** What differs is the direction: M06's is a
+*module* spec still carrying a claim `requirements.md` retired, and M04's is
+`requirements.md` itself naming a measurement its own §7 does not pin. Reading rtl_lead's
+note is what made me check REQ-210's opening clause against §0.5's definition instead of
+against §7's number, which is where the two agree and the finding hides.
+
+**6. The co-simulation posture, and why it is a bar in the plan's first commit rather than a
+caveat in its ninth.** Charter §3 and PROTOCOL §10 make differential co-simulation a
+**precondition of Phase 1 MAC sign-off**, and M04 is a MAC module — so the state of that
+lane is a gate condition on this module's `SO-`, not a footnote. I measured its three
+components rather than assuming any: (a) `test/third_party/verilog-ethernet/` holds exactly
+four files and `axis_xgmii_tx_64.v` is **not** among them, and `PROVENANCE.md`'s own rules
+make adding it a separate vendoring commit; (b) the only `iverilog` caller builds an
+RX testbench against M03, and `canonical.mli`'s **pinned** grammar is a per-word AXI-stream
+record — `tkeep`, `tlast`, `tuser0`, `octets` — **none of which a lane pair has**, so a TX
+canonical form is a new grammar and not a re-use; (c) REQ-901's lettered classes are
+entirely M03's and the upper stack's, and its own rule forbids citing a class not listed
+there. **Then I did the thing the M03 era learned to do late**: I wrote down what the anchor
+*would* and *would not* see if all three were paid, so that the claim is pre-refuted rather
+than argued over later. It would see octets, padding, the FCS and its order, the terminate
+lane and the gap in octets — **and this is the one Phase-1 boundary where the anchor could
+see length logic at all**, since classes (e) and (f) exclude it at M03 precisely because the
+receive reference has none. It would **not** see the strobe (REQ-901 compares no strobes),
+any cycle (REQ-901 excludes cycle alignment and latency constants by name), or `tx_tready`
+(a handshake is not an output frame). **So even a fully opened lane leaves REQ-206,
+REQ-207's handshake half, REQ-209 and REQ-210 bench-only**, and BAR T1 says so before anyone
+can promise otherwise.
+
+**7. On the length-logic claim I could not measure, and how I marked it.** The statement
+that the transmit reference has `MIN_FRAME_LENGTH`, `ENABLE_PADDING` and `ENABLE_DIC` comes
+from `architecture.md` §5's provenance note and from REQ-901's class (e) text, both written
+by the architect from a file read on 2026-08-01. **That file is not in this tree and I did
+not fetch it.** §0.1(i) obliges the difference between a record and a measurement to be
+marked, so the cell says the claim is carried *at the strength of that record*. This is the
+smallest of the round's disciplines and the one most likely to have been skipped, because
+the claim is almost certainly true.
+
+**8. The three repairs, and what each turned out to be.** (a) `FINDING SO-1-A`'s §6 homing:
+six rows, seven cells, each gaining a **dated appended** homing with the original list left
+standing, plus a new §6.1 that states the **converse rule** — a REQ with no row carries the
+reason, *and a row with no REQ line carries its home* — and homes `M03-O5`, which no REQ can
+reach because it constrains the plan rather than the design. (b) The §4.I cells carried
+since the `-0024` ruling: **both were staler in metadata than in substance**, and saying so
+is the honest report rather than dressing a citation fix as a repair. M03-I4 called
+`FINDING F-1` *outstanding* when it was discharged at `d54c931`; M03-I5 cited §0.5 at
+`a77017c` alone where its sibling has carried the `1f3c04c` re-ruling since
+`J-dv_lead-0086`. Both substantive claims were already right, and **I refused to re-assert
+M03-I4's three-class latency table** while correcting the status beside it: §0.1 binds its
+own author, and a status repair is not a licence to re-affirm a set claim it did not
+re-measure. (c) `P-1`: §2.1's rule is false at one citation because it **generalised from
+the common case and failed to carry §2.2's own exception** — its immediate neighbour — into
+its own words. The precision is appended as §2.1-P in this round's voice; not one cell of
+§3 moves and `docs/specs/traceability.md` is untouched, because the transcription was never
+at fault.
+
+**9. And measuring `P-1`'s reach found a second dimension the finding did not state.** The
+literal rule is false at **one of 49 distinct citations** — the figure `SO-` §2.8-R
+measured — **and at two of the 110 citation atoms**, the two whose row id is `M03-M10`. The
+same line is cited **three further times as `M03-F2`**, where the rule holds, and
+**REQ-107's cell carries `test_m03_f.ml:492` under both ids at once**. That single cell is
+the sharpest available argument for the exception: **one unit legitimately discharges two
+rows**, and a rule keyed on titles can only ever name one of them.
+
+**10. The round's two findings against its own instruments, both caught by running them,
+and I would rather record them than have had a tidier round.** `AP-6-1`: `FINDING SO-1-A`'s
+script bounds its slice with a **substring** search for `'## 7. Machinery …'`, so the moment
+I quoted the script inside §6 the quotation became the first match, the slice ended inside
+the code fence, and the check reported a **false** unhomed row. **I wrote the block, ran the
+command against the file it was in, and got the wrong answer from the right script.** The
+repair is a line-anchored boundary that a fenced quotation cannot satisfy. `AP-6-2`: I wrote
+the disposition table's first column in the row tables' own bold notation, which is **exactly
+the pattern the row census matches** — the raw count went 78 → 84, and the *set*-based
+derivation stayed at 78 only because every id in my table was already a declared row, i.e.
+the defect was masked by an accident of content. Backticking the column fixed it, **and the
+identical defect was in `AP-M04` §6.1 at the identical table** (81 raw against 80 declared),
+which is what makes it a class and not a slip. Both are the same family: *a document
+measured by a pattern must not be annotated in the notation that pattern selects*, and *a
+checker whose subject can contain the checker's own text needs a match rule its own
+quotation cannot satisfy.*
+
+**11. The new plan's own converse rule convicted its author before commit, which is the
+best evidence I have that it was worth carrying.** I ran the homing check on my draft of
+`AP-M04` and it returned **five** unhomed rows — `M04-B5`, `M04-M5`, `M04-M6`, `M04-O3`,
+`M04-O4`. Two of them were REQs (709, 710) that appear at this module only through §9's
+co-occurrence bullet and had no line at all; two were prohibition rows whose home is a
+requirement they constrain rather than attack; one was simply missed. **`AP-M03` shipped
+without that check for nine days and lost six rows**; `AP-M04` failed it in draft and lost
+none, at a cost of one command.
+
+**12. On the harvest note: none is owed at this round, and I say so rather than leave
+silence to be read.** PROTOCOL §7 and charter §8 attach the note to **every module sign-off
+and every phase gate**. This is a plan round and neither. Under `A2-D10` my next span opens
+at `J-dv_lead-0168` — the entry my own last note deliberately left for *"a miner who can
+read it finished"* — and **this entry joins that span**; both are mined at the next `SO-`
+or gate. Recorded because a skipped harvest and a not-owed one are indistinguishable in
+silence, and the tiling rule is the only instrument that tells them apart.
+
+**13. What I refused.** I did not open `libs/hardcaml_ethernet/src/xgmii_tx_64.ml`, though
+it has existed since `WO-0024` and reading it would have made several rows easier to write
+and every one of them worthless. I did not fetch `axis_xgmii_tx_64.v` to strengthen §7.1's
+length-logic claim: vendoring is its own commit under ADR-0015 D2 and a plan round taking it
+would be the scope-widening move `RV-C4` §12 convicts. I did not re-status a single
+`AP-M03` row, lift a bar, or touch `docs/**` — three of the four repairs were tempting
+places to do the fourth thing while I was there. And I did not decide `FINDING AP-M04-1`:
+the arithmetic is mine and the ruling is the architect's.
+
+### Actions
+
+- **Created `test/attack_plans/AP-xgmii_tx_64.md`** — the M04 attack plan, `AP-M03`'s
+  skeleton, **80 rows across 15 families** (A 5, B 5, C 6, D 6, E 5, F 6, G 8, H 6, I 4,
+  J 4, K 5, L 5, M 6, N 4, O 5): **56 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL,
+  1 GAP, 0 RULING**. §0.1 restates the three standing rules (SHA, domain, polarity); §0.2
+  opens the prohibition register at the first commit; §2 carries seven standing obligations
+  rewritten for a transmit port; §5 records ten rejected attacks; §6 carries the converse
+  homing rule with §6.1; §7 measures six machinery items and states **BAR T1**; §8 routes
+  six open items including `FINDING AP-M04-1`.
+- **`test/attack_plans/AP-xgmii_rx_64.md`** — seven §6 cells gain a dated appended homing;
+  new **§6.1** states the converse rule, homes `M03-O5`, carries the before/after
+  measurement and mints `AP-6-1` and `AP-6-2`; new **§4.I-R** discharges the `-0024`-era
+  carry-forward with a status correction appended inside each of the two cells; one §9
+  change-log row.
+- **`agents/handoffs/WO-0079_m03-traceability-test-rows.md`** — new **§2.1-P**, an appended
+  precision to §2.1's citation rule with its two-dimension measurement; one §9 change-log
+  row. §2.1 itself is unedited.
+- Nothing under `test/xgmii_rx_64/`, `test/cosim/`, `libs/`, `docs/` or any other journal
+  was touched, which was the dispatch's explicit out-of-scope list and is verified below.
+
+### Evidence
+
+**All commands run from a checkout at this working tree. No OCaml lands in this round**, so
+there is nothing for `dune runtest` to say about it; `dune` is absent from this container in
+any case (**ADR-0005** — the standing bound, re-checked: `which dune` returns nothing).
+
+```
+$ git rev-parse HEAD                       # at spawn, before reading anything
+1968bea1332135a60e5968a124d00822d0c2e4c1
+$ git status --short                       # at spawn
+                                           (empty)
+$ git status --short                       # at return
+ M agents/handoffs/WO-0079_m03-traceability-test-rows.md
+ M test/attack_plans/AP-xgmii_rx_64.md
+?? test/attack_plans/AP-xgmii_tx_64.md
+```
+
+**The status-cell pass over every row table, both plans, at this tree** (the method
+`DVC-1a` would mechanise; described-and-run rather than recalled):
+
+```
+$ grep -c '^| \*\*M04-[A-Z]\+[0-9]\+\*\* |' test/attack_plans/AP-xgmii_tx_64.md
+80
+$ grep -o '^| \*\*M04-[A-Z]\+[0-9]\+\*\* |.*| \(ASSERT\|NO-ASSERT\|NO-STIMULUS\|RULING\|GAP\|STRUCTURAL\) |$' \
+    test/attack_plans/AP-xgmii_tx_64.md | sed 's/.*| \([A-Z-]*\) |$/\1/' | sort | uniq -c
+     56 ASSERT
+      1 GAP
+     12 NO-ASSERT
+      6 NO-STIMULUS
+      5 STRUCTURAL
+$ grep -c '^| \*\*M03-[A-Z]\+[0-9]\+\*\* |' test/attack_plans/AP-xgmii_rx_64.md
+78
+$ grep -o '^| \*\*M03-[A-Z]\+[0-9]\+\*\* |.*| \(ASSERT\|NO-ASSERT\|NO-STIMULUS\|RULING\|GAP\|STRUCTURAL\) |$' \
+    test/attack_plans/AP-xgmii_rx_64.md | sed 's/.*| \([A-Z-]*\) |$/\1/' | sort | uniq -c
+     62 ASSERT
+      1 GAP
+      7 NO-ASSERT
+      4 NO-STIMULUS
+      4 STRUCTURAL
+```
+
+**`AP-M03`'s census is unmoved in every cell** — 78 / 62 / 7 / 4 / 4 / 1, the standing
+figure, taken from the file before and after the edits and not carried forward.
+
+**The homing check, quotation-stable form, run on both plans after the repair** (the
+`(?m)^## (\d)\. ` boundary is `AP-6-1`'s repair; the range-expansion loop is what
+`AP-M04`'s ellipsis citations need — without it the same command reports 21 false
+unhomed rows there):
+
+```
+$ python3 - <<'PY'
+import re
+for path, pre in (('test/attack_plans/AP-xgmii_tx_64.md', 'M04'),
+                  ('test/attack_plans/AP-xgmii_rx_64.md', 'M03')):
+    txt = open(path).read()
+    declared = set(re.findall(r'^\| \*\*(' + pre + r'-[A-Z]+\d+)\*\* \|', txt, re.M))
+    secs = {n: p for p, n in ((m.start(), m.group(1))
+                              for m in re.finditer(r'(?m)^## (\d)\. ', txt))}
+    s = txt[secs['6']:secs['7']]
+    named = set(re.findall(pre + r'-[A-Z]+\d+', s))
+    for m in re.finditer(pre + r'-([A-Z]+)(\d+)\s*…\s*' + pre + r'-\1(\d+)', s):
+        named |= {f"{pre}-{m.group(1)}{k}"
+                  for k in range(int(m.group(2)), int(m.group(3)) + 1)}
+    print(path, len(declared), len(named & declared), sorted(declared - named))
+PY
+test/attack_plans/AP-xgmii_tx_64.md 80 80 []
+test/attack_plans/AP-xgmii_rx_64.md 78 78 []
+```
+
+**The same check, on the same two files, at the states this round convicted** — recorded
+because a green that was never red is not evidence that the instrument works:
+
+| subject | state | result |
+|---|---|---|
+| `AP-M03` §6 | at `1968bea`, before this round | `78 72 ['M03-C5','M03-E5','M03-M8','M03-M9','M03-O4','M03-O5']` |
+| `AP-M04` §6 | my own draft, before commit | `80 75 ['M04-B5','M04-M5','M04-M6','M04-O3','M04-O4']` |
+| `AP-M03` §6 | first draft of §6.1, substring-bounded command | `78 77 ['M03-O5']` — **a false unhomed row**, `AP-6-1` |
+| `AP-M03` §4 | first draft of §6.1's table in bold notation | raw row count `84` against 78 declared — `AP-6-2` |
+| `AP-M04` §4 | same table, same notation | raw row count `81` against 80 declared — `AP-6-2` |
+
+**`P-1`'s reach, both dimensions, at this tree** (the command is quoted in full at
+`WO-0079` §2.1-P and is reproduced there with this output):
+
+```
+distinct citations                : 49
+  not on a let%expect_test        : 1 [('test/xgmii_rx_64/test_m03_f.ml', '811')]
+citation atoms (row -> path:line) : 110
+  atoms whose title lacks the row id: 2 [('M03-M10', 'test/xgmii_rx_64/test_m03_f.ml', '492'),
+                                         ('M03-M10', 'test/xgmii_rx_64/test_m03_f.ml', '492')]
+  distinct citations among them   : 1
+```
+
+**`FINDING AP-M04-1`'s arithmetic, reproducible from the specification and needing no
+tooling.** Frame octet `j` is accepted in source word `⌊j/8⌋` at cycle `C + ⌊j/8⌋`, byte
+position `j mod 8` → input octet time `8C + j` (requirements.md §0.5's octet-time
+definition). SPEC-M04 §6.1: a source word accepted on `C + m` is transmitted on `C + m + 2`,
+lane = byte position (REQ-012, no rotation) → output octet time `8C + 16 + j`. **`L = 16`
+octet times at every `j`, every length.** SPEC-M04 §7 pins **8** between the acceptance
+cycle and the `/S/` word. Both are constants; the two are not the same quantity; REQ-210's
+sentence names the second and calls it the first.
+
+**§4's identity checked against SPEC-M04 §6.1's own cycle table**, at `P = 60`: `F` = 64,
+`t` = 0, terminate at `C + 2 + 8 = C + 10` ✓ (table: C+10), `g = ⌈12/8⌉ = 2`, next start at
+`C + 12` ✓ (table: C+12), gap `16 − 0 = 16` ✓ (§6.1: *"1 + 7 + 8 = 16"*), start-to-start 11
+cycles ✓ (§6.1: *"Eleven cycles"*).
+
+**The two gap conventions, worked at every residue at `cfg_ifg` = 12** — this
+specification's *from the terminate character inclusive* against §0.3's rejected *twelve
+idle octets after it*: they agree at `t ∈ {0,1,2,3,5,6,7}` and **differ only at `t = 4`**
+(12 against 20). Derived by taking the smallest `p ≥ 12` (respectively `≥ 13`) with
+`p ≡ −t (mod 8)`; the first column reproduces §6.1's own two stated numbers.
+
+**The co-simulation posture, measured not recalled:**
+
+```
+$ ls test/third_party/verilog-ethernet/
+COPYING  PROVENANCE.md  axis_xgmii_rx_64.v  lfsr.v
+$ grep -n 'cosim\|iverilog' .github/workflows/build.yml | head -3
+92:  # Its own job, not a step in `build` (R-CI-1): a cosim failure must be
+94:  cosim:
+116:        run: sudo apt-get update && sudo apt-get install -y iverilog
+```
+
+`axis_xgmii_tx_64.v` is absent; `tools/cosim/run_cosim.sh` is the only `iverilog` caller and
+builds `test/cosim/tb_xgmii_rx_64.v`; `test/cosim/canonical.mli`'s pinned record is
+`{ tkeep; tlast; tuser0; cycle; octets }`; and REQ-901's lettered classes (a)–(h), read
+whole, name no transmit boundary.
+
+**No file outside the declared write set was modified**, which `git status --short` above
+shows directly: three paths plus this journal, and the dispatch's explicit exclusions
+(`test/xgmii_rx_64/**`, `test/cosim/**`, `libs/**`, `docs/**`, every other journal) are
+absent from it.
+
+### Outcome
+
+**DoD vs the round's own charge: met, both acts.**
+
+- **Act 1 — `AP-xgmii_tx_64.md` committed before the first M04 bench**, as charter §3 and
+  ADR-0001 require. It reaches every TX surface the dispatch named — preamble and SFD
+  construction (A), padding to minimum frame (C), FCS append (D), terminate lane placement
+  across **all eight** lanes derived rather than sampled (E), IFG enforcement with the DIC
+  question answered from §0.3 and §11's own ruling (F), and underflow (G, the largest
+  family) — and states the co-simulation posture explicitly as **BAR T1**, with what the
+  anchor could and could not see for TX and the four requirements that stay bench-only even
+  if the lane opens.
+- **Act 2 — all three repairs discharged at the carrier that named this round.**
+  (a) `FINDING SO-1-A`'s §6 homing: six rows homed, converse rule stated, measurement
+  re-run before and after. (b) The §4.I cells: `F-1`'s status corrected and §0.5's citation
+  completed, with the substantive claims explicitly **not** re-asserted. (c) `P-1`: §2.1
+  gains an appended precision and its reach is measured in a second dimension the finding
+  did not state.
+
+**Two findings minted against my own instruments this round** (`AP-6-1`, `AP-6-2`) and
+**one against the specification** (`AP-M04-1`, routed to architect_docs_lead, deciding
+nothing). **Nothing is re-statused anywhere**; no bar lifts; no census moves; no `BUG-` is
+opened; this is neither an escalation nor a gate act.
+
+**No harvest note**: not owed at a plan round (PROTOCOL §7, charter §8 attach it to
+sign-offs and gates). Under `A2-D10` my next span opens at `J-dv_lead-0168` and now
+contains this entry too; both are mined at the next `SO-` or gate.
+
+**Handoff**: the plan and the two repaired documents go to the orchestrator for commit.
+`FINDING AP-M04-1` and REQ-901's missing M04-boundary divergence classes are **spec-change
+requests for architect_docs_lead**, routed via the orchestrator, neither decided here. The
+three BAR T1 conditions are work-order requests, not silent to-dos.
+
+### Open-questions
+
+1. **`FINDING AP-M04-1` is live and is the round's largest.** REQ-210 names a per-octet
+   measurement and pins an event delay; the per-octet constant is **16** octet times and
+   §7's pinned figure is **8**, and a monitor built from the two together fails a conformant
+   M04 at every octet. Its second half — §0.5's front offset `h` being defined only for a
+   module that *removes* octets from the front, while M04 *prepends* — may be answered
+   separately. **Route**: architect_docs_lead via the orchestrator. **Nothing is blocked**:
+   M04-J1 asserts the event delay and M04-J3 reports 16, and neither moves on the ruling.
+2. **REQ-901 declares no divergence class at the M04 boundary**, and its own text forbids a
+   sign-off citing a class not listed there. Needed before any TX co-simulation result can
+   be used. **Route**: architect_docs_lead.
+3. **BAR T1's three conditions need work orders, in a stated order**: REQ-901's classes
+   (architect) gate what a comparison may compare; vendoring `axis_xgmii_tx_64.v` at a pin
+   is its own commit under ADR-0015 D2 and gates the harness entirely; the harness and a
+   canonical form for a lane pair follow. **None of the three is a bench round's to do
+   inside a bench round**, and charter §3 makes all three preconditions of M04's `SO-`.
+4. **`C-5` is still DEFERRED** — §0.6's strobe window is vacuous for `error_underflow`
+   (SPEC-M04 §11.3). `AP-M04` obligation 5 is a standing prohibition derived from an
+   undischarged deferral, which is a weaker footing than I would like: a reader of §0.6
+   alone finds a window, applies it, and gets a green that means nothing.
+5. **Machinery `T-2`**, the transmit-side conservation monitor, is **mine**, with an executor
+   named (the round that opens `test/monitors/`). No row is blocked; obligation 3 carries
+   the counting rule meanwhile, including the part that is easy to get wrong — keying on the
+   `tlast` acceptance exempts every underflowed frame.
+6. **`DVC-1a` is now wanted by two plans.** Both §6 homing checks and both status censuses
+   are described-and-run passes for want of it. Still mine, still unbuilt; the second plan
+   is a fact about its priority, not a new commission.
+7. **Standing and untouched by this round**: the architect's ledger row 32 (`BUG-0002`
+   cannot close on the `-0025` ruling) keeps its own carrier, a bug round, which this was
+   not; `SO-xgmii_rx_64.md` §3.9's other standing entries are unmoved; and the `A2.4`
+   clerical edits to `docs/gates/lessons-harvest-block.md` remain owed to the architect.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_tx_64.md
+- test/attack_plans/AP-xgmii_rx_64.md
+- agents/handoffs/WO-0079_m03-traceability-test-rows.md
