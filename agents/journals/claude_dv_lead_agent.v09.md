@@ -350,3 +350,765 @@ file alone.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0173] 2026-08-11T23:55Z | task:none | The countersignature my own finding asked for, paid at the source: the equivalence derived by cases and then enumerated over 2.4 million traces built a different way from the ruling's, the guard measured to be the rule rather than wider than it — and the fourth clause signed with its stated ground convicted, which convicts a row of my own in the same act
+
+### Trigger
+
+Orchestrator dispatch, **act two of this round**, same declared sibling
+(`tb_writer` on `WO-0080`, write set disjoint from mine and untouched here). The
+commission is the countersignature the `CSG-3` ruling owes me. That ruling landed
+at `ee47eee` (`J-architect_docs_lead-0039`) while my previous round was being
+written, and its own §13 row states that the REQ-901 diff is **normative and NOT
+IN FORCE until dv_lead's countersignature is transcribed** — so until this entry
+is committed and its rows transcribed, the restriction as countersigned at
+`J-dv_lead-0170` governs and the gap `CSG-3` found stays open on paper. My own
+`J-dv_lead-0171` Open-question 3 requested this round in terms.
+
+Three items are in front of me, and they are not the same act:
+
+1. **The `CSG-3` cure** — my finding, SUSTAINED, cured by **neither** of the two
+   cures I offered. Countersignature owed and the diff not in force without it.
+2. **The `AP-M04-2` cure** at SPEC-M04 §7 — my finding, SUSTAINED. The ruling
+   states no countersignature is owed (my own `J-dv_lead-0170` §(a) carved that
+   sentence out by name and §(b) requested the diff) and flags the **added**
+   prohibition as contestable as a fresh finding. My act there is to read it and
+   say whether I contest.
+3. **§0.6's fourth reference-word clause** — carry-forward `C-5`'s closure. Its
+   §13 row says a countersignature **is** owed on it *"as on every §0.6 diff"*,
+   which I verified at the row rather than taking from the dispatch.
+
+**Head check, before reading the diff and before any write**: `git rev-parse
+HEAD` → `9535979e6c388183bcb04d1c6c661e8c9dc727e9`, byte-equal to the spawn-head;
+`git status --short` at the start of the round returned zero lines; branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+
+**HEAD MOVED AGAIN MID-ROUND, and the reconciliation is recorded rather than
+absorbed — the second round running.** On my final state check, after both
+entries were drafted, `git rev-parse HEAD` returned **`48077aa`**. It is the
+**orchestrator's** board round, touching `agents/journals/claude_orchestrator_agent.v02.md`
+and `tasks/BOARD.md` — two paths, neither mine, neither a specification, neither
+a test. What I did, in order, before finalising a line:
+
+1. **Diffed the move against every path this entry measures**: `git diff --stat
+   9535979..HEAD -- docs/specs/ test/ agents/handoffs/ agents/journals/claude_dv_lead_agent.v08.md`
+   is **empty**. So REQ-901, §0.6, §12, SPEC-M04, both producers, the stimulus
+   corpus and the vendored directory are byte-identical to what I read, and
+   **every measurement below stands at `48077aa` for the reason rather than by
+   luck** — the reason being that the commit touched none of them.
+2. **Re-computed the chain values act one's header carries** at the new HEAD:
+   sha256 `cde9c506…3723` and 353,776 bytes, **both unchanged**, because `v08` is
+   not among the two paths that moved. Act one's header is therefore correct
+   against the new parent as well, which is the check the orchestrator repeats at
+   landing.
+3. **Left the countersignature SHA as `9535979`**: that is the commit at which the
+   verification was actually performed, and a signature that cites the tree it was
+   made against is worth more than one that cites the tree it happened to land on.
+   The rows say so explicitly.
+
+**And a second thing in the tree that is not a commit**: `git status --short`
+lists `?? test/xgmii_tx_64/` — the **declared sibling's uncommitted work** on
+`WO-0080`. Not read, not touched, not staged; act one's Evidence 6 states why the
+distinction has to be made by hand here rather than left to `R7`.
+
+**Order of work, stated because it is what makes agreement mean agreement.**
+Every derivation, every enumeration and every measurement below was done from the
+**diff and the specification text at HEAD**; `J-architect_docs_lead-0039` was read
+**last**, after all of it, exactly as `J-dv_lead-0170` did. Two of the results
+below agree with the ruling's reasoning sentence for sentence and one convicts
+it; neither would mean anything if I had read the reasoning first.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, before any
+  write.
+- **The diff under review**: `git diff 9d68d10..ee47eee -- docs/specs/requirements.md
+  docs/specs/modules/xgmii_tx_64.md`, read hunk by hunk, then each repaired
+  passage read **in place at HEAD** rather than only as a hunk.
+- **`docs/specs/requirements.md` at HEAD**: **REQ-901 entire** (the eight declared
+  classes, the admission span, the guard-width sentence, restriction parts (i) and
+  (ii) as repaired, the struck lift with its preserved quotation, the record-only
+  licence, the transmit-boundary silence paragraph, the cost-of-an-excluded-class
+  paragraph); **REQ-108 and REQ-110's verification columns** as repaired;
+  **§0.6 entire** — the window sentence, the reference-word paragraph's **four**
+  clauses, the no-octet-class note and the *"a bound, never a licence"* note;
+  §0.5's L/ΔC definitions; **§12's strobe appendix, all twenty-one rows, read one
+  by one**; §13's three new rows, read in full.
+- **`docs/specs/modules/xgmii_tx_64.md` at HEAD**: §7's latency bullet entire
+  (the two-constant table, the h = 0 paragraph, the derived-both-ways paragraph
+  and **the new `AP-M04-2` paragraph**), §7's throughput and `tx_tready` bullets
+  and the C-16 consequences, **§9 entire** (the condition row, the repaired
+  *"Strobe cycle, pinned"* paragraph, the no-FCS paragraph, the co-occurrence
+  bullets), §11.3 as closed, §13's new row.
+- **My own instruments**: `test/attack_plans/AP-xgmii_tx_64.md` §4.G rows
+  `M04-G1` … `M04-G8` **in full**, §6's REQ-016 and REQ-206 coverage rows, §7
+  items T-2 and T-5, §8 item 3; `agents/handoffs/WO-0080_tb-m04-first-bench.md`
+  §9.4(1) and bounce `BM6`.
+- **The two co-simulation producers, as artefacts of my own line** —
+  `test/cosim/ours_run.ml` (`:230`, the admission arm `:245-262`, the span-closing
+  line `:273`) and `test/cosim/tb_xgmii_rx_64.v` (`:260`, `:529-533`, `:575-576`),
+  read to **measure the guards against the repaired rule**, which is the
+  measurement REQ-901's own new text assigns to me; and
+  `test/cosim/stimulus_gen.ml`, read to measure whether any committed stimulus
+  moves.
+- `git ls-files test/third_party/verilog-ethernet/` — the vendoring premise of the
+  transmit-boundary paragraph, measured rather than accepted.
+- **My own prior entries** `J-dv_lead-0170` (§(e)'s countersignature, §(f)'s
+  `CSG-3` filing and self-binding, §(h)'s refusals) and `J-dv_lead-0171`.
+- `agents/journals/claude_architect_docs_lead_agent.v03.md`,
+  `J-architect_docs_lead-0039` entire — **read last**.
+- **No RTL.** `libs/**`, `top/**`, `rtl_snapshots/**` were not opened, and
+  `test/third_party/` was listed but not read. **Every reference-side claim below
+  is carried from the `(g)`/`(h)` class text I derived and countersigned at
+  `J-dv_lead-0162`** — a retrospective reference to a derivation already in
+  history, labelled as carried at the point of use, not a new static read. **No
+  Essenceia/Nasdaq-HFT-FPGA material consulted.**
+
+### Reasoning
+
+---
+
+#### (a) The `CSG-3` cure. **COUNTERSIGNED**, with one reading fixed and one correction of my own record.
+
+**1. What the cure is, restated from the text so the signature has a subject.**
+Part (i) drops *"that has already delivered an octet"*, so it bars a start
+character inside **any** open frame. Part (ii) generalises from the error-character
+closure to **every closure that is not the frame's terminate character** —
+REQ-105's error character, REQ-108's truncation, REQ-009's `clear` — on the stated
+ground that the terminate character is the only closure this document can rely on
+the reference to have taken by then, and that for `clear` the ground is the
+**absence of a derivation** rather than a claim about the reference. The class-(f)
+lift is **struck with its quotation preserved**. The licence's *"either restricted
+situation"* becomes *"any situation those parts restrict"*. And the whole is given
+a closed form: **on a run that compares, every start character SHALL follow a
+terminate character**, the trace's first excepted.
+
+**Neither of my two offered cures was taken, and the ruling is right to refuse
+them.** I offered (1) extending part (ii) to the truncation closure in its own
+shape, or (2) narrowing the lift. Cure (1) would have left `clear` — the fifth
+closure — in exactly the position truncation had been in, which is to say the
+finding would have been re-filed at the next closure someone thought about; I
+named `clear` in my own filing as having *"no instance in the co-simulation lane
+today"* and treated that as a reason not to press it, which was the same
+enumerate-the-cases-you-can-see error one level down. Cure (2) would have left the
+restriction short of the rule. **The mechanism that produced the gap was a
+restriction enumerated case by case against a span enumerated closure by closure**,
+and only stating the restriction over the span removes it. I record that my own
+cures were the narrower ones because a countersigner who does not say when the
+ruling improved on his filing is not adding a key.
+
+**2. The equivalence, derived by cases before it was enumerated.** The ruling
+asserts that the one-sentence form is equivalent to parts (i)+(ii). I derived it
+first, because an enumeration that agrees with an assertion I have not understood
+is a coincidence I would have no way to size.
+
+Structure of any trace, from the span alone: start characters `S₁ < S₂ < … < Sₙ`;
+the frame opened by `Sₖ` closes at `cₖ`, the **earliest** of the five closure
+events, with `cₖ ≤ Sₖ₊₁`. Take any `Sₖ₊₁`. Exactly three situations exhaust it:
+
+- **(α) `cₖ = Sₖ₊₁`** — the frame was still open and this start character is what
+  closed it. **Part (i) bars it.** And no terminate character lies in
+  `(Sₖ, Sₖ₊₁)`: one there would have been an *earlier* closure, contradicting
+  `cₖ = Sₖ₊₁`. **So the one-sentence form bars it too.**
+- **(β) `cₖ` is a terminate character**, `cₖ < Sₖ₊₁`. Part (i) does not bar (no
+  frame is open). Part (ii) does not bar either: any earlier non-terminate closure
+  `c_j` has the terminate character `cₖ` lying in `(c_j, Sₖ₊₁)`, which closes
+  every interval part (ii) could open. **And the one-sentence form does not bar**,
+  because `cₖ ∈ (Sₖ, Sₖ₊₁)` is a terminate character.
+- **(γ) `cₖ ∈ {error, truncation, clear}`**, `cₖ < Sₖ₊₁`. Part (i) does not bar.
+  Part (ii) bars **iff** no terminate character lies in `(cₖ, Sₖ₊₁)`. And no
+  terminate character lies in `(Sₖ, cₖ)` either — one there would have been the
+  earliest closure and we would be in (β). So *"no terminate in `(cₖ, Sₖ₊₁)`"* is
+  the same condition as *"no terminate in `(Sₖ, Sₖ₊₁)`"*, **which is exactly the
+  one-sentence form's bar.**
+
+`S₁` is excepted by the sentence and is legal under both parts (no frame is open
+and no closure has occurred). **The three cases exhaust the trace and agree in
+each, so the equivalence is a theorem over the span's own structure and not a
+statistical result.**
+
+**And the direction claim — legal→barred and never the reverse — is a containment
+theorem, not a count.** Dropping *"that has already delivered an octet"* only
+**widens** part (i); `{error} ⊂ {error, truncation, clear}` only **widens** part
+(ii); and striking a lift only **removes exemptions**. Every one of the three
+edits moves the barred set outward, so `NEW ⊇ OLD` by construction: **the repair
+cannot admit anything the old rule refused, whatever any enumeration says.** That
+is the property a stimulus restriction must have, and it is worth having as a
+proof rather than as a zero in a report, because a zero is evidence about the
+traces that were enumerated and the proof is about all of them.
+
+**3. The bounded independent check, and it is built a different way from the
+ruling's on purpose.** The ruling enumerates over a **six**-symbol alphabet
+`SToEXC` in which REQ-108's truncation is its own **symbol** `X`. Mine uses
+**five** symbols and models truncation as what the span says it is — an **octet
+count** passing a threshold, so the truncation event is *derived* from the trace
+rather than placed in it, and the threshold is swept (1 and 2) to show the
+derivation and not the constant is doing the work. Traces of length ≤ 9:
+**2,441,405 traces, 4,272,461 start characters judged individually** (a per-start
+comparison, not a per-trace one, which is the stronger claim). Results, at both
+thresholds: **zero mismatches** between parts (i)+(ii) and the one-sentence form;
+**1,019,340** start-character verdicts moved by the repair and **not one** in the
+barred→legal direction. And the three named geometries, judged individually
+(Evidence 2):
+
+| geometry | OLD | NEW | one-sentence |
+|---|---|---|---|
+| oversize with **no** terminate, then a lane-0 start, then a normal frame (`CSG-3`'s own) | legal | **barred** | **barred** |
+| REQ-108's own verification geometry — the same with the oversize frame's terminate present | legal | legal | legal |
+| a start character inside an open frame that has delivered **zero** octets | legal | **barred** | **barred** |
+
+**The middle row is the one the cost of this cure turns on** and it is the reason
+I can countersign without a scope objection: the stimulus REQ-108's verification
+column was written around is untouched, so the repair costs the requirement it
+most nearly reaches exactly nothing.
+
+**4. The reading this countersignature fixes, and it is load-bearing rather than
+pedantic.** Part (ii) bars a start character *"between a closure … and that
+frame's following terminate character"*. Where the closed frame has **no**
+following terminate character anywhere in the trace, two readings are available:
+**(A)** the interval runs to the end of the trace, or **(B)** there is no interval
+and nothing is barred. I ran both. Under (A) the equivalence holds as above. Under
+**(B) the two formulations disagree on 349,617 traces of length ≤ 9** at the first
+swept threshold and on 339,770 at the second (409,229 and 395,159 start characters
+respectively), **always in one direction**:
+the one-sentence form bars and reading (B) does not, on exactly the traces whose
+non-terminate closure is never followed by any terminate character — the smallest
+instance being `S /E/ S`.
+
+Three consequences, in the order that matters:
+
+- **The ruling's zero-mismatch result identifies its reading.** A trace set that
+  contains `SES` cannot report zero mismatches under (B), so (A) is what was
+  checked. **(A) is therefore what I countersign**, and I say so in the row so the
+  reading is on the record rather than inferable from a count.
+- **Nothing rests on the choice for a guard**, because the one-sentence form is
+  the **stricter** of the two everywhere they differ: a producer measured against
+  the sentence conforms to the restriction under either reading. This is the
+  property that makes the closed form worth having, and it is a stronger reason
+  for it than the readability one the ruling gives.
+- **The divergence class is not exotic.** It is a trace that ends with an aborted
+  or truncated frame followed by a frame whose terminate character never comes —
+  which is `CSG-3`'s swallowing hazard in its worst form, the one where no later
+  terminate rescues the sequence. If the architect intends reading (B), that is a
+  fresh finding and takes a narrow round; I do not believe it does, and I sign (A).
+
+**5. A correction of my own record — the struck lift was inert, and my filing said
+otherwise.** `J-dv_lead-0170` §(f) reads: *"Neither bars a start character after
+REQ-108's truncation closure — and the diff's own lift clause goes further"*. The
+first half is right and is the finding. **The second half overstates the lift's
+effect, and the same enumeration measures it: under the reading that ties class
+(f) to a frame our side truncates, the lift never changes a verdict in 2,091,881
+trace instances — not once.** Every start character it purported to lift was
+already unbarred by parts (i) and (ii) as they then stood, because part (i)
+needs an **open** frame and a truncated frame is closed, and part (ii) named only
+the error closure. So the lift's effect was **declaratory**: it advertised a
+licence for stimulus the parts already left legal.
+
+Two things follow and I want both on the record. **The finding's conclusion is
+untouched** — the gap was in the parts, which is exactly where the cure went.
+**And the strike is cheaper than it looks**: striking a clause that selects
+nothing removes no stimulus at all, which is a better argument for striking than
+the one I could have made from my own filing. Bound, stated because a bounded
+check that does not state its bound is a claim: this measures the lift under the
+reading *"a frame our side truncated"*; a whole-trace reading (*"a frame whose
+on-wire extent exceeds 1518 whatever our side did with it"*) is **not** tested
+here, and under it the lift could reach a start character inside a
+still-open over-long frame.
+
+**6. The release claim, checked against my own binding's text — and it releases
+into a stricter position than the one it held.** My binding, quoted from
+`J-dv_lead-0170` §(f): *"I will not narrow either guard for the truncation-closure
+geometry until `CSG-3` is ruled, whatever a later work order's convenience — the
+wide guard is the compensating control while the rule's coverage is short by one
+closure."* It carries a condition (`CSG-3` unruled) and a ground (coverage short).
+**Both are discharged**: the ruling landed, and the restriction is now stated over
+the span. So the binding releases **by its own terms**, and — this is the part
+worth stating — it was never an undertaking to narrow anything; it was an
+undertaking **not** to. Its release removes a prohibition; it commands nothing.
+
+**And the measurement REQ-901's own new text assigns to me, made rather than
+deferred** (*"Whether either producer's guard already implements exactly that is a
+measurement on `test/**` — dv_lead's to make"*). Both guards set an admission flag
+at a start character in XGMII lane 0 or 4, **refuse** a start character while it is
+set, and clear it **only** on a terminate character in the same input word,
+checked **after** the start arm (`ours_run.ml:230`, `:245-262`, `:273`;
+`tb_xgmii_rx_64.v:260`, `:529-533`, `:575-576`). Read as a predicate: *a start
+character is refused iff a start character has been admitted with no terminate
+character since* — which is **exactly** *"every start character follows a terminate
+character"*, the trace's first excepted because the flag initialises false.
+
+The residual width is **one geometry and I name it**: a terminate character and a
+later start character **in the same input word**, which the guards refuse (the
+start arm runs first) and the rule permits. §0.3's minimum inter-frame gap is 12
+octets — more than one 8-lane word — so no conformant stimulus produces it, and
+both producers' own comments already say so at the site. A second candidate is
+not one: a start character outside lanes 0 and 4 is not recognised by either
+guard, and REQ-101/REQ-102 put every start character in lane 0 or 4.
+
+**So: on stimulus conforming to §0.3's gap and the start-lane convention, `FI-4`
+and `FI-6` implement the repaired rule exactly — not wider, not narrower.** Three
+consequences: **nothing needs narrowing to conform**, which is what the ruling
+claims; **for a run that compares nothing MAY be narrowed either**, because the
+guards' refusal set now coincides with the rule's bar set and narrowing would
+admit stimulus the rule bars — the undertaking has become the rule's own
+requirement, which is the strictly stronger position; and **narrowing remains a
+live question only for a record-only run**, where `J-dv_lead-0170` §(e)(5)
+governs (*"It is not self-executing. It does not lift `FI-4` or `FI-6`"*), the
+lane is a separate authorised act with its own review, and the machinery does not
+exist.
+
+**7. Nothing committed moves, measured rather than assumed.** `test/cosim/stimulus_gen.ml`
+carries five builders, all constructed from `Dv_xgmii.Arrival.create` over whole
+frames with an explicit inter-frame gap, and a search for an error character, an
+oversize frame or a runt returns **nothing** (Evidence 4). So every start
+character in the committed corpus already follows a terminate character, and no
+committed stimulus, expectation or report changes legality under the widened
+restriction. **The diff touches no byte of `test/**`** either way, which is the
+order `WO-0078` §6.3 demands and which I re-checked.
+
+**Verdict on item 1: COUNTERSIGNED** — the widened parts (i) and (ii), the struck
+lift, the repaired licence, the one-sentence form, and REQ-108's and REQ-110's
+brought-into-agreement verification columns. **IN FORCE on transcription**, with
+the reading of §4 fixed on the record and no finding filed against any of it.
+
+---
+
+#### (b) The `AP-M04-2` cure and its added prohibition. **NOT CONTESTED.**
+
+The survival claim is struck — the sentence my own §(a) countersignature carved
+out by name — and §7 now carries in its place: **"A bench SHALL NOT build a
+REQ-016 idle-injection wrapper at this module's source interface"**, with the
+gloss *"the first injected cycle **on a required cycle** is an underflow, and a
+monitor measuring L across it measures a frame the injection destroyed."*
+
+**The contest that was available and why I do not take it.** A bench that drives
+REQ-206 **must** withhold a source word on a required cycle — that is the
+stimulus, and it is the whole of family G in my own attack plan (`M04-G1`, `G3`,
+`G5` withhold; `M04-G4` withholds at a cycle that is *not* required and asserts
+silence). A literal reading of *"a bench shall not withhold a word at this port"*
+would bar the module's only REQ-206 coverage. **Three things refute that reading,
+and any one of them is enough**: the sentence's **subject** is a *REQ-016
+idle-injection wrapper*, a named construct and not the act of presenting
+`tvalid` = 0; its **own gloss** keys the hazard to a *required* cycle, which is
+what distinguishes `M04-G4` from `M04-G1` and is the distinction the C-16 diff
+was written to make; and **§9's own condition row and §10's REQ-206 hook
+commission the withheld-word stimulus**, so the wide reading would put this
+specification in contradiction with itself at two sites in the same document.
+
+**One asymmetry I record rather than leave to be found.** My own `WO-0080` bounce
+`BM6` is **wider** than the specification's prohibition — it bars *"the source
+withholds a word mid-frame, **or** an idle-injection wrapper is built"* — and
+deliberately so, because that round commissions no family-G row and a first bench
+that manufactures REQ-206 aborts while claiming conformance coverage is the
+failure I said I would most regret finding late. A round-scoped bounce wider than
+a standing prohibition is not a conflict. **It would become one if `BM6` were ever
+quoted as a standing rule**, and it is not: family G's round lifts it by
+commissioning the stimulus, and the packet says so.
+
+**Verdict on item 2: NOT CONTESTED.** No countersignature is owed, none is
+offered, and **no §13 row is requested** — minting a row nobody asked for is the
+scope-widening I refused in the last round. The non-contest is recorded here and
+is citable as this entry §(b); if the architect wants it visible at SPEC-M04 §13,
+a later round may cite it, which is its call and not mine.
+
+---
+
+#### (c) §0.6's fourth reference-word clause. **COUNTERSIGNED** on the rule, with `FINDING ABS-1` against its stated ground — and the same error convicted in my own instrument.
+
+**First, the owed-ness, verified at the row and not taken from the dispatch.**
+requirements.md §13's row for this clause reads *"**dv_lead's countersignature is
+owed** on it as on every §0.6 diff, and the clause is in force meanwhile, nothing
+resting on it that the module pin did not already decide."* So a signature is owed
+and the clause is not held out of force by its absence — which is the same
+disposition as `AP-M04-1`'s and is the right one for a clause nothing rests on.
+
+**What I verified, three checks, each made before reading the ruling's own
+reasoning:**
+
+1. **The instance count.** The clause says the absence class *"in §12's strobe
+   appendix is REQ-206's `error_underflow` and nothing else"*. I read all
+   **twenty-one** rows of §12 rather than sampling. Every other condition is
+   decided **on** a word: the two that come nearest are `error_ip_truncated`
+   (*"frame ended before IPv4 total length was satisfied"*) and
+   `error_tx_length_mismatch` (*"application supplied fewer … octets than
+   declared"*), and **both are decided on the early `tlast` word** — a word that
+   arrives — which is precisely why neither is an absence. **One instance,
+   confirmed.**
+2. **The ΔC clause.** §0.5 defines **L** in octet times and **ΔC** in cycles, so
+   §0.6's *"the module's latency in cycles (§0.5)"* can only be ΔC, which SPEC-M04
+   §7 pins at **2**; REQ-210's 1-cycle event delay is REQ-210's and not §0.5's,
+   and a reader taking it computes a ceiling one cycle short. **Correct, and the
+   ambiguity it forecloses is one my own `AP-M04-1` filing created** — before that
+   repair M04 had one figure and now it has two, so the clause is repairing a
+   collision my finding caused in a document my finding did not touch.
+3. **The near-edge claim.** §9 pins the pulse on the cycle the word was required
+   and not presented; §0.6's floor is *"not earlier than the cycle on which its
+   condition first becomes decidable"* — the same cycle. So floor, pin and
+   reference word coincide and the ceiling sits ΔC beyond, which is what *"the
+   window carries no independent information"* means, and it is the same
+   disposition §0.6's own no-octet note gives, read with the *"a bound, never a
+   licence"* note that says the pin governs inside the window. **Correct.**
+
+**`FINDING ABS-1` (MINOR, against the stated ground and not against the rule; two
+sites, one of them mine).** The clause's ground reads:
+
+> the three clauses above name no word: the offending frame is cut short by an
+> absence rather than closed by an event on the stream, so the octet the first
+> clause measures from is one that never arrives, and the third clause does not
+> reach it either because the frame did receive octets.
+
+**Those two halves cannot both be true.** Since **2026-08-04** (`0caf023`, the
+ruling that settled this very paragraph) the first clause does **not** measure
+from the frame's *final* octet; it names *"the last octet that frame **received
+while it was open**"*. An underflowed frame **has** received octets — my own row
+`M04-G5` asserts that source word 0's octets reach the wire on an underflow at
+`C + 1`, because REQ-207 forbids dropping an accepted word — and the clause's own
+last half says so. **So the first clause names a word here: the source word
+carrying the last octet accepted before the underflow.**
+
+**What the clause therefore is, and it is not what it says.** Not a hole-filler
+but an **override**: it moves the reference word from the last accepted source
+word to the required cycle — one cycle later, and mid-frame it is always exactly
+one, because §7's throughput bullet requires one XGMII word emitted every cycle
+and pins `tx_tready` = 0 only on the FCS and terminate words, both **after** the
+`tlast` acceptance, so acceptance in the frame body is contiguous and the first
+withheld cycle is the next one.
+
+**And nothing turns on it, which I checked rather than assumed.** With `A` the
+cycle of the last accepted source word: the pin is at `A + 1`; the first clause's
+ceiling is `A + ΔC = A + 2`; the fourth clause's is `A + 1 + ΔC = A + 3`. **The
+pin is inside both**, and the fourth clause's window strictly contains the first
+clause's, so the change can only **loosen** a bound that is already redundant
+against §9's exact pin. **No conformant design changes and no committed
+instrument changes meaning** — M04 has no bench — so the row's **editorial**
+classification survives its ground being wrong, which is why this is MINOR and
+why the clause stays in force.
+
+**The cure is one sentence**: replace the *"name no word"* premise with what the
+clause actually does — the first clause would name the last source word accepted,
+and this clause moves the reference to the condition's own decidability cycle so
+that the window's floor and its reference word are the same event. **Route**:
+architect_docs_lead, spec-diff request via the orchestrator. **Not decided here**,
+on the discipline `AP-M04-1`, `AP-M04-2` and `CSG-3` all used.
+
+**And the same misreading is in my own instrument, which is why this is a finding
+and not an objection.** `AP-xgmii_tx_64` row `M04-G7` (NO-ASSERT) states:
+
+> Its bound is *"the module's latency in cycles after the input word carrying the
+> last octet of the offending frame"*, and an underflowed frame **never receives
+> that octet** — the window has no reference word, so a check against it is not
+> loose, it is undefined.
+
+**Same error, same phrase, mine.** And it is not stale: I wrote it on 2026-08-11,
+**a week after** the gloss that contradicts it landed, which makes it worse than
+the `M14-F1` class — those rows were falsified by a later ruling, this one was
+wrong when written, because I read §0.6's ceiling **sentence** and not the
+four-clause paragraph that defines its terms. **The row's status and conclusion do
+not move**: NO-ASSERT is right, and it is now right on the fourth clause's own
+statement that the window carries no independent information here — a better
+ground than the one I gave it. Its **ground** is repaired at the round that next
+opens `test/attack_plans/**`, which now owes **five** editorial repairs to one
+document.
+
+**Verdict on item 3: COUNTERSIGNED** — the reference word for an absence-reported
+condition, the ΔC-and-never-the-event-delay clause, the no-independent-information
+statement, and the one-instance scope. **`FINDING ABS-1` filed without holding the
+clause out of force**, against one sentence of its ground and one row of my own
+plan.
+
+---
+
+#### (d) The two rows on which no signature is owed, read anyway
+
+- **SPEC-M04 §13's `AP-M04-2` row** states no countersignature is owed and gives
+  the reason (my own §(a) carved the sentence out by name, my §(b) requested the
+  diff). I agree, and §(b) above is my non-contest of the added prohibition.
+- **requirements.md §13's transmit-boundary row** is editorial and answers my own
+  `AP-xgmii_tx_64` §8 item 2 **in the negative, with a closing event named**: a
+  divergence class at the transmit boundary is not writable in that document
+  today, because the four classes stated with a mechanism each cite the vendored
+  *receive* counterpart at a pin and the transmit counterpart is not vendored. **I
+  verified the premise rather than accepting it**: `git ls-files
+  test/third_party/verilog-ethernet/` returns exactly four paths —
+  `COPYING`, `PROVENANCE.md`, `axis_xgmii_rx_64.v`, `lfsr.v` — and no transmit
+  module (Evidence 5). **This moves one of my carry-forwards and I state the
+  move**: what act one restated as *"REQ-901's divergence classes at the transmit
+  boundary need a work order"* is now answered — the answerable event is a
+  **vendoring commit** governed by ADR-0015 D2 and `PROVENANCE.md`, not a spec
+  round, and until it lands **no sign-off packet may cite a transmit-boundary
+  co-simulation result as an anchor for any requirement**. Charter §3 makes
+  differential co-sim a precondition of Phase 1 MAC sign-off, so that is a **gate
+  condition on `SO-xgmii_tx_64`** and it is now stated in the requirement itself
+  rather than only in my plan. Not contested; no signature owed; the sequencing
+  (c) → (a) → (b) of `J-dv_lead-0171` Open-question 5 is unchanged and its third
+  member is now answered rather than open.
+
+---
+
+#### (e) What I refused
+
+- **I refused to widen my write set.** This is a countersignature round: the
+  signatures live in this entry, transcription into `docs/specs/**` is the
+  orchestrator's clerical act (PROTOCOL §6 and the 2026-08-03 / 2026-08-10 /
+  2026-08-11 precedents), and **not one byte of `test/**` or `agents/handoffs/**`
+  is touched** — including row `M04-G7`, whose ground I have just convicted and
+  could have repaired in the same tree, and including the four repairs already
+  owed to that document.
+- **I refused to decide `FINDING ABS-1`.** It is mine; the §0.6 half is the
+  architect's to rule on. A countersigner who rules on his own findings is not a
+  second key, which is the same sentence I wrote when I refused to decide
+  `AP-M04-2` and `CSG-3`.
+- **I refused to narrow `FI-4` or `FI-6`.** The binding that forbade it has
+  released, and I still do not narrow them: for a comparing run the rule now
+  forbids it, and for a record-only run the lane does not exist and the act is a
+  separate authorisation. **A released undertaking is not an instruction.**
+- **I refused to read RTL or reference source.** The reference-side claim inside
+  §(a) is carried from my own countersigned derivation at `J-dv_lead-0162` and is
+  labelled as carried at the point of use.
+- **I refused to reproduce the ruling's own counts.** 2,015,538 and 425,673 are
+  results of an enumeration over a different alphabet and a different length
+  bound; the only check I can make of the figures themselves is that
+  **2,015,538 is exactly `Σ 6ⁿ` for n = 1 … 8**, which is the size of the trace
+  space the ruling states it swept, so the count is at least consistent with its
+  own declared domain (Evidence 3). The **claims** are what I verified, twice and
+  independently; the counts are the ruling's.
+- **Harvest: none owed, and I say so rather than leave silence.** PROTOCOL §7 and
+  charter §8 attach the note to every module sign-off and every phase gate; this
+  is neither. The span opened at `J-dv_lead-0168` and **this entry joins it**, so
+  it now runs `-0168` … `-0173` across two volumes (act one, Reasoning 6), and all
+  six are mined at the next `SO-` or gate.
+
+### Actions
+
+1. Read the charter and PROTOCOL in full; ran the head check; read the diff hunk
+   by hunk and then every repaired passage in place at HEAD, including all three
+   new §13 rows.
+2. **Derived the equivalence by cases** (§(a)2) and **wrote and ran the
+   enumeration and the two probes** (Evidence 2, 3) — all of it **before** reading
+   `J-architect_docs_lead-0039`, so that agreement is agreement and the one
+   disagreement is not a misreading of the ruling's own words.
+3. **Measured both admission guards at HEAD** against the repaired rule, and
+   measured the committed stimulus corpus for anything the widened restriction
+   reaches (Evidence 4).
+4. Read §12's twenty-one strobe rows one by one; derived the two window ceilings
+   and compared them against §9's pin (§(c)).
+5. Read `AP-xgmii_tx_64` family G in full and `WO-0080` §9.4(1)/`BM6`, to test the
+   added prohibition against the stimulus my own plan commissions (§(b)).
+6. Wrote this entry, carrying **two countersignatures, one non-contest, one new
+   finding and one correction of my own record**. **No `git add`, no `git
+   commit`, no `git push`, no git write of any kind.**
+
+### Evidence
+
+Reproducible from a checkout at this commit. The enumeration scripts read **no
+repository file** — the rules are transcribed into them from REQ-901's own text —
+so they re-run anywhere. `dune` is absent from this container (**ADR-0005**,
+re-checked: `which dune` returns nothing) and **no OCaml lands in this round**.
+
+**1. The head check and the mid-round move** (Trigger):
+
+```
+$ git rev-parse HEAD                       # at spawn, before reading anything
+9535979e6c388183bcb04d1c6c661e8c9dc727e9
+$ git rev-parse HEAD                       # at the final state check
+48077aaf87784235bd869ae553e698e6af0d7247   # NOT the spawn-head
+$ git log --oneline 9535979..HEAD
+48077aa The board learns the loop runs whole on module two: …
+$ git diff --stat 9535979..HEAD
+ agents/journals/claude_orchestrator_agent.v02.md | 21 +++++++++++++++++++++
+ tasks/BOARD.md                                   |  2 ++
+$ git diff --stat 9535979..HEAD -- docs/specs/ test/ agents/handoffs/ \
+      agents/journals/claude_dv_lead_agent.v08.md
+                                           (empty — nothing this round measures moved)
+$ git show HEAD:agents/journals/claude_dv_lead_agent.v08.md | sha256sum
+cde9c506b85c56630dd68eac6f6bc51b3108033d222fb5267d9671d310463723  -
+$ git show HEAD:agents/journals/claude_dv_lead_agent.v08.md | wc -c
+353776
+$ git status --short
+?? agents/journals/claude_dv_lead_agent.v09.md
+?? test/xgmii_tx_64/                       # the declared sibling's, not mine
+```
+
+Act one's chain header is **unchanged against the new parent**, and every
+specification measurement below is unaffected **because** the two paths that
+moved are not among them.
+
+**2. The equivalence enumeration** (durable logic below; the run used
+`…/scratchpad/csg3_equiv.py` and `…/scratchpad/csg3_probe.py`, **ephemeral**
+paths stated as such per ADR-0003/F5):
+
+```python
+# alphabet: S start, T terminate, E error character, C clear, o octet.
+# REQ-108's truncation is NOT a symbol: the open frame closes by truncation on
+# the octet whose arrival takes its received count past THRESH (swept 1 and 2).
+# span: open from S until the earliest of T / E / a later S / truncation / C.
+# NEW (i) no S inside an open frame
+#     (ii) no S between a non-terminate closure and that frame's following T,
+#          the interval running to end-of-trace when no T follows  [reading A]
+# OLD (i) no S inside an open frame THAT HAS DELIVERED AN OCTET
+#     (ii) no S after an /E/ closure before that frame's following T; + class-(f) lift
+# SENTENCE  every S follows a T, the trace's first excepted
+for L in range(1, 10):
+    for t in product("STECo", repeat=L):
+        assert barred_new(t) == barred_sentence(t)        # per START CHARACTER
+        assert not (barred_old(t) - barred_new(t))        # never admits more
+```
+
+Observed (both thresholds, identical verdicts):
+
+```text
+THRESH=1  maxlen=9
+  traces enumerated              : 2441405
+  start characters judged        : 4272461
+  parts(i)+(ii) vs one-sentence  : AGREE on every start character
+  moved legal->barred            : 1019340
+  moved barred->legal            : NONE
+THRESH=2  maxlen=9   traces 2441405 | starts 4272461 | AGREE | 990422 | NONE
+```
+
+Named geometries, judged individually (`SooSoT`, `SooTSoT`, `SST` in this
+alphabet — the second `o` is what trips truncation at THRESH = 1):
+
+```text
+SooSoT   NEW bars [3]  one-sentence bars [3]  AGREE   OLD bars []     <- CSG-3's geometry
+SooTSoT  NEW bars []   one-sentence bars []   AGREE   OLD bars []     <- REQ-108's verification geometry
+SST      NEW bars [1]  one-sentence bars [1]  AGREE   OLD bars []     <- the zero-delivered start
+SoSoT    NEW bars [2]  one-sentence bars [2]  AGREE   OLD bars [2]
+SoESoT   NEW bars [3]  one-sentence bars [3]  AGREE   OLD bars [3]
+SoETSoT  NEW bars []   one-sentence bars []   AGREE   OLD bars []
+SoCSoT   NEW bars [3]  one-sentence bars [3]  AGREE   OLD bars []     <- the `clear` closure part (ii) newly names
+SoTSoT   NEW bars []   one-sentence bars []   AGREE   OLD bars []     <- the conformant control
+```
+
+**The lift probe** — over the same 2,091,881 trace instances containing a start
+character, the number of traces on which the class-(f) lift changes the OLD
+verdict is **0**: it selected nothing (§(a)5, with its stated bound).
+
+**3. The reading probe** (`…/scratchpad/csg3_reading.py`, ephemeral):
+
+```text
+READING B (bar only where a following terminate character exists):
+  THRESH=1  349617 traces disagree with the one-sentence form (409229 start characters)
+  THRESH=2  339770 traces disagree (395159 start characters)
+  direction: the one-sentence form bars and READING B does not, in every case;
+             smallest instances SES, SCS, SSES, SSCS
+```
+
+and the ruling's own domain size, checked as an identity rather than re-run:
+`Σ 6ⁿ, n = 1 … 8 = 6 + 36 + 216 + 1296 + 7776 + 46656 + 279936 + 1679616 =`
+**2,015,538**, exactly the figure reported for a length-1…8 sweep of `SToEXC`.
+
+**4. The guards and the committed corpus, measured at HEAD:**
+
+```sh
+sed -n '245,262p;273p' test/cosim/ours_run.ml        # FI-4: refuse while open; clear on terminate
+sed -n '529,533p;575,576p' test/cosim/tb_xgmii_rx_64.v # FI-6: the same, same order
+grep -c "Arrival.create" test/cosim/stimulus_gen.ml    # 19 (five builders)
+grep -n "0xFE\|oversize\|1600\|runt" test/cosim/stimulus_gen.ml   # (no output)
+```
+
+Observed: `ours_run.ml:249-255` raises on a start character while `admission_open`
+is set; `:273` is `if !admission_open && has_terminate word then admission_open :=
+false;` — **terminate only**, checked **after** the start arm;
+`tb_xgmii_rx_64.v:533` and `:575-576` mirror both. The stimulus generator's five
+builders are whole frames scheduled through `Arrival.create` with an explicit
+inter-frame gap and contain **no error character, no oversize frame and no runt**,
+so no committed stimulus is reached by the widened restriction.
+
+**5. The transmit-boundary premise:**
+
+```sh
+$ git ls-files test/third_party/verilog-ethernet/
+test/third_party/verilog-ethernet/COPYING
+test/third_party/verilog-ethernet/PROVENANCE.md
+test/third_party/verilog-ethernet/axis_xgmii_rx_64.v
+test/third_party/verilog-ethernet/lfsr.v
+```
+
+**Four paths, no transmit module** — the paragraph's premise holds at HEAD.
+
+**6. §12's row count**, for §(c)1's one-instance claim: twenty-one strobe rows
+(`sed -n '976,998p' docs/specs/requirements.md | grep -c '^| \`error'` → `21`),
+read individually; the only absence-conditioned condition is `error_underflow`.
+
+**7. Independence.** `git status --short` at return lists exactly one path of
+mine, `agents/journals/claude_dv_lead_agent.v09.md`, beside the declared
+sibling's untracked `test/xgmii_tx_64/`, which belongs to neither of my commits
+(Evidence 1; act one's Evidence 6 for why that distinction is mine to make by
+hand). **No `git add`, no `git commit`, no `git push`, no git write of any kind**;
+the commit that moved HEAD is the orchestrator's and I neither made it nor merged
+it.
+
+### Outcome
+
+**Two countersignatures (both COUNTERSIGNED), one non-contest, one new MINOR
+finding, one correction of my own record.** DoD for a countersignature round: met.
+Nothing is contested; the REQ-901 diff enters force on transcription of Row D.
+
+**THE COUNTERSIGNATURE TEXTS — written for the orchestrator to transcribe
+verbatim into `docs/specs/requirements.md` §13 (columns: Date | REQ | Change |
+Class | Commissioned by | Journal). The orchestrator fills its own journal id in
+the last column. Authority lives in this entry; the rows are clerical and commit
+under `Agent: orchestrator`.**
+
+**Row D — REQ-901, REQ-108, REQ-110. THE NORMATIVE ONE: IN FORCE from this row and not before.**
+
+```
+| 2026-08-11 | REQ-901, REQ-108, REQ-110 | **Countersignature transcribed — the restriction restated over the span, the widened parts (i) and (ii), the struck class-(f) lift, the repaired record-only licence, the one-sentence form and REQ-108's and REQ-110's brought-into-agreement verification columns are IN FORCE from this row.** dv_lead COUNTERSIGNED at `9535979` after deriving the equivalence and then checking it independently. **(1) Derivation, not acceptance**: over the span's own structure three cases exhaust every start character — the frame is still open (part (i) bars; and no terminate can lie between the two starts, else it would have been the earlier closure, so the sentence bars too); the frame closed on its **terminate** character (neither part bars, and that terminate closes every interval part (ii) could open, so the sentence does not bar); the frame closed on a **non-terminate** closure (part (ii) bars exactly when no terminate lies between the closure and the start, which is the same condition as no terminate between the two starts, because a terminate before the closure would have been the closure) — so the one-sentence form is equivalent to parts (i)+(ii) as a **theorem**, the trace's first start excepted under both. **The direction claim is likewise a containment theorem and not a count**: dropping *"that has already delivered an octet"* only widens part (i), `{error} ⊂ {error, truncation, clear}` only widens part (ii), and striking a lift only removes exemptions — so the repair **cannot** admit anything the old rule refused, by construction. **(2) A bounded independent enumeration, built differently from the ruling's on purpose**: five symbols with REQ-108's truncation **derived from an octet count** against a swept threshold rather than placed in the alphabet as a symbol; traces of length ≤ 9; **2,441,405 traces and 4,272,461 start characters judged individually — zero mismatches with the one-sentence form at either threshold, 1,019,340 start-character verdicts moved at the first (990,422 at the second) and not one in the barred→legal direction at either.** `CSG-3`'s own geometry (oversize with **no** terminate, then a lane-0 start, then a normal frame) moves legal→barred; **REQ-108's own verification geometry — the same with the oversize frame's terminate present — stays legal**, so the repair costs the requirement it most nearly reaches nothing; the zero-delivered start moves legal→barred. **(3) The reading this signature fixes**: part (ii)'s interval runs to the **end of the trace** where the closed frame has no following terminate character. Under the literal alternative the two formulations disagree on **349,617** traces of length ≤ 9, always with the one-sentence form the stricter (smallest instance `S /E/ S`), so the ruling's zero-mismatch result identifies its reading and this is the reading countersigned; nothing rests on the choice for a producer, because a guard measured against the one-sentence form conforms under either. **(4) A correction of record, dv's own**: `J-dv_lead-0170` §(f) said the class-(f) lift *"goes further"* than the parts; measured over the same enumeration under the reading that ties class (f) to a frame our side truncated, **the lift never changes a verdict — it selected nothing**, the geometry being already unbarred by the parts as they stood. The finding's conclusion is untouched — the gap was in the parts, which is where the cure went — and the strike is cheaper than dv's own filing implied. **(5) The guard measurement this diff assigns to dv, made**: `FI-4` (`test/cosim/ours_run.ml:245-262`, `:273`) and `FI-6` (`test/cosim/tb_xgmii_rx_64.v:529-533`, `:575-576`) refuse a start character while an admission flag set at the previous start character is still set, and clear it **only** on a terminate character — which is exactly *"every start character follows a terminate character"*, the trace's first excepted. The single residual width is a terminate character and a later start character **in one input word**, which §0.3's 12-octet minimum gap puts outside conformant stimulus. **So the release claim holds and is stronger than stated**: dv's self-binding (*"I will not narrow either guard for the truncation-closure geometry until `CSG-3` is ruled"*) releases by its own terms, and it releases into a **stricter** position — for a run that compares, narrowing is now barred by this rule itself rather than by dv's undertaking. Narrowing remains a question only for a **record-only** run, whose lane is a separate authorised act and does not exist. **No committed artefact moves**: `test/cosim/stimulus_gen.ml`'s five builders are whole frames with an explicit inter-frame gap and contain no error character, no oversize frame and no runt | transcription — the normative diff of the row above enters force here; this row itself moves no text. The countersigned reading of part (ii) is recorded in it: the interval runs to end-of-trace where no terminate character follows the closure | dv_lead, `FINDING CSG-3` (MATERIAL), filed at `J-dv_lead-0170` §(f) and ruled at `J-architect_docs_lead-0039`; countersignature of record `J-dv_lead-0173` §(a) | `J-orchestrator-NNNN` |
+```
+
+**Row E — §0.6's fourth reference-word clause (carry-forward C-5). The clause was already in force; this row records the countersignature it was owed.**
+
+```
+| 2026-08-11 | §0.6 (**the window's reference word, fourth clause**) | **Countersignature transcribed — §0.6's fourth reference-word clause is countersigned, with one MINOR finding against its stated ground and none against its rule.** dv_lead COUNTERSIGNED at `9535979` on the clause's operative content — the reference word for a condition reported on the **non-arrival** of an input word is the cycle the word was required and not presented; the ceiling adds §0.5's word delay ΔC and **never** an event delay a module spec may also pin; and the window carries no independent information at this module — after three checks made at the source. **(1) The instance count**: all twenty-one rows of §12 read one by one, and `error_underflow` is the only condition that is an absence; the two nearest candidates, `error_ip_truncated` and `error_tx_length_mismatch`, are both decided **on** the early `tlast` word, a word that arrives. **(2) The ΔC clause**: §0.5 defines L in octet times and ΔC in cycles, so *"the module's latency in cycles (§0.5)"* can only be ΔC = 2, and REQ-210's 1-cycle event delay is REQ-210's — the collision being one dv's own `FINDING AP-M04-1` created in a document it did not touch. **(3) The near-edge claim**: §9's pin, §0.6's floor and the new reference word are **the same cycle**, so the window adds nothing and the pin governs inside it (§0.6's own *"a bound, never a licence"*). **One MINOR finding filed without holding the clause out of force — `FINDING ABS-1`, against the clause's stated ground, at two sites of which one is dv's own.** The ground reads *"the three clauses above name no word … the octet the first clause measures from is one that never arrives, and the third clause does not reach it either because the frame did receive octets"*, and those halves cannot both hold: since **2026-08-04** (`0caf023`) the first clause names *"the last octet that frame **received while it was open**"*, not the frame's final octet, and an underflowed frame **has** received octets — REQ-207 forbids dropping an accepted word, and `AP-xgmii_tx_64` row `M04-G5` asserts source word 0's octets reach the wire on an underflow at `C + 1`. The first clause therefore names a word here (the source word carrying the last octet accepted), so **this clause is an override rather than a hole-filler**: it moves the reference one cycle later, to the condition's own decidability cycle. **Nothing turns on it and the editorial class survives, checked rather than assumed**: with `A` the cycle of the last accepted source word the pin is at `A + 1`, the first clause's ceiling is `A + 2` and this clause's is `A + 3`, so the pin lies inside both and the change can only loosen a bound already redundant against §9's pin. **The cure is one sentence** — state what the clause does (move the reference to the decidability cycle so that the window's floor and its reference word are one event) instead of denying that the first clause reaches this class. **And the identical misreading is in dv's own instrument, filed against dv in the same act**: `AP-xgmii_tx_64` row `M04-G7` says *"an underflowed frame never receives that octet — the window has no reference word"*, written on 2026-08-11, a week after the gloss it contradicts, so wrong when written rather than made stale. That row's NO-ASSERT status and conclusion do **not** move and are now carried by this clause's own no-independent-information sentence; its ground is repaired at the round that next opens the plan | transcription — no normative text moves in this row; it records that the countersignature §13 says is owed on this clause is paid, with `ABS-1` outstanding against one sentence of the clause's ground (architect_docs_lead's to rule) and one row of dv's own attack plan (dv's to repair) | carry-forward **C-5** (SPEC-M04 §11.3's deferral) and dv_lead's `AP-xgmii_tx_64` §8 item 3; countersignature of record `J-dv_lead-0173` §(c) | `J-orchestrator-NNNN` |
+```
+
+**No row is offered for SPEC-M04 §13's `AP-M04-2` cure and none is owed** (§(b)):
+the added bench prohibition is **NOT CONTESTED**, on the reading that its subject
+is a REQ-016 idle-injection wrapper and not the act of withholding a required
+word — a reading forced by the sentence's own *"on a required cycle"* gloss and by
+§9's and §10's own commissioning of REQ-206 stimulus. **Nor for the
+transmit-boundary row**, which is editorial and which I verified rather than
+merely read (§(d)).
+
+**Handoff.** No packet is written this round; the write set is this journal file
+alone. The two rows above are the signatures of record.
+
+### Open-questions
+
+1. **`FINDING ABS-1` (MINOR, new, mine).** §0.6's fourth clause states a ground
+   its own first clause refutes, and `AP-xgmii_tx_64` row `M04-G7` states the same
+   thing in the same words. **Route**: architect_docs_lead for the §0.6 sentence;
+   the plan row is mine and rides with the repairs at item 2. **Not blocking**:
+   the rule is right, the class is editorial, and no design or instrument moves.
+2. **The `AP-xgmii_tx_64` repair debt is now FIVE**, all editorial, all carried by
+   the round that next opens `test/attack_plans/**`: `M04-B2`/`M04-C4`'s poison
+   quantifier (`FINDING AP-M04-3`); `M04-J3`'s quotation of REQ-210's struck
+   opening clause; §2 obligation 5 and §8 item 3's superseded `C-5` deferral; the
+   §9 change-log row for families A/B/C's landed status; and **new this entry**,
+   `M04-G7`'s ground. Act one predicted a fifth might be added and did not
+   predict which.
+3. **`FI-4` and `FI-6` are not narrowed, and the reason has changed.** The
+   self-binding released; the guards stay as they are because for a comparing run
+   the repaired rule now requires exactly what they enforce. The next round that
+   proposes touching either must say which kind of run it is for, and a
+   record-only run needs the lane at item 5 of `J-dv_lead-0170`'s
+   Open-questions, which still does not exist.
+4. **`SO-xgmii_rx_64.md`'s Stage-3 gate table** still records condition **(c)
+   UNMET**; it became MET at `36e3a4d`. Unchanged by this round, still owed at
+   the round that next opens the `SO-`, and that round should also record that
+   `FINDING ECS-3`'s guard-width subject is discharged **for a comparing run**
+   and survives only for a record-only one.
+5. **The transmit boundary is a gate condition, now stated in the requirement.**
+   No sign-off packet may cite a transmit-boundary co-simulation result as an
+   anchor for any requirement until the transmit counterpart is vendored at a pin
+   (ADR-0015 D2, `PROVENANCE.md`) — verified at four vendored paths, none of them
+   a transmit module. Charter §3 makes differential co-sim a precondition of
+   Phase 1 MAC sign-off, so this binds `SO-xgmii_tx_64` and it is the orchestrator's
+   to sequence: the vendoring commit first, then the harness, then the classes.
+6. **Standing and untouched by this round**: `DVC-1a`; the transmit-side
+   conservation monitor (`AP-M04` §7 T-2); `AP-ip_eth_rx_64`'s `M14-F1`/`F2`/`F3`;
+   `WO-0080`'s return and its `RV-`; `AP-M04` §8 items 2 and 4–6.
+
+### Files-in-this-commit
+- (none)
