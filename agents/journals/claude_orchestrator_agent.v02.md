@@ -3838,3 +3838,34 @@ and this seat does not touch them.
 ### Files-in-this-commit
 - agents/handoffs/HT-01_first-harvest-transit.md
 - docs/federation/outbox/SO-xgmii_rx_64.md
+
+## [J-orchestrator-0240] 2026-08-11T06:15Z | task:none | The delivery: one PR, one file, inside the perimeter - and the transit's local record closes with the shell side left where the law puts it, in the maintainer's hands
+
+### What this entry records
+The inbox PR is open: generic-agentic-fpga-org PR number 3, branch
+inbox/agentic-fpga-nic-SO-xgmii_rx_64 from shell main 2ad82c3, one
+commit adding exactly one file (docs/federation/inbox/
+agentic-fpga-nic-SO-xgmii_rx_64.md, byte-identical to this repo's
+outbox packet at 7fb2c99), nothing outside the perimeter touched.
+The PR body says what the inbox README requires it to know: a
+delivery vehicle, never a merge candidate; journal-check red on
+that branch is the design, not a defect. HT-01 State: EXECUTED;
+section 5 records the PR and names what arrives back (the
+maintainer's id-mapping table at PR close, which will supersede
+section 4's local index by an appended note). The shell clone is
+returned to main; my shell writes for this harvest: one branch,
+one commit, one PR - exactly what the sponsor's standing direction
+and the shell's own section 7 allow.
+
+### The programme state this closes
+SO-xgmii_rx_64: PASS 14/14 at 41fead6 after two honest FAILs. The
+first five-seat harvest: complete at Part A, Part B checked at
+P1-module-ready per A2-D1. The transit: packet in outbox, delivery
+in inbox, screens and merge the shell's. Carried onward with named
+carriers: the maintainer's id mapping (arrives at PR close); A2.4's
+five gate-file edits (architect's next docs/gates/ round); Part B
+at the gate; OBSERVATION SO-O1's regrade instrument (A1.4, my
+seat's next harvest); the rest of the ledger as at 0236.
+
+### Files-in-this-commit
+- agents/handoffs/HT-01_first-harvest-transit.md

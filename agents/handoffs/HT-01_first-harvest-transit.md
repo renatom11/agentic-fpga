@@ -1,6 +1,6 @@
 # HT-01 — The first harvest transit (collation record)
 
-- **State**: PACKET IN OUTBOX — §3/§4 done, packet at `docs/federation/outbox/SO-xgmii_rx_64.md`; the inbox PR is the remaining act (§5)
+- **State**: EXECUTED — the inbox PR is open; the shell side (screens, transcription, id mapping, hand merge) is the maintainer's (§5)
 - **Author**: orchestrator, as collator (ADR-0018 §4.1; Amendment A2 in force at
   `41fead6`, acceptance act `J-orchestrator-0235`)
 - **Feeds**: the programme's first shell write under ADR-0018 §4.2 — the generic
@@ -169,7 +169,19 @@ The shell's law reshaped the delivery, and the reshape is recorded here:
   touching outside the inbox directory, and transcription into LESSONS is the
   maintainer's act, not the contributor's.
 
-## 5. The shell commit
+## 5. The shell delivery — executed 2026-08-11
 
-OPEN — recorded when the inbox PR exists (repo, branch, PR number, one commit
-SHA).
+- **PR**: <https://github.com/renatom11/generic-agentic-fpga-org/pull/3> — one
+  PR, one file, `docs/federation/inbox/agentic-fpga-nic-SO-xgmii_rx_64.md`,
+  byte-identical to this repo's `docs/federation/outbox/SO-xgmii_rx_64.md`
+  (7fb2c99); branch `inbox/agentic-fpga-nic-SO-xgmii_rx_64` from shell main
+  `2ad82c3`; nothing outside the perimeter touched.
+- **What this PR is not**: a merge candidate. Its commit carries no shell
+  journal entry by design; the maintainer stages, screens, transcribes with
+  fence-allocated final ids, merges the staging branch by hand, and closes
+  the PR with the landing commits and the id-mapping table (FEDERATION §8.1).
+  When that mapping arrives, it supersedes §4's local provisional index and
+  is recorded beside this section by an appended note.
+- **The one-commit rule**: this repo's side of the harvest transit is the
+  packet's outbox commit; the shell's side is whatever protocol-conforming
+  commits its maintainer lands — counted at the shell, per its own law.
