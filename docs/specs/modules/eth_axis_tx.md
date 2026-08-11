@@ -67,7 +67,7 @@ transmit chain, its `tready` towards its payload source is legitimate, and
 | REQ-001 | One `clock`, shared with the receive path (REQ-018 keeps the XGMII boundary simulation-only, so there is no second domain). |
 | REQ-002 | Payload input and frame output are 64-bit `Axi64` streams, at most one word per cycle each. |
 | REQ-003 | Does not bind M07's ports — but REQ-208 does: nothing here may reach back into the receive datapath, and nothing does, because M07 has no receive-side port. |
-| REQ-005 | Does not bind M07 (not a receive-path module). Its analogue is §7's pinned one-cycle constant, which no requirement obliges but which is stated so that M09's and M04's cadences compose. |
+| REQ-005 | Does not bind M07 (not a receive-path module). Its analogue is §7's **two** pinned constants — the 1-cycle event delay to output word 0 and the per-octet latency L = 22 — which no requirement obliges but which are stated so that M09's and M04's cadences compose. M07's per-octet constant is single-valued on a **gapless** stimulus only: §7 records that M07 fails §0.5's straddle test, so REQ-005's tagger assertion would fail a conformant design under injection and is not available here even by analogy. |
 | REQ-007, REQ-013 | `tuser`[0] on the payload's `tlast` word is copied to the frame's `tlast` word and is **not** acted on: M07 transmits the frame regardless, which is REQ-013's "no module drops a frame solely because this bit is set". |
 | REQ-008 | M07 owns **no** strobe: it detects no condition (§9). |
 | REQ-009 | Synchronous `clear`: `tx_tvalid` = 0 and `payload_tready` = 0 while `clear` = 1 and on the first cycle after; a frame in flight is abandoned with no `tlast` (§7). |
@@ -331,26 +331,95 @@ rely on it.
 
 ## 7. Timing contract
 
-- **Latency.** Pinned at **1 cycle**: the frame's first output word is emitted
-  on the cycle after M07 accepts the frame's first payload word. The two
-  measurement events are the cycle on which `payload_tvalid` and
-  `payload_tready` are both 1 for the frame's first payload word, and the cycle
-  on which `tx_tvalid` is 1 for that frame's first output word. Both sit at
-  octet position 0 of their words, so the figure is exactly 8 octet times and
-  not a rounding.
+- **Latency. Two constants, and naming which is which is the requirement.** M07
+  inserts fourteen octets ahead of a payload that arrives word-aligned, so the
+  delay to the word it **inserted** and the delay of an octet that **entered** are
+  different quantities with different values (requirements.md §0.5's
+  inserting-module clause and its output offset q). Both are pinned here; neither
+  may be measured against the other's figure.
+
+  | Quantity | Value | The two events it is measured between |
+  |---|---|---|
+  | **Event delay** | **1 cycle = 8 octet times** | the cycle on which `payload_tvalid` and `payload_tready` are both 1 for the frame's first payload word, and the cycle on which `tx_tvalid` is 1 for **output word 0** |
+  | L (octet times), §0.5 | **22** | the octet time of a payload octet at the `payload` port, and the octet time of that same octet on the `tx` stream |
+  | h (octet times) | **0** | — |
+  | q (octet times), §0.5's output offset | **6** | the position of the frame's first *input-derived* octet within the output word ΔC names; 14 mod 8 |
+  | Word delay ΔC = (L + h − q)/8 | **2** cycles | the cycle of the payload word named by the measurement event, and the cycle of the first output word carrying an octet **of the frame** — **output word 1**, not output word 0 |
+
+  **Why h = 0 and why ΔC counts to output word 1.** M07 removes nothing from the
+  front of the frame, and the fourteen octets it inserts entered on no input, have
+  no input octet time and are not octets of the frame — so §0.5's front offset is 0
+  and its output event is the first output word carrying an octet of the frame.
+  Output word 0 carries none: §6.1 makes it a function of the header record alone.
+  The first output word carrying an octet that entered at the `payload` port is
+  **output word 1**, at cycle C + 2, and its first such octet sits at byte position
+  6, which is q.
+
+  **L = 22, derived, and constant at every octet, every length and every content.**
+  Payload octet k is accepted in payload word ⌊k/8⌋ at cycle C + ⌊k/8⌋ at byte
+  position k mod 8, so its input octet time is 8C + k. It leaves as frame octet
+  14 + k, in output word ⌊(14 + k)/8⌋ at byte position (14 + k) mod 8 (§6.1), and
+  output word n leaves at C + 1 + n — so its output octet time is
+  8·(C + 1 + ⌊(14 + k)/8⌋) + ((14 + k) mod 8) = 8C + 8 + 14 + k, and the difference
+  is **22** for every k. By the identity, 8·2 − 0 + 6 = 22; and (L + h − q) = 16 is
+  a multiple of 8, which is what §0.5 requires of every conformant module. **Read
+  without the output offset the identity returns 16 and contradicts the
+  derivation** — the term exists because M07's insertion is 14 and not a whole
+  number of words, and requirements.md §13's 2026-08-11 row records why §0.5 took a
+  term rather than a scope.
 
   M07 is not a receive-path module: requirements.md §1.1 allocates it no ceiling
-  and REQ-006's budget does not contain it. **No requirement constrains the
-  value of this constant** — only that this specification states one, so that
-  M09's grant cadence and M04's 11-cycle frame period compose against a known
-  figure. It is 1 cycle because output word 0 is a function of the header record
-  alone and a registered output cannot do better; changing it later is an
-  ordinary spec diff with no budget consequence.
+  and REQ-006's budget does not contain it, so REQ-019 has no instance here and
+  neither figure is compared against anything. **No requirement constrains the
+  value of either constant** — only that this specification states each, so that
+  M09's grant cadence and M04's 11-cycle frame period compose against known
+  figures. The event delay is 1 cycle because output word 0 is a function of the
+  header record alone and a registered output cannot do better; changing it later
+  is an ordinary spec diff with no budget consequence, and L moves with it by 8
+  octet times per cycle.
 
-  Measured with `tx_tready` held 1 throughout, exactly as REQ-210 measures M04's
-  constant with the gap obligation already satisfied. A downstream stall delays
-  everything by the number of stalled cycles and is outside this constant's
-  domain.
+  Both are measured with `tx_tready` held 1 throughout, exactly as REQ-210
+  measures M04's two constants with the gap obligation already satisfied. A
+  downstream stall delays everything by the number of stalled cycles and is
+  outside both constants' domain.
+
+  **A bench SHALL NOT assert 8 octet times *per octet* at this port.** A
+  conformant M07 delivers 22 at every payload octet of every frame, so that
+  assertion fails every conformant design — which is the whole of
+  `FINDING AP-M04-1`'s class, met here at its fourth site. Where the per-octet
+  latency is asserted at all it is asserted against **22**, and the tagger's domain
+  is the **payload** octets only: the fourteen header octets entered on no input
+  and have no input octet time.
+
+- **What survives idle injection, and what does not** (§0.5). M07 **passes** the
+  late-decision test — its input carries `tkeep`, `tlast` and `tuser`[0] in band,
+  so the evidence word and the last-octet word name the same input word at every
+  stimulus — and **fails** the straddle test: (h − q) = −6 ≢ 0 (mod 8), which is
+  §6.1's own statement that output word n ≥ 2 is assembled from payload words
+  n − 2 and n − 1. **So L = 22 is a gapless constant only, and a monitor SHALL NOT
+  demand a single per-octet L on an injected run at this module**: k idles injected
+  between two payload words give one output word two latencies, 22 and 22 + 8k, and
+  REQ-011 forbids resolving that by splitting the word. This is the same verdict
+  M06 carries for the same structural reason (SPEC-M06 §7) — M07 is M06's
+  realignment run backwards, and a realignment straddles in either direction.
+
+  What is gap-invariant is the delay from each output event's **deciding input
+  word** D, and that is what REQ-016's wrapper asserts here (§10). With
+  J = ⌈P/8⌉ and W = ⌈(14 + P)/8⌉ as §6.1 defines them:
+
+  | Output event | D — deciding input word | Delay from D |
+  |---|---|---|
+  | output word 0 | payload word 0 (the acceptance) | 1 cycle |
+  | output word n, 1 ≤ n ≤ J | payload word n − 1 | 2 cycles |
+  | output word J + 1 (exists iff W = J + 2) | payload word J − 1 | 3 cycles |
+
+  D is payload word n − 1 and not n − 2 because §6.1 fixes an output word's
+  `tkeep`, `tlast` and `tuser`[0] from the **later** of the two payload words it
+  draws on: output word n is the frame's last exactly when payload word n − 1 is
+  the payload's `tlast` word **and** carries at most two octets, which is §6.1's
+  residue rule (W − J = 1 for P ≡ 1 or 2 mod 8, and 2 otherwise) seen from the
+  deciding side. Every one of these delays is unchanged on a gapped stimulus,
+  which is the property §0.5 says a specification pins.
 
 - **Throughput.** One payload word accepted per cycle while `payload_tready` is
   1; one output word emitted per cycle while `tx_tready` is 1. Over a frame M07
@@ -380,9 +449,13 @@ rely on it.
   applies. A monitor written for one and attached to the other reports a defect
   that is not there.
 
-  Idle gaps on the payload input (REQ-016) are tolerated and delay everything by
-  the number of idle cycles. REQ-016's tolerance ends one module later, at M04's
-  source port (REQ-206), and M07 is what makes that safe.
+  Idle gaps on the payload input (REQ-016) are tolerated: M07 does not advance and
+  emits nothing that cycle. **Not "everything is delayed by the number of idle
+  cycles"** — that is true only of the output events whose deciding input word the
+  idles fall at or before, which is why the latency bullet's D table states the
+  delay per event rather than one figure for the module (§0.5, *What survives idle
+  injection*). REQ-016's tolerance ends one module later, at M04's source port
+  (REQ-206), and M07 is what makes that safe.
 
 - **Reset.** While `clear` = 1 and on the first cycle after it returns to 0:
   `tx_tvalid` = 0 and `payload_tready` = 0, and the lanes M04 drives carry idle
@@ -458,7 +531,7 @@ requirements.md §0.6, and M07 has no strobe to re-report it with.
 | REQ-012, REQ-409 | header fields emitted first wire octet first; the ethertype's octet order is the case most often got wrong | §6.1 | REQ-405's octet-for-octet comparison, which includes a MAC field and the ethertype |
 | REQ-014 | `tstrb` ignored in, driven 0 out | §4.2 | protocol monitor; REQ-014's differential run |
 | REQ-015 | one `tlast` per frame; at most 190 output words, the `tlast` word included | §3, §7 | protocol monitor |
-| REQ-016 | payload idle cycles tolerated; M07 does not advance and emits nothing | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles on the payload stream, asserting the output octet sequence is unchanged |
+| REQ-016 | payload idle cycles tolerated; M07 does not advance and emits nothing | §6.1, §7 | idle-injection wrapper at 0, 1 and 7 cycles on the payload stream, asserting **(a)** the output octet sequence is unchanged — the ordered (`tdata`, `tkeep`, `tlast`, `tuser`) tuples, each octet in its own byte position — and **(b)** each output event delayed by exactly the idle cycles injected at or before its deciding input word, against §7's D table. A bench **SHALL NOT** assert a single per-octet latency here: M07 fails §0.5's straddle test (§7), so that assertion fails every conformant design at k ≥ 1 |
 | REQ-021 | frame octet 0 at `tx_tdata`[7:0]; the payload realignment is the inverse of M06's | §6.1 | payload lengths covering every residue modulo 8, asserting the octet string on the wire |
 | REQ-207 | an accepted payload word is always transmitted; `payload_tready` is 0 when M07 cannot accept | §6.1, §7 | drive a continuous source; assert the transmitted octet sequence equals the accepted-word octet sequence exactly once, in order, and that the run of 0 cycles at each frame's end is **W − J + 1** — two or three, never one (C-17(b)) |
 | REQ-208 | M07 has no receive-side port, so no path from here into the receive datapath exists | §3 | inspection of the emitted netlist; REQ-208's top-level test |
@@ -502,3 +575,4 @@ interface.
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
 | 2026-08-02 | Drain count corrected from W − J to **W − J + 1** (two or three cycles) in §6.1, §6.2's `Drain` row and §7's throughput bullet; §8 gains the composed figure and its tie to SPEC-M04's C+8 cycle; §10's REQ-207 hook gains the prohibition (ledger **C-17(b)**) | no | none — §6.1's cycle table already showed three zero cycles for the 46-octet frame; the prose contradicted it | `J-architect_docs_lead-0006` |
+| 2026-08-11 | **`C-RL-8` UPHELD — §7 pinned an event delay and printed it as a latency, at the fourth site of `FINDING AP-M04-1`'s class, and the repair is the same one REQ-210 took: pin both and name which is which.** §7's latency bullet read *"Pinned at **1 cycle** … Both sit at octet position 0 of their words, so the figure is exactly 8 octet times and not a rounding"* — and that closing sentence is, word for word, the sentence requirements.md §0.5 uses to explain why a delay pinned to an **inserted** word is an event delay and *not* a latency. Output word 0 carries no octet that entered at any port (§6.1, §7's own next paragraph), so the figure was the event delay throughout. §7 now carries a five-row table: the **event delay** of 1 cycle (8 octet times) to output word 0, unchanged in value and still the sharper observable; **L = 22** octet times per payload octet, derived from §6.1's own mapping and constant at every k, length and content; **h = 0**; §0.5's new **output offset q = 6**; and **ΔC = 2** counted to **output word 1**, the first output word carrying an octet of the frame. §7 gains a second bullet stating the two §0.5 verdicts — M07 **passes** the late-decision test (framing in band) and **fails** the straddle test, (h − q) = −6 ≢ 0 (mod 8), which is §6.1's own *"assembled from payload words n − 2 and n − 1"* — so L = 22 is gapless-only, and a table of each output event's **deciding input word** D and its gap-invariant delay (1, 2, 3 cycles). Three dependent sites repaired in the same diff rather than left to a later reader: §7's handshake bullet, whose *"delay everything by the number of idle cycles"* is true only of events whose D the idles precede; §3's REQ-005 row, which named one constant where there are two; and §10's REQ-016 hook, which now names both halves of REQ-016's own verification column and forbids the per-octet assertion §0.5 forbids | no — **editorial by requirements.md §13's own test.** No port, record, state, cycle, cycle-table row, residue class, drain count, strobe or gap figure moves: §6.1's C + 1 + n, the W − J + 1 stall count and §4.1's record are untouched, and the M07 RTL landed at `cddad51` was written to §6.1's table with this defect already named in its own doc comment (`J-rtl_lead-0020` §5, which derived L = 22 independently — that independence is what this row rests on rather than my arithmetic alone). No committed test changes meaning: no file under `test/` names `eth_axis_tx`. The event delay dv_lead checked at `J-dv_lead-0007` is the same number, so §12's countersignature record is a true record of that act and is not edited. What changes is which quantity each figure is, and that a monitor may no longer demand a per-octet constant here under injection | none — the reading removed is arithmetically unsatisfiable rather than rejected among live alternatives, so no property of the hardware is chosen; the alternative that *was* live is §0.5's (a term versus a scope) and is recorded and refused in requirements.md §13's row of the same date | `J-architect_docs_lead-0041` |

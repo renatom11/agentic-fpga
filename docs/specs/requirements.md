@@ -206,28 +206,88 @@ first octet and **h = 0**. Two consequences, because the alternative reading is
 what `FINDING AP-M04-1` convicted a requirement for. **ΔC's output event is the
 module's first output word carrying an octet of the frame**, never a word the
 module inserted ahead of it: at M04 that is the word after the preamble word, so
-ΔC = 2 and L = 8·ΔC − h = **16** octet times, which is the value the per-octet
-definition gives directly (SPEC-M04 §7). And **a delay pinned to an inserted word
-is an event delay, not a latency**: it is a legitimate and often sharper thing to
+ΔC = 2 and, by the identity below, L = 8·ΔC − h + q = **16** octet times with
+q = 0, which is the value the per-octet definition gives directly (SPEC-M04 §7).
+And **a delay pinned to an inserted word is an event delay, not a
+latency**: it is a legitimate and often sharper thing to
 pin — both its events are named and both sit at octet position 0 — but it is a
 different quantity with a different value, and a specification pinning both SHALL
 name which is which. Pinning one and citing the other's measurement is the defect
 `FINDING AP-M04-1` found, refutable by arithmetic on the specification before any
 RTL exists and refuted there (REQ-210, SPEC-M04 §7 and §10).
 
+**Output offset q (normative).** The output offset of a module, at a given start
+lane, is the position, within the output word named by ΔC's **output** event, of
+the first octet **of the frame** at that output. Equivalently: q = (the octets
+the module inserts ahead of the frame) mod 8. It is the exact mirror of h's
+second term — h measures where the frame's first octet sits inside the *input*
+word the measurement event names, q where it sits inside the *output* word ΔC
+counts to — and like h it is a property of the module and the start lane and is
+not a free choice. **q = 0 at every module that inserts nothing, and at every
+module whose insertion is a whole number of words**; that is the default and a
+specification stating no q is stating q = 0. A specification whose q is **not** 0
+SHALL state it in its §7, with the two identities below evaluated — the two
+Phase-1 instances do. REQ-021's producer-side alignment does **not** make q zero:
+REQ-021 aligns the first octet the module *emits*, and q measures the first octet
+it *forwards*, which at an inserting module is a later octet in a later word. In
+Phase 1 q = 0 everywhere except **M07 (q = 6, a 14-octet insertion)** and
+**M15 (q = 4, a 20-octet insertion)**.
+
+**The identity, with both offsets** (normative):
+
+> **L = 8·ΔC − h + q**, and therefore **ΔC = (L + h − q) / 8**.
+
+The two forms stated before this paragraph are this one at q = 0, which is why
+nothing stated before it moves: every module to which §1.1's ceilings, the
+word-delay identity or the straddle test has been applied has q = 0, and every
+value already in this document is unchanged.
+
+*Why a term and not a scope.* The live alternative — declaring the identity
+applicable only to insertions that are a whole number of words, and saying nothing
+at the others — was refused, because the identity is **not** the only statement in
+this section keyed to the front offset alone. Three more are: the whole-number
+consequence in the next paragraph, the coincidence clause in **Cycles**, and the
+**straddle** test. A scope on one sentence leaves the other three still keyed to h,
+still reaching the modules the scope removed, and still returning answers — which
+is how this defect reached a fourth site before anyone read it. The straddle test
+decides it: keyed on h alone it returns *no straddle* at M07 and M15, and the
+closing paragraph of this section reads a module passing both tests as **licensing**
+a per-octet assertion under injection. An h-only reading there does not merely
+understate a quantity, it licenses an assertion that fails a conformant design —
+the failure mode this section exists to prevent, and one this programme has already
+paid for once (**SCR-M03-I4**). One term repairs all four sites at once, and by
+construction changes no value anywhere it did not already apply.
+
+*Provenance and authority.* The conflation at a fourth site, the three figures it
+produces at M07 (8 printed, 16 from the identity, 22 from the per-octet
+definition), and the observation that the identity and the definition disagree at
+an insertion that is not a multiple of 8, are **rtl_lead's** — derived while
+implementing M07 against the frozen SPEC-M07, and routed undecided as **C-RL-8**
+(`J-rtl_lead-0020` §5 and Open-questions 1). The output offset, its extension to
+the whole-number consequence, to **Cycles** and to the straddle test, and the
+refusal of the scoping alternative, are the architect's, applied under
+`J-architect_docs_lead-0041`. **No conformant design changes**: every cycle every
+module specification pins is unchanged, including every cycle of SPEC-M07 §6.1
+against which the M07 RTL was written at `cddad51`. What changes is which quantity
+each figure is, and what a monitor may demand of it under injection.
+
 **Word delay ΔC (normative).** The word delay of a module is
 
-> ΔC = (L + h) / 8 cycles,
+> ΔC = (L + h − q) / 8 cycles,
 
-which is exactly (the cycle of the module's first output word for a frame) −
-(the cycle of the input word named by the measurement event), because
-L = 8·ΔC − h is the identity the paragraph above derives. Three consequences a
-reader needs:
+which is exactly (the cycle of the module's first output word **carrying an octet
+of the frame**) − (the cycle of the input word named by the measurement event),
+because L = 8·ΔC − h + q is the identity the paragraphs above derive. Three
+consequences a reader needs:
 
-- **ΔC is a whole number.** (L + h) is therefore a multiple of 8 for every
+- **ΔC is a whole number.** (L + h − q) is therefore a multiple of 8 for every
   conformant module. A specification pinning an L for which it is not describes
   a module that cannot exist, and that is checkable by arithmetic at spec
-  freeze, before any RTL.
+  freeze, before any RTL. **The q term is load-bearing in this bullet and not
+  decoration**: without it the test convicts a conformant M07 (L = 22, h = 0) and
+  a conformant M15 (L = 28, h = 0) — a freeze-time check refuting the two modules
+  it exists to protect. With it, (22 + 0 − 6) and (28 + 0 − 4) are 16 and 24 and
+  both close.
 - **ΔC is additive along a chain and floor(L / 8) is not.** Each module's input
   measurement event is the previous module's first output word, so the sum of
   ΔC over the receive chain of §0.4 is exactly the cycle count REQ-006
@@ -246,8 +306,10 @@ countersignature.
 
 **Cycles.** A latency constant is converted to cycles as its word delay ΔC
 above. Where h = 0 — every module that strips nothing, and every stream-to-
-stream measurement of a non-stripping stage — ΔC = L / 8 = floor(L / 8) and the
-two readings coincide; the change of unit only ever moves a stripping stage,
+stream measurement of a non-stripping stage — floor(L / 8) = ΔC and the two
+readings still coincide, because L = 8·ΔC + q with 0 ≤ q ≤ 7; where q is 0 as
+well, L / 8 is itself that integer and the chain of equalities is the one this
+paragraph used to state. The change of unit only ever moves a stripping stage,
 and it always moves it upward.
 
 **Gapped stimulus (normative).** L is defined and measured on a **gapless**
@@ -320,16 +382,20 @@ half a word — so its eight octets occupy eight consecutive output octet times
 whatever their input words did. Two consequences, each sufficient on its own and
 each checkable at spec freeze before any RTL exists:
 
-- **Straddle.** Output word m carries the octets at input octet times
-  T + h + 8m … T + h + 8m + 7, where T is the octet time of the input word named
-  by the measurement event and is a multiple of 8. Those eight lie in **one**
-  input word iff **h ≡ 0 (mod 8)**. Where h is not a multiple of 8, *every* output
+- **Straddle.** Output word m — counted from the output word ΔC's output event
+  names — carries the octets of the frame at input octet times
+  T + h − q + 8m … T + h − q + 8m + 7, where T is the octet time of the input word
+  named by the measurement event and is a multiple of 8. Those eight lie in
+  **one** input word iff **(h − q) ≡ 0 (mod 8)**. Where it is not, *every* output
   word is assembled from two input words; an idle injected at the boundary between
   them moves one part and not the other, and REQ-011 forbids resolving that by
   splitting the word, so its octets take **two** latencies differing by 8k. Read
-  §1.1's h column for the Phase-1 verdict: **M03 at a lane-4 start (h = 12), M06
-  (14) and M14 (20) straddle; M03 at a lane-0 start (8), M08 (0) and M17 (8) do
-  not.**
+  §1.1's h column and each module's §7 for its q. Receive path: **M03 at a lane-4
+  start (h = 12), M06 (14) and M14 (20) straddle; M03 at a lane-0 start (8), M08
+  (0) and M17 (8) do not.** Transmit path, where q rather than h is what decides
+  it: **M07 (h = 0, q = 6) and M15 (h = 0, q = 4) straddle — SPEC-M07 §6.1 and
+  SPEC-M15 §6.1 each state in their own words that an output word is assembled
+  from two payload words — while M04 (0, 0), M18 (0, 0) and M11 (0, 0) do not.**
 - **Late decision.** An output event decided by an input event **later** than the
   input word carrying the octets it reports moves with the deciding event while
   those octets moved with an earlier one. M03's `tlast` word is the worked
@@ -1092,3 +1158,4 @@ commissioned it. A behavioural row additionally names its ADR.
 | 2026-08-11 | §0.6 (**the window's reference word, fourth clause**) | **Countersignature transcribed — §0.6's fourth reference-word clause is countersigned, with one MINOR finding against its stated ground and none against its rule.** dv_lead COUNTERSIGNED at `9535979` on the clause's operative content — the reference word for a condition reported on the **non-arrival** of an input word is the cycle the word was required and not presented; the ceiling adds §0.5's word delay ΔC and **never** an event delay a module spec may also pin; and the window carries no independent information at this module — after three checks made at the source. **(1) The instance count**: all twenty-one rows of §12 read one by one, and `error_underflow` is the only condition that is an absence; the two nearest candidates, `error_ip_truncated` and `error_tx_length_mismatch`, are both decided **on** the early `tlast` word, a word that arrives. **(2) The ΔC clause**: §0.5 defines L in octet times and ΔC in cycles, so *"the module's latency in cycles (§0.5)"* can only be ΔC = 2, and REQ-210's 1-cycle event delay is REQ-210's — the collision being one dv's own `FINDING AP-M04-1` created in a document it did not touch. **(3) The near-edge claim**: §9's pin, §0.6's floor and the new reference word are **the same cycle**, so the window adds nothing and the pin governs inside it (§0.6's own *"a bound, never a licence"*). **One MINOR finding filed without holding the clause out of force — `FINDING ABS-1`, against the clause's stated ground, at two sites of which one is dv's own.** The ground reads *"the three clauses above name no word … the octet the first clause measures from is one that never arrives, and the third clause does not reach it either because the frame did receive octets"*, and those halves cannot both hold: since **2026-08-04** (`0caf023`) the first clause names *"the last octet that frame **received while it was open**"*, not the frame's final octet, and an underflowed frame **has** received octets — REQ-207 forbids dropping an accepted word, and `AP-xgmii_tx_64` row `M04-G5` asserts source word 0's octets reach the wire on an underflow at `C + 1`. The first clause therefore names a word here (the source word carrying the last octet accepted), so **this clause is an override rather than a hole-filler**: it moves the reference one cycle later, to the condition's own decidability cycle. **Nothing turns on it and the editorial class survives, checked rather than assumed**: with `A` the cycle of the last accepted source word the pin is at `A + 1`, the first clause's ceiling is `A + 2` and this clause's is `A + 3`, so the pin lies inside both and the change can only loosen a bound already redundant against §9's pin. **The cure is one sentence** — state what the clause does (move the reference to the decidability cycle so that the window's floor and its reference word are one event) instead of denying that the first clause reaches this class. **And the identical misreading is in dv's own instrument, filed against dv in the same act**: `AP-xgmii_tx_64` row `M04-G7` says *"an underflowed frame never receives that octet — the window has no reference word"*, written on 2026-08-11, a week after the gloss it contradicts, so wrong when written rather than made stale. That row's NO-ASSERT status and conclusion do **not** move and are now carried by this clause's own no-independent-information sentence; its ground is repaired at the round that next opens the plan | transcription — no normative text moves in this row; it records that the countersignature §13 says is owed on this clause is paid, with `ABS-1` outstanding against one sentence of the clause's ground (architect_docs_lead's to rule) and one row of dv's own attack plan (dv's to repair) | carry-forward **C-5** (SPEC-M04 §11.3's deferral) and dv_lead's `AP-xgmii_tx_64` §8 item 3; countersignature of record `J-dv_lead-0173` §(c) | `J-orchestrator-0247` |
 | 2026-08-11 | §0.6 (**the window's reference word, fourth clause — its ground, not its rule**) | **`FINDING ABS-1` SUSTAINED: the fourth clause is an OVERRIDE of the first, and its recital said it was a hole-filler.** The recital read *"the three clauses above name no word: the offending frame is cut short by an absence rather than closed by an event on the stream, so the octet the first clause measures from is one that never arrives, and the third clause does not reach it either because the frame did receive octets"* — two halves that cannot both hold, because since **2026-08-04** (`0caf023`) the first clause names *"the last octet that frame **received while it was open**"* and not the frame's intended final octet. Sustained on a **stronger** ground than the finding's, derived rather than accepted: at the one module this clause reaches, the class in which the first clause names nothing is **empty**, not merely unoccupied — REQ-206 defines the underflow only after the frame's start character and SPEC-M04 §6.1 emits that character only once a first source word has been accepted, so every underflowed frame has accepted at least one word and the first clause always names one. **The rule is untouched and stays in force**: the reference word for a condition reported on the non-arrival of an input word is still the cycle the word was required and not presented, the ceiling still adds ΔC and never an event delay, and the window still carries no independent information here — all three countersigned at `J-dv_lead-0173` §(c), transcribed in the row above. What changes is the recital: the clause now states that it **overrides the first clause**, moves the reference **later** to the condition's own decidability cycle so that the window's floor and its reference word are one event, and proves the override **can only loosen** — the required cycle is strictly after the last acceptance (an acceptance needs `tvalid`; the absence is `tvalid` = 0), the floor is the same in both, so this window strictly contains the first clause's and no report the first clause admitted is barred here. **The paragraph's opening sentence gains the same fact**: the first three clauses partition by what the frame received, the fourth overrides the first for the class it names. **A second site of the same misreading, repaired in this diff and not left for a later reader**: the clause's own closing italic said the trap it removed was *"a window whose reference word had no referent"* — the misreading restated one sentence after the clause that refutes it. It now says what the trap actually was: a determinate window measured from the wrong event, whose green repeats the module's pin. **And the site list is not the finding's two: a census over every specification for the retired ceiling phrase found four, all repaired in this commit.** (1) the clause's recital, (2) the clause's own closing italic one sentence later, (3) **SPEC-M04 §11.3**'s raised statement — corrected in its Status column, the statement itself left as raised under SPEC-TEMPLATE §11 (SPEC-M04 §13) — and (4) **SPEC-M10 §9**, which called its own no-payload case *"inside §0.6's window only vacuously"* and cited SPEC-M04 §11.3 as authority, when §0.6's **third** clause names that case's reference word exactly (SPEC-M10 §13). A fifth site, dv's `AP-xgmii_tx_64` row `M04-G7`, is dv's to repair and outside my write scope. **dv_lead's countersignature is owed** on it as on every §0.6 diff, **narrowed to what this diff adds** — the override statement, the loosening derivation and the two repaired recitals — since the rule itself is countersigned and in force from the row above; **the diff is in force meanwhile**, nothing resting on it that §9's pin did not already decide | **editorial**, on §13's own test — no conformant design changes (§9's pin is unmoved and sits at the floor of both windows), no committed instrument changes meaning (M04 has no bench), and the only bound that moves moves outward | `FINDING ABS-1` (MINOR), dv_lead, filed at `J-dv_lead-0173` §(c) without holding the clause out of force; ruled at `J-architect_docs_lead-0040` | `J-architect_docs_lead-0040` |
 | 2026-08-11 | §0.6 (**the fourth clause's override statement, its loosening derivation, and the two repaired recitals**) | **Countersignature transcribed — the `FINDING ABS-1` diff is COUNTERSIGNED and IN FORCE from this row.** dv_lead COUNTERSIGNED at `2a0a2b1`, **narrowly**: this signature covers what that diff adds — the paragraph's precedence sentence, the clause's override recital, the loosening derivation and the repaired closing italic — and is **not** a re-countersignature of the clause's rule, which was countersigned at `J-dv_lead-0173` §(c) and has been in force since `747e561`; the three operative sentences were re-read whole at this SHA and are unchanged. **(1) The empty-class derivation is sustained and needed one premise the ruling does not name.** REQ-206 opens the underflow only after the start character; SPEC-M04 §6.2 enters `Preamble` — the state that emits it — only on a first source word's acceptance; **and REQ-011 forbids `tkeep` = 0 with `tvalid` = 1**, which is the step from *accepted a word* to *received an octet*. Without REQ-011 the class would be empty only contingently and the precedence sentence would need a scope (`J-architect_docs_lead-0040` Open-question 1 asked for exactly this check). **(2) The loosening is a theorem and its unstated half is also true.** The required cycle is strictly after the last acceptance, and **no acceptance of the offending frame follows it** — SPEC-M04 §6.2 takes the underflow to `Abort` and then to `Gap`, and C-16's `C + 8` acceptance belongs to the next frame and is unreachable while REQ-206's condition holds — so the ceiling moves strictly outward while the floor, fixed on the condition's decidability, does not move at all. At the earliest instance: pin `C + 1`, first clause's ceiling `C + 2`, this clause's `C + 3`. **(3) The precedence sentence is countersigned on its operative half** — before it, both clauses reached one class and nothing said which won. One observation is recorded and **deliberately not filed**: *"the first three partition the frames"* is loose, clauses 1 and 3 partitioning while clause 2 qualifies clause 1's domain; no window moves under either reading. **(4) The second repaired recital is the one dv would have missed**: `FINDING ABS-1` named two sites and the clause's own closing italic, one sentence later, was a third. The census that found it, and the two unfiled sites at SPEC-M04 §11.3 and SPEC-M10 §9, are **architect_docs_lead's measurement and are quoted with that provenance, not re-measured here**. **No countersignature is owed or given on those two correction rows, nor on the `AP-M14-1` diff at SPEC-M14** | transcription — no normative text moves in this row; it records that the countersignature §13 says is owed on this diff is paid, with nothing outstanding against it | `FINDING ABS-1` (MINOR), dv_lead, filed at `J-dv_lead-0173` §(c) and ruled at `J-architect_docs_lead-0040`; countersignature of record **`J-dv_lead-0178`** §(a) | `J-orchestrator-0250` |
+| 2026-08-11 | §0.5 (**the inserting-module clause; the new output offset q; the word-delay identity; the whole-number consequence; Cycles; the straddle test**) | **`C-RL-8` UPHELD and REFINED — the inserting-module clause was written at a module whose insertion is a whole number of words, and four statements keyed to the front offset alone break at one that is not.** rtl_lead found the class's fourth site while implementing M07 (`J-rtl_lead-0020` §5): SPEC-M07 §7 pinned an event delay and printed it as a latency, and — the half that is not a relabel — §0.5's identity `L = 8·ΔC − h` returns **16** where the per-octet definition returns **22**, because M07 inserts **14** octets and the frame's first input-derived octet therefore lands at byte position 6 of the output word ΔC counts to, while the identity's derivation assumes position 0. rtl_lead posed the repair as a choice (an output-side offset term, or scoping the identity to multiple-of-8 insertions) and routed it undecided. **Ruled: a term, not a scope, and the ground is the straddle test rather than the identity.** §0.5 gains **output offset q** — the position, within the output word ΔC's output event names, of the first octet *of the frame* at that output; equivalently (octets inserted ahead of the frame) mod 8; the exact mirror of h's second term, stated per module in its §7, **q = 0 everywhere in Phase 1 except M07 (6) and M15 (4)**. The identity becomes **L = 8·ΔC − h + q** and the word delay **ΔC = (L + h − q)/8**. Three further sites take the term: the **whole-number** consequence, which without it convicts a conformant M07 (L = 22, h = 0) and M15 (L = 28, h = 0) at spec freeze — a check refuting the modules it exists to protect; the **Cycles** coincidence clause, restated as floor(L/8) = ΔC because L = 8·ΔC + q with 0 ≤ q ≤ 7; and the **straddle** test, now `(h − q) ≡ 0 (mod 8)`. **The straddle site is why the scope was refused and is a defect rtl_lead's filing did not reach.** Keyed on h alone the test returns *no straddle* at M07 and M15 — contradicting each module's own §6.1, which states that an output word is assembled from two payload words — and §0.5's closing paragraph plus REQ-016's verification column read a module passing both tests as **licensing** a per-octet assertion under injection. So the h-only reading does not understate a quantity, it licenses an assertion that fails a conformant design: the failure mode this section exists to prevent, and the one this programme has already paid for at `SCR-M03-I4`. A scope on the identity would have left that licence standing at exactly the two modules it removed. **The alternative is recorded because it was live**: scope the identity to insertions that are a whole number of words, and say nothing at M07 and M15. Refused on the ground above and on a second — a scope must then be written three more times, once per keyed statement, and the mechanism that produced this defect is precisely a rule enumerated site-by-site against a document that grows sites. **Consequences at the two modules land in the same commit**: SPEC-M07 §13 and SPEC-M15 §13 each carry a row pinning both constants, the four §0.5 quantities and the two test verdicts | **editorial by this table's own test — no conformant design and no committed test changes meaning**, and stated site by site rather than asserted. §1.1's table is untouched and stays correct: every stage in it has q = 0, so its "always satisfies (L + h) ≡ 0 (mod 8)" convenience column is unchanged in value. No cycle in any module specification moves; the M07 RTL at `cddad51` was written to SPEC-M07 §6.1's table with this defect already named in its own doc comment, M15 has no RTL, and no file under `test/` names either module. **What does change is a permission**: a monitor may no longer demand a single per-octet latency under injection at M07 or M15. Nothing was built on that permission — it is being withdrawn before its first customer, which is the whole value of catching it by arithmetic on the specification. **Countersignature discipline as at REQ-210: dv_lead's countersignature is owed**, on q's definition, the two amended identities, the whole-number bullet, the Cycles clause and the straddle test. **The diff is IN FORCE meanwhile**, on this table's editorial limb and on the REQ-611 and §0.6-fourth-clause precedents: nothing rests on it that a module's own §7 does not now state, and holding it out of force would leave the *un*repaired straddle test — the licensing one — governing in the interim, which is strictly worse than the repair being read before it is signed. **Not E2** (no requirement, phase or role added or dropped; no REQ text is touched). **No ADR**: at the level of the constraint the retired reading is arithmetically unsatisfiable rather than chosen among live alternatives, so nothing about the hardware is decided — the 2026-08-11 REQ-210 row's own ground, and the alternative that *was* live is recorded in this cell, which is the form the C-14, C-16 and REQ-210 repairs used | **rtl_lead**, carry-forward **C-RL-8**, derived at `J-rtl_lead-0020` §5 and Open-questions 1 and routed undecided through the orchestrator; the M15 adjacency is rtl_lead's measurement and its end-to-end derivation is mine | `J-architect_docs_lead-0041` |

@@ -3287,3 +3287,545 @@ owner and a closing event, so a row is never a note to nobody):
 - docs/specs/modules/ip_eth_rx_64.md
 - docs/specs/modules/xgmii_tx_64.md
 - docs/specs/modules/arp_eth_rx.md
+
+## [J-architect_docs_lead-0041] 2026-08-11T13:54Z | task:none | `C-RL-8` upheld and refined — the inserting-module clause was written at the one insertion that is a whole number of words, and the term it needed repairs four statements rather than the one that was filed, the load-bearing one licensing an assertion no conformant design can pass
+
+### Trigger
+
+Orchestrator dispatch, one round: adjudicate and repair **C-RL-8**, rtl_lead's
+finding routed to me through the orchestrator per rtl_lead's own handoff. The
+abort-first precheck ran before any file was opened and passed: `git status
+--short` empty, `git rev-parse HEAD` = `cddad51f479ab1656222e94fb9264e7040d761f1`,
+branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+
+**Concurrency, stated rather than left for a reader to reconcile.** The dispatch
+declared a dv_lead round live in this tree on disjoint paths (`test/**`,
+`agents/handoffs/WO-0081*`, its own journal). At the end of this round `git status
+--short` lists four paths: my three under `docs/` and `test/xgmii_tx_64/
+test_m04_d.ml`, which is dv's. **I opened no file under `test/` for writing and
+none under `agents/handoffs/`.** My confinement claim is over the paths I own and
+is not a claim that the tree is otherwise quiet. I read `test/` twice, read-only
+and for one purpose each, and both readings are recorded in Inputs.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` and `agents/PROTOCOL.md`, in full,
+  before any other file (§4 grammar, §5 R1–R9, §6 write scope, §7 gates, §10).
+- **`agents/journals/claude_rtl_lead_agent.v02.md`, `J-rtl_lead-0020` in full** —
+  the finding's authoritative source. §5 carries the derivation, Open-questions 1
+  the statement, §2 and §3 the microarchitecture the derivation rests on, §Inputs
+  the discipline claim that it read `docs/specs/**` and wrote none of it.
+- **`docs/specs/requirements.md` §0.5 in full**, plus §1 (REQ-005, REQ-011,
+  REQ-016, REQ-019, REQ-021), §1.1 both tables, and §13's fourteen 2026-08-11
+  rows — the REQ-210 + §0.5 repair and its countersignature transcription being
+  the precedent this round is measured against.
+- **`docs/specs/modules/eth_axis_tx.md` in full** (SPEC-M07, FROZEN at `508eea2`):
+  §3, §6.1, §6.2, §7, §10, §11, §12, §13.
+- **`docs/specs/modules/ip_eth_tx_64.md`** (SPEC-M15, FROZEN at `3f6accc`): §6.1
+  in full, §7 in full, §3's invariant rows, §10, §11, §12, §13.
+- `docs/specs/modules/udp_ip_tx_64.md` §7 and `docs/specs/modules/arp_eth_tx.md`
+  §7 — the two rtl_lead measured as clean, re-read here to verify the verdict
+  rather than accept it.
+- `docs/specs/modules/xgmii_tx_64.md` §7, §10's REQ-210 row and §13's three
+  2026-08-11 rows — the model repair, read for its form before I wrote mine.
+- `docs/specs/modules/eth_axis_rx.md` §13's 2026-08-11 row — the module-side row
+  form and the straddle-verdict wording M06 already carries.
+- `docs/specs/modules/ip_eth_rx_64.md` §7's parse-latency bullet — the third
+  occurrence of the *"not a rounding"* phrase, read to decide whether it is a
+  fourth site. It is not (Reasoning §5).
+- `docs/specs/modules/ip_complete_64.md` §7 and `docs/specs/modules/arp.md`
+  §6.1's REQ-502 table row 15 — the two places that compose M07's and M15's
+  figures, read to measure what the repair reaches.
+- `docs/specs/architecture.md` §4's inventory — to establish which module SPEC-M15
+  is from the record rather than from the dispatch's sentence.
+- My own `J-architect_docs_lead-0038`, `-0039` and `-0040` — the spec-repair
+  procedure, the change-log row forms, the countersignature mechanics and the
+  carried ledger.
+- **Read-only into other seats' scopes, twice, each for one question.**
+  (a) `libs/hardcaml_ethernet/src/eth_axis_tx.ml` — its doc comment only, to check
+  whether the landed RTL was built to the sentence I am repairing. It was not; it
+  names the defect and derives L = 22 itself. (b) `test/` — `grep -rl
+  'eth_axis_tx\|ip_eth_tx' test/`, to establish whether any committed test changes
+  meaning. None does. Neither file was opened for writing and nothing else was
+  taken from either.
+- **No Essenceia/Nasdaq-HFT-FPGA material consulted.**
+
+### Reasoning
+
+#### 1. The adjudication: UPHELD on the face of the text, then REFINED
+
+**Upheld, and it needed no re-derivation to reach that.** SPEC-M07 §7's first
+bullet was titled **Latency**, pinned 1 cycle between the acceptance of the first
+payload word and the emission of **output word 0**, and justified calling the
+figure a latency with: *"Both sit at octet position 0 of their words, so the
+figure is exactly 8 octet times and not a rounding."* requirements.md §0.5's
+inserting-module clause says that a delay pinned to an inserted word *"is an event
+delay, not a latency: it is a legitimate and often sharper thing to pin — **both
+its events are named and both sit at octet position 0** — but it is a different
+quantity with a different value."* The sentence §7 used to argue that its figure
+**is** a latency is the sentence §0.5 uses to explain why it is **not** one. And
+§7's own next paragraph supplies the premise: *"output word 0 is a function of the
+header record alone."* A module's specification convicting itself two paragraphs
+apart is the same shape `FINDING AP-M04-1` had, and it is refutable by arithmetic
+before any RTL exists — which is where rtl_lead found it.
+
+**I re-derived the three figures rather than accepting them**, because a ruling
+that accepts its filing's arithmetic has checked nothing. Payload octet k is
+accepted in payload word ⌊k/8⌋ at cycle C + ⌊k/8⌋ at byte position k mod 8, so its
+input octet time is 8C + k. §6.1 puts it at frame octet 14 + k, in output word
+⌊(14 + k)/8⌋ at byte position (14 + k) mod 8, and output word n leaves at C + 1 + n
+— so its output octet time is 8·(C + 1 + ⌊(14 + k)/8⌋) + ((14 + k) mod 8), which
+telescopes to 8C + 22 + k. **L = 22 at every k, every length and every content.**
+The identity `L = 8·ΔC − h` with h = 0 and ΔC = 2 returns 16. The printed figure is
+8. Three figures, one printed, and the two §0.5 routes disagreeing with each other
+— which is exactly rtl_lead's §5 and is confirmed independently here.
+
+**Refined in two directions the filing did not reach**, and the second decides the
+question the filing left open.
+
+**(a) The identity is not the only §0.5 statement keyed to h alone.** Three more
+are, and one of them convicts: the whole-number consequence says *"(L + h) is
+therefore a multiple of 8 for every conformant module. A specification pinning an
+L for which it is not describes a module that cannot exist."* At M07, L + h = 22.
+At M15, 28. Neither is a multiple of 8. So §0.5's own freeze-time arithmetic check
+— the check the AP-M04-1 repair leaned on as the thing that catches this class
+before RTL — **refutes the two conformant modules it exists to protect**, the
+moment their true L is written down. A repair that fixes the identity and leaves
+that bullet produces a specification that cannot state its own latency without
+being convicted by the document that demanded it.
+
+**(b) The straddle test is wrong at M07 and M15, and it is wrong in the licensing
+direction.** This is the half neither rtl_lead nor the dispatch named, and it is
+the one that decides the term-versus-scope question. §0.5's straddle test reads
+*"those eight lie in one input word iff h ≡ 0 (mod 8)"*. At M07 and M15, h = 0, so
+the test returns **no straddle**. Both modules' own §6.1 says the opposite in
+terms: SPEC-M07's *"output word n ≥ 2 carries payload octets 8n − 14 through
+8n − 7 — which lie in payload words n − 2 … and n − 1"*, SPEC-M15's *"body word
+n ≥ 3 … lie in payload words n − 3 … and n − 2"*. Two input words. And the
+consequence is not a mislabelled quantity: §0.5's closing paragraph says *"where a
+module passes **both** tests its per-octet constant does survive injection"*, and
+REQ-016's verification column says *"where §0.5's two tests both pass at a module,
+its own §7 says so and the wrapper asserts the per-octet constant as well."* Both
+modules pass the late-decision test — their input carries `tkeep`, `tlast` and
+`tuser`[0] in band — so under the live text they pass both, and a bench writer
+following REQ-016's column to the letter builds a wrapper asserting a single
+per-octet latency under injection at a module where one output word carries two.
+**That assertion fails every conformant design.** It is the exact failure mode
+§0.5 exists to prevent, it is the one this programme has already paid for once
+(`SCR-M03-I4`, where a monitor built from an unqualified §0.5 sentence reddened
+against a conformant M03), and the h-only reading is not merely silent about it —
+it affirmatively licenses it.
+
+#### 2. The ruling rtl_lead asked for: a term, not a scope
+
+rtl_lead put it as a choice: *"the identity needs an output-side offset term (or
+an explicit scoping to insertions that are multiples of 8) before it can be
+applied to an inserting module at all."* Both were live. I ruled **the term**, on
+three grounds, in the order of their weight.
+
+**Ground 1 — a scope on the identity does not reach §1 (b).** This is decisive on
+its own. The scope removes the identity's answer at M07 and M15 and says nothing
+about the straddle test, which is a different sentence with its own keying. After
+the scope, §0.5 still returns *no straddle* at both modules and REQ-016's column
+still licenses the impossible assertion. To close it, the scope must be written
+again in the straddle bullet, again in the whole-number bullet, and again in
+**Cycles** — four scopes for one defect, each a place to go stale. The term is
+written once and all four statements take it because all four are the same
+arithmetic.
+
+**Ground 2 — the mechanism that produced this defect is enumeration.** §0.5's
+inserting-module clause was written on 2026-08-11 at M04, whose insertion is
+exactly one word, and it was correct there and nowhere tested against another
+insertion. A scope is that same act repeated: a rule stated over the cases its
+author had in front of them, against a document that grows modules. This is
+`FINDING CSG-3`'s lesson at a different paragraph — my own `-0039` round cured a
+restriction *"stated over two of the span's five closures"* by restating it over
+the span rather than by naming the third closure — and taking the enumerating
+option here, one round after ruling against it there, would be inconsistent as
+well as wrong.
+
+**Ground 3 — consistency with how REQ-210 and REQ-611 were repaired.** Both
+repairs *added a named quantity* rather than removing a claim: REQ-210 now pins
+**both** constants because *"pinning both is strictly more informative than
+renaming one, while the failure mode was conflation, which naming cures and
+renaming does not"*; REQ-611 gained the per-event invariant alongside its scoped
+figure. The term is that move at §0.5's own level — it gives the section a name
+for the quantity it was missing. The scope is the other move, deleting reach.
+
+**The term, stated so it changes nothing it did not already reach.** Output offset
+**q**: the position, within the output word ΔC's output event names, of the first
+octet **of the frame** at that output; equivalently (octets inserted ahead of the
+frame) mod 8. It is the exact mirror of h's second term — h says where the frame's
+first octet sits inside the *input* word the measurement event names, q where it
+sits inside the *output* word ΔC counts to. The identity becomes
+**L = 8·ΔC − h + q**, the word delay **ΔC = (L + h − q)/8**, the whole-number test
+**(L + h − q) ≡ 0 (mod 8)**, the straddle test **(h − q) ≡ 0 (mod 8)**.
+
+**Why this is editorial and not a renumbering of the programme**: q = 0 at every
+module §0.5 has ever been applied to. Checked module by module, not assumed —
+M03 both lanes, M06, M08, M14, M17 (all receive-path, output word-aligned at the
+frame's first octet, q = 0); M04 and M18 (insertions of 8, q = 0); M11 (its output
+word 0 carries ARP octet 0 at position 0, and §7 already says the fourteen
+Ethernet octets it causes to exist *"are not an insertion at this port"*); M09
+(adds nothing). So §1.1's table, its convenience column's *"always satisfies
+(L + h) ≡ 0 (mod 8)"*, SPEC-M20 §7's chain arithmetic and every pinned value in
+the document are unchanged. **The two Phase-1 instances are M07 (q = 6) and M15
+(q = 4), and both are new text.**
+
+**One drafting decision inside the term, taken deliberately.** h's paragraph says
+h *"is stated in the module's specification §7"* — an obligation on every spec.
+Mirroring that for q would have minted an unmet sweep across fifteen frozen
+specifications in a round that opened two, and a rule whose first act is to make
+thirteen documents non-conformant is a rule that will be ignored. So q's default
+is **0 and needs no statement**; only a non-zero q must be stated. That is
+stronger, not weaker: it puts the obligation exactly where the information is.
+
+#### 3. The module repairs, and why they could not land without the §0.5 diff
+
+I considered landing the two module repairs alone and filing the §0.5
+generalisation as a proposal, because the dispatch's write set named
+`requirements.md` only *"if a change-log row belongs there"*. **It does not work,
+and the reason is arithmetic rather than preference.** SPEC-M07 §7 repaired
+honestly must state L = 22 with h = 0. Under the *live* §0.5, (L + h) = 22 is not
+a multiple of 8, so the repaired specification would state a latency that §0.5's
+whole-number bullet declares *"describes a module that cannot exist"* — I would be
+curing a conflation by writing a self-refuting specification, at a module whose
+RTL is already in the tree. And the straddle licence of §1 (b) would still be
+standing at both modules meanwhile. The three files are one diff or none.
+
+**How I read the write set, stated plainly so the orchestrator can bounce it.**
+Under my procedure a requirements.md §13 row is not an annotation on someone
+else's diff — it *is* the record of a requirements.md diff, and every one of the
+fourteen 2026-08-11 rows landed with the text it describes in the same commit. A
+row without its text would describe a diff that does not exist. So I read *"only
+if a change-log row belongs there under your procedure"* as covering the row's own
+text, and I have made the reading explicit rather than quiet. Everything else in
+the dispatched set is untouched.
+
+**SPEC-M07 §7** now carries the SPEC-M04 form: a five-row table (event delay 1
+cycle = 8 octet times to output word 0; L = 22; h = 0; q = 6; ΔC = 2 to **output
+word 1**), the derivation, the reason h = 0, the prohibition on asserting 8 octet
+times per octet, and a second bullet giving the two §0.5 verdicts and the
+**deciding-input-word** table (output word 0: D = payload word 0, delay 1; output
+word n, 1 ≤ n ≤ J: D = payload word n − 1, delay 2; output word J + 1 when
+W = J + 2: D = payload word J − 1, delay 3). D is the **later** of an output
+word's two source payload words because that is the one whose `tkeep` and `tlast`
+decide whether the output word is the frame's last — §6.1's residue rule
+(W − J = 1 for P ≡ 1 or 2 mod 8, else 2) read from the deciding side rather than
+the counting side.
+
+**SPEC-M15 §7** takes the identical treatment at its own numbers: event delay 1
+cycle to body word 0; **L = 28**; h = 0; **q = 4**; **ΔC = 3** to **body word 2**;
+straddle **failed**, (h − q) = −4; D table with delays 1, 2, 3 and 4, and
+`arp_query_valid`/`arp_response_valid` excluded by name because no payload word
+decides them. rtl_lead named M15 as *"an adjacency read from its §7 and §6.1
+rather than as a finding I have derived end to end"* and said the derivation was
+mine. It is done here and it holds: the sentence is verbatim identical, the
+insertion is 20, and the arithmetic runs the same way.
+
+**Three dependent sites per file, repaired rather than left.** §7's handshake
+bullet at both modules said idle gaps *"delay everything by the number of idle
+cycles"* — true only of events whose deciding input word the idles fall at or
+before, and false as a universal the moment an idle lands mid-frame. §3's REQ-005
+row at both named *"§7's pinned one-cycle constant"* where there are now two. §10's
+REQ-016 hook at M07 asserted only REQ-016's half (a) and at M15 named no assertion
+at all; both now carry (a), (b) against the D table, and the prohibition. This is
+ledger item 50's discipline: a repair that lives at one site leaves the falsified
+reading at the others, and this round's own §1 (b) is what that costs.
+
+#### 4. Class, force and countersignature
+
+**Editorial on §13's own test, and stated site by site rather than asserted.** No
+conformant design changes: not one cycle, cycle-table row, residue class, drain
+count, strobe, gap figure, checksum or interface record moves in either
+specification. No committed test changes meaning: `grep -rl` over `test/` returns
+nothing for either module. The M07 RTL at `cddad51` was written to §6.1's table
+with this defect already named in its own doc comment, and M15 has no RTL at all.
+**What changes is a permission** — a monitor may no longer demand a single
+per-octet latency under injection at either module — and nothing was built on it.
+Withdrawing a licence before its first customer is the whole value of catching
+this by arithmetic on the specification.
+
+**In force meanwhile, and this is the one place I depart from the REQ-210 row's
+shape.** REQ-210's diff was held out of force pending countersignature; the
+REQ-611 and §0.6-fourth-clause diffs were in force meanwhile. This one is in
+force, on a ground specific to it: holding it out would leave the **unrepaired**
+straddle test governing in the interim, and that is the licensing one. A reader in
+the gap would find §0.5 telling them M07 passes both tests and REQ-016 telling
+them to assert the per-octet constant — strictly worse than the repair being read
+before it is signed. The countersignature is owed and named in the ledger.
+
+**Not E2**: no requirement, phase or role is added or dropped, and no REQ's
+normative text is touched — §0.5 is a definitional section and the two diffs are
+module §7s. **No ADR**: at the level of the constraint the retired reading is
+arithmetically unsatisfiable rather than chosen among live alternatives, so
+nothing about the hardware is decided; the alternative that *was* live (scope
+versus term) is recorded in the §13 cell, which is the form C-14, C-16 and REQ-210
+used. **Not E5**: rtl_lead routed the finding undecided and disputed nothing.
+
+#### 5. The census, because a repair at two sites should say how it knows there
+are two
+
+Four checks, each stated with what it would have caught.
+
+**(a) The phrase.** `grep -rn "not a rounding" docs/specs/` returns three hits:
+SPEC-M07 §7 (repaired), SPEC-M15 §7 (repaired — the grep missed it at first
+because the phrase wraps mid-line, which is why the second check exists), and
+**SPEC-M14 §7's parse-latency bullet**. M14's is **not** a fourth site: its two
+events are an input word and the `ip_hdr_valid` pulse, it says in terms that this
+is *"a different measurement on the same pipeline … stated separately because
+REQ-611 asks for it"*, it does not claim the figure is §0.5's L, and M14's actual
+L = 12 is stated elsewhere in the same bullet. REQ-611's own 2026-08-11 repair
+already scoped it. Checked and cleared, not skipped.
+
+**(b) rtl_lead's two negative results, re-verified rather than accepted.**
+SPEC-M18 §7 does **not** carry the class: it pins the delay for output words
+carrying **application** octets and states *"output word 0 is outside that
+constant and is stated separately, because it carries no application octet"*,
+giving both monitors' figures — which is what §0.5's clause asks for, written
+before the clause existed. Its use of the *"octet position 0"* sentence is sound,
+because M18's insertion is 8 and its q is 0, so the pinned quantity really is the
+per-octet latency. SPEC-M11 §7 tabulates L, h and ΔC explicitly and disclaims the
+Ethernet octets as *"not an insertion at this port"*. Both verdicts stand, and
+M18 is more than clean — it is the model the two repairs are written towards.
+
+**(c) Who composes the repaired figures.** `grep -rn "SPEC-M07 §7\|SPEC-M15 §7"
+docs/` returns eleven hits; nine cite those sections for handshake, abandon or
+record-discipline reasons and are untouched by this diff. Two compose the figure:
+**SPEC-M16 §7**'s transmit chain (*"M07 emits its first output word at C + 2
+(SPEC-M07 §7's 1 cycle from the acceptance of its own first payload word)"*) and
+**SPEC-M13 §6.1**'s REQ-502 table row 15. Both are **true and correctly evented**
+— they compose event delays and name both events — so neither is falsified and
+neither is repaired here. What they now under-name is that the bullet they cite
+pins two constants where their citation implies one. New ledger item 59, with a
+closing event, rather than a silent widening of this round's diff.
+
+**(d) Whether anything was built on the retired reading.** M07's RTL doc comment
+already names the defect and derives 22 independently; M15 has no RTL; no
+committed test names either module. So the class has no built customer at either
+site, which is what makes the row editorial and is checked rather than hoped.
+
+### Actions
+
+1. Ran the precheck before opening any file; both outputs matched the dispatch
+   exactly.
+2. Read the charter and PROTOCOL in full, then `J-rtl_lead-0020` §5 and
+   Open-questions 1 in full, then requirements.md §0.5 in full.
+3. Re-derived L = 22 at M07 and L = 28 at M15 from each module's own §6.1 before
+   reading either §7's claim as wrong.
+4. Derived the two refinements the filing did not carry — the whole-number
+   bullet's false conviction, and the straddle test's false licence — and made the
+   second the ground of the term-versus-scope ruling.
+5. Edited `docs/specs/requirements.md` §0.5: the M04 identity sentence, the new
+   **Output offset q** paragraph, the amended identity block, the whole-number
+   bullet, the **Cycles** coincidence clause, the **Straddle** bullet, and a
+   provenance note attributing the finding to rtl_lead and the term to me.
+6. Edited `docs/specs/modules/eth_axis_tx.md`: §7's latency bullet replaced by the
+   two-constant table plus derivation, a new *what survives idle injection* bullet
+   with the D table, §7's handshake idle sentence, §3's REQ-005 row, §10's REQ-016
+   hook, and a §13 row.
+7. Edited `docs/specs/modules/ip_eth_tx_64.md`: the same six sites at M15's
+   numbers, plus §13's stale *"This spec is DRAFT and has none"* preamble, which
+   was already false against §12 and the file's own FROZEN header.
+8. Appended the requirements.md §13 revision row: class, force, the refused
+   alternative, the countersignature obligation and the provenance split.
+9. Ran the census of Reasoning §5, four checks, and recorded the two negative
+   results and the two composing sites rather than only the positives.
+10. Wrote this entry. **No `git add`, no `git commit`, no `git push`, no git write
+    of any kind.**
+
+### Evidence
+
+Reproducible from a checkout at this commit.
+
+```sh
+git status --short
+#   docs/specs/requirements.md, docs/specs/modules/eth_axis_tx.md,
+#   docs/specs/modules/ip_eth_tx_64.md — mine — plus
+#   test/xgmii_tx_64/test_m04_d.ml, which is the declared dv_lead lane and
+#   which I did not open for writing (Trigger)
+
+# 1. The conflation, at both sites, in the text as it stood at HEAD~0's parent
+git show cddad51:docs/specs/modules/eth_axis_tx.md  | sed -n '332,342p'
+git show cddad51:docs/specs/modules/ip_eth_tx_64.md | sed -n '547,556p'
+#   both end "so the figure is exactly 8 octet times and not a rounding"
+
+# 2. The sentence that refutes them, in the same tree
+git show cddad51:docs/specs/requirements.md | sed -n '210,216p'
+#   "a delay pinned to an inserted word is an event delay, not a latency …
+#    both its events are named and both sit at octet position 0"
+
+# 3. The census of the phrase — three hits, one of which is cleared in §5(a)
+grep -rn "not a rounding" docs/specs/
+
+# 4. Nothing was built on the retired reading at either module
+grep -rl 'eth_axis_tx\|ip_eth_tx' test/          # (no output)
+ls libs/hardcaml_ethernet/src/ip_eth_tx_64.ml    # No such file or directory
+
+# 5. The composing sites, true and correctly evented, carried not repaired
+grep -rn "SPEC-M07 §7\|SPEC-M15 §7" docs/ | wc -l   # 11
+```
+
+**The arithmetic, which is a derivation and not an execution**, stated so a reader
+can check it with the two documents and no toolchain. At M07: input octet time
+`8C + k`; output octet time `8·(C + 1 + ⌊(14+k)/8⌋) + ((14+k) mod 8) = 8C + 22 + k`;
+difference **22**, independent of k. At M15 the same with 20 for 14: **28**.
+Identity closes at both under the new term — `8·2 − 0 + 6 = 22` and
+`8·3 − 0 + 4 = 28` — and `(L + h − q)` is `16` and `24`, both multiples of 8.
+Straddle: `(h − q) mod 8` is `2` at M07 and `4` at M15, neither 0, agreeing with
+each §6.1's own two-payload-word statement — and the h-only form returns 0 at
+both, which is the false licence.
+
+**The q = 0 check across the rest of the programme, module by module** — M03 (both
+lanes), M06, M08, M14, M17, M04, M18, M11, M09 — is a reading of each module's own
+§6.1/§7 output-alignment statement, recorded in Reasoning §2. It is what makes the
+row editorial and it is the claim most worth an independent check.
+
+**NOT claimed, stated so the absence does not read as coverage**: that any figure
+here has been measured (none has — M07 has no bench, M15 has neither bench nor
+RTL); that dv_lead has countersigned any part of this diff (it has not, and the
+obligation is ledger item 60); that the D tables have been simulated (they are
+derived from each §6.1 and are checkable by reading); that the SPEC-M16 and
+SPEC-M13 citations are repaired (they are carried, item 59). **No verification
+result appears in this entry and no sign-off is claimed.**
+
+### Outcome
+
+**DoD met on all four dispatched acts.** C-RL-8 adjudicated with grounds
+(UPHELD, then REFINED at two points the filing did not reach); SPEC-M07 §7
+repaired; the §0.5 question decided — **a term, not a scope**, on the straddle
+test's licence rather than on the identity; SPEC-M15 §7 repaired in the same
+round; M18 and M11 spot-verified clean and the verdicts re-derived rather than
+accepted; change-log rows in all three files; this entry.
+
+**On the dispatch's conditional (act 3).** My procedure does **not** require a dv
+countersignature before an edit lands: the fourteen 2026-08-11 precedent rows show
+the text and its row landing together, with force stated in the row and the
+countersignature transcribed later by the orchestrator. So I edited rather than
+returning proposed text, and the force disposition is written into the row itself.
+
+**Handoff**: to the orchestrator for commit, and thence to dv_lead for the
+countersignature owed on the §0.5 diff (ledger item 60), narrowed to what it adds
+— q's definition, the two amended identities, the whole-number bullet, the
+**Cycles** clause and the straddle test — with the two module diffs owing none of
+their own, since both are consequences of the §0.5 ruling at sites dv did not
+file. To rtl_lead: C-RL-8 is discharged and its answer is *the term*; SPEC-M07
+§6.1, the section the M07 RTL was built to, is byte-unchanged.
+
+**Carried ledger, restated whole** (ADR-0017 §4.4's practice; every row carries an
+owner and a closing event, so a row is never a note to nobody). Items 1–58 are
+carried from `-0040` with their dispositions; only the rows this round touched
+carry new text.
+
+| # | Item | Owner | Closing event | This round |
+|---|---|---|---|---|
+| 1 | ADR-0016 §8's transcription mechanic is unwritten in PROTOCOL | orchestrator | a PROTOCOL §11 amendment | carried |
+| 2 | The generic shell's `LESSONS` transit is the orchestrator's and unexercised | orchestrator | the first harvest reaching the shell | carried |
+| 3 | PROTOCOL §11 does not describe the ADR-0016 §8 transcription mechanic | orchestrator | same transcription as #1 | carried; half spent |
+| 4 | ADR-0017 §4.4 owes a fifth step: the rotating entry restates any running carry-forward | me | an ADR-0017 amendment, or a deliberate decision to leave it to practice | carried, practised seven times |
+| 5 | ADR-0018 §4.3's `LC-`/`LD-` ids have no per-miner namespace | me | an ADR-0018 amendment, or the collator ruling a scheme | CLOSED at `-0036` |
+| 6 | `R-SEAL-2` drafted and unproposed | me | a round that proposes it | carried |
+| 7 | ADR-0016 §7.2's immutability question, unanswered for the **active** volume | me | an ADR amendment or an explicit decision that R3 + history suffices | carried |
+| 8 | ADR-0019 is PROPOSED, not accepted; its §7 diffs are orchestrator-scope | orchestrator | acceptance or rejection | carried |
+| 9 | `agents/journals/INDEX.md` stale, silent on volumes | orchestrator | a gate-boundary refresh (PROTOCOL §9) | carried |
+| 10 | No owner for rotating a **shared worker-template** journal | orchestrator | a ruling, or an ADR-0017 clause | carried, overtaken |
+| 11 | `docs/gates/P1-module-ready-checklist.md` does not exist | orchestrator (file); me (content) | the checklist landing before the gate | CLOSED at `-0037` |
+| 12 | `P1-spec-freeze-checklist.md`'s ledger `C-7` ordinal | me | the next round opening that checklist | carried — this round's write set excluded `docs/gates/`, for the third round running |
+| 13 | `lessons-harvest-block.md` instantiation per gate | orchestrator | the first gate to instantiate it | carried |
+| 14 | `C-5`'s §0.6 repair: vacuity case and the `-0021` case are different dispositions | me | any WO next opening `requirements.md` §0.6 | CLOSED at `-0039` |
+| 15 | "Last octet" received-versus-delivered undecided programme-wide (§0.6) | me | a ruling in `requirements.md` §0.6 | carried — this round opened `requirements.md` at **§0.5** and not §0.6, so the item is untouched rather than passed over; it remains the oldest untaken §0.6 item |
+| 16 | Three handoff packets restate "four classes" | me | a packet-text round | carried |
+| 17 | M03 has no §11 item tracking REQ-901 (e)/(f) to the first co-simulation run | me | the round that opens SPEC-M03 §11 | carried |
+| 18 | REQ-901's configuration clause names three transmit-only parameters | me | a `requirements.md` round | carried — **this round opened `requirements.md` and did not take it**, the edit being §0.5's and §13's. Third consecutive pass; it is now a scheduling item |
+| 19 | The reference's disposition of a sub-5-octet frame | dv_lead (measurement); me (ruling) | a co-simulation round that measures it | carried |
+| 20 | The (e)/(f) reading should run over every error class families E–H assert | me, with dv | a scoping round before Phase 3 | carried |
+| 21 | `R-CI-4`'s gate-removal owner | orchestrator | naming the owner | carried |
+| 22 | The M03 RTL non-conformance against §9 ruling 9 | rtl_lead (fix); dv_lead (bug) | a `BUG-` round | carried |
+| 23 | SPEC-M03 §6.1 item 4 unscoped; §9's paragraph out of table order; `ifc_check.ml`'s stale note | me (first two); orchestrator (third) | the next round opening each file | carried |
+| 24 | Requirements ledger open: `C-45`, `C-36`, ADR-0012's residual, REQ-007 at two modules, `C-38`, the `DRAFT` header, `C-2`, `C-3`, `C-7`, `C-9`'s REQ-903 half, `C-32`, `C-33`, `C-44` | me | each closes on the round that opens its clause | carried |
+| 25 | Two re-countersignatures and one concurrence owed at `-0013`'s SHA | dv_lead | dv countersigning | carried |
+| 26 | The M03-G6 window bound is looser than `-0021`'s ruling | me | reading whether dv tightened G6's window | carried, still unchecked |
+| 27 | dv's re-countersignature owed on the §0.6 diff (`-0023`) | dv_lead | dv countersigning | carried |
+| 28 | dv's re-countersignature owed on the §0.5 + REQ-016 diff (`-0024`) | dv_lead | dv countersigning | carried — **and this round is its fifth customer and the first to amend the same section.** The straddle test and the *what survives injection* rule this round edits are that diff's own text; the amendment is additive (a term) and retires none of it, so an unsigned `-0024` now has a longer unsigned successor. This is the strongest argument yet for clearing it |
+| 29 | Three module specs owe the same repair, named in §13's row (`-0024`) | me | a batch round over the three | CLOSED at `-0038` |
+| 30 | `AP-xgmii_rx_64.md` §4.I's cells and `FINDING SO-1-A`'s §6 repair are dv's | dv_lead | dv's next plan round | carried |
+| 31 | The design consequence owed as a work order, not absorbed (`-0025`) | me (WO); orchestrator (dispatch) | the WO issuing | carried |
+| 32 | `BUG-0002` cannot close on the `-0025` ruling; M03-I4/I6 remain red | dv_lead | a bug round | carried |
+| 33 | Option 2 (narrowing REQ-016 at an XGMII port) remains available only as **E2** | orchestrator → sponsor | an E2 escalation, or the option lapsing | carried; still the only E2 on this ledger. **This round again did the opposite of narrowing REQ-016** — it states what REQ-016's own wrapper may assert at two more modules and touches REQ-016's text nowhere |
+| 34 | `FINDING CSG-1`'s class request: four cases, three outcomes | dv_lead (carrier); me (class) | a record-only run, then a class round | carried |
+| 35 | Repairs that correct dv's findings rather than my own text, unseen by dv | dv_lead | dv reading them, disputing or not | carried — **and this round adds a fourth of the kind, in the other direction**: the straddle licence is a defect *nobody* filed, found by working rtl_lead's filing, and it is the load-bearing half of the ruling |
+| 36 | The `-0032` countersignature is owed | dv_lead | dv countersigning | CLOSED at `4e7331b` |
+| 37 | The REQ-110 delivered-octets case has no class and now has a stimulus bar | me (class); dv (stimulus) | a class ruling | carried |
+| 38 | `WO-0063` phase B's disclosure axis (`-0030`) | dv_lead | that phase closing | carried |
+| 39 | Whether any Phase-1 module other than M03 needs the `-0031` treatment | me | a survey round | carried |
+| 40 | The nine role-rewrites are the weakest part of `-0034`'s nil-domain declaration | auditor (sampling) | an auditor finding, or the collator accepting the tier | carried |
+| 41 | `-0030`'s stated interval is corrected but not retracted | me | nothing repairs it; the correcting notes are the only remedy | carried |
+| 42 | A2.4's five clerical edits to `docs/gates/lessons-harvest-block.md` | me | the next round opening `docs/gates/` | CLOSED at `-0037` |
+| 43 | A2 binds without countersignature; a contest is carried to an Amendment A3 | any contesting seat; me for drafting | a re-verdict without contest, or an A3 landing | carried, half spent |
+| 44 | The block's preamble still says an `SO-` instantiates §3's block *"verbatim"* | me | the next round opening `docs/gates/lessons-harvest-block.md` | carried — **third consecutive round whose write set excludes the file**; the fix is a dispatch that includes `docs/gates/`, which is the orchestrator's to sequence |
+| 45 | The `P1-module-ready` checklist's ledger `G-1 … G-11`; five rows are mine | me for those five | each `G-` row's own closing event | carried — **`G-3` gains material again**: two more frozen specifications take post-freeze diffs and **both are editorial**, so the post-freeze churn count still does not move |
+| 46 | REQ-904's commissioned CI set-equality script does not exist | dv_lead (`tools/` scope); me for the `WO-` request | the script landing green | carried — **this round adds no REQ id**, fourth round running |
+| 47 | Three countersignatures owed on `-0038` | dv_lead | dv countersigning each | CLOSED at `-0039`; re-checked at `-0040`; **re-checked here**: this round amends §0.5's *straddle* and *identity* text, which the `-0038` REQ-210 diff cites but does not contain, and the inserting-module clause that diff *did* write is extended, not retired — its M04 numbers (ΔC = 2, L = 16, q = 0) are unchanged and its signature is undisturbed. Stays closed |
+| 48 | `AP-xgmii_tx_64` §8 item 2: REQ-901 declares no divergence class at the M04 boundary | me (the record); orchestrator (the sequencing) | the vendoring commit, then a derivation round | carried; the spec half stays fully discharged |
+| 49 | `AP-xgmii_tx_64` §8 item 3 makes `C-5` a dependency of a landed plan | me | the §0.6 round item 14 named | CLOSED at `-0039` |
+| 50 | **A closed ledger item can be reopened by a later ruling, and nothing detects it** | me | a survey of closed items whose grounds cite a since-amended §0.5/§0.6 clause | **carried, and this round is the fourth instance and the first from the *other* direction**: not a closed item falsified by an amendment, but an amendment (`-0038`'s inserting-module clause) falsified by a module it had never been evaluated against. The survey's two slices would not have caught it — neither reaches a clause's own *reach*. A third slice is owed: for each normative clause, the set of modules it quantifies over, evaluated |
+| 51 | `FINDING CSG-1`'s four cases have never been checked against a run | dv_lead (the run); orchestrator (scheduling) | the first record-only run | carried, unchanged |
+| 52 | SPEC-M04's own §11.3 carries `C-5` as a deferred item | me | the `C-5` round of items 14 and 49 | CLOSED at `-0039` |
+| 53 | §0.5 states its two tests as properties of a module, and a module may pass them at a port where the stimulus they quantify over has no instance | me | a `requirements.md` §0.5 round, or a deliberate decision to leave the statement at the module | **carried, and it gains a third instance and a sharper form.** M07 and M15 *passed* the straddle test only because the test was keyed to the wrong offset — a module passing a test it should fail, where item 53's two instances were modules passing tests vacuously. All three say the tests are stated over the wrong domain. **This round opened §0.5 and did not take it**, deliberately: one signature should answer one question, and the term was that question. Three instances is past the threshold this row set at two — the §0.5 scoping round should now be scheduled |
+| 54 | Class (h)'s REQ-110 half now has no comparing-run instance | me (the class); dv_lead (an observation) | the class round of item 34 | carried, unchanged |
+| 55 | Two countersignatures owed on `-0039` | dv_lead | dv countersigning each | CLOSED, both halves, at `747e561` |
+| 56 | **The `AP-M14-1` adjacency stands unscoped at four other specifications** — SPEC-M06, SPEC-M17, SPEC-M16, SPEC-M19 | me | a round per specification, or one batch round | carried — **and this round is evidence for the batch reading rather than the per-round one**: two specifications took the same repair in one round because their derivations differed only in a constant, which is the condition under which a batch is safe |
+| 57 | **SPEC-M17 §7 and SPEC-M08 §7 still carry the retired *"delay everything by exactly 8 octet times per cycle"* sentence** | me | the round that opens SPEC-M17 §7 | carried — **and this round repaired the *cycle-form* of the same sentence at M07 and M15**, where it read *"delay everything by the number of idle cycles"*. That is the same defect in the same class, so the item's site list was short by two and the two are now closed. What remains is item 57's actual open question, which is different and is about **pulses** at M17 and M08, and is untouched |
+| 58 | One countersignature owed on `-0040`: the §0.6 `ABS-1` diff (editorial, in force meanwhile) | dv_lead | dv countersigning | carried — **new-in-progress**; no signature has arrived since `-0040` landed |
+| 59 | **Two specifications compose M07's and M15's §7 figures under a name those bullets no longer use exclusively** — SPEC-M16 §7's transmit chain and SPEC-M13 §6.1's REQ-502 table row 15 | me | the round that next opens SPEC-M16 §7 or SPEC-M13 §6.1 | **new this round, and it is a naming-currency item and not a defect** — both texts are true and both name their two events correctly, so neither is falsified. What they under-name is that the cited bullet now pins two constants. Measured by grep over eleven citations, nine of which are handshake or abandon references and untouched |
+| 60 | **One countersignature owed on this round**: the §0.5 output-offset diff (**editorial**, IN FORCE meanwhile, signature narrowed to q's definition, the two amended identities, the whole-number bullet, the **Cycles** clause and the straddle test) | dv_lead | dv countersigning | **new this round.** The SPEC-M07 and SPEC-M15 diffs owe **none** of their own — both are consequences of the §0.5 ruling at sites dv did not file, carrying no rule beyond it. A contest of the *in force meanwhile* disposition, or of the term-versus-scope ruling, stays open to dv and would take a narrow round |
+
+- **No harvest note is owed** — PROTOCOL §7 and charter §8 attach it to an `SO-`
+  and to a phase gate, and this round is neither. Declared rather than omitted.
+  The open span for my next harvest continues to run and this entry joins it.
+- **No escalation.** **E2 not triggered** (no requirement, phase or role added or
+  dropped; no REQ's normative text is touched, and item 33 remains the only E2 on
+  this ledger). **E3 not triggered** — no toolchain or licensing surface is
+  reached. **E5 not triggered**: rtl_lead routed C-RL-8 undecided and disputed
+  nothing; this is an adjudication of a filing, not of a disagreement.
+
+### Open-questions
+
+1. **The thing dv should check hardest is not the term but its default.** q's
+   paragraph says a specification stating no q is stating q = 0, and I justified
+   that by a module-by-module reading (Reasoning §2). If **any** Phase-1 module
+   other than M07 and M15 has a non-zero q, then the default silently mis-states
+   that module's identity and the sweep I declined to mint is owed after all. The
+   candidates I judged 0 and would most want re-derived are **M11** (whose output
+   is a generated packet, not a forwarded one) and the three structural wrappers
+   **M16, M19, M20**, whose transmit-side ports expose a child's stream and whose
+   q is therefore inherited rather than their own — a case §0.5 does not discuss.
+2. **The *in force meanwhile* disposition is a departure from the REQ-210 row and
+   is mine, not precedent's.** I took it because holding the diff would leave the
+   licensing form of the straddle test governing in the gap. If dv reads the
+   editorial class as too weak to carry a change in what a monitor may demand,
+   the honest counter is that the change **removes** a permission rather than
+   adding an obligation — but that is an argument, not a signature, and dv's is
+   the one that settles it.
+3. **Item 50 needs a third slice and this round is why.** Both existing slices
+   look for *grounds falsified by an amendment*. This defect ran the other way: a
+   clause correct where it was written, wrong at a module it had never been
+   evaluated against, and undetectable by either slice. The slice owed is: for
+   each normative clause, enumerate the modules it quantifies over and evaluate
+   it at each. That is a round of its own and I am naming it rather than doing it.
+4. **M15's D table is derived and unreviewed by anyone.** M15 has no RTL, so
+   unlike M07 — whose D structure rtl_lead derived independently while
+   implementing it — nothing checks my four delay figures but §6.1's own mapping.
+   They are the most re-derivable thing in this diff and the least witnessed.
+5. **The dispatch's write set and my reading of it.** I edited
+   `docs/specs/requirements.md` §0.5's body, not only its §13 row, on the ground
+   in Reasoning §3 that a row records a diff and cannot land without one. If the
+   orchestrator intended the narrower reading, this round should be bounced whole
+   rather than partially reverted — the three files are one diff and the module
+   repairs are unsound without the §0.5 term.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
+- docs/specs/modules/eth_axis_tx.md
+- docs/specs/modules/ip_eth_tx_64.md
