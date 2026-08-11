@@ -991,3 +991,606 @@ amendment adds to the orchestrator's owed-transcription list except this hunk.
    silent for a reader who has the standard, which is the refusal we want.
 5. **Federation** — A1.7(4), parked with the sponsor, and the only failure mode
    here whose answer is not in this document.
+
+---
+
+## Amendment A2 (2026-08-11) — the sign-off instantiation, the seat-qualified id, and the span's closed end
+
+**§§1–12 and Amendment A1 above stand unedited.** This section is an amendment in
+the sense A1 was, which is ADR-0003's: what changed is recorded here rather than
+rewritten silently upstream, so the original text and the reason it moved are both
+readable in one file and one diff.
+
+**Three items, one round, and they are unrelated in subject and identical in
+shape.** Each is a place where this ADR minted an instrument and left an end open;
+each was found by a seat **executing** the instrument rather than reading it; and
+none was found by its author. That is §3.6's argument for self-mining arriving a
+second time, from three chains at once, and it is recorded here rather than
+claimed, because a document that predicts its own defects and then finds none is
+the failure mode §7.1 names.
+
+| item | the open end | found by | this ADR's own text at fault |
+|---|---|---|---|
+| **1** | which of the instantiated block's eleven boxes a **sign-off** can carry, and which are the collator's **later** acts | dv_lead, `FINDING SO-5`, executing the block inside a packet graded by it | §4.1's *"filled by the orchestrator"* against `docs/gates/lessons-harvest-block.md`'s preamble (A2.1) |
+| **2** | the `LC-`/`LD-` id space has no per-miner namespace: five seats at one tag mint five sequences from 1 | architect_docs_lead (`J-architect_docs_lead-0034`, banked as its own candidate 61) and rtl_lead (`J-rtl_lead-0013` Open-question 1), independently, in the same arc | §4.3 and A1.4 |
+| **3** | whether a harvest's span ends **at** the note's own entry or at the entry **before** it, and where the next one opens | rtl_lead, `J-rtl_lead-0013` Open-question 2, measured across two chains | §3.2's second sentence, whose end is stated and whose successor is not |
+
+### A2.0 Authority, route, and the acceptance ruling
+
+**The route is PROTOCOL §11 and the requesting seat is dv_lead.** A1's authority
+was the sponsor's quoted direction; there is no sponsor direction here and none is
+claimed. The request is quoted rather than paraphrased, because it is the thing
+being ruled on and because a request paraphrased by the seat that grants it cannot
+be checked against what was asked — `J-dv_lead-0167` Open-questions item 1
+(landed `5d50ab7`):
+
+> **`SC-12`'s wording defect is unresolved and now blocks a future `PASS`, so it needs an
+> amendment rather than a reading (ESCALATION, E-class none — an ADR request via the
+> orchestrator, PROTOCOL §11).** `SC-12` demands *"every box checked"* of a **packet**;
+> four of the eleven boxes — shell transcription, `LC-`/`LD-` → `L-` pairing,
+> sponsor-visibility, the completeness declaration — are the orchestrator's acts **after**
+> the packet lands, by §4.1 and the block's §1 item 4. On a literal reading no `SO-` can
+> ever satisfy `SC-12`. **This round refused to rule it in either direction** (§4.9), and
+> a re-verdict round that finds `FINDING SO-6` paid **cannot avoid it**. **Requested**: an
+> ADR-0018 amendment stating which boxes a `SO-`-time instantiation must carry and which
+> belong to the gate-time collation, so the criterion becomes satisfiable without any
+> packet re-reading its own clause.
+
+**A2 IS IN FORCE AT THIS LANDING**, on the authority of **PROTOCOL §11**, completed
+at this commit: §11(1)'s numbered ADR is this amendment; §11(2)'s orchestrator
+journal entry is the entry accompanying the commit that carries it — which is the
+acceptance act, exactly as ADR-0019's Status block says of itself, so if the
+orchestrator does not write it, A2 is not in force; §11(3) owes nothing, because no
+`R`-rule is minted, no script changes, and no enforcement semantics move (§7.4's
+reason, unamended, and A1.6's application of it to a change inside a
+review-enforced criterion).
+
+**No countersignature is required and none is awaited.** The programme's two
+nearest precedents took one — ADR-0016 and ADR-0017 both flipped PROPOSED →
+ACCEPTED on dv_lead's countersignature — and the difference is worth stating rather
+than skating over, because a rule that is followed twice and dropped the third time
+is how a precedent becomes a preference:
+
+1. **In both of those, the *content* authority was dv_lead's.** ADR-0016 records a
+   rule dv_lead itself found and stated (`RV-0049-VERDICT` §1); ADR-0017's design
+   was checked by dv_lead against the scripts before it signed. This amendment's
+   content authority is this seat's: the block, its boxes, §3.2's span and §4.3's
+   ids are all this ADR's own instruments, and the defect in each is this ADR's.
+   dv_lead is the **requester**, and its request is granted in the terms it asked
+   for (A2.2, and the partition is dv's own four-and-seven).
+2. **The independence property dv_lead was protecting points the other way.**
+   `SO-xgmii_rx_64.md` §4.9 refused to rule the question in either direction
+   because *"both possible rulings would amend a criterion inside the document the
+   criterion grades"* — the graded party must not be the one who decides the
+   criterion. **Making A2 wait on the graded seat's countersignature re-admits that
+   seat to the decision it declined to make.** A countersignature would be the
+   dignified version of the thing refused.
+3. **A2 cannot flip today's token, which is the test for a self-serving
+   amendment.** At `14615f8` `SC-12` fails on `FINDING SO-6` — three **mining**
+   boxes unmet at one row — and every one of those three is in Part A below, i.e.
+   still the packet's to check. A2 removes an impossibility; it removes no
+   measured failure, and the verdict it leaves standing is `FAIL`.
+4. **Nothing here decides a question §§1–12 or A1 left to another authority.**
+   LH1/LH2/LH3, self-mining, who mines, the shell's scheme, the sponsor's shape,
+   the enforcement posture and every §11 rejection are untouched (list below).
+   Item 2 codifies a ruling the **collator already made** and four chains have
+   already minted against; item 3 closes an end §3.2's own sentence left open.
+
+**How to contest it, since it binds without consent.** Any seat may contest any of
+the three rulings. The route is a finding in that seat's own committed artefact,
+carried to an **Amendment A3**, drafted by this seat under PROTOCOL §11 like this
+one. **A contest does not suspend A2** — a criterion that any graded party can
+suspend by objecting is the defect of A2.1 in a new place — and A2 states this so
+that a contesting seat knows in advance that it argues against a live rule rather
+than against a proposal.
+
+**Unmoved by this amendment**, stated as a list because an amendment that does not
+say what it leaves alone invites re-reading of everything: **LH1, LH2-g, LH2-d and
+LH3, verbatim**; the three tiers and the classifier (A1.1–A1.3); self-mining and
+who mines (§3.3, §3.6) — including the five-seat obligation at **every** `SO-`,
+which A2 does not reduce and which is the substantive half of `FINDING SO-5`; war
+stories kept and re-offerable (§3.5, A1.3.1); collation as **clerical** and the
+collator's bar on editing a statement (§4.1); **one shell commit per harvest**
+(§4.2, and A2.2's ruling on batching preserves it verbatim); sponsor refusal (§4.4,
+D6); the refusal to legislate the shell's `L-` scheme, its `LESSONS` format or its
+pack storage (§4.3, §12, A1.4); the review-enforced posture and the refusal to mint
+an `R`-rule (§7.4); every alternative rejected at §11; every item parked at §12 and
+A1.7(4).
+
+**Reading rules for the text above.**
+
+- Where **§4.1** says the block is *"filled by the orchestrator from each agent's
+  note"*, it describes **gate-time collation**. At an `SO-` the instantiation is
+  written and checked by the round that signs the packet (A2.2). §4.1's authority
+  rule is unchanged at both sites: **each cell's authority is the cited
+  `J-<agent>-NNNN` entry**, and whoever fills the table is transcribing, never
+  selecting.
+- Where **§4.3** and **A1.4** give the candidate id as `LC-<harvest-tag>-<n>` and
+  `LD-<harvest-tag>-<n>`, read `LC-<seat>-H<k>-<n>` and `LD-<seat>-H<k>-<n>`
+  (A2.6). A1.4's independent-sequence rule, its regrade rule and its
+  never-reuse rule are unchanged and now apply to the qualified form.
+- **§3.2**'s span sentence stands; A2.7 supplies the successor sentence it lacks
+  and does not restate the one it has.
+- **§6 item 2**, **§9** and the PROTOCOL §7 paragraph are correct as they stand and
+  are **not** amended — A2.5 measures why.
+- **This amendment's decisions are labelled `A2-D1` … `A2-D12`**, and a bare `D1` …
+  `D7` anywhere below is §2's, unchanged. The prefix is not decoration: this
+  amendment's own second item exists because a label minted without a namespace
+  collides the first time a second party mints one, and an amendment that repaired
+  that for candidate ids while inflicting it on its own decisions would be
+  unreadable in exactly the way it complains about.
+
+### A2.1 The defect, at its two sources, and the one of them that is this seat's
+
+`FINDING SO-5` (MAJOR, dv_lead, `SO-xgmii_rx_64.md` §4.8), quoted at its wording
+half because the substantive half is unaffected by anything here:
+
+> **`SC-12` demands of this packet a thing this packet's author cannot do.** It requires
+> the block *"instantiated in this packet with **every box checked**"*, which imports
+> PROTOCOL §7's **gate** condition — *"A gate is not passed while any box … is
+> unchecked"* — onto a **packet**. §4.1, in the same document, states the opposite: the
+> block is *"filled by the orchestrator from each agent's note"* and the shell transit
+> *"is the orchestrator's"*.
+
+**The finding is right and its diagnosis is one step short, and the missing step is
+the part that belongs to this seat rather than to dv_lead's criterion.** `SC-12` did
+not import PROTOCOL §7's gate condition directly. It imported
+`docs/gates/lessons-harvest-block.md`'s preamble, which had **already** extended
+that condition to sign-offs and **attributed the extension to PROTOCOL §7**. The two
+sentences, measured at this commit:
+
+```sh
+grep -n "is not passed" agents/PROTOCOL.md docs/gates/lessons-harvest-block.md
+# agents/PROTOCOL.md:291:later project pulls in only if that domain is its own. A gate is not passed
+# docs/gates/lessons-harvest-block.md:5:verbatim, filling the bracketed fields. **A gate is not passed, and a module
+```
+
+- **PROTOCOL §7** (line 291): *"A gate is not passed while any box of the
+  instantiated `docs/gates/lessons-harvest-block.md` is unchecked."* — **gates
+  only**. An `SO-` is not a gate: PROTOCOL §3 classes it as a packet and a merge
+  precondition, and §7's own table makes `SO-*.md` PASS an **input** to
+  `P<n>-module-ready`. The constitution never said what `SC-12` was told it said.
+- **The block** (line 5): *"**A gate is not passed, and a module sign-off is not
+  complete, while any box in the instantiated block is unchecked** (PROTOCOL §7)."*
+  — the clause after the first comma has no source in PROTOCOL §7, and the
+  parenthesis says it does.
+
+**So the impossibility was minted in this seat's own file, one hop upstream of the
+criterion that inherited it**, and `SC-12`'s author is the party that discovered
+it while being graded by it. That ordering — the block over-reaches, the criterion
+quotes the block in good faith, and the executing round pays — is the same shape as
+this ADR's other two items, and it is why the repair is an amendment here and not a
+correction to dv_lead's packet: **the packet quoted its source accurately; the
+source was wrong.**
+
+### A2.2 THE PARTITION — Part A is the harvest's own record, Part B is the collation
+
+**The eleven boxes of the block's §3 checklist split 7 / 4, and the four are exactly
+the four dv_lead enumerated.** The discriminator is one question, and it is not
+"who is the orchestrator": it is **whose act does the box observe, and does that act
+exist yet when the instantiation is written.**
+
+> **Part A — the MINING boxes (seven).** Each observes an act that is complete
+> before the instantiation is written: a note exists, a span tiles, a classifier
+> was run, a candidate discharges its criteria, a pack is named, a table was filled
+> without editing a statement. **All seven are checkable at an `SO-`, at a gate,
+> and by any later reader**, because their whole evidence is committed journals.
+>
+> **Part B — the COLLATION boxes (four).** Each observes an act of the
+> **collator**, performed **after** the harvest's mining is complete and **outside**
+> the artefact being written: the shell commit, the `LC-`/`LD-` → `L-` pairing that
+> only exists once the shell has allocated, the sponsor's sight of the table and the
+> diff, and the orchestrator's declaration that the harvest is complete. **None can
+> be checked by the round that writes a sign-off packet, in any state of the
+> world.**
+
+| # | box (short form; the block's own wording is unchanged) | part | why |
+|---|---|---|---|
+| 1 | every persistent-journal agent has a row, and every span tiles | **A** | reads five journals; complete when they are committed |
+| 2 | each row's harvest note exists and carries span, candidates, war stories | **A** | same |
+| 3 | the classifier was run on every candidate, from the most general honest statement | **A** | a property of each note's own text |
+| 4 | every candidate discharges LH1, LH3 and LH2 at its stated grade | **A** | same; and the box already says *checked against the note, not against the summary line* |
+| 5 | every `LD-` row names a domain pack | **A** | same |
+| 6 | pack names checked against those already in use | **A** | reads prior gate records, which are committed |
+| 7 | no candidate was edited in transcription | **A** | a property of the table being written, so it binds **whoever writes one** |
+| 8 | shell transcription: exactly one commit | **B** | another repository; the collator's act |
+| 9 | `LC-`/`LD-` → `L-` pairs recorded | **B** | the `L-` id does not exist until 8 |
+| 10 | sponsor-visible; refusals recorded | **B** | happens at the gate (D6, §4.4) |
+| 11 | harvest declared complete by the orchestrator | **B** | the collator's declaration, by definition not the miner's |
+
+**A2-D1 — an `SO-` instantiates Part A only.** A sign-off packet's instantiation
+carries the seven Part A boxes as boxes, and carries Part B as a **named deferral
+line and not as boxes**, so that the instantiation contains no box its author is
+structurally unable to check. The line is copied from the block and names its
+carrier:
+
+> **Part B — collation, deferred to `<gate>`.** Shell transcription, the
+> `LC-`/`LD-` → `L-` pairing, sponsor visibility and the completeness declaration
+> are the collator's acts at the gate that ratifies this harvest (ADR-0018 §4.2,
+> §4.4, D6; A2.2).
+
+**A2-D2 — a gate instantiates all eleven**, and PROTOCOL §7's sentence keeps its
+exact present meaning there: **a gate is not passed while any of the eleven is
+unchecked.** Nothing about a gate is relaxed by this amendment.
+
+**A2-D3 — Part A is re-checked at the gate over the gate's own spans.** An `SO-`'s
+Part A check discharges that sign-off and **does not** discharge the gate's: the
+gate's harvest is a different trigger over different spans, and a gate that
+inherited an `SO-`'s checked boxes would be checking a claim about entries it does
+not cover. This is stated because the cheapest wrong reading of a partition is that
+the earlier site's work carries forward.
+
+**A2-D4 — who writes and checks the instantiation.** At an `SO-`, the round that
+signs the packet (dv_lead); at a gate, the orchestrator as collator. **§4.1's
+authority rule is unchanged at both**: every cell's authority is the cited
+`J-<agent>-NNNN` entry, box 7 binds whoever fills the table, and a party who
+re-grades another miner's statement has become the selector §4.1 forbids —
+which is the refusal `SO-xgmii_rx_64.md` §4.9 already executed against
+`J-orchestrator-0233`'s eighteen and is the behaviour this ruling preserves. A
+packet author checking Part A is not grading its own note in any new sense: it
+reads five notes and records what they say, and the auditor samples the result
+(§3.6, §7.2).
+
+**A2-D5 — one shell commit per harvest, never one per gate.** Deferring Part B to a
+gate raises a batching question §4.2 did not face: several `SO-` harvests may be
+ratified at one gate. **They are transcribed as several commits, one per harvest,
+in harvest order.** §4.2's sentence — *"the shell unfreezes for exactly one commit
+per harvest"* — is preserved verbatim rather than reinterpreted, and the sponsor's
+review stays one diff **per harvest** instead of becoming one diff per gate, which
+is the readability property §4.2 bought and A2 declines to spend.
+
+### A2.3 What A2 does NOT do to the criterion, or to the verdict
+
+- **It does not decide any verdict, and it cannot.** At `14615f8` `SC-12` is NOT MET
+  on `FINDING SO-6`: three of the seven **Part A** boxes are unmet at the
+  orchestrator's row. All three stay in Part A. A2 changes the count of boxes a
+  packet must carry from eleven to seven and leaves every failure that has actually
+  been measured exactly where it was.
+- **It does not weaken the five-seat obligation.** `FINDING SO-5`'s substantive
+  half — *"the programme's first harvest is therefore one fifth complete"* — is
+  untouched, and boxes 1 and 2, which are what made that finding checkable, are in
+  Part A at every site.
+- **It does not edit `agents/handoffs/SO-xgmii_rx_64.md`, and orders no edit to
+  it.** That packet is dv_lead's; §4.8's and §4.9's landed instantiations are dated
+  records and are not migrated or re-instantiated by this amendment, on A1.5's
+  precedent (*"nothing is migrated and no committed harvest is regraded"*). A
+  re-verdict round reads `SC-12` against the amended block and this section.
+- **It does not restate `SC-12`.** `SC-12`'s own words — *"THE PROGRAMME'S FIRST
+  LESSONS HARVEST IS COMPLETE … instantiated in this packet with every box
+  checked"* — are dv_lead's to keep, narrow or rewrite. A2 supplies the partition
+  the request asked for and stops there. **Named so it is not a trap**: under A2 a
+  packet-side criterion can require the harvest's **mining** to be complete; the
+  word *complete* in §4.2/D5's collation sense is a gate-time property and no
+  packet can carry it. Which of those `SC-12` means is its author's ruling, made in
+  its author's document, and this amendment deliberately does not pre-empt it.
+- **It does not reach any other criterion of that packet**, and nothing here is a
+  finding against dv_lead. The defect was in this seat's file (A2.1).
+
+### A2.4 The block's edit — source text here, applied by this seat's next round
+
+`docs/gates/lessons-harvest-block.md` is **inside** this seat's write scope
+(PROTOCOL §6), so this is not ADR-0016 §8's cross-scope mechanic; it is a
+**write-set discipline**, and the reason is stated so it is not read as an
+inability. This round's dispatched write set is this ADR and this seat's journal.
+Editing a second file outside that set would make the round's `Files-in-this-commit`
+disagree with what was commissioned, in the same commit as an amendment about
+instruments that were minted in one sitting.
+
+**A2 is nonetheless in force before that edit lands, and the block itself is the
+authority for saying so**: the block states twice that it is the short form and this
+ADR is the normative text — *"Normative text is ADR-0018 §3.4 as amended by §A1.2;
+this is the short form"* (§2) and *"Normative text is ADR-0018 §A1.3"* (§2.1). A
+short form that disagrees with its normative text is stale, not governing. **The
+partition is in force from this section; the block edit is the short form catching
+up**, and until it lands a reader of the block reaches the correct rule by the
+block's own deference clause.
+
+**Owed, this seat's scope, carrier: the next architect round that opens
+`docs/gates/` — which is the `P1-module-ready` checklist round already owed.** Five
+clerical edits, their text fixed here:
+
+1. **Preamble (line 5), the clause that minted the impossibility.** Replace
+   *"**A gate is not passed, and a module sign-off is not complete, while any box in
+   the instantiated block is unchecked** (PROTOCOL §7)."* with:
+
+   > **A gate is not passed while any box in the instantiated block is unchecked**
+   > (PROTOCOL §7). **A module sign-off instantiates Part A only** — the seven
+   > mining boxes — **and is not complete while any of them is unchecked**; Part B's
+   > four collation boxes are the collator's acts at the gate that ratifies the
+   > harvest, and appear in an `SO-` as a named deferral line, never as boxes
+   > (ADR-0018 §A2.2).
+
+2. **§1 item 4** gains its site qualifier: the orchestrator fills and checks the
+   table **at a gate**; at an `SO-` the round that signs the packet does, and each
+   cell's authority is the cited `J-<agent>-NNNN` entry at both sites (A2-D4).
+3. **§1 item 2** takes the qualified id form of A2.6: `LC-<seat>-H<k>-<n>` and
+   `LD-<seat>-H<k>-<n>`, the two sequences still numbering independently, ids still
+   never reused, and the harvest tag recorded in the row rather than inside the id.
+4. **§3's checklist** splits under two sub-headings — **Part A — mining** (carried
+   by a sign-off and by a gate) and **Part B — collation** (a gate) — **with all
+   eleven box texts unchanged and in their present order** (1–7 under A, 8–11 under
+   B), plus the deferral line of A2-D1 quoted under Part B for `SO-` use.
+5. **§4's transcriber notes** gain one line: an `SO-`'s Part A check does not
+   discharge the gate's (A2-D3), and several harvests ratified at one gate are
+   transcribed as several shell commits, one each (A2-D5).
+
+**Nothing above changes a box's wording.** A partition that also rewrote the boxes
+would make it impossible to tell which of two effects a later disagreement is about.
+
+### A2.5 No PROTOCOL diff is owed, and the measurement is A2.1's
+
+**Stated explicitly because A1 and §8 each owed one, and an amendment that is silent
+about the constitution invites a reader to assume it forgot.** PROTOCOL §7's
+lessons-harvest paragraph is **correct as it stands** and A2 proposes no hunk
+against it:
+
+- Its box sentence is scoped to **gates** (A2.1's measurement), and A2 leaves a
+  gate's condition exactly as it is — all eleven, unchecked box means not passed.
+- It never mentions the candidate id scheme, so A2.6 does not reach it — the local
+  id form has never been in the constitution and is not being taken out of it:
+
+  ```sh
+  grep -c "LC-\|LD-" agents/PROTOCOL.md
+  #    0
+  ```
+- Its span sentence — *"stated as an entry-id interval so that spans tile and a
+  skipped harvest is a visible gap"* — states the **property** A2.7 preserves and
+  never states a boundary convention, so A2.7 adds no obligation the constitution
+  contradicts.
+
+**§11(3) is untriggered for §7.4's reason**, unamended: no `R`-rule, no script
+change, no enforcement semantics moved. **This ADR's §6 item 2 and §9 are also
+unamended** — both speak of gates, both are true after A2.
+
+### A2.6 The candidate id gains a seat qualifier — RULING O-1 codified, with four refinements
+
+**The defect, in this ADR's own words at §4.3**: a candidate carries
+`LC-<harvest-tag>-<n>`, harvest tag = the gate name or `SO-<module>`. At the
+programme's first harvest, **five seats mined one tag**. Five sequences from 1, one
+namespace.
+
+**What the record shows is better and worse than a collision.** Measured over
+literal id occurrences in `agents/journals/` and `docs/`, and the measurement's two
+limits are stated before its output rather than after someone trips on them. It
+counts **citations, not allocations** — ranges are cited by their endpoints — and
+it is **not the prefix set**: a note that declares its prefix in prose and then
+abridges every id is invisible to it, which the auditor's range is, exactly
+(`grep -c "LC-SO-xgmii_rx_64-AUD-[0-9]" agents/journals/claude_auditor_agent.v02.md`
+→ **0**, against a note that says in terms *"Every id is `LC-SO-xgmii_rx_64-AUD-<n>`
+… Abridged ids `-AUD-n` below"*). **The prefix set is read from the notes; the
+command is quoted for what it does show.** **Taken at this amendment's parent
+commit `b4814b0`, for §1.2's reason**: this section cites ids of its own and a
+self-counting measurement is not stable under its own edits — at this commit the
+same command adds the `LD-dv_lead-H2` prefix A2-D9 invents as an example below, and
+nothing else moves.
+
+```sh
+# At b4814b0 — before this section starts citing ids itself:
+grep -rhoE "\bL[CD]-[A-Za-z0-9_]+(-[A-Za-z0-9_]+)*-[0-9]+\b" agents/journals docs/ \
+  | sort -u | sed -E 's/-[0-9]+$//' | sort | uniq -c
+#    2 LC-SO-M03            <- this ADR's own A1.4 examples
+#    5 LC-SO-xgmii_rx_64    <- dv_lead, first harvest (allocated 1 … 94)
+#    1 LC-SO-xgmii_rx_64-ADL
+#   14 LC-data_wrangler-H1
+#    3 LC-dv_lead-H2
+#    1 LC-orchestrator-H1
+#   50 LC-rtl_lead-H1
+#   28 LC-tb_writer-SELFWALK
+#    1 LD-SO-M03
+#    1 LD-SO-xgmii_rx_64
+#  (+ LC-SO-xgmii_rx_64-AUD-<n>, the auditor's 54, invisible here — abridged in
+#     its note and therefore read from the note, not from this command)
+```
+
+**Four schemes, zero collisions** — and the second half of that sentence is the
+finding, not the reassurance. The scheme this ADR wrote produced no collision
+because **six of the seven minting chains departed from it, independently, in three
+different ways** before it could: dv_lead's first harvest used §4.3's literal form
+and is the only range that does; the auditor and this seat appended a seat
+abbreviation (`-AUD-`, `-ADL-`); rtl_lead, data_wrangler, the orchestrator and
+dv_lead's second harvest used the seat-first form; tb_writer used a walk name
+(`-SELFWALK-`). rtl_lead named the hazard exactly — *"a candidate id that means two
+things is worse than either scheme"* — and the record holds its milder sibling:
+**four forms that mean the same thing**, which no selector can group and no reader
+can sort.
+
+**RULING O-1 is codified.** The collator ruled the scheme at `J-orchestrator-0233`
+while this item was carried on this seat's ledger as *"an ADR-0018 amendment, or
+the collator ruling a scheme"*. It ruled; this codifies, because an interim ruling
+inside one journal entry is not where a programme's id allocator should live.
+Quoted as it was written:
+
+> The LC- id space gains a SEAT QUALIFIER: each seat mints under
+> LC-<seat>-H<harvest#>-<n> (the auditor's LC-SO-xgmii_rx_64-AUD-n
+> and data_wrangler's LC-data_wrangler-H1-n are conformant as minted
+> and are not renumbered). dv_lead's unqualified LC-SO-xgmii_rx_64-1
+> ... -94 is grandfathered as the dv seat's first-harvest range. The
+> collator merges BY TAG and never renumbers; a merge records both
+> provenances. This row is the allocator the concurrent harvests
+> lacked.
+
+**A2-D6 — the id form.** A candidate carries **`LC-<seat>-H<k>-<n>`** (tier 1) or
+**`LD-<seat>-H<k>-<n>`** (tier 2). Four refinements, each with the reason it is
+needed rather than adopted silently:
+
+1. **`<k>` counts the minting chain's own harvests — its *spans*, not its notes,
+   and not the programme's harvests.** Per-seat, because a seat that misses a
+   harvest another seat runs would otherwise have to read outside its own journal to
+   mint an id, and the whole value of the qualifier is that a miner can allocate
+   alone. **Spans, not notes**, on a landed incident: the orchestrator's harvest
+   carries two notes over one span (`J-orchestrator-0233`, the walk, and `-0234`,
+   the admissibility record demanded by `FINDING SO-6`), and `-0234` correctly kept
+   `LC-orchestrator-H1-1 … -18` unrenumbered. A successor note over the same span
+   keeps its `H<k>` and never renumbers.
+2. **The harvest tag leaves the id and is recorded beside it** — in the note, which
+   already names its trigger, and in the gate record's row. §4.3 put the tag inside
+   the id so the id would say *where*; the record shows why that fails. **This
+   programme has already minted ids under two spellings of one module's tag**:
+   A1.5 wrote *"The first instantiation is `SO-M03`"* and the packet landed as
+   `SO-xgmii_rx_64`, so `LC-SO-M03-1` and `LC-SO-xgmii_rx_64-1` name the same
+   harvest of the same module in this ADR and in the packet respectively. That is
+   A1.4's pack-fragmentation failure mode with ids as its subject, and the cure is
+   the same one A1.4 chose for packs: keep the volatile name out of the key.
+   `<seat>` and `<k>` are both immutable and both derivable from the miner's own
+   chain.
+3. **`LD-` takes the same qualifier on its own sequence.** A1.4's independent
+   sequences, its regrade rule (a regraded candidate takes a fresh id from the other
+   sequence; ids are never reused) and its after-commit rule are unchanged;
+   `LC-<seat>-H<k>-1` and `LD-<seat>-H<k>-1` may coexist and are different
+   candidates.
+4. **`<seat>` is the name of the minting journal chain, which covers a worker
+   self-walk.** §3.3 does not oblige a worker to self-mine and this does not change
+   that — but two worker templates have banked candidates in this arc, so the
+   allocator must name them rather than leave a scheme to be improvised a fifth
+   time: a worker template that mints uses its template name and its own chain's
+   ordinal. **A lead's note that mines a worker span mints under the *lead's*
+   qualifier** (the candidates are the lead's yield, §3.3), and says which spawn
+   short-ids it covered, as it already must.
+
+**A2-D7 — nothing landed is renumbered, and the grandfathering is total.** O-1
+grandfathers three ranges by name; the record holds **seven minting chains** under
+four schemes, so the grandfathering is stated over all of them rather than over the
+three that were in view. **Every id already minted stands as minted**:
+
+| range as minted | chain | read as |
+|---|---|---|
+| `LC-SO-xgmii_rx_64-1 … -94` and `LD-SO-xgmii_rx_64-1` | dv_lead | its **H1** |
+| `LC-SO-xgmii_rx_64-AUD-<n>` | auditor | its **H1** |
+| `LC-SO-xgmii_rx_64-ADL-<n>` | architect_docs_lead | its **H1** |
+| `LC-rtl_lead-H1-<n>` | rtl_lead | its **H1** |
+| `LC-orchestrator-H1-<n>` | orchestrator | its **H1** (both notes, one span) |
+| `LC-data_wrangler-H1-<n>` | data_wrangler | its **H1** |
+| `LC-tb_writer-SELFWALK-<n>` | tb_writer | its **H1** |
+| `LC-dv_lead-H2-<n>` | dv_lead | **already conformant to A2-D6 as minted** |
+
+Ids live in append-only journals; a renumbering would be a second name for a thing
+that already has one, which is the defect being repaired, inflicted deliberately.
+**A2-D6 governs every id minted after this commit** — including a seat's next
+harvest, which mints `H2` (or `H3`, at dv_lead) under its own name whatever its
+grandfathered range looks like.
+
+**A2-D8 — the merge clause, tightened so that a merge cannot become an edit.** O-1's
+*"the collator merges BY TAG and never renumbers; a merge records both
+provenances"* is adopted with its ambiguity resolved: when two seats' candidates
+**state the same rule**, the collator may transcribe them as **one** shell `L-`
+entry recording **both** local ids as provenance. The shell entry's statement is
+**one of the two, verbatim**, with the other recorded beside it; the collator never
+synthesises a third sentence, and where the statements are not the same rule it
+transcribes both. This keeps §4.1's bar intact — deduplication is clerical,
+composition is selection — and it is the same distinction A1.4 drew when it let the
+collator normalise a **pack name** but never a statement.
+
+**A2-D9 — the near-collision check of A1.4 still holds**, and now over the qualified
+form:
+
+```sh
+printf 'LC-rtl_lead-H1-7 LD-dv_lead-H2-1 L-D15\n' | grep -oE "L-[A-Z]{1,3}[0-9]{1,3}"
+#    L-D15
+```
+
+§10's "no collisions" line survives A2: shell ids begin `L-`, local ids begin `LC-`
+or `LD-`, and §1.2's measurement command is unaffected by the qualifier.
+
+### A2.7 The span's closed end — one convention forward
+
+**The open end, in §3.2's own sentence**: *"The span runs from the entry after the
+last harvested entry to the last entry before the harvest note."* It says where a
+span **ends** and never says where the next one **opens**, and five seats supplied
+the missing half three different ways. rtl_lead measured the divergence at two
+chains and asked for one line before the third, fourth and fifth notes each picked
+independently; all five have since landed, so the census is complete:
+
+| seat | note entry | span as stated | next opening, as declared | tiles? |
+|---|---|---|---|---|
+| dv_lead | `J-dv_lead-0165` | `-0001 … -0165` (**ends at the note's own entry**) | `-0166` | **yes** |
+| architect_docs_lead | `J-architect_docs_lead-0034` | `-0001 … -0034` (**ends at the note's own entry**) | not stated | yes, by A2.7's rule |
+| rtl_lead | `J-rtl_lead-0013` | `-0001 … -0012` (§3.2's wording) | `-0013` | **yes** |
+| auditor | `J-auditor-0019` | `-0001 … -0018` (§3.2's wording) | `-0020` | **no — `-0019` falls in neither interval** |
+| orchestrator | `J-orchestrator-0233` (walk) + `-0234` (admissibility) | `-0001 … -0232` (§3.2's wording) | `-0235` | **no — `-0233` and `-0234` fall in neither** |
+
+**Both boundary conventions tile internally; what does not tile is the pairing of
+§3.2's end with a next opening one entry past the note.** dv_lead's packet recorded
+the auditor's case as *"a prospective one-entry gap, declared in its own note and
+therefore visible, which is what the tiling rule is for"* — visible is the design
+working, and it is not a reason to leave the end open.
+
+**A2-D10 — the convention, forward, in one line.**
+
+> **A harvest's span ends at the last entry before the note that carries it, and
+> every later span opens at the first entry not already inside a mined span.**
+
+Why §3.2's end and not dv_lead's and this seat's inclusive one, since the inclusive
+form also tiles and two of the five used it:
+
+1. **It is §3.2's live wording**, so the rule needs no reading rule against text
+   §§1–12 still carry, and two seats' practice is grandfathered instead of three
+   sentences being reinterpreted.
+2. **An entry cannot be mined by the note it contains.** A note that ends its span
+   at its own entry claims to have mined reasoning it was writing while it mined —
+   and where the note rides a work round (`R2` couples a journal entry to the work
+   in its commit), that entry's substantive reasoning is exactly the material a
+   harvest exists to mine. Under A2-D10 it is mined at the next harvest, in full, by a
+   miner who can read it finished.
+3. **The second clause is the repair, and it is what the census actually
+   demanded.** Stating the opening as *"the first entry not already inside a mined
+   span"* rather than *"the note's own entry"* makes the rule self-correcting: it
+   yields `-0166` for dv_lead and `-0035` for this seat (whose notes' entries are
+   inside their mined spans), `-0013` for rtl_lead, `-0019` for the auditor and
+   `-0233` for the orchestrator — closing the two declared gaps without any journal
+   being edited, which is not available anyway.
+
+**A2-D11 — a declared next opening is a prediction, not a mining act.** Where a
+landed note predicted an opening later than A2-D10 gives, **A2-D10 governs and the prediction
+consumes nothing**: the auditor's `-0019` and the orchestrator's `-0233`/`-0234`
+are unmined and are mined at those seats' next harvests. No journal is edited, no
+note is retracted, nothing is re-declared — the next note simply opens where A2-D10
+says and states that it is doing so and why, exactly as rtl_lead did when it named
+its own convention rather than leaving it to be inferred.
+
+**A2-D12 — grandfathering.** Every landed harvest note stands as written; no span
+is restated and no harvest is re-run. The three spans that end at `-0012`, `-0018` and
+`-0232` and the two that end at `-0034` and `-0165` are all **mined**, and A2-D10
+computes every seat's next opening from that fact alone. **A note states the
+convention it used** — one clause — so that a reader checking tiling never has to
+infer it, which is rtl_lead's request granted in the form it asked for.
+
+### A2.8 Failure modes new to this amendment
+
+1. **The gate inherits an `SO-`'s Part A.** Refused at A2-D3, and the shape to watch
+   for is a gate checklist whose Part A cites a sign-off packet instead of the
+   notes for the gate's own spans.
+2. **Part B goes quiet because it is no longer a box in the first place it
+   appears.** The guards are the deferral line (A2-D1), which names the gate that
+   owes it, and the gate's own eleven boxes with PROTOCOL §7 unchanged behind them.
+   **The finding shape**: a gate record whose Part B is checked with no shell commit
+   linked, or an `SO-` whose deferral line names no gate.
+3. **The partition read as reducing the five-seat obligation.** It does not (A2.3),
+   and boxes 1 and 2 stay in Part A precisely so the reduction cannot happen
+   quietly.
+4. **A seat's harvest ordinal drifts from another's.** Intended: `H<k>` is
+   per-chain, so at one gate the seats may be at `H2`, `H2`, `H3`, `H1` and `H1`.
+   The gate record's row carries the harvest tag; the id carries who and how many.
+   A reader who needs *when* looks at the row, which is one lookup and is why the
+   tag is recorded rather than dropped.
+5. **A seat mints under a scheme A2 grandfathered rather than under A2-D6**, because
+   it read its own last note instead of this section. The signal is cheap: an id
+   minted after this commit whose second field is not `H<k>`.
+
+### A2.9 What A2 does not decide
+
+- **Anything shell-side.** §4.3, §12 and A1.4's refusal are unamended and now cover
+  one more thing: whether the shell's `L-` entries record a merge's two provenances
+  as one field or two is the shell's, not this repo's (A2-D8 binds only what
+  leaves here).
+- **Whether the shell commit may land before the gate that ratifies it, or must
+  land at it.** A2-D5 fixes the **count** (one per harvest, not one per gate) and
+  leaves the **moment** where §4.4 and §12 already left it, together with the
+  parked question of what a sponsor refusal converts a candidate into.
+- **`SC-12`'s own text**, and every other criterion of `SO-xgmii_rx_64.md` — dv's
+  document, dv's ruling (A2.3).
+- **Whether a seat may skip an `SO-` harvest**, and what a skipped one costs. D1 and
+  PROTOCOL §7 say every sign-off carries one; A2 partitions the boxes and does not
+  touch the trigger. The tiling rule is still the only instrument that makes a skip
+  visible, and A2-D10 sharpens it without deciding the consequence.
+- **Federation** — A1.7(4), still the sponsor's, still parked, and untouched by
+  anything here.
