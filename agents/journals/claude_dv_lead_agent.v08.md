@@ -3070,3 +3070,458 @@ belongs at tier 2 in a `continuous-integration` pack, and I would rather be told
 ### Files-in-this-commit
 
 - agents/handoffs/SO-xgmii_rx_64.md
+
+## [J-dv_lead-0168] 2026-08-11T03:35Z | task:none | The PASS: both of the things my own FAIL named were done by other seats before this round could read them, and the hardest part of the round was refusing the new ground I found while checking that they had been
+
+### Trigger
+
+Orchestrator dispatch, sole agent in flight, no declared sibling. **The round the previous
+verdict scheduled and pre-conditioned.** `SO-xgmii_rx_64.md` §8.0.2, in `J-dv_lead-0167`'s
+own words, named one substantive act and one wording question, and fixed the form of the
+answer to the second in advance: *"A re-verdict round that finds `SO-6` paid must settle it
+before it can write `PASS`, **and it must settle it by amendment, not by reading.**"* Both
+are now claimed done — the successor harvest note at `b4814b0`, and ADR-0018 Amendment A2
+at `85753b6` with its acceptance act at `41fead6`. This entry is the third read-back and
+the third signature.
+
+**Abort-first head check, before anything else.** `git rev-parse HEAD` →
+`41fead67b9fa7ec22f54e807f830c0b64faefb9c`, byte-equal to the dispatched spawn-head
+`41fead6`; `git status --short` returns zero lines. Exact match, so neither the merge-base
+ancestor branch nor the descendant branch was reached. Proceeded.
+
+**Entry id checked at the file, not taken from the dispatch.** The chain's tail at HEAD is
+`J-dv_lead-0167`; R5 admits `-0168` and that is what this is. The dispatch nominated the
+same id and I checked it anyway, for the reason `J-orchestrator-0231` recorded against
+itself: a stale id has been dispatched in this programme once, and the check costs one
+`grep`.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` in full (§3 sign-off duties and the external-anchor rule,
+  §5's DoD checklist, §7 escalation, §8's sign-off-entry and **harvest-note** clauses);
+  `agents/PROTOCOL.md` in full (§3 packet classes and the verbatim relay rule, §4 grammar
+  and §4.2 files-list equality, §5 R1–R9, §6 write scopes, §7 **gates and the
+  lessons-harvest paragraph**, §10 independence and R-SEAL-1, **§11 the amendment
+  procedure**).
+- `docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md` — **Amendment A2 in full**
+  (§§A2.0–A2.9, decisions `A2-D1` … `A2-D12`), plus §§3.2, 3.4, 4.1–4.4, 7.4 and
+  **A1.1–A1.5** (the two LH2 grades, the classifier as a decision procedure, `LD-`'s
+  regrade and never-reuse rules, the block's third disposition) for the bar the notes are
+  read against.
+- `docs/gates/lessons-harvest-block.md` **in full** at `41fead6` — the preamble's line-5
+  clause A2.1 convicts, §1's instantiation items, §2's bar table, §2.1's classifier, §3's
+  eleven boxes verbatim, **§4's transcriber notes** (*"You are not the selector"*, and the
+  third bullet obliging the hide test).
+- `agents/journals/claude_orchestrator_agent.v02.md` — **`J-orchestrator-0234` in full**
+  (the successor note, this round's subject), **`J-orchestrator-0233` in full** (re-read so
+  the defect could be confirmed to reproduce before being called repaired), and
+  **`J-orchestrator-0235`** (the acceptance act that puts A2 in force).
+- `agents/handoffs/SO-xgmii_rx_64.md` — my own packet: §0.0/§0.2, §1's fourteen criteria
+  **verbatim**, §1.1, §1.2, §2.1-M/§2.2-M/§2.3-M/§2.8-R/§2.9-R/§2.10/§2.11, §3.9-M/§3.10/
+  §3.11, §4.1–§4.9 with `FINDING SO-5` and `FINDING SO-6`, §5 and §5.8/§5.8-R, §6.4, §7.2,
+  §8.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4's row tables (the status-cell pass);
+  `docs/specs/traceability.md` (the matrix parse); `docs/specs/modules/xgmii_rx_64.md`
+  §10 (the hook table, for the identity claim); `agents/handoffs/BUG-000{1,2,3}*.md`
+  (state strings).
+- CI, as **externally verifiable references** (ADR-0003/F5): the branch's complete
+  workflow-run list over `14615f8` → `41fead6`, and `build` run `31453108454` with its two
+  jobs and their step breakdowns.
+- **No `libs/**`, `top/**` or `rtl_snapshots/**` path was opened** — and `top/` does not
+  exist in the tree at either SHA, which I checked rather than assumed. **No RTL was read
+  in this round.** The derivation chain is spec → plan → suite → matrix throughout
+  (PROTOCOL §10, charter §8's independence clause).
+
+### Reasoning
+
+**1. The trap this round walks into is the mirror of round 3's, and naming it first is the
+only defence I have against it.** Round 3's temptation was to confirm two acts, flip two
+rows and write `PASS`; it refused, and failed the packet on a box that was genuinely
+unmet. **This round's temptation is the opposite**: everything the previous verdict named
+is paid, so the only way to keep a `FAIL` — and a `FAIL` is the reputationally safe token
+for a grader — is to find a **new** ground. One was in reach within twenty minutes of
+opening the successor note. **A bar a grader may raise when the last obstacle falls is as
+much a function of who is being graded as one he may lower**, and §0.0's rule cuts both
+ways or it is not a rule. So I fixed the method before measuring: read every artefact at
+its own source, apply the bar I published in §4.9 and no other, and record anything I find
+outside that bar as an observation with an owner rather than converting it into a verdict.
+
+**2. `SC-12`'s reading: settled by amendment, and I am careful to say I applied one rather
+than made one.** Round 3 refused to rule the wording question in either direction and
+routed it to PROTOCOL §11. It went the whole way: architect_docs_lead authored **Amendment
+A2**, the orchestrator's `J-orchestrator-0235` is the acceptance act A2.0's own clause
+requires, and A2 is in force at the SHA I am signing at. Three things about it are worth
+recording because they are what make it usable by the seat it benefits. **(a) It ruled
+against my diagnosis, not with it.** `FINDING SO-5` said `SC-12` had imported PROTOCOL §7's
+gate condition; A2.1 measured the two sentences and found `SC-12` had imported the **gate
+block's line 5**, which extended the condition to sign-offs while citing §7 for a clause §7
+does not contain. The defect was in the architect's own file and the amendment says so.
+**(b) It cannot flip a token.** A2.0(3) and A2.3 both state, and I re-verified, that all
+three boxes round 3 failed are in **Part A** — still the packet's to check — so the
+partition removes an impossibility and removes no measured failure. Applied at `14615f8` it
+still yields `NOT MET`. **(c) It refused to restate `SC-12`**, explicitly leaving that to
+this document (A2.3, A2.9). So §1.3 does the reading and shows four checks that it is not
+the discharge-by-declaration move, the strongest being that the obligation to settle it by
+amendment was written by me **when doing so cost me the token**.
+
+**3. `SC-12`'s substance: measured at the journal, and the prior defect re-run first.**
+`FINDING SO-6` convicted `J-orchestrator-0233` on three counts — LH3 discharged on none of
+eighteen, no stated grade, the classifier nowhere stated as run. I re-ran round 3's counts
+on that entry before reading the successor, because **a repair is only a repair against a
+defect that still reproduces**, and a finding whose measurement has evaporated should be
+withdrawn rather than discharged. It reproduces exactly: `LH1`=18, `LH3`=1 (inside a war
+story), classifier=0. Then `J-orchestrator-0234`: eighteen numbered items, **every one
+matching `<n>. LH2-g. LH3: <consequence>`**, ids `LC-orchestrator-H1-1 … -18` unrenumbered,
+the classifier stated as run from step 0 twice, war stories carried with their criteria,
+worker-span nil declared with cause. I read each of the eighteen LH3 clauses rather than
+counting the token: every one names a concrete breakage a reviewer could recognise in
+another repo — a forked numbering, a vacuous green check, a silent mis-attribution, an
+unrecoverable container — not a virtue. **Boxes 2, 3 and 4 are checkable at that row and
+they check.**
+
+**4. The two-notes-over-one-span structure, and why it is not a dodge.** The harvest of
+record for that seat is now a pair: `-0233` the walk, `-0234` the admissibility record. I
+accept the pair because **my own repair text asked for exactly that shape** (*"a successor
+note … for the same span"*, *"No renumbering"*), and because two independent artefacts read
+it the same way without being asked to: **A2.7's census table** lists the seat's note as
+*"`J-orchestrator-0233` (walk) + `-0234` (admissibility)"*, and **A2-D6(1)** codifies that
+`<k>` counts **spans, not notes**, citing this very case as its evidence and confirming
+that `H1` was correctly kept. A structure that three documents authored by two other seats
+read identically is not a structure I invented to reach a verdict.
+
+**5. `OBSERVATION SO-O1` — the new ground I found and did not use, which is the decision
+this round exists to make.** The block's §4 obliges whoever fills a table to run the
+hide-the-provenance test, so I ran it over all eighteen statements with a token scan.
+**Two carry a version-control tool noun inside the rule statement while the stated grade is
+`LH2-g`**, whose bar bars *"toolchain or library name"*: candidate 8 names
+`git show HEAD:<journal>` outright, candidate 2 turns on `HEAD`, `merge-base`, `ancestor`
+and `descendant`. The other sixteen carry only common version-control verbs. **Round 3
+predicted this almost exactly** — *"one names a version-control command outright, two more
+turn on push and merge-base semantics"* — **and in the same breath ruled what to do about
+it**: *"None of that can be decided from outside the note: the classifier is run by the
+miner … a reader who re-grades another seat's statements has become the selector."* **That
+ruling was made when it cost nothing and it binds now that it costs something.** A2-D4
+independently codified the same refusal, naming §4.9's act as the behaviour it preserves.
+And the two defects differ in kind in the constitution's own words: PROTOCOL §7 makes
+LH1+LH2+LH3 the condition of admissibility **at all**, so eighteen candidates with no LH3
+were nothing banked and a harvest-level box failed; a **grade** decides which destination
+an admissible candidate routes to, routing is a collation act, and the block's own remedy
+is per-candidate — bounce at transcription, or A1.4's later-harvest regrade citing the old
+id. **So: measured, named by id, given an owner (the miner) and a route (the collator's
+hide test at gate-time, which A2-D3 guarantees will happen), and NOT charged.** I name no
+pack and assign no grade, because naming the pack is the half of the act that would make me
+the selector.
+
+**6. What I re-measured rather than carried, and why the identity block matters more this
+round than last.** Five paths moved `14615f8..41fead6` and I listed all five rather than
+the ones I expected. None is a census producer — and this round I extended the identity
+check to four governing documents a reader might reasonably suspect had moved under a
+criterion: `agents/PROTOCOL.md`, my own charter, `docs/gates/lessons-harvest-block.md` and
+the traceability matrix. **All four byte-identical.** That matters because the gate block
+is still stale: A2.4's five clerical edits are owed and unlanded, so line 5 still carries
+the over-reach. I state which file I read the rule from — the ADR, on the block's own
+deference clause — rather than letting a reader assume I read the stale short form and got
+lucky. **The one governing document that did move is ADR-0018 itself, and that move is this
+round's subject**, said in the same breath as the identity so it is not buried.
+
+**7. The CI interval, walked because I banked the rule for it last round.**
+`LC-dv_lead-H2-2`, banked at `J-dv_lead-0167`, says a record whose evidence is references
+to external executions must account for the failed executions between the ones it cites.
+**A rule banked and not applied by its own author in the very next round is a rule nobody
+has ever run.** So I walked every run on the branch in the window rather than the endpoints
+— and it paid: **`85753b6` has no CI run at all**, because it was pushed together with
+`41fead6` and a push event creates one run per workflow on the head commit. Nothing rests
+on it and it touches no criterion, but a governing amendment landing with no green beside
+it is exactly the thing a later auditor would have to re-derive. Disclosed at §2.9-R2 with
+its cause.
+
+**8. Options for the token, and why `PASS` won.** (a) *`FAIL` on `OBSERVATION SO-O1`* —
+rejected at §4.10 on three grounds, the first being that round 3 pre-committed the
+disposition. (b) *`FAIL` on the four collation boxes, reading `SC-12` literally* — rejected:
+A2 is in force and rules that a sign-off instantiates Part A only; ignoring a landed
+amendment to preserve my own prior reading would be exactly the unilateral act round 3
+refused, in the opposite direction. (c) *`PASS` with the bounds folded into prose* —
+rejected: `SC-14` requires everything unearned to be a **listed** bound, and a bound
+mentioned in a paragraph is a bound a reader has to hunt for. **(d) `PASS` with a §1.4
+re-read of all fourteen at the new SHA, a twelve-row bound list at §8.R4.4, both prior
+tokens preserved and quoted, and the one observation recorded with an owner — chosen**,
+because it makes the three rounds diffable against each other and leaves every superseded
+sentence where its author wrote it.
+
+### Actions
+
+- Ran the head check and the tree check; read the charter, the protocol, **ADR-0018
+  Amendment A2 in full**, the gate block in full, the packet, and the orchestrator's three
+  entries `-0233`, `-0234`, `-0235` at their own journal.
+- **Re-measured** at `41fead6`: the five-path identity plus four governing documents, the
+  attack-plan census and precedence, the three suite inventories, the traceability matrix,
+  the `BUG-` directory, the barred-sentence occurrences, the complete CI run list for the
+  interval, and the LH1/LH2/LH3/classifier token counts over **two** entries of another
+  agent's journal.
+- **Ran the hide-the-provenance test myself** over all eighteen of the orchestrator's rule
+  statements, as `docs/gates/lessons-harvest-block.md` §4 obliges — and recorded the result
+  without acting on it.
+- **Wrote, in `agents/handoffs/SO-xgmii_rx_64.md` and nowhere else**: the header's
+  State/Verdict fields, a round-4 Execution bullet and the live signature line; **§1.3**
+  (the `SC-12` reading, with the four checks that it is not a self-service); **§1.4** (the
+  fourteen re-read at `41fead6`, with the identity block); **§2.9-R2** (the CI evidence and
+  the whole-interval walk, including the `85753b6` hole); **§2.12** (the round-4
+  re-measurement with three dimensions per claim); **§3.12** (the ledger, the new standing
+  item with its carrier, the standing set re-checked); **§4.10** (the block re-instantiated
+  under A2's partition, the successor note measured, `FINDING SO-6` discharged,
+  `OBSERVATION SO-O1` minted and not charged, Part B's named deferral line); **§5.8-R2**
+  (six sentences declined with the bar that forbade each); **§8.R4** (the live `PASS`, its
+  ground, what it is not, what it owes onward, and the twelve listed bounds), with round
+  3's token carried **verbatim** into a quotation so the file holds exactly one bare token;
+  and the §10 change-log row.
+- **Wrote no `docs/**` byte, no `test/**` byte, no `tools/**` byte.** Opened no RTL. Edited
+  no other agent's journal, re-graded no other agent's candidate, and edited no prior
+  round's section — §1.1, §1.2, §4.8, §4.9 and §8.0.1–§8.0.3 are untouched.
+
+### Evidence
+
+**All commands run from a clean checkout at `41fead6`; the CI facts are externally
+verifiable references (run id, job id, conclusion), marked as such per ADR-0003/F5.**
+
+1. **Head and tree.**
+```
+$ git rev-parse HEAD
+41fead67b9fa7ec22f54e807f830c0b64faefb9c
+$ git status --short          # before my own edits
+(zero lines)
+```
+
+2. **The identity the re-read rests on.**
+```
+$ git diff --name-only 14615f8..41fead6
+agents/handoffs/SO-xgmii_rx_64.md
+agents/journals/claude_architect_docs_lead_agent.v03.md
+agents/journals/claude_dv_lead_agent.v08.md
+agents/journals/claude_orchestrator_agent.v02.md
+docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md
+$ for p in test tools libs test/cosim test/attack_plans docs/reports/audit \
+           docs/specs/requirements.md docs/specs/modules/xgmii_rx_64.md \
+           test/attack_plans/AP-xgmii_rx_64.md docs/specs/traceability.md \
+           agents/PROTOCOL.md docs/gates/lessons-harvest-block.md \
+           agents/charters/dv_lead.md; do
+    [ "$(git rev-parse 14615f8:$p)" = "$(git rev-parse 41fead6:$p)" ] && echo "$p IDENTICAL"; done
+test IDENTICAL 9a8871c89d36        tools IDENTICAL eebfccde25dd
+libs IDENTICAL 9714f32260c5        test/cosim IDENTICAL 9c8125280a5c
+test/attack_plans IDENTICAL af79ab920296
+docs/reports/audit IDENTICAL 0f573595b9ef
+docs/specs/requirements.md IDENTICAL 405ad8d7fb6a
+docs/specs/modules/xgmii_rx_64.md IDENTICAL 333482659f8f
+test/attack_plans/AP-xgmii_rx_64.md IDENTICAL 03cc7e7da6f2
+docs/specs/traceability.md IDENTICAL 648311e10ccc
+agents/PROTOCOL.md IDENTICAL 6bd8ade4b74b
+docs/gates/lessons-harvest-block.md IDENTICAL df304360eb39
+agents/charters/dv_lead.md IDENTICAL b70ef37831d9
+$ git cat-file -t 41fead6:top
+fatal: path 'top' does not exist in '41fead6'        # the tree has no top/ at either SHA
+```
+
+3. **SC-1 — the census and the precedence, re-run rather than carried.**
+```
+$ awk -F'|' '/^\| \*\*M03-[A-Z]+[0-9]+\*\* \|/ { st=$(NF-1); gsub(/[* `]/,"",st); print st }' \
+    test/attack_plans/AP-xgmii_rx_64.md | sort | uniq -c
+     62 ASSERT     1 GAP     7 NO-ASSERT     4 NO-STIMULUS     4 STRUCTURAL
+$ awk -F'|' '/^\| \*\*M03-[A-Z]+[0-9]+\*\* \|/' test/attack_plans/AP-xgmii_rx_64.md | wc -l
+78
+$ git merge-base --is-ancestor df3e474 026a71f ; echo $?
+0
+$ git rev-list --count df3e474..026a71f
+49
+```
+
+4. **Suite inventories (`FINDING M-4` re-measured, all three domains).**
+```
+$ grep -rh 'let%expect_test' test/xgmii_rx_64/*.ml | wc -l          -> 59
+$ grep -rh --include=*.ml 'let%expect_test' test/ | wc -l           -> 139
+$ grep -rh 'let%expect_test' test/ | grep -c .                      -> 141   (contaminated)
+```
+
+5. **SC-2 — the matrix, re-parsed at the new SHA on a byte-identical blob.**
+```
+$ awk -F'|' '/^\| REQ-/{n++; t=$7; gsub(/^[ \t]+|[ \t]+$/,"",t);
+             s=$8; gsub(/^[ \t]+|[ \t]+$/,"",s);
+             if(t=="") e++; else p++; c[s]++}
+     END{print n" rows: "p" populated, "e" empty"; for(k in c) print "  "k": "c[k]}' \
+    docs/specs/traceability.md
+110 rows: 34 populated, 76 empty
+  OPEN: 97
+  COVERED: 13
+```
+
+6. **SC-9 — open defects, measured over the directory, each string read out of its packet.**
+```
+$ ls agents/handoffs/BUG-*.md | wc -l    -> 3
+BUG-0001  FIX CONFIRMED
+BUG-0002  ACCEPT — CLOSED
+BUG-0003  FIX ACCEPTED — CLOSED
+-> three packets, three CLOSED, NONE OPEN.
+```
+
+7. **SC-3 / SC-4 / SC-6 / SC-13 — CI at the sign-off SHA (externally verifiable).**
+   `build` run **`31453108454`**, `head_sha` `41fead67b9fa…`, event `push`, conclusion
+   **`success`**; job **`93661268366`** (`build`) **all 13 steps `success`** — 5 *Build*,
+   6 *Run tests (expect tests, waveform snapshots)*, 7 *Generate RTL*, 8 *Verify nothing
+   was left unpromoted or non-deterministic*, 9 *DV mechanical checks*, 10 *Abort-bit
+   availability quantifier* among them; job **`93661268386`** (`cosim`) **`success`**, its
+   nine steps all `success`, quoted separately and load-bearing for nothing outside the
+   classes it drove. **`journal-check` run `31453108435`, `success`.** **Bound**:
+   `opam exec -- dune runtest` cannot execute in this container (ADR-0005), which is
+   exactly why `SC-3` makes the run id the evidence.
+
+8. **The whole CI interval, walked (`LC-dv_lead-H2-2` applied to its own author).**
+```
+5d50ab7   build 31451461231 success   journal-check 31451461221 success
+b4814b0   build 31451519563 success   journal-check 31451519546 success
+85753b6   NO RUN OF ANY WORKFLOW EXISTS  (pushed together with 41fead6; a push event
+                                          creates one run per workflow on the head commit)
+41fead6   build 31453108454 success   journal-check 31453108435 success
+-> 0 red conclusions on build or journal-check anywhere in the interval, measured over
+   the branch's complete run list. The two `cancelled` site-deploy runs in the same
+   listing (d53d795, 185ae66) are BEFORE 14615f8 and outside this window.
+```
+
+9. **SC-12 — the successor note, measured at the journal (the round's load-bearing check).**
+   *Method: each entry is sliced at its own header to the next header line; tokens counted
+   over the slice; the numbered candidate items matched on the pattern shown.*
+```
+$ python3 -c "<slice each entry; count tokens; match numbered items>"
+J-orchestrator-0233:  LH1=18  LH3=1   LH2-g=1   classifier=0
+                      numbered candidate statements = 18 ; 'LH1:' labels = 18
+                      -> round 3's measurement REPRODUCES; the defect was real and is real
+J-orchestrator-0234:  LH1=2   LH3=21  LH2-g=19  classifier=4
+                      items matching '^\s*\d+\. (LH2-[a-z]+)\. (LH3:)'  -> 18
+                      ids present 1 … 18, none missing, none duplicated
+                      -> 18/18 stated grade AND 18/18 LH3 clause
+```
+
+10. **`OBSERVATION SO-O1` — the hide test, run over all eighteen statements.**
+```
+$ python3 -c "<split -0233's yield into its 18 numbered items; scan the statement text
+              (everything before the LH1: label) for version-control tool nouns>"
+ 2: ['HEAD', 'ancestor', 'descendant', 'merge-base']
+ 8: ['HEAD', 'git']
+ 1,4,5,6,9,11,15: common verbs only (commit/diff/push)
+ 3,7,10,12,13,14,16,17,18: none
+-> 2 of 18 statements carry a TOOL noun under a stated LH2-g. Recorded, owner and route
+   named, NOT charged (SO- §4.10). No grade assigned; no pack named.
+```
+
+11. **The packet's own mechanical claims, checked after writing it.**
+```
+$ grep -c '^# \(PASS\|FAIL\)' agents/handoffs/SO-xgmii_rx_64.md      -> 1   (# PASS)
+$ grep -c '^> *> *# \(PASS\|FAIL\)' agents/handoffs/SO-xgmii_rx_64.md -> 2  (rounds 3, 2, quoted)
+$ grep -ci 'co-simulation anchors this module' agents/handoffs/SO-xgmii_rx_64.md -> 4
+   all four inside a statement of the prohibition itself (§0.1 item 2, §1.1's SC-6 row,
+   §1.2's SC-6 row, §5.1 item 1); round 4 added none.
+```
+
+### Outcome
+
+**DoD vs the round's own charge: met.** §1 is re-read criterion by criterion at `41fead6`;
+`SC-12`'s reading is settled at §1.3 by applying a landed amendment rather than by making
+one; §8 carries one token; both prior `FAIL`s are preserved and quoted; the harvest block
+is re-instantiated under A2's partition and its Part A is checked box by box.
+
+**THE VERDICT: `PASS`. Fourteen of fourteen criteria MET.**
+
+- **`SC-12` — NOT MET → MET.** Read against the block **as amended by A2** (in force at
+  this SHA on `J-orchestrator-0235`): a sign-off instantiates **Part A's seven boxes**,
+  Part B is a named deferral line to `P1-module-ready`. **All seven CHECKED.** The three
+  that failed at round 3 are all Part A and are paid by `J-orchestrator-0234` (`b4814b0`) —
+  18/18 stated grade, 18/18 LH3, classifier stated as run from step 0, ids unrenumbered.
+  **`FINDING SO-6` DISCHARGED** by the carrier it named. **`FINDING SO-5`'s wording half
+  SETTLED BY AMENDMENT**; its substantive half is untouched by A2 and re-verified.
+- **The other thirteen** re-measured or re-affirmed on byte-identical subjects at a new run
+  id; nothing moved.
+- **Twelve bounds are listed inside the `PASS`** at §8.R4.4, `SC-14`'s own requirement —
+  the undischarged module-level anchor, the structural backpressure discharge, the single
+  mutation survivor, the declared `GAP`, the five unreachable instruments, Stage 3's
+  refusal, the 76 empty matrix rows, five unrepaired findings, the uncollated Part B,
+  `OBSERVATION SO-O1`, and the thirty unmined worker entries.
+- **One observation minted and deliberately not charged**: `OBSERVATION SO-O1`, measured,
+  owned by the miner, routed to the collator's gate-time hide test.
+
+**Handoff**: `agents/handoffs/SO-xgmii_rx_64.md`, **verbatim** relay class (PROTOCOL §3),
+to the orchestrator as the merge precondition. **The packet's DV rows are now supplied to
+`P1-module-ready` as satisfied.** No `BUG-` opened; nothing routes to rtl_lead; this is not
+an escalation and it is not a gate decision (charter §7, §0.3).
+
+---
+
+**LESSONS HARVEST — `SO-xgmii_rx_64` round 4, dv_lead's third note (ADR-0018 as amended by
+A2, PROTOCOL §7, charter §8).**
+
+**SPAN: EMPTY. NIL YIELD, DECLARED.** **The convention is stated, as `A2-D12` requires a
+note to state it**: I use **`A2-D10`**, in force at this SHA — *"A harvest's span ends at
+the last entry before the note that carries it, and every later span opens at the first
+entry not already inside a mined span."* My two landed notes mined `J-dv_lead-0001 …
+-0165` (note `-0165`) and `-0166 … -0167` (note `-0167`), both with the inclusive end that
+`A2-D12` grandfathers. So the opening is **`-0168`** and the end is **`-0167`** — **the
+interval is empty, and there is nothing to mine.** Declared rather than omitted, because a
+skipped harvest and a nil harvest are indistinguishable in silence and the tiling rule is
+the only instrument that tells them apart.
+
+**CUMULATIVELY, THIS SEAT HAS MINED `J-dv_lead-0001 … -0167`, no gap and no overlap**, and
+**the next harvest opens at `-0168`** — this entry, which cannot be mined by the note it
+contains (`A2-D10`'s own second reason). That is not a technicality here: this round's
+reasoning is the substantive material a later harvest would want — how a verdict behaves
+when the last obstacle falls, and what a grader does with a defect that is real and outside
+the bar he published. **It is left for a miner who can read it finished.**
+
+**WORKER SPANS COMMISSIONED IN THIS SPAN: NIL, declared** — vacuously, the span being
+empty, and substantively: I commissioned no worker spawn in this arc.
+
+**YIELD: NIL.** **`LC-`: 0. `LD-`: 0. War stories: 0. No pack minted, no pack normalised.**
+The one pack this programme has in use (`version-control`, from my first harvest) is
+unchanged, and **no total is quoted here that was not produced by this walk** — the walk
+being over an empty interval, which is the honest reason the totals are zero rather than
+small.
+
+**ONE LINE THE BLOCK'S §4 ASKS FOR WHEN A YIELD LOOKS ODD.** A nil is worth the same
+suspicion as an all-`LD-` yield. **My reading is that this is structural rather than
+substantive**: two of my notes landed within the last three entries of this chain, so the
+unmined interval had no room to contain anything. **The signal to watch is a nil declared
+over a span that is not empty** — that would say something about the miner. This one says
+only that the previous note was recent.
+
+### Open-questions
+
+1. **`A2.4`'s five clerical edits to `docs/gates/lessons-harvest-block.md` are OWED and
+   unlanded**, so at `41fead6` the block's line 5 still carries the clause A2.1 convicts,
+   still citing PROTOCOL §7 for it. **Carrier: the architect's next `docs/gates/` round**
+   (the `P1-module-ready` checklist round already owed; `J-orchestrator-0235` records the
+   two items sharing one carrier). **Not mine** — `docs/gates/**` is outside my write scope
+   — and I read the rule from the ADR on the block's own deference clause, saying so at
+   §1.3 rather than letting a reader assume. **Recorded because a reader of the block alone
+   will meet the stale sentence and should not have to re-derive why it does not govern.**
+2. **`OBSERVATION SO-O1` is live and owned elsewhere.** Two of `J-orchestrator-0234`'s
+   eighteen candidates carry a version-control tool noun under a stated `LH2-g`. **I do not
+   contest the grade and I have not re-graded it**; the route is the collator's own
+   hide-the-provenance test at gate-time transcription (block §4) with `A1.4`'s
+   later-harvest regrade as the instrument. **`A2-D3` guarantees the site exists**: the
+   gate re-checks Part A over its own spans. Stated here so that if the collator's test
+   agrees with me, nobody has to discover that a dv round saw it and said nothing.
+3. **I raise no contest against Amendment A2**, and I say so rather than leaving silence to
+   be read either way. A2.0 names the contest route — a finding in the contesting seat's
+   own artefact, carried to an Amendment A3 — and states that a contest does not suspend
+   A2. **The partition is the four-and-seven I requested, its diagnosis is better than the
+   one my own finding offered, and it left the five-seat obligation and every LH criterion
+   untouched.**
+4. **Part B of the harvest is the only half of `SC-12`'s subject that no packet can carry**,
+   and it is unstarted at `41fead6`: no `L-` id in any artefact, no shell commit, no sponsor
+   sight, no completeness declaration. **Carrier: the orchestrator as collator at
+   `P1-module-ready`**, one shell commit **per harvest** (`A2-D5`). Listed as bound 10 of
+   the `PASS`.
+5. **Standing and unchanged**: `FINDING SO-2` (census producer domain), `SO-3` (the
+   22-assertion figure; measured 7 of 29), `SO-4` (`AP-M03` §7 row (b)), `M-4` (141 vs
+   139), `P-1`'s residue (`WO-0079` §2.1 false at 1 of 49 citations) and the rest of §3.9's
+   set — **none of their subjects moved this round and none of their carriers opened**, and
+   **none is closed by this `PASS`.** `FINDING J-1` remains closed.
+
+### Files-in-this-commit
+
+- agents/handoffs/SO-xgmii_rx_64.md
