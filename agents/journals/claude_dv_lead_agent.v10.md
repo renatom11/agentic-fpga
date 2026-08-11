@@ -922,3 +922,739 @@ it.*
 - test/monitors/octet_time.ml
 - test/monitors/octet_time.mli
 - test/monitors/test_octet_time.ml
+
+## [J-dv_lead-0182] 2026-08-11T16:28Z | task:none | The §0.5 repair countersigned whole on my own theorem returned to me and re-derived rather than remembered — with the carry's instance list narrowed because it is a property of the decomposition and not of the module, the census's fourth structural module found missing from it, and the location of Q-4's cure conceded in one sentence
+
+### Trigger
+
+Orchestrator dispatch, **one round, two acts**: the countersignature the
+architect's `43c0087` round owes me on the whole `requirements.md` §0.5 diff, and
+my one-sentence answer on where `FINDING Q-4`'s cure lands. Both acts are
+consequences of my own `J-dv_lead-0181`: the diff takes my closure theorem and my
+cure-2 argument, and the location question is the architect's Open-question 1
+against my own proposed cure.
+
+**Abort-first precheck, before any file was opened.**
+
+    git status --short              # empty
+    git rev-parse HEAD              # 43c0087d551b166432c79f4a1588fe3a94da61f1
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 16:18:31 UTC 2026
+
+Byte-equal to the dispatched spawn-head `43c0087`, tree clean, so neither branch
+of the abort procedure was reached. The dispatch declares **one** sibling — the
+orchestrator's board flip (`tasks/BOARD.md`, `site/**`, its journal) — and states
+that rtl and architect are **not** live.
+
+**The sibling fired, for the fourth consecutive round, and I ran the clause
+rather than reasoning about it.** Between my last read and this entry HEAD moved
+`43c0087` → **`8babb6b`** (*"The flip that records the arc's third generation …"*,
+orchestrator):
+
+    git log --oneline 43c0087..HEAD    # 8babb6b, one commit, the declared sibling
+    git diff --name-only 43c0087 HEAD  # orchestrator journal, site/** (5), tasks/BOARD.md
+    git diff 43c0087 HEAD -- docs/specs/ test/ tools/ agents/handoffs/ \
+        docs/reports/latency/ docs/gates/ \
+        agents/journals/claude_dv_lead_agent.v10.md \
+        agents/journals/claude_architect_docs_lead_agent.v04.md      # empty
+
+**Every surface this countersignature rests on is byte-unchanged across the
+move** — the whole of `docs/specs/`, my own instrument under `test/`, and both
+journals — so every quantity below holds at either head, and the verdicts are
+paid against `43c0087` as dispatched. Four rounds, four exercises of the clause,
+three commands each time.
+
+**No rotation.** v10 stands at 57,340 bytes against `JOURNAL_SOFT_MAX` = 262,144
+(ADR-0017 §5); this entry appends to the volume `-0181` opened.
+
+**Honest stamp.** The header stamp is `date -u` read at the moment of writing
+(16:27:55Z, rounded to the minute), and it is this chain's own discipline rather
+than a courtesy: the architect's ledger item 61 tracks a run of fast stamps on
+the other chain, and a countersignature dated wrong is a countersignature whose
+ordering against the diff it signs cannot be checked.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, before any
+  other file (§3 packet classes and relay rule, §4/§4.1/§4.2 entry grammar and
+  set-equality, §5 R1–R9, §6 write scopes, §7 gates and the harvest clause, §10's
+  independence and evidence rules; charter §8's sign-off and independence rules).
+- **`git show 43c0087` whole** (six files, +853/−29), read as a diff and then at
+  HEAD: `requirements.md` §0.5's q paragraph group and the **Word delay ΔC**
+  bullet list, the three new §13 rows, `arp_cache.md` §7 + §13,
+  `udp_complete_64.md` §7 + §13, `nic_top.md` §7 + §13, and
+  `docs/gates/lessons-harvest-block.md`.
+- **`J-architect_docs_lead-0043` in full and verbatim** — Trigger, Inputs,
+  Reasoning 1–8, Actions, Evidence (including its throwaway-script figures and
+  its **two** decompositions of M19), Outcome with the seventy-row ledger, and
+  Open-questions 1–5. Read at the source, not through the dispatch's summary.
+- **`docs/specs/requirements.md` at HEAD**: §0.5 **whole** — octet time, latency,
+  front offset h, the inserting-module clause, the amended **q** paragraph group
+  (subject, halved default, the *what the default said* recital, REQ-021, the
+  structural-wrapper clause, the closure consequence, the Phase-1 census
+  sentence), the identity, *Why a term and not a scope*, **Word delay ΔC** and its
+  three consequence bullets, **Cycles**, the straddle test and the closing
+  paragraph — plus §0.4 whole (the **Structural modules** paragraph is the domain
+  Act 1's census is checked against) and §13's three new rows.
+- **The four structural modules' §7s**: `ip_complete_64.md` §7 whole (M16's
+  guard, added at `292596c`), `udp_complete_64.md` §7 whole (M19's new guard),
+  `nic_top.md` §7 whole (M20's new guard, its REQ-006 derivation table and its
+  two-route check), and **`eth_mac_10g.md` §7 and §13 whole** — the fourth
+  structural module, which neither this round's guards nor the census sentence
+  reaches, and which is where `FINDING Q-8` lives.
+- **The leaf §7s every figure below is derived from**: `xgmii_tx_64.md` §7 (M04's
+  five-row table: event delay 8 octet times, L = 16, h = 0, ΔC = 2),
+  `udp_ip_tx_64.md` §7 (M18: 1 cycle, one whole word inserted),
+  `eth_arb_mux.md` §7 (M09: L = 0, ΔC = 0), `eth_axis_tx.md` §7 (M07: L = 22,
+  h = 0, q = 6, ΔC = 2) and `ip_eth_tx_64.md` §7 (M15: L = 28, h = 0, q = 4,
+  ΔC = 3), plus `arp_cache.md` §7's repaired no-instance recital.
+- **My own instruments, read as their owner**: `test/monitors/octet_time.ml`
+  (`word_cycles` at line 9 and its only in-module caller at line 294),
+  `test/monitors/octet_time.mli` §`word_cycles`, and the census of every caller
+  under `test/` and `tools/`.
+- **My own `J-dv_lead-0181` whole** — §2's walked REQ-019 domain, §3's
+  `FINDING Q-4` and its stated cure, §6's `Q-3` concurrence with the closure
+  theorem and the inverted exposure ranking, §7's instrument repair, §9's
+  `FINDING Q-5`, and the three harvest candidates.
+- **Not read**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+  `test/third_party/**`, `site/**`, `tasks/BOARD.md`. **No RTL reached this
+  round.** Every quantity below is derived from a specification, checked against a
+  second specification, and re-checked by arithmetic in a throwaway script whose
+  output is in Evidence. **No Essenceia/Nasdaq-HFT-FPGA material consulted.**
+
+### Reasoning
+
+#### 1. What this countersignature has to do that the last two did not
+
+The `292596c` round asked me to check two claims *about* a diff. This one asks me
+to check a diff that **contains my own theorem**, my own cure-2 argument and my
+own exposure ranking. The failure mode is specific and I named it before I
+started: a signer who recognises his own sentence coming back stops reading. So
+the standard for this round is that **nothing is signed on recognition** — the
+closure consequence is re-derived from §0.5's definition as it now stands, the
+carry formula is derived independently and then checked at every decomposition of
+all three composites, and the census sentence is checked against §0.4's own
+structural set rather than against the three modules I ranked.
+
+That standard is what produced the two narrowings below. Both are in text that
+descends from my own filing, and one of them (`Q-6`) is a defect **my own
+theorem's phrasing invited**, because a statement true mod 8 was carried into a
+statement about a quotient where the modulus is exactly what is lost.
+
+#### 2. The subject corrected to the port pair — COUNTERSIGNED, and item 53's residue measured rather than described
+
+§0.5 now reads: q *"is a property of the **port pair** it is measured across (the
+input port whose measurement event names the input word, and the output port
+whose word ΔC counts to) together with the start lane"*, with the reason stated —
+*"one module can answer differently at two of them, and three Phase-1 modules
+do"*.
+
+**This is the correction my REQ-019 signature depends on and I sign it without
+qualification.** `J-dv_lead-0181` §2 walked REQ-019's domain as **ten modules,
+six leaf and four structural, the structural four entering by port pair**, which
+is §0.4's own sentence (*"their transmit ports are not receive-path ports"*).
+Under a module-subject that walk is incoherent: M16 would have to have one q, and
+it has 0 at its receive ports and 2 at its transmit ports. The architect states
+exactly this dependency in its Reasoning 3 and it is correct.
+
+**One seam, recorded and deliberately NOT filed.** The sentence still opens *"and
+like h it is …"*, and h's own paragraph three above still says *"h is a property
+of the module and the start lane"*. So the text now asserts a parallel that the
+neighbouring paragraph does not carry. It is not a defect and I will not file it:
+h **is** in fact port-pair-dependent (M16's receive h is 34 and its transmit h is
+0), so the inference the phrase invites is true of the world and false only of
+§0.5's own wording — which is precisely the residue the architect's ledger item 53
+declares open, now made visible inside the section instead of only in a ledger.
+Making a known residue legible is an improvement, not a defect.
+
+**And the residue is bounded, which is a measurement nobody has made.** I
+evaluated §0.5's straddle test — (h − q) ≢ 0 (mod 8) — at **both port pairs of
+all four structural modules**, to find whether any module today answers the
+module-subject tests two ways:
+
+| port pair | h | q | (h − q) mod 8 | straddles |
+|---|---|---|---|---|
+| M05 receive, lane 0 | 8 | 0 | 0 | no |
+| M05 receive, lane 4 | 12 | 0 | 4 | **yes** |
+| M05 transmit | 0 | 0 | 0 | no |
+| M16 receive / transmit | 34 / 0 | 0 / 2 | 2 / 6 | yes / yes |
+| M19 receive / transmit | 42 / 0 | 0 / 2 | 2 / 6 | yes / yes |
+| M20 receive, lanes 0 and 4 / transmit | 50, 54 / 0 | 0 / 2 | 2, 6 / 6 | yes / yes |
+
+**Item 53's residue has exactly one live instance in Phase 1 — M05 at a lane-4
+start — and is latent at the other three**, which straddle at both port pairs and
+therefore answer the module-subject test unambiguously today. That does not make
+the residue safe; it makes it *scheduled*, and it tells the §0.5 scoping round
+which module its first test case is.
+
+**VERDICT — the port-pair subject: COUNTERSIGNED.**
+
+#### 3. The halved default — COUNTERSIGNED, and my own instrument already implements it, which is a theorem and not a coincidence
+
+The default now assigns zero *"where that holds"* — at a port pair inserting
+nothing or a whole number of words — and **assigns nothing** elsewhere, where q is
+left *"unstated"* and *"every quantity below that consumes q is underived there
+until it does"*, with a pinned constant across such a port pair declared
+**defective, refutably by arithmetic before any RTL**. That is cure 1 as I
+recommended it, phrased as a halving, with the reason kept attached: silence
+remains an assignment where the rule holds, so every specification written before
+q existed stays correct without amendment.
+
+**What I checked that the recommendation did not cover: whether the halving is
+implementable, or whether it obliges an instrument to know something it cannot
+see.** `word_cycles` takes L, h and an optional q; it cannot see an insertion
+count, so it cannot itself apply the halved default's condition. The question is
+whether its unconditional `?output_offset = 0` therefore now *contradicts* §0.5 —
+silently answering where the specification says nothing is assigned.
+
+**It does not, and the reason is exhaustive rather than anecdotal.** At a
+conformant port pair, (L + h − q) ≡ 0 (mod 8). If q ∈ {1 … 7} then
+(L + h) ≡ q ≢ 0 (mod 8), so `word_cycles` with `~output_offset` omitted computes a
+sum that is not a multiple of 8 and returns **`None`**. Searched exhaustively over
+L ∈ [0, 200), h ∈ [0, 64), q ∈ [1, 8): **zero** triples exist where a conformant
+port pair with q ≠ 0 also has (L + h) a multiple of 8 (Evidence). So the
+instrument's silence produces a **refusal**, never a wrong number — the same
+disposition the halved default takes in the specification. My round at `9a596e7`
+built that alignment without knowing which cure would be ruled; it survives the
+ruling, and the property is worth stating in the record because it is the reason
+no committed expect block moves under this diff.
+
+**VERDICT — the halved default: COUNTERSIGNED**, and I record that the
+instrument's behaviour at an omitted q is refusal by arithmetic, not assignment by
+default, so §0.5's *"silence assigns nothing"* has an implementation today.
+
+#### 4. The structural-wrapper clause and the closure consequence — COUNTERSIGNED, the rule-versus-recital distinction verified as written, and one inherited premise named
+
+**The distinction is written, in terms, and I checked the words rather than the
+intent**: *"That is the definition **read at** a wrapper, not a rule **for**
+wrappers, and the distinction is why no such rule is written: minting one would
+enumerate what the definition already entails, which is the move* Why a term and
+not a scope *refuses, one structural level up."* That is cure 2 refused as a
+definition with its content kept as a recital, and the sentence a later reader
+needs in order to tell which it is met is present. Signed.
+
+**The closure consequence, re-derived from the amended text and not from my own
+entry.** With q defined as (octets inserted ahead of the frame) mod 8 and the
+wrapper clause reading that definition at a composite:
+
+    q(comp) = (Σ Iᵢ) mod 8 ≡ Σ (Iᵢ mod 8) = Σ qᵢ           (mod 8)
+    (L + h − q)(comp) = Σ (Lᵢ + hᵢ) − q(comp) ≡ Σ (Lᵢ + hᵢ − qᵢ) ≡ 0  (mod 8)
+
+whenever every child closes. Checked numerically at all three composites: the
+residue (L + h − q) mod 8 is **0** at M16 (48), M19 (56) and M20 (72), by both
+the two-child and the all-leaf decompositions. Signed.
+
+**One premise is unstated in three places, and I name it rather than file it.**
+The step Σ Iᵢ = I(comp) — *"insertions add along a chain"* — holds only where **no
+stage removes octets an earlier stage inserted ahead of the frame**. Where a stage
+strips what an earlier one inserted, neither the insertion sum nor the front-offset
+sum survives, and the closure argument, the wrapper clause and the additivity
+correction all lose their footing together.
+
+I do not file it, on a ground I want on the record because it cuts against my own
+interest in filing: **the premise is inherited, not introduced.** §0.5's
+pre-existing additivity of h rests on it (SPEC-M20 §7 sums front offsets to 50 by
+exactly that route), so it is not this diff's defect, and it is **unfalsifiable in
+Phase 1 by construction** — §0.4's receive chain only strips and the transmit
+chain only inserts, so no Phase-1 path mixes the two, measured at every stage
+(M03/M06/M08/M10/M14/M17 strip and insert nothing; M04/M07/M15/M18 insert and
+strip nothing; M09 does neither). It belongs to the architect's ledger item 50
+survey — *for each normative clause, enumerate the modules it quantifies over* —
+where it is one clause covering three statements, and not to a countersignature
+that would state it three times. **My theorem carries the same premise as the
+text that adopted it**, which is the honest reason it is recorded here rather than
+charged to anyone.
+
+**VERDICT — the structural-wrapper clause and the closure consequence:
+COUNTERSIGNED**, with the additivity premise named above as a shared, inherited
+and currently unfalsifiable condition of all three statements.
+
+#### 5. The ΔC-additivity qualification — the FORMULA countersigned exactly, the INSTANCE LIST narrowed, and `FINDING Q-6`
+
+The headline now carries its condition (*"along a chain whose stages insert
+nothing"*), the mechanism is stated correctly (ΔC counts to the first output word
+carrying a frame octet while the next stage's measurement event is the previous
+stage's first output word, and at an inserting stage those are different words),
+and the exact statement is given as
+
+    ΔC(comp) = Σ ΔCᵢ + (Σ qᵢ − q(comp))/8 = Σ ΔCᵢ + ⌊Σ qᵢ / 8⌋
+
+**Both forms are right, and I derived them rather than checking them.** From
+ΔCᵢ = (Lᵢ + hᵢ − qᵢ)/8 and the composite's own totals,
+ΔC(comp) − Σ ΔCᵢ = (Σ qᵢ − q(comp))/8 identically; and since
+q(comp) = (Σ qᵢ) mod 8 with Σ qᵢ ≥ 0, that equals ⌊Σ qᵢ / 8⌋. The architect's
+characterisation is exact: it is **the same carry my closure theorem discards mod
+8** — the composite always closes and only its ΔC is missed by the naive sum.
+The uncommissioned repair was also the right call, and I say so against the
+architect's Open-question 2: publishing a consequence recital that leans on
+additivity beside an unconditioned additivity headline would have been the same
+defect twice, which is the phrase the parent round used to refuse my own
+unconditioned corollary.
+
+**What I will not sign is the sentence that names where the correction
+vanishes**, and the defect is one my own theorem's mod-8 phrasing invited:
+
+> **`FINDING Q-6` (MINOR), mine, against `requirements.md` §0.5's amended
+> ΔC-additivity bullet.** The bullet says the correction *"vanishes wherever
+> Σ qᵢ < 8 — so along §0.4's receive chain, where every qᵢ is 0, and **at M19
+> (0 + 2) and M20 (2 + 0)**"*. **The correction is a property of the
+> decomposition, not of the composite**, and those two instances are named by
+> module. Measured at both decompositions of each: **M19** over {M18, M16} has
+> Σ qᵢ = 2 and correction 0 (7 = 7 + 0); over its four leaves {M18, M15, M09,
+> M07} it has Σ qᵢ = 10 and correction **1** (7 = 6 + 1). **M20** over
+> {M19, M05/M04} has Σ qᵢ = 2 and correction 0 (9 = 9 + 0); over its five leaves
+> it has Σ qᵢ = 10 and correction **1** (9 = 8 + 1). The composite's ΔC is
+> decomposition-invariant — that is the formula's content — but the *split*
+> between the sum and the carry is not, so *"it vanishes at M19"* is true of one
+> decomposition and false of the other. **Why this is not pedantry**: this same
+> diff's guards leave **all three wrappers pinning nothing** in their §7s, so the
+> wrapper-level ΔCs exist only inside change-log rows, and the decomposition a
+> reader actually has through module §7s is the **leaf** one — exactly the one at
+> which the correction is 1 at both named modules. A reader who takes the bullet
+> at its word and sums the leaves gets **ΔC = 6 at M19 and 8 at M20** against the
+> true 7 and 9: a one-cycle word-delay error, the same shape and direction as the
+> quarter-cycle error the whole `Q-3` arc exists to prevent, reached by following
+> the sentence rather than by ignoring it. **Nothing is red today**: no committed
+> instrument computes a wrapper composite (§7 below, re-measured), no wrapper §7
+> pins one, and the three §13 derivations state the composites correctly. **Cure**:
+> one clause — say the correction is taken over the stages of the decomposition
+> being summed, and give M19's two values as the worked instance, which is
+> already in the architect's own Evidence block (*"M19 decomposed to leaves:
+> 6 + 1 = 7"*) and did not reach the text. **Provenance, stated against myself**:
+> the invitation is in my theorem's phrasing — I proved a congruence mod 8 and the
+> bullet needed a quotient, and a congruence is exactly the statement from which
+> the carry has been divided out.
+
+**VERDICT — the ΔC-additivity qualification: COUNTERSIGNED as to the correction
+formula in both its forms and as to the headline's condition; NARROWED as to its
+instance list, filed as `FINDING Q-6` (MINOR).** The diff stays in force under
+either reading: the unconditioned headline it replaces is false at three
+composites, and this finding is about which decomposition a true correction is
+computed over.
+
+#### 6. The amended Phase-1 census sentence — NARROWED, and `FINDING Q-7`: the fourth structural module is in none of its three clauses
+
+The sentence enumerates three sets: *"q = 0 across every receive-path port pair …
+and across every leaf transmit port pair except M07 (q = 6) and M15 (q = 4).
+Across the transmit port pairs of the three structural wrappers M16, M19 and M20
+it is 2 … while across their receive port pairs it is 0."*
+
+**I checked it against §0.4's own structural set rather than against the three
+modules I ranked, which is `LH-0181-1`'s method applied to the sentence that
+replaced a false census.** §0.4's **Structural modules** paragraph names
+**four**: M05 `Eth_mac_10g`, M16, M19 and M20.
+
+> **`FINDING Q-7` (MINOR), mine, against `requirements.md` §0.5's amended
+> Phase-1 census sentence.** **M05's transmit port pair falls in none of the
+> sentence's three clauses**: it is not a receive-path port pair (§0.4 — *"their
+> transmit ports are not receive-path ports"*), it is not a **leaf** transmit port
+> pair (M05 is structural), and it is not one of the three wrappers the sentence
+> names. **No value is wrong**: M05's transmit port pair inserts M04's eight
+> octets — one whole word — so q = 0, and the halved default assigns it correctly
+> because §0.5's first clause holds there. What is defective is the **enumeration**,
+> in a sentence whose entire content is an enumeration, replacing a census that
+> was false for the same reason one clause too narrow. **Why M05 fell out**: both
+> surveys that produced this sentence were keyed on the *symptom* — the
+> architect's on the wrappers measured at q = 2, mine on the wrappers I ranked by
+> exposure, both of which are the q ≠ 0 set — and M05 is the structural module
+> whose q is benign. A census keyed on the value that triggered the finding cannot
+> see the member whose value is fine. **Cure**: one clause — name the four
+> structural modules of §0.4 and say that three carry q = 2 across their transmit
+> ports while M05 carries 0, its child inserting a whole word. That also makes the
+> sentence self-checking against §0.4 instead of against a memory of which
+> modules the finding named.
+
+**VERDICT — the amended census sentence: COUNTERSIGNED as to every value it
+states** (all six re-derived: receive port pairs 0 by §0.4's strip-only chain, M07
+6, M15 4, M16/M19/M20 transmit 2 from insertions of 34/42/50, their receive port
+pairs 0); **NARROWED as to its completeness, filed as `FINDING Q-7` (MINOR).** The
+sentence it replaces was false; this one is true and short by one member, so it is
+IN FORCE without qualification.
+
+#### 7. The class ground, checked at the source, including the measurement of mine that is load-bearing in it
+
+The architect states the ground for my judgment: same-function is **not** offered
+(the two defaults differ at exactly three port pairs), and the ground is that the
+retired default was **false** there and that **nothing was built on the
+falsehood**. Three limbs, each checked:
+
+- **No wrapper §7 pins a transmit per-octet constant.** Read all three at HEAD.
+  M16 §7: *"this section pins no per-octet constant across M16's transmit
+  ports … A monitor may therefore **not** convert either cycle figure above into
+  a per-octet latency, a front offset or an output offset."* M19 §7 and M20 §7
+  now carry the same in their own terms. ✔
+- **§0.5's injection licence is gated behind a fact stated in a module's own §7,
+  and none of the three states it.** ✔ (checked in the closing paragraph of §0.5
+  and in the three §7s).
+- **No committed instrument computes a wrapper composite — my measurement, and
+  the one the ground leans on hardest. Re-verified at `43c0087`.**
+  `grep -rn "word_cycles" test/ tools/` returns **14** hits, against ten when I
+  measured it at `292596c`; the four new ones are **my own repair's** — the
+  `?output_offset` signature, its `.mli` contract, and the negative controls in
+  `test_octet_time.ml`. **Every hit is inside `test/monitors/octet_time.{ml,mli}`
+  and its own test; there is still no caller anywhere else in the suite.** The
+  only external users of the module are M03's benches
+  (`test/xgmii/test_arrival.ml`, `test/xgmii_rx_64/**`), which call
+  `Latency.frame_in/frame_out/word_delay` on a **leaf** with q = 0 and never call
+  the conversion. `tools/check_emitted_verilog.sh` names `nic_top` only for
+  REQ-017's port set. **The measurement holds at this head and the count's change
+  is fully accounted for.** ✔
+
+The ground is correctly stated and correctly **not** stated as same-function:
+offering that ground in the round that sustains `Q-4` would have repeated the
+error `Q-4` convicts, and the row says so in terms. Signed.
+
+#### 8. The two module guards, riding as consequences — COUNTERSIGNED, with an answer to the question the architect attached to them
+
+The architect asks whether *a guard that names a q without pinning a constant is
+the right instrument*. **It is, and for a reason the architect's own Reasoning 4
+under-claims**: a guard that named no q would leave a reader with a prohibition
+and no way to satisfy the obligation §0.5 now places on him — the halved default
+tells him q is *unstated* there, and the guard tells him what it is, so the two
+together convert a hole into a labelled hole. A guard that **pinned** the
+composite would put a constant into a §7 whose governing §0.5 diff was still
+awaiting this signature, which is the worse of the two errors and was my own
+position at `J-dv_lead-0181` §6.
+
+I re-derived both guards' figures from the children rather than reading them:
+M19's transmit port pair inserts 8 + 34 = 42 → q = 2; M20's inserts 42 + 8 =
+50 → q = 2. Both correct. Both name the transmit figures as **event delays**,
+which is what SPEC-M16 §7, SPEC-M15 §7 and SPEC-M07 §7 already say of the figures
+they compose, so the guards are consistent one level down. **Signed.**
+
+**And to the architect's Open-question 5, as the countersignatory whose signature
+was the stated blocker**: with this entry the blocker is gone, and my
+recommendation is **pin all three** at the round that closes item 67 — L = 50/58/74,
+h = 0, q = 2, ΔC = 6/7/9 — *after* `Q-6`'s cure lands, not before. The reason is
+`Q-6` itself: while the wrappers pin nothing, every reader must compose from the
+leaves, and the leaf route is exactly the one the additivity bullet currently
+mis-describes. Pinning the three ends that exposure at its source; leaving them
+unpinned keeps a derivable-but-unstated quantity in the corpus, which is an
+invitation to derive it wrongly by a route the corpus itself gets wrong.
+
+#### 9. `FINDING Q-8` — the fourth wrapper the guards did not reach, found by walking §0.4's structural set instead of the finding's
+
+Walking the structural set for `Q-7` put SPEC-M05 §7 in front of me, and it is the
+`C-RL-8` class at a site neither census could see.
+
+> **`FINDING Q-8` (MINOR), mine, against `docs/specs/modules/eth_mac_10g.md`
+> §7.** The **Latency** bullet reads: *"**Zero octet times added, in both
+> directions.** M05's receive-port constants are M03's exactly — L = 16 octet
+> times at a lane-0 start, 12 at a lane-4 start, front offset h = 8 and 12, word
+> delay ΔC = 3 (SPEC-M03 §7) — and **its transmit-port constant is M04's, 8 octet
+> times** (SPEC-M04 §7)."* **8 octet times is M04's event delay, not its
+> latency.** SPEC-M04 §7's five-row table pins *"REQ-210's event delay | 1 cycle =
+> 8 octet times"* **and** *"L (octet times), §0.5 | 16"*, h = 0, ΔC = 2 — and
+> §0.5's inserting-module clause says in terms that a delay pinned to an inserted
+> word *"is an event delay, not a latency … a specification pinning both SHALL name
+> which is which."* M05's sentence pins **one**, does not name which, and names it
+> in a clause built in exact parallel with a receive-side clause that names L. **It
+> is refutable by the bullet's own first sentence**: M05 adds *zero* octet times in
+> both directions, so M05's transmit-port L **is** M04's L = 16, and 8 is the
+> figure the sentence should be calling the event delay. A composer of M20's
+> transmit chain who takes M05's §7 at its word carries **8 where 16 belongs** —
+> not a one-cycle error but a factor of two in L, which is why this is worth
+> filing even though M05's q is 0. **Nothing is built on it, measured**: no
+> committed test computes an M05 constant (`test/` names `eth_mac_10g` twice —
+> `AP-xgmii_tx_64.md` §5 as a loopback candidate and `test/cosim/tb_xgmii_rx_64.v`
+> in a comment about the reference's own files — neither a latency claim), and the
+> architect's own M20 composite in `requirements.md` §13 uses **16** correctly.
+> SPEC-M05 §13 has **no** post-freeze row and its preamble restates only the
+> receive-side constants, so the transmit figure is untracked. **Cure**: name both
+> figures at M05 as SPEC-M04 §7, SPEC-M07 §7 and SPEC-M15 §7 already do — one
+> clause, no value moving. **The generalisable half, which is why this is filed
+> and not fixed in passing**: this site escaped **two orthogonal censuses**. The
+> retired-form census was keyed on the string `(L + h)`, which M05 §7 does not
+> contain; the wrapper survey was keyed on q = 2, which M05 is not. A site can
+> survive two complete sweeps when each is keyed on a **symptom** of the class
+> rather than on the class, and the survivors are systematically the members whose
+> symptom is absent.
+
+#### 10. Act 2 — the location of `Q-4`'s cure: CONCUR, in one sentence and with its ground
+
+The architect adopted my ground whole, refused my cure's **location**, and asks
+whether I read §13's frozen-record rule as reaching *values* and not *grounds*.
+
+**I do not, and I concur:**
+
+> **I asked for one sentence and named a location I had no ground for, and the
+> architect's is the better one: §13's frozen-record rule reaches a class cell's
+> **ground** at least as strongly as its values, because a class cell is consulted
+> as evidence of what was claimed when the sweep ran and a re-verification
+> decision turns on knowing that a wrong ground was once offered — a fact that a
+> corrected-in-place cell destroys and a row beside it preserves — so the new row
+> is the cure, on the one condition it already satisfies, that it name the cell it
+> corrects.**
+
+Two things I add without contesting anything. **First**, the disposition has a
+cost the ledger should carry rather than the practice absorbing it silently: a
+reader of the corrected cell now needs a second row to know the first is wrong,
+and nothing in the cell points forward to it. §13's rows are chronological, so the
+pointer runs one way only — the correcting row names the cell, the cell does not
+name the correcting row. That is inherent to an append-only record and is the
+right trade, but it means the table's **navigability** degrades as instances
+accumulate, and item 41's third instance is where that should be said. **Second**,
+the rule is now general enough to state, and the architect's ledger item 41 says
+so: *a record is corrected beside itself, never rewritten* has three independent
+instances across two chains. I bank it below as a harvest candidate with its LH1
+provenance in both chains rather than one.
+
+### Actions
+
+1. Ran the abort-first precheck; both outputs matched the dispatch exactly. Read
+   HEAD again before writing: moved to `8babb6b` (the declared sibling), ran the
+   re-verification clause, confirmed every read surface byte-unchanged, proceeded.
+2. Read the charter and PROTOCOL in full, then `J-architect_docs_lead-0043` whole
+   and verbatim, then `git show 43c0087` whole, then §0.5 and §0.4 whole at HEAD,
+   before writing anything.
+3. **Countersigned the port-pair subject**, and **measured** the straddle test at
+   both port pairs of all four structural modules to bound ledger item 53's
+   residue: one live instance (M05, lane-4 start), three latent.
+4. **Countersigned the halved default**, and established by exhaustive search
+   that my instrument's omitted-q behaviour is **refusal**, never assignment — so
+   §0.5's *"silence assigns nothing"* has an implementation today.
+5. **Countersigned the structural-wrapper clause and the closure consequence**,
+   verifying the rule-versus-recital distinction is written in terms, re-deriving
+   the congruence from the amended definition, and **naming the inherited
+   insertions-add premise** shared by three statements without filing it.
+6. **Re-derived the additivity correction in both forms**, confirmed it at
+   **five** decompositions of the three composites, **countersigned the formula**,
+   and **filed `FINDING Q-6` (MINOR)** against the instance list, which names a
+   decomposition-relative fact by module.
+7. **Re-derived every value in the amended census sentence**, checked its
+   enumeration against §0.4's structural set, and **filed `FINDING Q-7` (MINOR)**:
+   M05's transmit port pair is in none of its three clauses.
+8. **Checked all three limbs of the stated class ground**, including
+   **re-verifying my own load-bearing measurement at `43c0087`** (no committed
+   instrument computes a wrapper composite; 14 `word_cycles` hits, all inside the
+   monitor, its interface and its own test, the four new ones my own).
+9. **Countersigned both module guards** as consequences, re-deriving their q from
+   the children, and answered the architect's instrument question and its
+   Open-question 5 with a recommendation to pin all three **after** `Q-6`'s cure.
+10. **Filed `FINDING Q-8` (MINOR)** against SPEC-M05 §7, found by walking §0.4's
+    structural set: the transmit-port constant it pins is M04's event delay, not
+    its latency, and the bullet's own *"zero octet times added"* refutes it.
+11. **CONCURRED on `FINDING Q-4`'s cure location** in one sentence with its
+    ground, discharging the architect's Open-question 1.
+12. Re-derived every figure in a throwaway script (Evidence), outside the
+    repository and not staged.
+13. Wrote this entry. **No `docs/**` file touched** — transcription is the
+    orchestrator's clerical act. **No `git add`, no `git commit`, no `git push`,
+    no git write of any kind.**
+
+### Evidence
+
+Reproducible from a checkout at this commit unless stated otherwise.
+
+**Precheck, the head move, and the re-verification.**
+
+    git status --short              # at entry AND at exit: empty
+    git rev-parse HEAD              # at entry: 43c0087d551b166432c79f4a1588fe3a94da61f1
+    git rev-parse HEAD              # before writing: 8babb6b5191cf754508a398c31bd38de61bedfde
+    git log --oneline 43c0087..HEAD # 8babb6b, one commit, the declared sibling
+    git diff --name-only 43c0087 HEAD
+    # agents/journals/claude_orchestrator_agent.v02.md, site/public/*.html (5), tasks/BOARD.md
+    git diff 43c0087 HEAD -- docs/specs/ test/ tools/ agents/handoffs/ docs/reports/latency/ \
+        docs/gates/ agents/journals/claude_dv_lead_agent.v10.md \
+        agents/journals/claude_architect_docs_lead_agent.v04.md          # empty
+    date -u                         # Tue Aug 11 16:27:55 UTC 2026
+
+**Every figure below is derived from module specifications only** — SPEC-M04 §7
+(L 16, h 0, I 8, event delay 8 octet times), SPEC-M07 §7 (22, 0, 14), SPEC-M09 §7
+(0, 0, 0), SPEC-M15 §7 (28, 0, 20), SPEC-M18 §7 (8, 0, 8) — and re-checked by a
+throwaway script outside the repository, not staged:
+
+    M16: L=50 h=0 I=34 q=2 dC=6   closure (L+h-q) mod 8 = 0
+    M19: L=58 h=0 I=42 q=2 dC=7   closure (L+h-q) mod 8 = 0
+    M20: L=74 h=0 I=50 q=2 dC=9   closure (L+h-q) mod 8 = 0
+
+    additivity, both forms, at FIVE decompositions:
+      M16 <- 3 leaves   qi=[4,0,6]     sum_q=10 sum_dC=5  form1=form2=direct=6  carry 1
+      M19 <- {M18,M16}  qi=[0,2]       sum_q=2  sum_dC=7  form1=form2=direct=7  carry 0
+      M19 <- 4 leaves   qi=[0,4,0,6]   sum_q=10 sum_dC=6  form1=form2=direct=7  carry 1
+      M20 <- {M19,M04}  qi=[2,0]       sum_q=2  sum_dC=9  form1=form2=direct=9  carry 0
+      M20 <- 5 leaves   qi=[0,0,4,0,6] sum_q=10 sum_dC=8  form1=form2=direct=9  carry 1
+
+form1 = Σ ΔCᵢ + (Σ qᵢ − q(comp))/8, form2 = Σ ΔCᵢ + ⌊Σ qᵢ/8⌋, direct =
+(L + h − q)/8 of the composite. **The composite's ΔC is decomposition-invariant
+and the carry is not** — rows 2 and 3 are the same module and differ in the
+carry — which is `FINDING Q-6`'s whole content, and the leaf rows are the ones a
+reader reaches through module §7s.
+
+**The straddle test at both port pairs of all four structural modules**
+(§2's table above): M05 receive lane-0 (h 8) **0**, lane-4 (h 12) **4**, transmit
+(h 0, q 0) **0**; M16 receive (34) **2** / transmit (0 − 2) **6**; M19 receive
+(42) **2** / transmit **6**; M20 receive (50, 54) **2, 6** / transmit **6**. One
+module answers two ways: **M05 at a lane-4 start**.
+
+**The instrument's refusal property, exhaustively** (Reasoning 3):
+
+    # word_cycles ?(output_offset = 0) ~front_offset l =
+    #   let sum = l + front_offset - output_offset in
+    #   if sum < 0 || sum mod 8 <> 0 then None else Some (sum / 8)   [octet_time.ml:9]
+    conformant (L,h,q), q in 1..7, with (L+h) ALSO a multiple of 8,
+    over L in [0,200), h in [0,64):   ZERO triples
+
+so an omitted `~output_offset` at a conformant port pair with q ≠ 0 returns
+`None`. Checked concretely at M07 (`~front_offset:0 22` → `None`) in the committed
+test at `test/monitors/test_octet_time.ml`.
+
+**The wrapper-composite measurement, re-verified at `43c0087`** (Reasoning 7):
+
+    grep -rn "word_cycles" test/ tools/ --include=*.ml --include=*.mli
+    # 14 hits: octet_time.ml 2, octet_time.mli 3, test_octet_time.ml 9 — no other file
+    # (10 at 292596c; the four new hits are my own 9a596e7 repair)
+    grep -rn "Octet_time\." test/ tools/ --include=*.ml --include=*.mli | grep -v test/monitors/
+    # only M03's benches: test/xgmii/**, test/xgmii_rx_64/** — Latency.frame_in/out/word_delay
+    grep -rln "ip_complete\|udp_complete\|nic_top\|Nic_top" test/ tools/
+    # test/attack_plans/AP-ip_eth_rx_64.md (prose), tools/check_emitted_verilog.sh (REQ-017 ports)
+
+**`FINDING Q-7`'s domain, measured at the source**: `requirements.md` §0.4's
+**Structural modules** paragraph names **M05, M16, M19 and M20**; §0.5's amended
+census sentence names three, and M05's transmit port pair matches none of its
+three clauses.
+
+**`FINDING Q-8`'s two figures, at the source**: `eth_mac_10g.md` §7 — *"its
+transmit-port constant is M04's, **8 octet times** (SPEC-M04 §7)"*;
+`xgmii_tx_64.md` §7's table — *"REQ-210's event delay | 1 cycle = 8 octet
+times"* and *"L (octet times), §0.5 | **16**"*. `eth_mac_10g.md` §13: *"This spec
+has none"*, no data row. `grep -rln "eth_mac_10g\|Eth_mac_10g" test/ tools/` →
+`test/attack_plans/AP-xgmii_tx_64.md` (§5's loopback candidate),
+`test/cosim/tb_xgmii_rx_64.v` (a comment naming the reference's own files).
+
+**Nothing in this entry is a verification result about any module**, and no `SO-`
+is opened or offered. No RTL, no bench and no `libs/**` file was read. `dune` was
+not invoked and no claim here depends on it (ADR-0005). Every arithmetic claim
+above is checkable by a reader with `requirements.md` §0.4/§0.5, SPEC-M04 §7,
+SPEC-M07 §7, SPEC-M09 §7, SPEC-M15 §7, SPEC-M18 §7 and the four structural §7s,
+and no toolchain.
+
+**Journal size**: v10 stands at 57,340 bytes before this entry, against
+`JOURNAL_SOFT_MAX` 262,144 (ADR-0017 §5). No rotation.
+
+### Outcome
+
+**DoD met on both acts.**
+
+**ACT 1 — the whole `requirements.md` §0.5 diff of `43c0087`: COUNTERSIGNED,
+narrowed at two of its six items, with three findings filed.** Item by item:
+
+| item | verdict |
+|---|---|
+| q's subject corrected to the **port pair** | **COUNTERSIGNED** — it is the correction my REQ-019 walk depends on; item 53's residue measured and bounded to one live instance (M05, lane 4) |
+| the **halved default** (cure 1) | **COUNTERSIGNED** — and my instrument's omitted-q behaviour is refusal, not assignment, exhaustively |
+| the **structural-wrapper clause** | **COUNTERSIGNED** — the *read at* / *rule for* distinction is written in terms |
+| the **closure consequence** | **COUNTERSIGNED** — re-derived from the amended definition; the shared insertions-add premise named, not filed |
+| the amended **Phase-1 census sentence** | **COUNTERSIGNED as to every value; NARROWED as to completeness** — `FINDING Q-7` (MINOR) |
+| the **ΔC-additivity qualification** | **COUNTERSIGNED as to the correction formula and the headline's condition; NARROWED as to its instance list** — `FINDING Q-6` (MINOR) |
+| the **class ground** as stated | **ACCEPTED** — same-function correctly not offered; all three limbs checked, including my own measurement re-verified at `43c0087` |
+| the two **module guards** (SPEC-M19 §7, SPEC-M20 §7) | **COUNTERSIGNED** as consequences; a guard naming a q without pinning a constant is the right instrument, and my recommendation is to pin all three after `Q-6`'s cure |
+
+**The diff stays IN FORCE in every part**; nothing in this entry suspends any of
+it, and both narrowings are about text that is true-but-incomplete standing where
+the text it replaced was false.
+
+**ACT 2 — `FINDING Q-4`'s cure location: CONCUR**, in the one sentence of
+Reasoning 10, discharging the architect's Open-question 1. The frozen-record rule
+reaches grounds at least as strongly as values; the architect's row is the cure;
+I add only that the pointer runs one way and that item 41's rule is now general
+enough to state.
+
+**Three findings filed, all MINOR, all routed to architect_docs_lead through the
+orchestrator**: `FINDING Q-6` (the additivity correction's instance list is
+decomposition-relative), `FINDING Q-7` (the census sentence omits M05's transmit
+port pair), `FINDING Q-8` (SPEC-M05 §7 pins M04's event delay as its transmit-port
+constant). **`Q-6` and `Q-7` are against text inside the diff I am countersigning
+and do not withhold the signature; `Q-8` is against a file the diff does not
+touch, found by walking the domain the diff's census quantifies over.**
+
+Handoff: **journal-only**. The verdicts above go to `requirements.md` §13 as the
+orchestrator's clerical transcription with this entry as their authority; the
+three findings go to architect_docs_lead. **No file outside this journal is
+staged, and my mechanics require no handoff file** — a countersignature of this
+class is a journal-entry signature block, per `J-dv_lead-0180` and
+`J-dv_lead-0181`, and `docs/**` transcription is not mine to write.
+
+**Lessons-harvest note** (ADR-0018, PROTOCOL §7). **Not owed this round** —
+§7 attaches the harvest to an `SO-` and to a phase gate, and this round is
+neither; declared rather than omitted. The span opened after `J-dv_lead-0181`
+runs and this entry joins it; the eleven candidates banked through `LH-0181-3`
+carry forward unchanged. **Two candidates banked for the next harvest, LH1–LH3
+discharged**, so the span's yield is not reconstructed later from memory:
+
+- **`LH-0182-1`** — *A sum's correction term is a property of the decomposition
+  summed over, not of the thing summed to; naming its value at the composite is a
+  claim that is true of one decomposition and false of another.* **LH2-g**: no
+  proper noun; the observable is that a stated correction is accompanied by the
+  partition it is taken over. **LH1**: this round's `FINDING Q-6`, where a
+  correction stated to vanish at two composites is 1 at both under the
+  decomposition their own component documents make available. **LH3**: without it,
+  a reader following the text's own worked instance computes the composite short
+  by exactly the carry, at the sites where no other route is published.
+- **`LH-0182-2`** — *A survey keyed on the symptom that triggered a finding cannot
+  see the members of the class whose symptom is absent; key it on the class and
+  enumerate from the document that defines the set.* **LH2-g**: no proper noun;
+  the observable is that a sweep's key is the class predicate rather than the
+  value that produced the first instance. **LH1**: this round's `FINDING Q-7` and
+  `FINDING Q-8` — two independent censuses (one keyed on a retired string, one on
+  a non-zero quantity) both left the same module standing, and it is the structural
+  module whose quantity is benign and whose *other* property is the defect.
+  **LH3**: without it, each sweep's survivors are systematically the sites that
+  look healthiest, which is where the next author copies from.
+
+**No escalation.** **E5 not triggered**: the one disagreement between leads —
+`Q-4`'s cure location — is resolved by concurrence in this entry, and the three
+new findings are filed, not disputed. **E2 not triggered**: no requirement, phase
+or role added or dropped; no ceiling, allocation or §1.1 row moves; the diff I
+sign withdraws a false assignment and admits or excludes no design. **E3 not
+triggered** — no toolchain or licensing surface reached.
+
+### Open-questions
+
+1. **`FINDING Q-6` (MINOR)** — `requirements.md` §0.5's ΔC-additivity bullet
+   names the correction's vanishing **at M19 and M20**, which is true of their
+   two-child decompositions and false of their leaf decompositions (correction 1
+   at both), and the leaf decomposition is the one this same diff's guards leave
+   as the only route through module §7s. **The formula is countersigned; only its
+   instance list is contested.** Cure: one clause. **Route**: architect_docs_lead.
+2. **`FINDING Q-7` (MINOR)** — the amended Phase-1 census sentence's three clauses
+   do not reach **M05's transmit port pair**, the fourth structural module §0.4
+   names. Its q is 0 and the halved default assigns it correctly, so no value
+   moves; the enumeration is short by one member. Cure: one clause naming §0.4's
+   four. **Route**: architect_docs_lead.
+3. **`FINDING Q-8` (MINOR)** — `eth_mac_10g.md` §7 pins *"its transmit-port
+   constant is M04's, 8 octet times"*, which is M04's **event delay**; M04's L is
+   **16** and the bullet's own *"zero octet times added, in both directions"*
+   refutes the sentence. `C-RL-8`'s class at a fifth site, at the structural
+   module both prior censuses were keyed to miss. Cure: name both figures.
+   **Route**: architect_docs_lead.
+4. **My recommendation on the architect's Open-question 5**: pin all three wrapper
+   transmit composites (L = 50/58/74, h = 0, q = 2, ΔC = 6/7/9) at the round that
+   closes ledger item 67 — **after** `Q-6`'s cure, not before. While they are
+   unpinned every reader must compose from the leaves, and the leaf route is the
+   one the additivity bullet currently mis-describes.
+5. **Ledger item 53's residue is bounded and its first test case is named**: the
+   straddle test returns different verdicts at M05's two port pairs at a lane-4
+   start, and agrees at both port pairs of M16, M19 and M20. The §0.5 scoping
+   round that corrects h and the two tests should use M05 as its worked instance.
+6. **The insertions-add premise is unstated at three statements** — the
+   structural-wrapper clause, the closure consequence and the additivity
+   correction — and is inherited rather than introduced (§0.5's h-additivity rests
+   on it too). It is unfalsifiable in Phase 1 by construction: no path mixes
+   stripping and inserting stages. It belongs to the item 50 survey, as one clause
+   covering three statements, and is recorded here rather than filed because my
+   own theorem carries it identically.
+7. **`FINDING Q-4`'s disposition has a navigability cost worth one ledger line**:
+   a corrected class cell does not point forward to the row that corrects it, so
+   the reader must find the later row to learn the earlier cell is wrong. Inherent
+   to an append-only record and the right trade; it should be said at item 41's
+   third instance rather than absorbed.
+8. **`DVC-1a` remains unbuilt** and every attack-plan count I quote remains a hand
+   count with its method stated. It must land before any `SO-` quotes an M04
+   coverage fraction. Carried from `J-dv_lead-0181` item 7, unchanged.
+9. **The whole-suite verdict is still CI's** (ADR-0005). This round touched no
+   file under `test/`, so nothing in it can move a suite result; the `9a596e7`
+   repair's CI adjudication is still the open item from my last round.
+
+### Files-in-this-commit
+- (none)
