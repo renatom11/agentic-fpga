@@ -459,3 +459,432 @@ honoured no stop-hook commit demand.
 ### Files-in-this-commit
 - agents/handoffs/SO-xgmii_rx_64.md
 - agents/handoffs/WO-0074_family-m-mutation-campaign.md
+
+## [J-dv_lead-0188] 2026-08-11T21:20Z | task:none | The two-frame presenter commissioned with its own machinery's design fixed rather than delegated — the run law re-anchored on the start character because the plan's identity does not generalise, the landed precondition found FALSE against a conformant design at two frames, and the route's own identity made an assertion so a silence on the wrong stimulus cannot be read as a result
+
+### Trigger
+
+Orchestrator dispatch, **one round: author `WO-0082`, the two-frame presenter
+packet — the `SO-M04` long pole**. It is the packet four of my own plan sites have
+been naming since `BUG-0004` closed: `AP-M04` §7 item **T-7** (the machinery
+absence, measured at the producer and carrying my seat as executor), §0.2 item 4
+(the REQ-206 prohibition), row `M04-G10`, and `BUG-0004` §10.4's carrier table.
+
+**This entry covers a round that died mid-response and was resumed.** The first
+attempt reached the end of its reading and design work and was killed by a server
+error at the moment it began to write; the orchestrator's resume message states,
+and the tree confirmed, that **no packet file existed** — the death was before the
+first write, so nothing partial had to be distrusted and nothing was inherited
+except my own reading, which I re-verified against a moved head before writing a
+line.
+
+**Abort-first head check, before reading anything.**
+
+    git status --short   # 3 lines, all auditor-lane (below)
+    git rev-parse HEAD   # 53ada46e2d257347d9e1d3bb6e84ce875e710fd6
+    git rev-parse --abbrev-ref HEAD   # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+`53ada46` is the dispatched expectation exactly. The three dirty paths were
+`docs/reports/audit/WO-0041-mutations/README.md` (modified) and two untracked
+files, `agents/journals/claude_auditor_agent.v03.md` and
+`docs/reports/audit/ADR-0020-auditor-countersignatures.md` — **all three inside
+the auditor's declared and exclusive lane** (PROTOCOL §6, ADR-0003), which the
+dispatch declared mid-round. Neither branch of the abort procedure was reached.
+
+**The head moved twice under the round and I re-verified rather than trusted the
+report.** At resume, `HEAD` = `6c02f5b`. The dispatch's own rule is to
+re-verify read surfaces, and the measurement is the whole of the clearance:
+
+    git diff 53ada46 6c02f5b -- docs/specs/ test/ agents/handoffs/ \
+                                agents/PROTOCOL.md agents/charters/
+    # empty
+
+**Every surface this packet reads is byte-unchanged across both landings.** The
+movement is `d84d36a` (`libs/hardcaml_ethernet/src/eth_axis_tx.ml`, rtl_lead's
+C-RL-9 comment repair) and `6c02f5b` (`docs/reports/process-council/**`, the
+orchestrator's council transcription) plus those two seats' own journals — three
+declared sibling lanes, none of them mine, and **the empty diff above is why the
+base figures I measured at `53ada46` are quoted at `6c02f5b` rather than
+re-measured for form.**
+
+**One substrate fact I record rather than let a later reader find unexplained.**
+At my closing check the auditor's three paths had **disappeared from the working
+tree without `HEAD` moving** — the modified file is clean and the two untracked
+files no longer exist. That is entirely inside the auditor's own lane, it is not
+mine to adjudicate, and **I touched none of the three at any point**; I note it
+because a reader comparing this entry's opening and closing tree states would
+otherwise see a silent deletion and have to guess.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` (§3's attack-plan and delegation duties, §5's DoD,
+  §8's journaling rules, §9's honest-enforcement note — the last is what §17.1 of
+  the packet exists to instrument).
+- `agents/PROTOCOL.md` — §3 (packet classes; the numbering rule, which is why the
+  packet's State block says the number is the orchestrator's to allocate), §4,
+  §5, §6, §7's **Mutation record** as in force, §10 (independence, the mutation
+  sequencing, **R-SEAL-1**).
+- **`test/attack_plans/AP-xgmii_tx_64.md` at `9a596e7`, read at the rows and not
+  recalled**: §0.1's three standing rules, §0.2 item 4 in full, §1's status
+  vocabulary, §2's seven standing obligations, §3's stimulus legality, §4's
+  identity, the family-A/B/F/G/H row tables, §5 item 11, §6's coverage map,
+  **§7's machinery table (T-1 … T-7) and §7.1's BAR T1**, §9's last two change-log
+  rows.
+- **`agents/handoffs/BUG-0004_…md` §9.3 (routes 2 and 3, derived), §9.4 (the
+  `W = 2` derivation), §10.3 (the three-way routing and the `SO-` precondition),
+  §10.4 (the carrier table)** — read at the source, because this packet's whole
+  subject is two derivations that packet never measured.
+- `agents/handoffs/WO-0080_…md` and **`WO-0081_…md` in full** — §3, §4.1, §5.1–5.3,
+  §6.0, §10, §11.1–11.3, §12, §13, §15, §16, §17.1–17.3, §18, §19; and
+  `RV-0081-VERDICT`'s own §4 and §6.
+- **`docs/specs/modules/xgmii_tx_64.md` at `292596c`**: §6.1 entire (the preamble,
+  FCS items 1–4, terminate-and-fill, **the gap paragraph**, the cycle table, the
+  storage paragraph), §6.2, §6.3, **§7 entire — the latency bullet, the
+  throughput bullet, the C-14.1 bullet and the C-16 bullet with all four
+  consequences**, §9, §13's four 2026-08-11 rows.
+- **`docs/specs/requirements.md` at `f67a57a`**: §0.5 entire as amended (the `q`
+  definition, the **halved** silence default, the structural-wrapper clause, the
+  identity `L = 8·ΔC − h + q`), §0.3, §0.6, §9.1, REQ-016, REQ-019, REQ-204,
+  REQ-206, REQ-209, REQ-210.
+- **The bench layer, read as the contract it is**: `test/xgmii_tx_64/bench.mli`
+  (all 259 lines) and `bench.ml`'s presenter, `check_words`, `run_one_frame`,
+  `run_lengths`, `wire_frame` and `assert_instruments_clean`;
+  `test/xgmii_tx_64/test_m04_a.ml` (the preamble idiom), `test_m04_g.ml` (the
+  strobe idiom and its own docstring), `test_m04_d.ml` (the promoted block),
+  `test/xgmii_tx_64/dune`.
+- `test/xgmii/tx_decoder.mli`, `frame.mli`, `xgmii_word.mli`;
+  `test/monitors/stream_word.mli`, `strobe_monitor.mli`;
+  `test/golden/crc32_ref.mli`.
+- My own chain: `J-dv_lead-0179` (Open-question 3, **the re-pin flag this round
+  discharges**), `-0180` (Open-questions 2 and 7), `-0181` (the §4.D straddle
+  re-pin, read at its diff), `-0187`.
+- **No RTL source read, for any purpose.** `libs/**`, `top/**`, `bin/**`,
+  `rtl_snapshots/**` and `test/third_party/**` were not opened at this commit or
+  any earlier one — not for `BUG-0004`'s fix, which is the one place the
+  temptation was real, and the packet's §8 says in terms that the derivation is
+  deliberately the only route to it.
+
+### Reasoning
+
+**The packet's subject in one sentence, because it decides everything below.**
+Every M04 run ever driven has contained exactly one frame, and that is enforced in
+the machinery rather than merely true of the benches: `assert_instruments_clean`
+fails unless exactly one frame decodes, `wire_frame` fails unless exactly one
+frame decodes. Twenty-five discharged rows and **not one handover**. `T-7` is the
+measurement of that absence and it names my seat as executor. A seat discharges a
+machinery obligation by **commissioning it with its design fixed**, not by
+handing a worker a capability request — so §5.3 of the packet specifies the
+runner, the split of the presenter, the run-length allowance, the two generalised
+instruments and the four re-expressions, and says in terms *"you implement this
+design, you do not choose it"*.
+
+**1. The re-pin is an act, and four movements had to be answered separately.**
+`J-dv_lead-0179` Open-question 3 flagged that `requirements.md` moved **inside
+`WO-0081`'s own spec basis** while that round ran, and required the next packet to
+re-pin rather than inherit. A re-pin that only refreshed SHAs would not have been
+one, so §3.1 answers each movement with its own ground: **(a)** §0.5 gained `q`
+and halved its silence default — *nothing here turns on it, and the reason is a
+measurement*: `q = 0` at M04 by two independent routes I derived at
+`J-dv_lead-0180` §4, and family J does not ride at all; **(b)** SPEC-M04 §7's
+straddle citation was repaired at `292596c` — *nothing moves*, but it matters
+because §7 is the section this round reads hardest and the worker is reading a §7
+edited eleven days into the module's life; **(c)** the plan-side twin was
+**already re-pinned by me** at `9a596e7`, which is why this round makes no plan
+edit at all; **(d)** PROTOCOL §7's Mutation record is in force — *nothing*,
+because no campaign rides this packet and §10 sequences one after the `RV-`.
+**§3.2 then records the thing that makes the discipline non-ceremonial**: five
+base figures would have been **wrong** if carried from the previous packet — the
+expect-test census (149→156), the tracked-file count (7→10), `bench.mli`'s value
+count (12→13), the `M04-` id census (13→25 ids) and the print census (0→10).
+
+**2. The stage split is by capability axis, not by family, and the dispatch asked
+me to scope it honestly.** Four families have back-to-back rows; **three distinct
+capabilities** reach them. Building all three in one round would have doubled the
+machinery of a round whose machinery already re-expresses four landed functions.
+So: this packet builds **one** — the multi-frame continuous presenter — and rides
+the six rows it reaches (`A3`, `B3`, `F1`, `F2`, `F5`, `G10`). Held back with the
+reason named per row: `A4` and `F6` need an **underflowed predecessor**, i.e.
+family G's withholding polarity, and two of A4's three members riding is not a
+discharge; `F3` drags in the **configuration axis** (`cfg_ifg` is hard-wired at 12
+in `create`, deliberately, "with its first consumer"); `F4` is **family I's
+10 000-frame run**, 47× this round's whole ceiling, and its own Stimulus cell says
+so. **Family F therefore does not complete and the packet does not describe it as
+completing** — the temptation to call a four-of-six family "closed" is exactly the
+coverage-by-silence the charter's DoD forbids.
+
+**3. The run law, and it is the round's central derivation because the plan's
+identity does not generalise by substitution.** `AP-M04` §4's identity is stated
+for one frame issued into an idle transmitter with the gap already served. For
+frame `k ≥ 2` the anchor is **not** that frame's own first acceptance: REQ-210
+says in its own text that *"back-to-back transmission legitimately delays a start
+character until the gap is served"*, and the start character is fixed by REQ-204's
+rounded gap rather than by M04's depth (SPEC-M04 §7's C-16 consequence 3 says so
+directly). So I re-anchored everything on `S_k`, the start-character cycle:
+`S₁ = C + 1`; `T_k = S_k + 1 + ⌊F_k/8⌋`; `S_{k+1} = T_k + g_k`. **It reduces to
+the plan's identity at `k = 1` byte for byte**, and at `P = 60` it reproduces
+every figure §6.1's own cycle table states independently — terminate at `C + 10`,
+next start at `C + 12`, gap 16 octets, 11 cycles, 88 octets. A bench that computed
+frame 2's cycles from frame 2's own `C` is wrong by two cycles at `P = 60` and by
+a different amount at every other length, which is trap **T3**.
+
+**4. The finding that would have produced a bench failing conformant designs, and
+it is against the landed machinery rather than against anything new.** The landed
+`P-ACCEPT` asserts the accepted cycles are `C … C+W−1`, **contiguous**. It has
+been green for twenty-two runs. **It is false at two frames against a conformant
+M04**: `tx_tready` is 0 on the FCS word and the terminate word (C-14.1), so every
+multi-frame acceptance stream has holes. A worker generalising the presenter "by
+analogy" carries the check across and the resulting red reads as a design defect.
+So §5.3(4) splits the presenter's loop from its checks — `present` keeps
+`P-ACCEPT` for the single-frame path, `present_stream` gets **`SP-1` liveness and
+`SP-2` completeness and nothing else** — and the packet states the prohibition
+twice, as trap **T4** and as bar **M-20**, which asks the worker to write down in
+one sentence *why* contiguity would fail a conformant design. **A bar that asks
+for the reason catches a copied check that a bar asking for the code would
+not.**
+
+**5. `T-7` is discharged in half and I named the half rather than glossing it.**
+The row asks for a *"controllable"* handover cycle. This round builds the
+continuous source and the handover, and **not** an arbitrary-cycle release
+scheduler. The honest analysis is that the half built is the half `M04-G10`
+needs — a continuous source presents the next frame's word 0 at exactly `C + 8` by
+construction, which is *why* routes 2 and 3 exist at all — and the half not built
+has **no consumer among this round's rows** (its consumers are family H's), so
+building it would land a capability with none, which is the standing rule `BM5`
+enforces. I considered driving the `C + 11` alternative to give the scheduler a
+consumer and rejected it: that alternative **is** a family-H row's observable, and
+inventing a use to justify a capability is how a round acquires coverage it did
+not commission. §5.4 states the residue and §19.2 item 4 puts the state-cell
+movement in my own hands at the `RV-`, to the extent measured and no further.
+
+**6. The append-only rule, and it is the third answer to a question with two bad
+answers.** Three of this round's five units belong to families whose files are
+landed, and §5.3 re-expresses four landed functions whose **only** evidence of
+harmlessness is the sixteen landed units staying byte-identical. Option one —
+forbid touching the family files, put everything in one new file — files rows
+where no later family round would look for them, and the landed `test_m04_g.ml`
+docstring already anticipates the opposite in terms (*"Family G's own round
+appends further units to THIS file"*). Option two — edit freely — destroys the
+regression witness. **The third answer is PROTOCOL §5's own `R3` borrowed one
+directory over**: additions only, `--numstat` deletions **zero**, which is exactly
+"nothing existing was touched" because a modified line shows as one deletion and
+one insertion. The family convention survives permanently, the witness survives
+this round, and the bar is mechanical rather than a reading.
+
+**7. The disposition class I would not have written a year ago, and it is the most
+valuable pre-commitment in the packet.** `M04-G10` asserts a **silence**. A
+silence is worthless if the run was not the experiment: if the handover does not
+land at `C + 8`, `error_underflow` may well be 0 for reasons with nothing to do
+with `BUG-0004`. So the unit asserts **the route's own identity first** — the
+whole acceptance list, `C … C+8` for shape (a) and `C … C+8` plus `C + 11` for
+shape (b), the second with its hole at `C + 9`/`C + 10` — and **class D3c**
+pre-commits that a failure there **voids every silence assertion downstream**,
+with the void condition written into the unit's own failure message rather than
+left to adjudication. `WO-0081`'s table had one `D3` because a single-frame round
+had one run-level precondition; folding `D3c` into it would have routed *"the run
+was not the route"* to *"the run stalled"* and let a reader take the silence at
+face value.
+
+**8. What I refused to write, three times.** **No plan edit** — issuing a work
+order is not an event `AP-M04` §9's change-log discipline attaches a row to; that
+discipline attaches to an edit of the plan and to the **absorption** of a round's
+results, which is my act at the `RV-`. The one annotation the plan was owed at
+issuing time (§4.D's straddle citation) **was already paid** at `9a596e7`, and I
+checked that rather than assuming it. **No sealed prediction** — my form seals
+mutation campaigns, not bench rounds, and `WO-0080`/`WO-0081` carry no seal file
+either; a bench packet withholds nothing, so **R-SEAL-1 has no subject here** and
+I have not claimed a withheld result anywhere in the packet. The one
+prediction-shaped thing in it, §16.3's expected-CI statement, is **disclosed by
+construction** and this round's is *green with an empty diff*, which is a
+tightening rather than a loosening: no printed value is commissioned, so class P
+is **closed** and any diff at all is a bounce.
+
+**9. Cost, and why the ceiling moved.** 2 354 driven cycles across 16
+elaborations — 2.24% of the measured size class, the largest single run (the
+hundred-frame one) 1.2% of the probe's own run. The ceiling rises from 1 700 to
+**2 600** and from 28 to **20** elaborations: cycles up because one row's stimulus
+is a hundred frames, elaborations **down** because a multi-frame run is one
+elaboration where the last round's twenty-two runs were twenty-two. Both figures
+are derived from §6's tables and the packet says that exceeding either means one
+of **my** constants is wrong.
+
+**Harvest.** **Not due, declared rather than skipped** (charter §8, PROTOCOL §7):
+this round is neither an `SO-` issuance nor a phase gate — it issues a work order.
+**My open span continues unbroken from `J-dv_lead-0183` through `-0187` and this
+entry joins it.** **Two candidates banked**, LH1–LH3 discharged, both **LH2-g**
+(no proper noun of any kind); lettering continues the arc's shared sequence after
+(k)/(l) at `J-dv_lead-0187`.
+
+- **(m)** *An experiment that reports the absence of an event must first assert
+  the precondition that identifies which experiment was performed, and must
+  declare its own result void when that precondition fails.* **LH1** this round's
+  handover precondition and its pre-committed void class, written against a row
+  whose entire content is a silence. **LH3** without it, a negative result is
+  reported on a stimulus that was never produced, and the absence of evidence
+  enters the record as evidence of absence — undetectably, because the run is
+  green.
+- **(n)** *A precondition proven over a single instance does not survive its
+  generalisation to a sequence, and the ones already hardened into assertions are
+  the dangerous half: such an assertion keeps passing review by looking unchanged
+  while failing every conformant subject.* **LH1** this round's contiguity check
+  — true of one frame, false of two against a conformant subject, green for
+  twenty-two prior runs. **LH3** without the rule, the generalisation ships a
+  checker whose failure is read as a defect in the thing checked rather than in
+  the checker, which is the most expensive misreading available.
+
+### Actions
+
+- Ran the abort-first precheck at `53ada46`; on resume after the mid-response
+  death, **re-ran the head check and executed the dispatch's re-verification
+  clause** — `git diff 53ada46 6c02f5b` over `docs/specs/`, `test/`,
+  `agents/handoffs/`, `agents/PROTOCOL.md` and `agents/charters/` returned empty.
+- Read the charter, the protocol, `AP-M04` at its rows, `BUG-0004` §9.3/§10.3/
+  §10.4, `WO-0080`/`WO-0081` in full, SPEC-M04 §6.1/§6.2/§6.3/§7/§9/§13, and
+  `requirements.md` §0.3/§0.5/§0.6 as amended.
+- Read the landed bench layer as a contract: `bench.mli` in full, `bench.ml`'s
+  presenter and four guard sites, and the three family files whose idioms the new
+  units follow. **No RTL was opened.**
+- **Measured the base at `53ada46` and re-verified it unmoved at `6c02f5b`**: the
+  expect-test census, the per-file unit counts, the tracked-file set, `bench.mli`'s
+  value count, the `M04-` id census and its two bare tokens, the infix-`mod`
+  sites, the printing sites, the `tready` sites, the `[%expect]` block census and
+  its one non-empty member, `test/xgmii_rx_64/`'s file count, and
+  `tools/dv_checks.sh`'s zero M04 occurrences.
+- **Derived the run law** and checked its reduction to `AP-M04` §4's identity at
+  `k = 1` and against SPEC-M04 §6.1's own cycle table at `P = 60`.
+- **Derived every constant of the five units** — 14 frame shapes, the eight-member
+  gap sweep, the two `M04-B3` orders, and `M04-G10`'s acceptance lists and three
+  named cycles — from the run law and from §7's C-16 consequences 2, 3 and 4.
+- **Wrote `agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md`** — 19
+  sections plus a header block and section map, six commissioned rows, five units,
+  20 review bars with base figures, 19 bounce conditions, 16 traps, 12
+  disposition classes, and the §17.1 allow-list in `WO-0081`'s proven unified
+  form.
+- Wrote this entry. **No file outside the new packet and this journal was
+  created, edited or staged; `test/attack_plans/**` was not touched; no
+  `git commit` or `git push` was run and no stop-hook commit demand was
+  honoured.**
+
+### Evidence
+
+All commands run from the checkout at `53ada46` and re-verified at `6c02f5b`; the
+empty diff below is what licenses quoting the first set at the second commit.
+
+**Head movement and surface clearance:**
+
+    git rev-parse HEAD                       # 6c02f5b2b21be63c1091e6b026be17aeb7159bbe
+    git diff 53ada46 6c02f5b -- docs/specs/ test/ agents/handoffs/ \
+        agents/PROTOCOL.md agents/charters/  # empty
+    git diff 53ada46 6c02f5b --stat          # 12 files: two sibling journals,
+    #   docs/reports/process-council/round-1/** (9), libs/hardcaml_ethernet/src/eth_axis_tx.ml
+
+**The base figures every §12 bar is stated against:**
+
+    grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .      # 156
+    git ls-files test/xgmii_tx_64/ | wc -l                           # 10
+    git ls-files test/xgmii_rx_64/ | wc -l                           # 17
+    grep -c '^val ' test/xgmii_tx_64/bench.mli                       # 13
+    grep -rho --include=*.ml 'M04-[A-Z][0-9]*' test/ | sort -u | wc -l   # 25 distinct
+    grep -rho --include=*.ml 'M04-' test/ | wc -l                     # 145 = 143 + 2 bare
+    grep -rn ' mod ' test/xgmii_tx_64/                                # 3, all non-expression
+    grep -rn 'print\|Stdio' test/xgmii_tx_64/*.ml | wc -l             # 10, all in test_m04_d.ml
+    grep -rn 'tready' test/xgmii_tx_64/*.ml | wc -l                   # 9
+    grep -c 'M04\|xgmii_tx_64\|AP-xgmii_tx' tools/dv_checks.sh        # 0
+
+Per-file `%expect_test` counts: scaffold 1, a 1, b 3, c 5, d 3, e 2, g 1 = **16**.
+`[%expect` blocks: **16**, of which **15 are `{||}`** and one carries U13's
+promoted oracle value at `test_m04_d.ml:392` — read individually, not counted.
+The three infix-` mod ` hits are `bench.mli:151` (docstring),
+`test_m04_b.ml:255` (string literal) and `test_m04_e.ml:14` (docstring); the ten
+print hits contain **exactly one call site**, `Stdlib.print_string` at
+`test_m04_d.ml:362`.
+
+**The run law checked against the specification's own table**, at `P = 60`:
+`F = 64`, `t = 0`, `S₁ = C+1`, `T₁ = C+1+1+8 = C+10`, `g = ⌈12/8⌉ = 2`,
+`S₂ = C+12`, spacing 11 cycles, gap `16 − 0 = 16` octets, **88 octets between
+start characters** — every figure independently stated in SPEC-M04 §6.1's cycle
+table and its closing paragraph. The `t = 4` member: `F = 68`, `g = ⌈16/8⌉ = 2`,
+gap `16 − 4 = **12**` — §6.1 names that number too (*"16 octets for t = 0 and 12
+octets for t = 4"*).
+
+**`M04-G10`'s three cycles, each traced to a specification sentence rather than
+to `BUG-0004`**: the acceptance at `C + 8` is §7's C-16 consequence 2; the second
+word at `C + 11` is consequence 4; the start character unmoved at `C + 12` is
+consequence 3. `BUG-0004` §9.3 supplies only the two cycles at which the
+**unfixed** design strobed, `C + 12` and `C + 13`, which the packet uses to name
+the assertion and never as an expected value.
+
+**Cost arithmetic**, checkable by summing §10's table: 51 + 408 + 1 227 + 464 +
+204 = **2 354** cycles over 1+8+1+2+4 = **16** elaborations; `2 354 / 105 010` =
+**2.24%**.
+
+**Not measured this round, and named as such**: **green**. No suite was run, no
+`dune` invoked, no CI run id claimed — this round writes a packet and no code.
+Every claim about the landed bench's behaviour is a read of the committed file,
+and every claim about the design's behaviour is a derivation from the
+specification, which is what the round exists to commission a measurement of.
+
+### Outcome
+
+**Met.** The packet is authored, complete, and `DRAFT` pending the orchestrator's
+number allocation and spawn.
+
+- **`agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md`** — 19
+  sections. §0 what the round is; §1 the slice and **the honest stage split**;
+  §2 the six rows; **§3 the re-pinned references with §3.1's four movements and
+  §3.2's five would-have-been-wrong figures**; **§4 the run law**; **§5 the
+  capability layer, the fixed design of the extension, and §5.4's named `T-7`
+  residue**; §6 every derived constant per unit; §7/§8 the DUT seam and the read
+  prohibition; §9 the regime facts including **§9.8, what measuring `M04-G10`
+  does and the four things it does not**; §10 cost and the pre-committed ceiling;
+  §11 units, files and **§11.4's append-only rule**; §12 twenty bars, every
+  tree-quantified one executed at the base; §13 nineteen bounce conditions;
+  §14 sixteen traps; §15 twelve pre-committed dispositions including **D3c**;
+  §16 the expected-CI discipline; §17 the allow-list in the proven unified form;
+  §18 the return; §19 what the round does not carry and what I owe after it.
+- **Worker**: tb_writer. **Round count**: one, and the family set is split across
+  three stages with stage 2 and stage 3 named at §1.4.
+- **`T-7`'s executor obligation** is discharged as a commissioning act with the
+  machinery's design fixed by me; its residue is named at §5.4 and its state cell
+  moves only at absorption, only to the extent measured.
+
+**Handoff**: to the orchestrator, to allocate the packet number, commit, and
+spawn tb_writer against it. `Files-in-this-commit` lists the one new packet file;
+this journal volume is the committing agent's own and is excluded per §4.2.
+Trailers `Agent: dv_lead`, `Work-Order: none`, `Journal-Entry: J-dv_lead-0188`.
+**Not `Journal-Only`** — this commit carries work.
+
+### Open-questions
+
+1. **The packet number is not mine to allocate** (PROTOCOL §3). The file is named
+   `WO-0082` because that is the next free number measured at this tree
+   (`grep -c 'WO-0082' tasks/BOARD.md` → 0) and the State block says so; if the
+   orchestrator allocates differently, the filename and the four internal
+   self-references move together.
+2. **`BM17`'s arming condition is measured by the worker and not by me.** It turns
+   on whether the spawn prompt carries an enumerated allow-list at its head —
+   the orchestrator's act, reported as a fact in §18 item 9. It was armed last
+   round and did not fire; **that is a precedent about the arrangement working,
+   not a reason to relax it**, and the packet says so in the condition itself.
+3. **The auditor's three working-tree paths disappeared mid-round without `HEAD`
+   moving** (Trigger). Inside its own exclusive lane, not mine to adjudicate, and
+   I touched none of them. Recorded so a reader comparing tree states is not left
+   to guess; if it was an aborted round, the debt it was paying is that seat's to
+   re-carry.
+4. **`DVC-1a` remains unbuilt** and every M04 count in this packet is a hand count
+   with its method stated (§9.7 of the packet says so in the worker's own terms).
+   It must land before any `SO-` quotes an M04 coverage fraction. Carried from
+   `J-dv_lead-0179` item 6 through `-0187` item 5, unchanged.
+5. **Class D2 is materially more likely this round than in any previous M04
+   round**, and I say so in the packet rather than discovering it: the decoder's
+   `gaps`, `start_spacings` and multi-frame `frames` are landed, unit-tested, and
+   **have never been called from this directory**, because a one-frame run
+   completes no gap. If one of them is wrong, the red will look like a design
+   defect and it is mine to separate.
+6. **Carried, unchanged**: the whole-suite verdict is CI's and the `9a596e7`
+   repair's CI adjudication is still open; `J-dv_lead-0184` item 5 still stands
+   (no test, plan row or spec claim of mine may cite that round's mutation-hunk
+   reads, and this packet cites none); `SO-xgmii_rx_64.md` §2.2-D's green half
+   remains owed against a gate SHA that does not exist.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md
