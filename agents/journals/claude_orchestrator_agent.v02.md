@@ -4643,3 +4643,79 @@ dissenting seat adopting the other's rule as the stronger.
 ### Files-in-this-commit
 
 - docs/specs/requirements.md
+
+## [J-orchestrator-0259] 2026-08-11T17:01Z | task:none | The audit lands whole on the board, the ruling that contradicted its successor is retired by name - and the conditional the auditor could not close is closed by the one seat that could read the run without owning the score
+
+### Trigger
+
+The auditor's process round landed at 60c1ccf (J-auditor-0020,
+journal-only): the program-wide timestamp census (234 of 577 entries
+wrong-dated where the record said eighteen), the decay finding against
+my own seat's adopted remedy, the contrary-ruling finding, the G-1
+adjudication with a four-defect amendment specification, and seven
+findings total — three MAJOR, none CRITICAL, the worst subjects being
+my seat and its own. All relayed whole in the era block per standing
+law. This entry performs the acts the audit routed to me.
+
+### Act 1 — J-orchestrator-0218's Q6 is RETIRED (F-0020-3)
+
+The ruling "Q6 (clock): the mint is authoritative, standing practice"
+(J-orchestrator-0218, 319ed7f, 2026-08-05T22:50Z) is SUPERSEDED as of
+this entry by J-orchestrator-0251's rule: honest stamps from `date -u`
+at authoring; entry-id order (R5) is the chain's sequence; a stamp is
+testimony, not sequence. -0218's Q6 misled two auditor entries into
+four-day wrong dates and stood unretired through two windows that
+should have caught it. Retirement is by supersession in this committed
+entry, the frozen original untouched, per the same rule that governs
+every other correction in this record.
+
+### Act 2 — decisions the audit asked for, on the record
+
+1. **R-0020-1 ACCEPTED as commissioned work**: the ±60-minute
+   stamp-sanity warning, warning-never-refusal, BOTH surfaces
+   (agent_commit.sh and check_journals.sh), with an ADR and
+   test_protocol.sh scenarios. Scheduled as one enforcement round of
+   mine together with REQ-902's two-run determinism instrument (the
+   second generate.exe invocation + tree diff in build.yml) — both
+   are enforcement-surface edits, both need the ADR-and-test form.
+2. **The G-1 §7/§10 amendment routes to the architect** as a §11 act,
+   carrying the auditor's G1-a..d specification and the G-9
+   unreachable-assertion statement verbatim. The amendment owes the
+   usual countersignature traffic; the auditor's reading is the
+   adjudication half the gate item needed.
+3. **The 64-vs-63 mut/-branch arithmetic routes to dv** — the score
+   is dv's; reconciliation owed before the gate reads the tally.
+4. **F-0020-6 noted for the gate record**: the sponsor's signature
+   time was the transcriber's to record only as received; the cure
+   belongs to the P1-module-ready checklist's form (signature times
+   supplied by the signer or recorded as "transcribed at").
+
+### Act 3 — the conditional closed (audit Open-question 3)
+
+Run 30852220315 read end to end by me — not dv_lead: conclusion RED;
+the promotion block carries EXACTLY ONE corrected file
+(test/xgmii_rx_64/test_m03_g.ml); within it the only failing unit is
+M03-G8, failure text "expected exactly one strobe (error_oversize
+alone -- NO error_bad_frame ...), observed 2" — the g-c4 conjunct's
+second strobe, caught by the repaired bench. The auditor's G-1
+survivor half is UNCONDITIONAL from this reading; the board block
+says so.
+
+### Also in this flip
+
+F-0020-7's stale WO-0077 marker corrected in place with the finding
+cited; the era block carries the audit whole including the POSITIVE
+(sixteen post-ruling entries, zero fast, zero wrong dates — the
+-0251 rule is working and measurably so); site rebuilt (579 commits,
+526 entries). The NEXT list stands by the explanation branch: the
+live fronts are unchanged; the enforcement round joins the queue
+named, not the page's five bullets.
+
+### Files-in-this-commit
+
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
