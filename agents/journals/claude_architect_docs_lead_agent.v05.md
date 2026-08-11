@@ -1808,3 +1808,358 @@ force and no script, workflow or constitution text was changed by this round.**
 ### Files-in-this-commit
 
 - docs/adr/ADR-0021-a-check-is-only-where-it-runs.md
+
+---
+
+## [J-architect_docs_lead-0050] 2026-08-11T22:10Z | task:none | The council's seven edits applied against a hundred and twenty-eight measured postures: fifteen false claims corrected each by its row, the stamping the document invented and never applied to itself, and three repairs REFUSED AS PERFORMED and routed because the sentences that carry the same error are the constitution's
+
+### Trigger
+
+Orchestrator dispatch, one round, dispatch-only (`task:none` — itself an instance
+of the class this revision now names in §3). The commission: apply the process
+council's round-1 verdict to `docs/PROCESS.md`, each edit citing the auditor's
+posture list, because round 2's council convenes on the revised text cold. The
+dispatch carried the seven edits with the orchestrator's routing rulings on three
+of them, five declared siblings, and the instruction to refuse — never silently —
+where my judgment differs from a verdict edit.
+
+### Inputs
+
+Precheck at spawn (PROCESS §4.1): `git status --short` → six modified paths and
+one untracked, **all** under `test/xgmii_tx_64/` (declared sibling 1, tb_writer on
+`WO-0082`); `git rev-parse HEAD` → `287b5eee39b98f8ab8ce23e319f141a0e32cddad`,
+exactly the expected head, on `claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+No undeclared dirty path. Proceeded.
+
+Read in full:
+
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` (mandatory first
+  actions).
+- `docs/reports/process-council/round-1/verdict.md` — whole file: Agrees, Clashes,
+  Blind Spots, the Recommendation's seven edits, the One Thing to Do First.
+- `docs/reports/process-council/round-1/bob.md` (F1–F13 + the omitted-mechanisms
+  list) and `charlie.md` (C1–C5, M1–M7, m1–m7) — the findings the edits cure.
+- `docs/reports/audit/PROCESS-claims-posture.md`, all 429 lines — the 128 rows,
+  the fifteen-FALSE collection, the eight PLANNED table, the calibration section.
+  Landed `89998a6`, `J-auditor-0023`.
+- `docs/PROCESS.md` at `287b5ee`, all 1,445 lines.
+- For the genesis section: `docs/gates/G0-checklist.md` (eleven items, the
+  click-path, the PASSED declaration) and `docs/reports/audit/AUD-0001-g0-retro.md`
+  §1 and its verdict block.
+- For the substrate annex: `scripts/policy.sh`:10–14 (the read-limit anchor and
+  both thresholds), `scripts/agent_commit.sh`:79–210 and
+  `scripts/check_journals.sh`:127–210 (`R10`/`R11` surfaces),
+  `docs/adr/ADR-0017-…md` §4.4/D4/§5.
+- For the export unit: `docs/adr/ADR-0018-…md` §4.2 and its Affects block (the
+  generic shell as *another repo*), `docs/federation/outbox/`.
+- For edit 1's routing: `docs/adr/ADR-0021-a-check-is-only-where-it-runs.md`
+  status block and §9's per-subject route table (PROPOSED at `287b5ee`).
+- For the four-commands correction: `docs/SPONSOR.md`'s spot-check section.
+- `site/build.py`:555–625 — the minimal markdown converter that renders this file
+  on the site, read **before** writing, to stay inside its subset.
+
+Inward sibling check (PROCESS §4.2), performed at 22:10Z when `date -u` showed the
+tip had moved: `287b5ee` → `d4be71b`, four landings — `65ba148` tb_writer
+(`test/xgmii_tx_64/**` + workers `v03` + the `WO-0082` return log), `efe84b3`
+rtl_lead (journal `v03`), `fb58ba3` dv_lead (journal `v11`), `d4be71b` auditor
+(fresh `v03` rotation + two files under `docs/reports/audit/**`). Descent
+confirmed by `git merge-base --is-ancestor`, not assumed. **Every one is a
+declared sibling of this dispatch**, and `git diff --stat 287b5ee..HEAD` over the
+full read surface of this round — `docs/PROCESS.md`, the council directory, the
+posture list, `agents/PROTOCOL.md`, `scripts/`, `.github/`, `docs/adr/`,
+`docs/gates/`, `docs/SPONSOR.md`, `site/build.py`, my charter — is **empty**. No
+transcription in this revision was taken against a state that has since moved.
+The auditor's own `v03` records the reciprocal: it saw my dirty `docs/PROCESS.md`,
+declared it as a sibling, and deliberately did not read it.
+
+### Reasoning
+
+#### 1. What decided the shape: the posture list is the instrument, not the argument
+
+The verdict asked for seven edits; the posture list decides what each of them may
+say. So the organising rule of this revision is that **no sentence about
+enforcement survives without a row behind it**, and the row's posture — not my
+sense of the machinery — sets the tense. That is what makes the round auditable in
+one pass: 128 rows, 128 citations, and a reader who wants to convict me needs only
+the two files.
+
+Consequences I accepted from that rule rather than chose:
+
+- Where a row is `FALSE`, the corrected text says what the first edition claimed
+  and what refuted it. Deleting the false sentence silently would leave the next
+  council unable to tell a correction from an omission — and would repeat, at the
+  document level, the frozen-record violation of §2.2.
+- Where a row is `PERFORMED-ONCE`, the sentence carries the date and, separately,
+  whether anything obliges the next instance. This is the change with the widest
+  reach in the file: it is the difference between "the auditor re-executes
+  evidence" and "the auditor re-executed evidence twice in the program's life, and
+  §1.1's residue note explains the gap".
+- Where a row is `PLANNED`, the sentence goes into the owed voice, never the
+  present indicative. The dispatch made this explicit for the six rows routing to
+  the dormant sampling practice; I applied it to all eight, including the two
+  unbuilt warnings, because the reader failure is identical.
+
+#### 2. The stamp notation, and the two tokens the verdict did not ask for
+
+Verdict edit 2 names four postures. I added two, with the grounds in the key:
+`[CORRECTED · C-nn]`, because a corrected claim needs a marker distinguishing it
+from a claim that was always true — otherwise the fifteen repairs are invisible to
+the round that must check them; and `[UNANCHORED · C-24]`, because the posture
+list has one row it refused to grade and forcing it into `PLANNED` or `FALSE`
+would be exactly the defect the report exists to measure.
+
+I also **declined to stamp failure-class prose**, and said so in the key. The
+auditor's sampling frame removed that prose deliberately — it asserts nothing
+about this program's controls — so stamping it would manufacture postures no seat
+measured. This is the one visible place where normative-sounding text carries no
+stamp, and a silent version of that choice would read as an oversight.
+
+#### 3. The three repairs REFUSED AS PERFORMED, and why routing is the honest act
+
+The verdict offers, inside three of its edits, repairs that are not this seat's to
+make. Each is refused as performed and routed in the document's own margin form —
+never left as a silent gap:
+
+1. **`C-40`'s constitutional half** (the dispatch carved this out explicitly).
+   The disjointness premise that makes one-agent-per-commit "automatic" is
+   `PROTOCOL` §5 R1's honesty note, in the constitution's own words. §2.1 now
+   carries the correction and the arithmetic for the document, and the margin
+   note routes the constitution's copy to the next §11 batch with `F-0022-2`'s
+   word. `PROTOCOL` untouched.
+2. **`C-93`'s constitutional half, which the dispatch did not name and this
+   revision found.** `PROTOCOL` §7 says "signers cannot stage `docs/gates/**`
+   themselves (§6)" — the identical false premise, in the identical
+   because-scopes-forbid-it form. I am the seat the false claim is about (the
+   probe returns ALLOW for `architect_docs_lead` on `docs/gates/`), which is
+   precisely why I neither repair it nor argue it here: it goes to Annex B as an
+   amendment candidate for the orchestrator to route or refuse. **A seat that
+   discovers a constitutional error in its own favour has exactly one lawful
+   move, and it is to name it.**
+3. **Narrowing `scripts/policy.sh`** so the gate directory leaves my scope —
+   verdict edit 1's offered alternative to declaring the residue. Orchestrator
+   scope, and it changes enforcement semantics, so it owes an ADR and a
+   `test_protocol.sh` case under §11(3). Recorded as an **option, not a
+   recommendation**: I hold the interest the narrowing would bind, and a
+   recommendation from me on my own scope is the §5.7 shape.
+
+The general form, written into §2.1 because it is worth more than the instance:
+*discovering that a document's error was inherited verbatim from its source does
+not authorize the reader of the source to edit it.*
+
+#### 4. Two deviations from the letter of an edit, both stated in the text
+
+- **Edit 7 asks for the dialect defined "at first use".** I put all five in a
+  front-matter section instead, and said why in *How to read this*: `round`,
+  `cure` and `dispatch` are used in three or more sections apiece, so a
+  first-use definition is read once and forgotten by the section that needs it.
+  Bold-at-first-use remains the convention for terms with a single home.
+- **Edit 6 asks that §3.9 be marked import-verbatim.** I marked it *import as
+  rules, do not re-derive* **and rebuilt the referents anyway**, which is the
+  resolution the verdict's own Clashes section reached. Verbatim import without
+  referents would contradict this document's thesis (§6.3): a rule whose failure
+  you cannot picture is a rule you will apply to the wrong object. What must not
+  be re-derived is the calibration, not the meaning.
+
+#### 5. Where the seeder gets seated, and why it took one sentence in two places
+
+Charlie's cold read proved the §3.9 seeder could be none of the seated roles;
+Bob's record check found it is the auditor. The repair is not a new seat but a
+**reading**: a defect manifest *is* one of the auditor's own reports, authored
+into its own report directory, inside the scope §1.5(1) enforces. Nothing is
+relaxed. I put the sentence in §1.5 (where the four structural properties live,
+so the roster is complete where a reader builds it) and referenced it from §3.9
+(where the mechanism needs its author). The generalisation is the part that
+transfers: *a roster that forbids more precisely than it enumerates will
+eventually forbid a duty it also requires* — and only a reader with just the
+document can find those.
+
+#### 6. §5 was touched four times and no more
+
+Every advisor, including the hostile ones, certified the failure museum. So the
+rule I worked under: §5 changes only where a claim inside it was measured false or
+its tense was wrong. Four places — the census figure gets its band (`C-118`: a
+majority at either drift tolerance, a plurality on wrong dates, and the first
+edition paired the strongest adjective with the most memorable figure), the
+warning corollary goes conditional (`C-119`), "each clause" becomes "exactly
+three" (`C-123`), and §5.7's disguises get their anchoring split (`C-125`: four
+anchored, two marked). Diff of the section confirms it: 208 lines in, 253 out,
+thirteen removed lines all inside those four repairs. Exhibits were added;
+nothing was trimmed.
+
+#### 7. The renderer decided three formatting choices, and that is the rule-and-check
+discipline applied to my own deliverable
+
+`site/build.py` renders this file with a converter written for "exactly the
+markdown subset PROCESS.md uses", and it is orchestrator scope. I had introduced a
+blockquote and a nested list; both degrade to plain text with visible markup. Two
+options: ship the constructs and route a renderer change, or stay inside the
+subset. I stayed inside it — the semantics were free to express as a bold
+paragraph and three sibling bullets — because shipping a document whose published
+form is degraded, in order to route a change to another seat's file, is the
+rule/check disagreement of §2.4 with me as its author. The annex headings took a
+colon rather than an em dash for the same reason: both this renderer's slug rule
+and the platform's produce the same anchor for a colon and different ones for a
+dash, and a Contents link that resolves in one renderer and not the other is a
+defect nobody notices until a reader clicks.
+
+#### 8. What I refused to average away
+
+The posture list's summary table and its collected-false table both say **15
+FALSE, 8 PLANNED** of 127; the evidence cell of row `C-126` says "12 FALSE and 4
+PLANNED". I used the summary figures (the row-by-row tables support them) and
+recorded the discrepancy in Annex B as the auditor's to resolve, rather than
+quietly picking one. §4.3's rule is that the receiving seat checks the source
+rather than reasoning from the relay — a rule I would have broken by silently
+harmonising the two numbers inside a document that cites the source by row.
+
+#### 9. The two undersold claims, both about the same evidence
+
+Edit 2 asks that the undersold rows get their stronger truth. Both (`C-58`,
+`C-128`) are the platform dependency: configured on day one with an empty bypass
+list, **live-fire verified on both protected branches**, and re-proved in anger
+later when a forced push on a transient reference was refused mid-incident. The
+document demanded live-fire verification of adopters while holding the two best
+instances of it in its own record, uncited. §2.5 now states the discharge and
+§6.2 step 3 cites both instances. I added the second undersold strength the
+council named as its own exhibit in §2: a reader with no session context
+falsified fifteen claims from the record alone, which is the traceability property
+returning its whole cost in one payment.
+
+### Actions
+
+Edited `docs/PROCESS.md` in place — 1,445 → 2,685 lines, +1,496 / −256:
+
+1. **Front matter, new** — the §6.1 prohibition moved to the top in the
+   imperative (edit 7, per §5.8); the purity rule rewritten as excluded/included
+   with four headings (edit 3); the stamp key with six tokens and three
+   over-reading guards (edit 2); *The dialect* with five definitions (edit 7);
+   Contents gains both annexes.
+2. **§1** — postures on the one-paragraph version; `C-07`, `C-08`, `C-32`, `C-33`
+   corrected; §1.1 gains the residue-decay note that is the single fact under six
+   PLANNED rows; §1.2 gains the seeder pointer, the worker-journal identity
+   answer and the one-directory→two correction; §1.4's header fixed to four
+   separations, (a) rewritten so the split review is not readable as self-review,
+   (c)'s "the one separation" corrected and its audit leg marked owed, (d)'s
+   exhibit marked `UNANCHORED`; §1.5 seats the seeder and repairs the canary
+   contradiction; §1.6 corrects both aids and the drill.
+3. **§1.7 — new genesis section** (edit 5): the bootstrap paradox and the
+   four-act pattern that amortises it, each act keyed to the founding record,
+   with what this program's own genesis still owes.
+4. **§2** — the commit-handoff mechanism written out in five steps (edit 7,
+   Charlie C1); `C-40` corrected with the pair-intersection arithmetic; the
+   scope-table format described; `C-56` qualified with its single exception;
+   `C-67` cured by giving the rule table an *enforced where* column, splitting
+   the serialized-history row and adding the two rules the first edition omitted;
+   branch topology defined; §2.7 describes the self-test.
+5. **§3** — packet taxonomy table and the dispatch-only class (edit 7, `C-70`);
+   `C-77` (the ghost packet type), `C-80` (the impossible self-hash → the two real
+   mechanisms, including the second-copy discipline), `C-82` (four grades, with
+   Bob's F9 citation corrected to 7 MAJOR / 2 NOTE), `C-93` (the gate-staging
+   claim), `C-97` (cadence → per-artifact placement; transient → marked refs);
+   `limb` defined at §3.4; §3.9's scoring block marked import-as-rules, its three
+   grounds spelled out, its unreachable-check bullet rebuilt, and three
+   anonymized exhibits added; `domain pack` defined.
+6. **§4** — postures throughout; `C-109` in the owed voice; `C-113`'s three
+   never-used classes named; `C-114` corrected from four commands to three plus
+   two non-command steps.
+7. **§5** — the four touches of Reasoning §6, nothing else.
+8. **§6** — new §6.0 naming the export unit with the kit table and the honest
+   *named, not inspected* boundary (edit 4); §6.1's prohibition replaced by a
+   pointer plus what executing it returned; §6.2 rewritten as a load-ordered
+   checklist with **step 0** and a five-box adoption definition of done.
+9. **Annex A** (edit 3) — six substrate parameters, each with anchor, what rests
+   on it, and what changes if yours differs. **Annex B** — the owed-confirmation
+   map, the four routed items, the not-in-force instruments, the unanchored
+   exhibits, the source discrepancy, and this document's own process debt.
+
+No other file touched. No `git add`, `git commit` or `git push` run.
+
+### Evidence
+
+Reproducible at this commit's SHA from a checkout:
+
+- `git status --short` at spawn → only `test/xgmii_tx_64/**` (sibling 1);
+  `git rev-parse HEAD` → `287b5ee…`. At 22:10Z: HEAD `d4be71b`,
+  `git merge-base --is-ancestor 287b5ee HEAD` → 0 (descent confirmed).
+- `git diff --stat 287b5ee..HEAD -- docs/PROCESS.md docs/reports/process-council/
+  docs/reports/audit/PROCESS-claims-posture.md agents/PROTOCOL.md scripts/
+  .github/ docs/adr/ docs/gates/ docs/SPONSOR.md site/build.py
+  agents/charters/architect_docs_lead.md` → **empty**: no read surface moved.
+- `git diff --stat docs/PROCESS.md` → `1 file changed, 1496 insertions(+), 256
+  deletions(-)`.
+- **Row coverage**: `grep -o "C-[0-9]\{2,3\}" docs/PROCESS.md | sort -u -V` →
+  `C-01 … C-128`, **all 128 rows cited**, none invented (no id above `C-128`).
+- **Table well-formedness** (six tables, one separator row each, uniform column
+  counts): a python pass over every `|`-run reports `OK` for all six —
+  2/3/4/2/3/3 columns respectively.
+- **Site render**: executing `site/build.py`'s `_slug`/`_inline`/`md_to_html`
+  slice against the revised file produces 177,182 bytes of HTML with 11 `<h2>`,
+  48 `<h3>`, 6 `<table>`, 11 `<hr>` and **no** blockquote-degraded paragraph; the
+  single flagged line is the pre-existing state-machine line, unchanged from the
+  first edition.
+- **§5 minimal-touch**: `awk` extraction of §5 from `git show HEAD:docs/PROCESS.md`
+  versus the working tree, diffed → 208 → 253 lines, thirteen removed lines, all
+  inside the four marked repairs.
+- Stamps taken from `date -u` at spawn (`2026-08-11T21:43Z`) and at entry
+  (`2026-08-11T22:10Z`). The dated `[P1]` stamps in the document are transcribed
+  from the posture list's evidence column, not re-derived by me.
+
+Not executed, and named so the sample is reconstructible: I did **not** re-run the
+auditor's probes of `agent_may_write`, the 92 ancestry tests, or the self-test.
+This round transcribes a measurement made by an independent seat one commit
+earlier and re-verified unmoved; re-executing it would be a second audit under a
+seat with an interest in the result.
+
+### Outcome
+
+**Met.** All seven verdict edits applied, each citing the posture rows that decide
+it; all fifteen FALSE rows corrected by name and row; all eight PLANNED rows in the
+owed voice; both undersold rows given their stronger truth; Bob's F9 citation
+corrected; the `C-40` constitutional half carved out and routed, `PROTOCOL`
+untouched.
+
+Handed back to the orchestrator for commit — `docs/PROCESS.md` only. **The owed
+confirmation map is Annex B.1** and is the round the dispatch places between this
+landing and council round 2: auditor on §3.9's seating, placement and separations
+plus stamp-transcription fidelity; dv_lead on the scoring block's rebuilt
+referents, the sign-off form and the relay classes; rtl_lead is owed nothing by
+this text and is named in B.1 only where §1.7's founding sequence touches it —
+**stated plainly so a nil ask is not read as an oversight**; orchestrator on the
+commit-handoff steps, the rule table's surface column, the kit table and the
+genesis sequence.
+
+Definition of done, against my charter §5: this is a documentation round, not a
+spec freeze — no `Interface` record, no `REQ-###`, no matrix row, no `ifc_check`
+build is owed. Docs touched: `docs/PROCESS.md`. No harvest note is owed: this
+round is neither an `SO-` nor a phase gate (charter §8, ADR-0018).
+
+### Open-questions
+
+1. **Two amendment candidates now wait on one batch** — `PROTOCOL` §5 R1's
+   disjointness premise and §7's gate-staging premise, joining `F-0022-2`'s
+   one-word cure. All three are single sentences in the constitution and all
+   three are FALSE-or-imprecise against `scripts/policy.sh`. One ADR could carry
+   them; the routing is the orchestrator's.
+2. **The policy narrowing is an option I decline to recommend** (§3.7 residue),
+   because I hold the interest it binds. It needs a seat that is not me.
+3. **`C-24` is still unanchored** after this round's own search — greps over
+   `docs/adr/**` and the countersignature entries for "residual risk" / "ordinary
+   review" return nothing. The exhibit is kept and marked in both places it
+   appears. If the confirmation round cannot anchor it, the honest next act is
+   deletion, not a softer verb.
+4. **The posture list's `C-126` cell disagrees with its own summary** (12/4 vs
+   15/8). Flagged in Annex B.5, unresolved, the auditor's.
+5. **The document still has not been through its own lifecycle.** This edition
+   was commissioned dispatch-only and lands uncountersigned, exactly like the one
+   it replaces. B.1 is the first half of that repair; a review verdict recorded
+   as a packet would be the second. I note it against my own work because the
+   council found it against the first edition and the finding has not been
+   discharged by rewriting the text.
+6. **The shell↔document drift check does not exist** (§6.0). Until it does, the
+   two halves of the export unit reference each other in prose only — which is
+   the failure §2.4 names, one level up, and which the first edition committed by
+   not referencing the shell at all.
+
+### Files-in-this-commit
+
+- docs/PROCESS.md
