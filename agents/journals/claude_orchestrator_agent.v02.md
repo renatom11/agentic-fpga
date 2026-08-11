@@ -4373,3 +4373,60 @@ return: the next M04-chain packet re-pins its spec basis against
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0253] 2026-08-11T14:15Z | task:none | The sponsor reads the page and finds what the counters could not: the hand-authored corner of a derived site, a ledger that skipped an id, and a heading arguing with its own builder
+
+### Trigger
+
+The sponsor sent screenshots of the deployed backlog page. Three defects
+visible, none of them caught by the refresh I had just declared complete:
+
+1. **"What happens next" was a week stale** — WO-0056, family H, SO-M03:
+   the receiver's mid-qualification era. Root cause: the list is a
+   hand-authored constant (`NEXT`) inside site/build.py, per its own D4
+   style note "the orchestrator's summary, refreshed at each
+   regeneration" — and I regenerated twice today without refreshing it.
+   The builder's counters being live had convinced me the page was
+   derived; the docstring says otherwise and I had just read it. On my
+   ledger beside the six-day staleness it extends.
+2. **The heading said "Every work order ever issued (78)"** against a
+   ledger whose row census was 80 at that build. Two causes stacked:
+   the heading counts DISTINCT ids while the build line counts rows
+   (WO-0046 carries a legitimate superseded-run record row; WO-0063B's
+   id is collapsed into WO-0063 by the four-digit regex), and the
+   deployed page was one build behind (the sponsor's (78) is 4d163ee's
+   arithmetic; a474cc7's deploy had not landed at screenshot time).
+3. **WO-0079 had no ledger row at all** — packet exists, CLOSED, its 34
+   traceability rows transcribed 34/34 at 14615f8 during the SO- arc.
+   The table's "every work order ever issued" claim was false by one id.
+
+### The repairs
+
+- BOARD.md: WO-0079's row added, marked retroactive with this entry id
+  in the note — the row says out loud that it was found by the count
+  disagreeing with itself, per the record-not-press-release rule.
+- site/build.py: NEXT rewritten to the current truth in the standing
+  D4 voice (plain-first, insider reference in parentheses): AP-M04 →
+  SO-M04 with 57/82 named, M06/M07 review, co-sim BAR T1, the
+  P1-module-ready gate, and PR #3 at the parent org. The heading count
+  is untouched: with 0079's row landed it computes 81 — every numbered
+  work order 0001–0081, which is now a true sentence (0063B rides under
+  0063's number; 0046's record row shares its id).
+- Site rebuilt: 564 commits, 511 entries, 83 ledger rows, heading 81.
+- Rule forward: the NEXT constant is part of the board flip — a flip
+  that does not touch it must say why in the flip entry.
+
+One working error caught before commit: my WO-0079 row Edit matched a
+prefix of WO-0080's row and glued that row's note onto the new row as a
+fifth cell; caught by cell-count check, repaired in place. Nothing
+staged carried it.
+
+### Files-in-this-commit
+
+- tasks/BOARD.md
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

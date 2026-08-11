@@ -131,11 +131,11 @@ PHASES = [
 
 # D4: plain-first, insider reference in parentheses — the standing style.
 NEXT = [
-    'Land the receiver’s coverage repair and replay the surviving seeded defect against it — the new row must catch what the suite missed (WO-0056)',
-    'Design and bench family H, then the remaining test families of the receiver’s plan — each landing only after line-by-line review and a seeded-defect campaign',
-    'The receiver’s sign-off: every asserted row benched, every family qualified (SO-M03)',
-    'Next construction wave: the four Ethernet-layer modules (M06–M09)',
-    'Rotate the last oversized agent journal to its second volume (the journal-chain rules landed 2026-08-03)',
+    'Finish the transmitter’s test plan — 57 of its 82 planned checks remain, two families closed this window — then seeded-defect campaigns must prove the benches catch planted bugs before any sign-off (AP-M04 → SO-M04)',
+    'Independent design review of the two newest modules, the frame receiver and frame transmitter, then their own test plans and benches by the same loop (M06/M07)',
+    'Open the transmitter’s cross-simulation lane: vendor the reference design’s transmit side and build the runner that replays both implementations against each other (co-sim BAR T1)',
+    'Accumulate per-module rows on the module-readiness gate toward the sponsor’s signature — the receiver’s fourteen-of-fourteen PASS is row one (P1-module-ready)',
+    'The first lessons harvest is delivered to the parent organization as a pull request awaiting the maintainer’s review — 353 candidate lessons from the receiver’s full verification cycle (federation inbox PR #3)',
 ]
 
 # ---- shared style -----------------------------------------------------------
