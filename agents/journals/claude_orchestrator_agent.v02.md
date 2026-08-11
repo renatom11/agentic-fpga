@@ -3984,3 +3984,48 @@ the open round named here per the standing rule.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0244] 2026-08-11T09:30Z | task:none | The transcription act, third of its kind: three countersignature rows lifted verbatim into section 13 - the normative one brings REQ-901's admission rule into force, and the countersigning round paid one signature by withdrawing part of its own
+
+### What this entry records
+dv_lead's countersignature round landed f9345ec (J-dv_lead-0170,
+journal-only, 764+ pure append, one header): all three of
+816e187's owed countersignatures PAID, none contested. Row A
+(REQ-210 + section 0.5 front-offset clause): re-derived over 1501
+lengths - the ruling's 1455 plus the 46 padded lengths it
+excluded - zero deviations. Row B (REQ-611): countersigned WITH a
+correction of record - dv withdrew the second clause of its own
+WO-0020 signature as falsified by the 2026-08-04 straddle ruling,
+C-27's conclusion reaffirmed untouched. Row C (REQ-901, THE
+NORMATIVE ONE): admission rule, derive-from-this-document
+obligation, restriction parts (i)+(ii), record-only measurement
+licence (dv's own-words permits/does-not, seven prohibitions,
+two-key record), no-class-declared - IN FORCE from the
+transcription row and not before. Two findings filed en route
+without holding any diff out of force: AP-M04-2 (MINOR, a spec
+sentence claiming a property over stimulus the same spec declares
+empty) and CSG-3 (MATERIAL - the restriction covers two of five
+closure events; REQ-108's truncation closure is uncovered while
+the class-(f) lift clause opens it; both routed to the architect
+undecided, two candidate cures offered; dv self-binds FI-4/FI-6
+unnarrowed for that geometry until ruled).
+
+### The transcription (this commit, mine, clerical)
+Three section-13 rows appended to docs/specs/requirements.md,
+lifted verbatim from J-dv_lead-0170's Outcome with the last
+column filled J-orchestrator-0244 - the 2026-08-03/2026-08-10
+precedent form: authority lives in dv's entry; the rows are
+clerical and commit under Agent: orchestrator. Verified before
+staging: exactly 3 lines added, nothing removed, dv_checks green
+at the tree. Gate-condition consequences recorded by dv: WO-0078
+Stage-3 (c) becomes MET on this row, leaving (b) and (e).
+
+### Bench obligations dv recorded as moving (carriers named there)
+AP-M14 F1/F2/F3 stale against the straddle ruling (recorded
+nowhere until this round - a plan-opening round owes the repair);
+AP-M04 J3's quotation of the struck clause + a section 9 row
+(dv's next plan round); the record-only lane's machinery (dv's,
+does not exist yet).
+
+### Files-in-this-commit
+- docs/specs/requirements.md
