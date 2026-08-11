@@ -1209,3 +1209,785 @@ restated. Every item carries an owner and a closing event.
 ### Files-in-this-commit
 
 - libs/hardcaml_ethernet/src/eth_axis_tx.ml
+
+## [J-rtl_lead-0025] 2026-08-11T21:52:11Z | task:none | ADR-0021 subject 3 COUNTERSIGNED: my REQ-902 derivation is transcribed faithfully at §4.1/§4.2/§4.6 with three quotations verbatim and the placement forced exactly as I derived it — and the two additions I did not write are contested on measurement, one of them by the ADR's own ground for a probe it declines
+
+### Trigger
+
+Orchestrator dispatch, one round, narrow: the countersignature ADR-0021 §9's
+route assigns this seat on **subject 3 only** — *"rtl_lead, on §4.1–§4.5 as a
+factual check that its derivation is transcribed and not misstated — blocking
+for this subject only, so subjects 1, 2 and 4 do not wait on it"*. Branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+
+**Abort-first precheck, run before any read of substance.** `git rev-parse HEAD`
+→ `287b5eee39b98f8ab8ce23e319f141a0e32cddad`, an exact match with the dispatch's
+expected value, so neither the descendant clause nor the abort was reached.
+`git status --short` printed six modified paths under `test/xgmii_tx_64/` plus
+one untracked `test/xgmii_tx_64/test_m04_f.ml` — all tb_writer's, all declared.
+
+**HEAD then moved under me mid-round, exactly as the dispatch warned it might,
+and the re-verification is recorded rather than waved through.** At the end of
+the round HEAD is **`65ba148`**, `Agent: tb_writer` — a **declared** sibling,
+confirmed a **descendant** of the dispatch's `287b5ee`
+(`git merge-base --is-ancestor`), staging only `test/xgmii_tx_64/**`, its own
+worker journal, and its own packet's Return log. The dispatch's instruction on
+this case is *re-verify read surfaces and proceed*, so I re-verified all eight
+surfaces this round rests on — `build.yml`, `bin/generate.ml`, ADR-0021,
+`requirements.md`, `agents/PROTOCOL.md`, my charter, `scripts/policy.sh` and
+`rtl_snapshots/eth_axis_tx.v` — by **comparing their blob hashes at the two
+SHAs rather than diffing them**, the same form ADR-0021's own measurement pin
+uses. **All eight are byte-identical at `287b5ee` and `65ba148`**, and the
+`C-RL-6b` watch value is unchanged. Nothing in this entry was re-derived,
+because nothing it reads moved; every measurement below reproduces at both SHAs.
+The tree at exit holds this journal and `docs/PROCESS.md` (the architect's
+declared revision). Every dirty path at every reading lay inside the dispatch's
+declared sibling set; nothing outside it ever appeared, so the stop condition
+never fired.
+
+I write **one file this round**: this journal. `libs/`, `top/`, `bin/`,
+`rtl_snapshots/` and `agents/handoffs/` were opened **read-only**, and
+`.github/workflows/build.yml` — the file this subject specifies against — is
+not in my write scope at all (PROTOCOL §6), which is the whole reason subject 3
+exists as an ADR clause rather than as a commit of mine.
+
+### Inputs
+
+- `agents/charters/rtl_lead.md` and `agents/PROTOCOL.md` in full (mandatory
+  first actions). §6's scope table and §11's amendment procedure are what bound
+  this round; charter §8's determinism-evidence rule is what makes the subject
+  mine to check.
+- `docs/adr/ADR-0021-a-check-is-only-where-it-runs.md` **in full**, not only §4:
+  §0's per-subject force rule, §1.1's table row 3, §7.2's third claim and §9's
+  route table all condition what my signature can mean.
+- **`J-rtl_lead-0021` §7 in full** — the derivation under check — together with
+  that entry's Open-questions item 4, which is the routing sentence the ADR
+  acted on.
+- `J-rtl_lead-0022` Outcome (the watch as first stated), `J-rtl_lead-0023`
+  Open-questions 2 and its §8 (the watch value and its non-reach by ADR-0020),
+  and `J-rtl_lead-0024` §4(b), §5, §6 and Open-questions 2 (the restated
+  trigger, the five-link neutrality argument and the named falsifier).
+- `.github/workflows/build.yml` **at HEAD**, in full — step names, step order,
+  line numbers 54/55/57, the `git add -A` limb, and a repo-wide check for
+  `if:`/`continue-on-error`.
+- `bin/generate.ml` at HEAD — lines 114–125, the output-path construction and
+  the `Sys.mkdir` limb the ADR's step comment asserts.
+- `docs/adr/ADR-0005-*.md` Decision — rule 2, the promotion-source rule the
+  step's comment contrasts itself against.
+- `docs/specs/requirements.md` §10 — REQ-902's normative sentence and its
+  verification column, and REQ-906.
+- `scripts/policy.sh` (the two size parameters, to state this volume's headroom).
+- GitHub Actions API, job- and step-level: runs **31504570344** (`c06f475`) and
+  **31535599727** (`d84d36a`), plus the branch's recent run list. Read via the
+  REST API, not from a local execution.
+- **An ephemeral local probe of `dune exec`'s working directory and environment**
+  (§6 below), built in the session scratchpad **outside this repository** and
+  leaving no path in the tree. Environment-specific and reported as such.
+- **No Essenceia/Nasdaq-HFT-FPGA material consulted, for this or for anything in
+  it** (charter §3, Inputs honesty). A transcription check of my own derivation
+  has no prior-art question in it.
+
+### Reasoning
+
+#### 1. What the route asks, and the exact shape of the answer
+
+The route asks a **factual** question, not a design question: is
+`J-rtl_lead-0021` §7 transcribed, or misstated? That is answerable by comparison
+and I answer it first, before anything I might prefer about the instrument.
+§4.1's own framing helps here — it says the derivation *"is transcribed rather
+than restated"* and separately that §4 *"adds the failure semantics, the
+placement argument, the capability bounds and the negative control"*. So the
+file itself partitions §4 into **transcription** and **addition**, and my
+signature has to respect that partition rather than blur it: a defect in an
+addition is not a misstatement of my derivation, and saying otherwise would
+inflate my own answer.
+
+**Verdict on the route's question: TRANSCRIBED, FAITHFULLY. No misstatement
+found.** Everything below §2 that reads as criticism is against material §4.1
+declares to be the ADR's own, and I label each one as such.
+
+#### 2. The transcription, checked clause by clause
+
+Three quotations carry the derivation, and all three are verbatim against
+`J-rtl_lead-0021` §7:
+
+- The dv_lead sentence (*"generates **once** and compares against the committed
+  tree, so this is cross-run identity between two commits and **not** a
+  double-generation check"*) is quoted with its attribution intact —
+  `J-dv_lead-0176` §9, *adopted by* rtl_lead. That is the correct division: the
+  observation is dv_lead's and my §7 says *"That reading is correct and I adopt
+  it."* An ADR that had credited it to me would have been the misstatement.
+- The unsoundness sentence is verbatim including its conclusion (*"A check that
+  can pass while the property fails, and might fail while it holds, is worse
+  than the absence it replaces"*), with an ellipsis that drops only my
+  enumeration of the classes — which §4.5 then handles at more length than I
+  did. Elision without distortion.
+- The scope sentence (*"Regeneration is a **process invocation**, and the only
+  file in this repository that invokes `generate.exe` is
+  `.github/workflows/build.yml`, whose scope is the orchestrator's exclusively"*)
+  is verbatim. **I re-measured its factual core at HEAD** rather than letting my
+  own claim stand on its original measurement at `3951b05`: a repo-wide search
+  for `generate.exe` returns exactly one invocation, `build.yml:55`. Every other
+  occurrence is prose (my charter, three handoff packets) or a comment
+  (`tools/dv_checks.sh:98`). The claim still holds at 287b5ee.
+
+The step's shape is mine in every particular I stated: **second process**,
+**scratch working directory**, **`diff -r` of the two output trees**, and
+**`_build/default/bin/generate.exe`** as the invocation — my §7 named that path
+explicitly and §4.2's note credits it as *"rtl_lead's own"*. The placement is
+mine too: *"placed after `Generate RTL` and before the determinism step"*.
+
+§4.1 adds one characterisation of me — that the derivation *"was made against
+its own interest — it declined the rider it was offered"*. That is accurate and
+I let it stand, with the qualification my own §7 already carries: I declined on
+soundness, and I also said the rider *"cannot share this commit even if it were
+sound"*. The ADR quotes the soundness ground and omits the scheduling one, which
+is the right emphasis — the scheduling ground was about that arc's commit and
+has expired; the soundness ground has not.
+
+#### 3. The placement, and its two forcing grounds — verified at HEAD, not accepted
+
+§4.3 claims the placement is *forced twice*. Both grounds check out against
+`build.yml` as it stands:
+
+- **Lower bound.** Line 54–55 is `Generate RTL` → `opam exec -- dune exec
+  bin/generate.exe`. That step produces run 1's output *and* is what causes
+  `_build/default/bin/generate.exe` to exist. §4.3 says either reason alone
+  fixes the bound; correct — and the second is the one that matters
+  operationally, because the step's own `test -x "$EXE"` guard would otherwise
+  be the only thing between a re-ordering and a confusing red.
+- **Upper bound.** Line 57's step body begins `git add -A`, verified in the
+  file. So running after it would compare run 2 against a tree the checker had
+  already staged. §4.3's stated reason is mine — *a reader must be able to tell
+  one failure from another by the failing step's name alone* — which is the
+  property `J-rtl_lead-0016` established and this seat has now run four
+  scheduled reds on.
+
+The ADR's *"between the current lines 55 and 57"* is exact: 55 is `Generate
+RTL`'s `run:`, 56 is blank, 57 is the determinism step's `- name:`.
+
+#### 4. The never-a-promotion-source rule — correct, and stronger than the ADR claims
+
+The rule is stated three times (the step's comment, §4.4's table, §4.4's closing
+sentence) and its contrast is correctly cited: **ADR-0005 rule 2** is
+*"Expect-test snapshots are **promoted from CI's own diff output**, never
+authored by hand"*, and `build.yml:57`'s own comment says *"On failure the
+printed diff IS the promotion source (ADR-0005)"*. So the reflex the ADR warns
+about is real and is trained by the adjacent step. The ground given — *two runs
+disagree, so neither tree is authoritative and there is no correct file to
+promote* — is exactly right and is the same ground my watch rests on.
+
+**And the placement buys more than §4.3 claims for it.** `build.yml` carries no
+`if:` and no `continue-on-error` on any step of the `build` job (measured), so a
+failed step skips the remainder of the job — a fact this seat has already
+observed on the record rather than assumed (`J-rtl_lead-0021` Evidence: run
+31495302673, step 6 `failure`, steps 7–10 `skipped`). Therefore, when emission
+is nondeterministic across processes, **the new step reddens and step 57 never
+runs, so no `PROMOTION BLOCK` is printed at all**. The class that must never be
+promoted is evaluated *strictly before* the class whose output is a promotion
+source. §4.3 argues placement only from step-name legibility; the stronger
+consequence is that the ordering **enforces** the never-promote rule instead of
+relying on a reader honouring it. I record it because it is the single best
+property of this design and the ADR undersells it.
+
+#### 5. The in-step negative control, judged against my own standard
+
+My standard is the one this seat has applied to its own parse checks and to the
+promotion mechanism: *a check that cannot report failure is not a check*, and it
+must be shown to fail **on the shape of the thing it is checking**. The control
+at §4.2 meets it:
+
+- It flips one byte into a **copy of run 2's tree inside scratch** and diffs
+  that against the checkout. Since the preceding comparison has just established
+  scratch ≡ checkout, the control tree differs from the checkout by exactly the
+  flipped byte, so a live `diff -r` **must** report it. The polarity is right:
+  the failure branch is entered when `diff` *succeeds*.
+- It touches nothing in the checkout, which is why a green run can be believed
+  rather than merely reported.
+- It runs on the **success path only**, and that is correct rather than a gap:
+  on a red run the comparator has just demonstrated it can fail, so a control
+  there would be redundant. The inertness risk lives entirely on green runs and
+  that is where the control sits.
+
+One robustness nit, not a finding: `printf 'x' >> "$(ls -1 "$SCRATCH"/ctrl/*.v |
+head -1)"` assumes at least one `.v` exists in the control tree. It does today
+and it must — six snapshots are committed, so an empty scratch tree would have
+reddened the first `diff -r` before the control was reached — but the assumption
+is implicit, and a `set -euo pipefail` script that computes a filename through a
+pipeline is one empty result away from `printf` writing to the empty string. A
+guard (`test -n`) or a glob-first form costs one token. Offered, not required.
+
+#### 6. `FINDING C-RL-11` (MAJOR, against §4.2's first note and §4.5's environment row — **CONTESTED**)
+
+§4.2's first note reads: *"`opam exec --` wraps run 2 so that the only
+**declared** difference between the two runs is cwd and process identity."*
+§4.5's table then rests a row on it: *"environment / locale dependence — **no** —
+both runs share the environment, deliberately, so a diff attributes to the
+program."*
+
+**Both are false, and I measured it rather than recalling it.** Run 1 is
+`opam exec -- dune exec bin/generate.exe`; run 2 is `opam exec -- "$EXE"`. A
+probe built outside this repository (dune 3.24.1, the version in this
+container's switch) shows that `dune exec` injects **nine environment variables
+the direct invocation does not have** — `INSIDE_DUNE`, `DUNE_SOURCEROOT`,
+`DUNE_OCAML_STDLIB`, `DUNE_OCAML_HARDCODED`, `OCAMLPATH`,
+`OCAMLFIND_IGNORE_DUPS_IN`, `OCAMLTOP_INCLUDE_PATH`, `CAML_LD_LIBRARY_PATH`,
+`MANPATH` — and **prepends `_build/install/default/bin` to `PATH`**. Three of
+those are **absolute paths into the checkout**, which is precisely the shape of
+value that, were it ever to reach emitted output, would produce a diff caused by
+the harness rather than by the program.
+
+Two things this finding is **not**. It is not a misstatement of my derivation —
+my §7 said *"executed with cwd in a scratch directory"* and made no environment
+claim, so the parity sentence is the ADR's own addition. And it is not a live
+false positive: `grep -rn 'getenv\|Unix.environment' bin/ libs/` returns
+**nothing**, and the emitted artifacts contain no path-shaped text (measured at
+`J-rtl_lead-0024`), so nothing in today's emitter can read those values. The
+defect is in the **claim**, not in the current outcome — which is the exact
+distinction §4.5 makes when it says naming the hash-order gap *"is the
+difference between an instrument and a claim"*.
+
+**The sharpest form of it: the ADR's own ground for declining a probe convicts
+the step it ships.** §4.5 declines `OCAMLRUNPARAM=R` because *"REQ-902's text is
+'regenerating the RTL snapshots from unchanged sources', and an environment
+variable is not source, so a red under `R` would be a finding whose disposition
+needs a spec reading nobody has made."* The step as written **already varies ten
+environment values between its two runs**, undeclared, while its capability
+table asserts they share an environment. If varying one environment variable
+deliberately needs a spec reading, varying ten accidentally needs one at least
+as much.
+
+**Contested, with the repair drafted, and the repair is text — not a redesign.**
+
+> §4.2 note 1 becomes: *the two runs differ in cwd, process identity, **and the
+> environment `dune exec` injects into run 1** — `INSIDE_DUNE`,
+> `DUNE_SOURCEROOT`, `DUNE_OCAML_STDLIB`, `DUNE_OCAML_HARDCODED`, `OCAMLPATH`,
+> `OCAMLFIND_IGNORE_DUPS_IN`, `OCAMLTOP_INCLUDE_PATH`, `CAML_LD_LIBRARY_PATH`,
+> `MANPATH`, and a `PATH` prefix. `opam exec --` equalises the switch and not
+> this. The difference is declared rather than removed, because removing it
+> would mean changing `Generate RTL`, which this ADR deliberately does not
+> touch.*
+>
+> §4.5's environment row becomes **yes, incidentally and now declared**, with
+> the note that the capability is a by-product of the harness asymmetry rather
+> than a designed probe.
+>
+> §4.4's first-row disposition gains one clause: *before routing a `Files …
+> differ` red as an emitter defect, check the emitted bytes for any of the
+> declared values — a harness-caused diff and a program-caused diff are the same
+> `diff` output and only this check separates them.*
+
+I prefer **declaring** to **equalising** for the reason in the draft: matching
+the environments would require reproducing dune's injection inside run 2, which
+is fragile against a dune version this repository does not pin (`agentic_fpga.opam`
+requires only `dune >= 3.0`, and CI resolves it through `ocaml/setup-ocaml@v3`).
+An unpinned harness difference is exactly the kind of thing that must be written
+down rather than asserted away.
+
+#### 7. `FINDING C-RL-12` (MAJOR, against §4.4's third row — **CONTESTED**). The classification the dispatch asked me to judge
+
+§4.4's third row classifies `Only in rtl_snapshots` as an **orphan snapshot** —
+*"a committed `.v` that no emitter writes"* — job red, *"but **not** a `REQ-902`
+finding: the remedy is a deletion, and the disposition is rtl_lead's inventory,
+not the emitter's determinism."*
+
+**Judged: the disposition is right for the case it names, and the class is
+under-determined at this step's own position in the workflow — so the row can
+send a strong REQ-902 defect to the wrong place, and the act it recommends is a
+deletion.**
+
+The mechanism is §4.3's own placement. `Generate RTL` runs
+`dune exec bin/generate.exe` with cwd at the checkout root, and `bin/generate.ml`
+lines 114–125 write `rtl_snapshots/<name>.v` **relative to cwd**, creating the
+directory if absent. So by the time the new step runs, the checkout's
+`rtl_snapshots/` is not the committed set — it is *the committed set together
+with everything run 1 wrote*. Therefore `Only in rtl_snapshots` has **two**
+causes, not one:
+
+1. a committed `.v` that no emitter produces — the orphan the row names; or
+2. **a file run 1 wrote and run 2 did not** — which is row 2's class exactly
+   (*"a file written by one process and not the other … A write that happens
+   once is nondeterminism of the strongest kind"*), with the two runs swapped.
+
+Row 2's own class description is **direction-symmetric** while the table
+partitions by direction, so the two rows overlap on this output and the ADR
+resolves the overlap silently in favour of the benign reading. The consequence
+is not academic: the recommended remedy for the benign reading is *deleting a
+committed snapshot*, which under cause 2 destroys a legitimate artifact and
+files the strongest nondeterminism signal the instrument can produce as an
+inventory chore.
+
+**Contested, with the repair drafted, and it is one printed line plus a split
+row.**
+
+> The step's failure branch also prints `git ls-files -- rtl_snapshots` and
+> `git status --porcelain -- rtl_snapshots`, so the classification is decidable
+> from the log alone rather than from a later reader's memory of what was
+> committed.
+>
+> §4.4's third row splits: a checkout-only path that is **untracked at HEAD** is
+> unambiguously cause 2 — **a `REQ-902` defect**, routed as row 2. A
+> checkout-only path that is **tracked at HEAD** is an orphan **candidate**;
+> where it also differs from `HEAD` it was written by run 1 and is again cause 2.
+> The residue — tracked, byte-equal to `HEAD`, absent from run 2 — is the only
+> genuine orphan class, and even it is decided by *whether an emitter row names
+> the file*, which is a one-line read of `bin/generate.ml` and not an inference
+> from a diff's direction.
+
+This is the ADR's own standard applied inside the step: it requires that a
+reader tell one failure from another **by the failing step's name**, and this is
+the one place where two dispositions with opposite remedies share not only a
+step but a single line of output.
+
+#### 8. The declined script offer — transcribed correctly, and its grounds check out
+
+§4.6 states my offer accurately, including the constraint I attached (*"but not
+in `bin/`"*), and declines the file while accepting the derivation. The refusal
+grounds are the ADR's own and are sound against PROTOCOL §6 as I read it at
+HEAD: `tools/**` is **dv_lead's** staging scope, so an RTL-line determinism
+instrument living there would put a DV artifact in the middle of an RTL-line
+requirement; `scripts/**` is the orchestrator's, which is where `build.yml`
+already lives, so a script there buys indirection without moving ownership; and
+`bin/` holding the OCaml executable and nothing else is my own convention,
+correctly attributed. **No `R-CI-` number is minted**, on the ground that
+`R-CI-1`…`R-CI-8` are ADR-0015's cosim-lane rules — I agree, and I would have
+filed against an extension of that namespace had one been made.
+
+One point of care I note without contesting: §4.7 concludes no
+`test_protocol.sh` case is owed because `build.yml` is not the protocol, a
+charter, or an enforcement script. That reading of §11 is right on its face, and
+the consequence is that **subject 3's only evidence of correctness is the in-step
+negative control plus the first green run's id**. That is a thinner evidentiary
+base than subjects 1 and 2 get, and §9's route already prices it in by requiring
+the first green run cited by id (REQ-906). I flag it so the thinness is a
+recorded choice rather than an oversight.
+
+#### 9. The capability table, and the OCaml hash-seed claim checked against knowledge
+
+§4.5's central row: *"hash-table iteration order under a per-process seed — **no,
+under the shipped runtime** — OCaml's `Hashtbl` is not randomised unless
+`~random:true` or `OCAMLRUNPARAM=R`."*
+
+**The claim is correct.** OCaml's stdlib `Hashtbl` is deterministic by default;
+randomisation is opt-in per table via `~random:true`, or globally via the `R`
+flag in `OCAMLRUNPARAM`. Two completions, neither of which overturns the row:
+
+- There is a **third** trigger — `Hashtbl.randomize ()`, which makes
+  subsequently created tables randomised for the rest of the process. Nothing in
+  `bin/` or `libs/` calls it (this repository's own sources are measured clean
+  of any environment read at all), but Hardcaml is not vendored here so I cannot
+  measure its dependency set. The row's hedge *"under the shipped runtime"*
+  covers this, and the honest completion is that the row is contingent on the
+  dependency set rather than on the language.
+- The row is also **the right answer to my own §7**, which named hash-seed
+  randomisation *first* among the classes an in-process check cannot expose.
+  §4.5 correctly observes that the two-process instrument does not reach it
+  either — because with no per-process seed there is nothing for two processes
+  to differ in. That is a narrowing of my derivation's implied reach, stated
+  openly, and it is the most honest paragraph in §4. I sign it without
+  qualification.
+
+For completeness: the neighbouring row (*"per-process random seed, pid, or
+start-time dependence — yes for seed/pid"*) reads at a glance as contradicting
+it. It does not — one row is about a seed **the program draws**, the other about
+a seed **the runtime does not draw** — but the two sit adjacent and a reader
+will trip on it. A half-sentence would fix it. Noted, not contested.
+
+#### 10. Subject 3 against the `C-RL-6b` watch: REINFORCES, on four grounds, with one reading to forbid
+
+The watch, as restated at `J-rtl_lead-0024` Open-questions 2: *a CI run emitting
+a different sha for `rtl_snapshots/eth_axis_tx.v` while the **circuit** is
+unmoved is a REQ-902 defect that comes back to me and **must not be
+re-promoted**.* Value `48c4b03b88ba2fc211fc145b0a9c1747e7f610513cbef80767ee7e22897beb04`,
+**verified intact at HEAD** this round.
+
+**Its two datapoints, verified at step granularity rather than taken from the
+dispatch**: run **31504570344** at `c06f475` — the promotion commit's own run —
+`build` job steps 7 `Generate RTL` and 8 `Verify nothing was left unpromoted or
+non-deterministic` both `success`; and run **31535599727** at `d84d36a` — the
+comment-only `libs/` edit — the same two steps `success`. The second is the
+falsifier `J-rtl_lead-0024` §6 named in advance (*"if that step goes red naming
+`rtl_snapshots/eth_axis_tx.v`, this entry's §4 is wrong"*) declining to fire, so
+the five-link neutrality argument now has one measurement behind it. **Both
+datapoints are step-8 observations** — one emission per run compared against the
+committed tree — which is exactly the *cross-run identity between two commits*
+dv_lead convicted of not being a double generation. So the watch stands at **two
+cross-run datapoints and zero two-process datapoints**, and subject 3 is what
+supplies the missing kind.
+
+Reinforcement, in increasing weight:
+
+1. **No contradiction in the verdicts.** Both instruments say the same four
+   things on a red: job red, never promote, root-cause the emitter, route to
+   rtl_lead. The new step puts in CI's own output what my watch has been holding
+   in a journal.
+2. **It splits the watch's two candidate causes, free, every run.** After
+   `d84d36a` a differing sha had two candidates: emitter nondeterminism, or a
+   comment-sensitivity falsifying links 3–4 of `J-rtl_lead-0024` §4(b). With the
+   new step landed, a **green** two-run step plus a red step 57 on that path
+   excludes intra-run cross-process nondeterminism and points at source
+   sensitivity or cross-commit drift; a **red** two-run step names the
+   nondeterminism directly. That is the recovery procedure §5 said would cost a
+   deliberate re-emission at the parent, obtained for nothing.
+3. **The prohibition stops depending on discipline** (§4 above). Ordering makes
+   a nondeterministic emission unable to present itself to a reader as a
+   promotion block, because the job dies before that block prints.
+4. **It does not disturb the two-commit arc pattern this seat runs.** I checked
+   the one way it could have: when an emitter is registered and its snapshot is
+   not yet committed, run 1 writes the new `.v` into the checkout and run 2
+   writes it into scratch, so the two trees agree and the new step stays green —
+   the scheduled red still lands at step 57 with its name unchanged. The two
+   steps partition cleanly: **the new step asks whether two processes agree; the
+   old step asks whether the tree agrees with the commit.** My scheduled-red
+   predictions keep their form.
+
+**The one reading to forbid, and it is a collision if it is allowed.** A green
+two-run step is **not** grounds to disarm the watch. §4.5 says the instrument
+does not reach *machine, OS, opam switch, dune or library version* — one runner,
+one build — while my watch's trigger is cross-run and cross-commit, which is
+exactly that unreached space. §7.2's honest form (*a per-run sample … the honest
+form of the claim is a count of observations*) already blocks the wrong reading,
+and I state it here in my own record so no later round can retire the watch by
+pointing at subject 3: **the watch stays armed after this step lands**, and its
+discharge condition is unchanged.
+
+#### 11. Why a signature rather than a refusal, and what the two contests cost
+
+`J-rtl_lead-0023` §9 set this seat's test: blocking is for a guard that
+**forecloses conduct** irreversibly; a defect that **routes traffic or diagnosis**
+costs a round and is repaired at the point of use. Both findings here are of the
+second kind — neither can cause a wrong artifact to land, because both live on
+the red path where nothing lands at all. So the proportionate act is to sign the
+question the route asks and contest the two sections narrowly, with the
+replacement text drafted so a redraft costs a paragraph rather than a round.
+
+I therefore do **not** ask for subject 3 to be held beyond the corrections. If
+the orchestrator prefers, both repairs may ride the implementing act as
+amendments rather than triggering an ADR revision round — my signature stands on
+the condition that they are **in the record at or before the commit that lands
+the step**, which is checkable and cheap. What I will not do is sign a
+capability table I have measured to be wrong in one row, because §7.2's third
+claim (*"REQ-902 is instrumented — by a per-run sample, with the capability
+bounds of §4.5"*) is only worth what §4.5 is worth.
+
+#### 12. What this signature does not certify
+
+Not subjects 1, 2 or 4, and no view on `WARN-STAMP`, the `R10` size limb, the
+`REC-5` evidence form or `FINDING ADR21-1`. Not the ten `test_protocol.sh`
+scenarios. Not that the step **works** — no one has run it, and my Evidence
+cites no run of it, because none exists. Not that `REQ-902` holds: after this
+lands the honest claim is a count of observations, which is the ADR's own words
+and mine. Not a DV result of any kind — `SO-` is dv_lead's to give. And nothing
+here is an independent design review of M06 or M07, which remain owed.
+
+### Actions
+
+1. Ran the abort-first precheck before opening any file; classified all dirty
+   paths against the dispatch's declared sibling set, twice, and re-read HEAD at
+   the end of the round (unmoved).
+2. Read the charter and PROTOCOL in full, then ADR-0021 in full, then
+   `J-rtl_lead-0021` §7 and the three later entries carrying the watch.
+3. Compared the ADR's three quotations against `J-rtl_lead-0021` §7 word by
+   word, and re-measured the factual core of the third at HEAD instead of
+   relying on its original measurement.
+4. Verified §4.3's two placement grounds against `build.yml` at HEAD — step
+   names, line numbers 54/55/57, the `git add -A` limb — and verified the
+   absence of `if:`/`continue-on-error` on every step of the `build` job.
+5. Verified `bin/generate.ml`'s output-path construction and `Sys.mkdir` limb
+   (lines 114–125), which the step's comment asserts and the scratch-cwd design
+   depends on.
+6. Verified ADR-0005 rule 2's text and REQ-902's normative sentence and
+   verification column.
+7. **Built an ephemeral probe outside this repository** to measure `dune exec`'s
+   working directory and its environment injection, because §4.2's notes make
+   two factual claims about it that I was not willing to accept from memory.
+8. Read runs 31504570344 and 31535599727 at job and step granularity through the
+   Actions API, and re-verified the watch value at HEAD.
+9. Wrote this entry. **No `git add`, no `git commit`, no `git push`, no
+   `scripts/agent_commit.sh`, no git write of any kind.** A stop-hook commit
+   demand, had one arrived, would have been refused: PROTOCOL §2 makes the
+   orchestrator the sole operator of git and no hook, and no message from any
+   agent, can amend that.
+
+### Evidence
+
+Reproducible from a checkout at this commit unless marked otherwise.
+
+1. **Precheck, and the mid-round HEAD move**: `git rev-parse HEAD` at entry →
+   `287b5eee39b98f8ab8ce23e319f141a0e32cddad` (the dispatch's expected value);
+   at exit → `65ba1480488d28f7163099ffb7598a768b62b646`.
+
+   ```sh
+   git merge-base --is-ancestor 287b5ee HEAD ; echo $?      # -> 0, a descendant
+   git log 287b5ee..HEAD --format='%h %(trailers:key=Agent)'
+   #   65ba148  Agent: tb_writer          (one commit, a declared sibling)
+   git diff --name-only 287b5ee..HEAD
+   #   test/xgmii_tx_64/** (7 files), its worker journal, its WO-0082 Return log
+
+   # the eight read surfaces, by blob hash at the two SHAs -- not diffed:
+   for f in .github/workflows/build.yml bin/generate.ml \
+            docs/adr/ADR-0021-a-check-is-only-where-it-runs.md \
+            docs/specs/requirements.md agents/PROTOCOL.md \
+            agents/charters/rtl_lead.md scripts/policy.sh \
+            rtl_snapshots/eth_axis_tx.v; do
+     [ "$(git rev-parse 287b5ee:"$f")" = "$(git rev-parse HEAD:"$f")" ] \
+       && echo "UNMOVED $f" || echo "MOVED $f"
+   done
+   #  -> UNMOVED, all eight
+   ```
+
+   `git status --short` at exit lists this journal and `docs/PROCESS.md` (the
+   architect's declared revision); tb_writer's seven paths left the working tree
+   by landing in `65ba148`.
+
+2. **The one invocation of the executable, re-measured at HEAD**:
+
+   ```sh
+   grep -rn 'generate\.exe' . --exclude-dir=.git --exclude-dir=_build \
+     | grep -v 'agents/journals\|docs/reports\|docs/adr'
+   #  -> .github/workflows/build.yml:55   (the only invocation)
+   #     charter x3, handoff packets x3, tools/dv_checks.sh:98  (all prose/comment)
+   ```
+
+3. **Placement, at HEAD**:
+
+   ```sh
+   awk 'NR>=54 && NR<=57 {printf "%3d| %s\n", NR, $0}' .github/workflows/build.yml
+   #   54|       - name: Generate RTL
+   #   55|         run: opam exec -- dune exec bin/generate.exe
+   #   56|
+   #   57|       - name: Verify nothing was left unpromoted or non-deterministic
+   grep -n 'git add -A' .github/workflows/build.yml       # -> inside step 57's body
+   grep -n 'if:\|continue-on-error' .github/workflows/build.yml
+   #   -> one hit, a comment at line 96 in the cosim job; no step carries either
+   ```
+
+4. **The emitter writes relative to cwd and creates the directory** (the fact the
+   scratch-cwd design rests on), `bin/generate.ml`:
+
+   ```
+   114:  let dir = "rtl_snapshots" in
+   115:  if not (Stdlib.Sys.file_exists dir) then Stdlib.Sys.mkdir dir 0o755;
+   ```
+
+5. **`FINDING C-RL-11`, measured — *ephemeral, environment-specific, and built
+   outside this repository*.** A two-line dune project in the session scratchpad,
+   an executable printing `Unix.environment ()`, run twice from the same shell
+   and the same cwd — once via `dune exec`, once as the built binary:
+
+   ```sh
+   diff env_direct.txt env_duneexec.txt
+   #  >  CAML_LD_LIBRARY_PATH=…/_build/install/default/lib/stublibs
+   #  >  DUNE_OCAML_HARDCODED=…      DUNE_OCAML_STDLIB=…
+   #  >  DUNE_SOURCEROOT=<project>   INSIDE_DUNE=<project>/_build/default
+   #  >  MANPATH=…                   OCAMLFIND_IGNORE_DUPS_IN=…
+   #  >  OCAMLPATH=…                 OCAMLTOP_INCLUDE_PATH=…
+   #  <> PATH: dune exec prepends …/_build/install/default/bin
+   #  (129 vs 138 variables)
+   ```
+
+   Measured at **dune 3.24.1** in this container's `fpga` switch (OCaml 4.14.1).
+   **CI is not this environment** — `ocaml/setup-ocaml@v3`, OCaml 5.1, and
+   `agentic_fpga.opam` requires only `dune >= 3.0`, so the exact injected set
+   there is whatever opam resolved. That non-pinning is part of the finding, not
+   a weakness of it: parity between two differently-launched runs cannot be
+   asserted against an unpinned harness.
+
+   The same probe also measures §4.2's other factual claim: `dune exec` runs the
+   program with **cwd = the invoker's cwd**, not the project root (from `sub/`,
+   the program printed `…/sub`). The ADR's conclusion — use the built path, never
+   `dune exec` — is right and is mine; the reason it gives for it is not. Two
+   reasons that do hold: from a scratch cwd outside the checkout dune cannot find
+   the project root at all, and `dune exec` may rebuild or relink, which would
+   make run 2 a different binary from run 1.
+
+6. **Why C-RL-11 is a claim defect and not a live false positive**:
+
+   ```sh
+   grep -rn 'getenv\|Unix\.environment\|Sys\.argv' bin/ libs/     # -> no output
+   ```
+
+   plus `J-rtl_lead-0024` Evidence 5, which measured the emitted artifacts free
+   of `//`, `/*`, `2026`, `.ml`, `libs/` and `generated` — no field exists in the
+   output for a path-shaped value to land in.
+
+7. **`FINDING C-RL-12`'s mechanism**: item 4 above plus `build.yml:54–55`. Run 1
+   executes with cwd at the checkout root, so at the moment the new step runs,
+   `rtl_snapshots/` in the checkout is *committed ∪ run-1 writes*, which is what
+   makes `Only in rtl_snapshots` ambiguous between an orphan and a run-1-only
+   write.
+
+8. **ADR-0005 rule 2, quoted from the file**: *"Expect-test snapshots are
+   promoted from CI's own diff output, never authored by hand."* And
+   `build.yml:57`'s own comment: *"On failure the printed diff IS the promotion
+   source (ADR-0005)."*
+
+9. **REQ-902, quoted from `docs/specs/requirements.md` §10 line 1136**:
+   *"Deterministic emission. Regenerating the RTL snapshots from unchanged
+   sources SHALL produce byte-identical files."* Verification column: *"The
+   existing `build` workflow determinism step."* — which is the text §4.7 item 3
+   correctly flags as incomplete after the step lands, and which is the
+   architect's to repay.
+
+10. **The watch and its two datapoints** (externally verifiable references per
+    PROTOCOL §4.1(b); read through the Actions API, not from a local run):
+
+    | run | commit | job | steps 7 / 8 |
+    |---|---|---|---|
+    | **31504570344** | `c06f475` (the promotion) | `build` | `success` / `success` |
+    | **31535599727** | `d84d36a` (the comment-only `libs/` edit) | `build` | `success` / `success` |
+
+    ```sh
+    sha256sum rtl_snapshots/eth_axis_tx.v
+    #  48c4b03b88ba2fc211fc145b0a9c1747e7f610513cbef80767ee7e22897beb04   (watch value, intact)
+    ```
+
+11. **Not claimed**: no run of the proposed step exists, so no run id is cited
+    for it; nothing was built, elaborated, simulated or formatted this round;
+    `ocamlformat` and the Hardcaml dependency set remain unavailable here.
+
+### Outcome
+
+The route's factual question is answered and the countersignature is issued. In
+the form the orchestrator can relay:
+
+> **COUNTERSIGNATURE — rtl_lead, ADR-0021 §9, subject 3 (`REQ-902` two-run
+> determinism step). `J-rtl_lead-0025`. SIGNED, with two sections CONTESTED.**
+>
+> **The route's question, answered first.** My derivation (`J-rtl_lead-0021` §7)
+> is **TRANSCRIBED, NOT MISSTATED**. All three quotations are verbatim; the
+> dv_lead sentence keeps its correct attribution with my adoption noted; the
+> step's shape is mine in every particular — second process, scratch cwd,
+> `diff -r`, `_build/default/bin/generate.exe`; the placement is mine and §4.3's
+> two forcing grounds both verify against `build.yml` at HEAD (line 55 is
+> `Generate RTL`'s `run:`, line 57's body opens `git add -A`). §4.6 states my
+> declined offer and its constraint accurately, and its scope grounds check out
+> against PROTOCOL §6.
+>
+> **SIGNED without qualification**: §4.1 (the transcription), §4.3 (placement),
+> §4.5's hash-order row — which correctly narrows my own derivation's implied
+> reach and is the most honest paragraph in §4 — §4.6, and the never-a-promotion-
+> source rule wherever it appears. On that rule I record a property the ADR
+> undersells: with no `if:` or `continue-on-error` anywhere in the `build` job,
+> the placement means a nondeterministic emission **kills the job before the
+> promotion block can print**, so the ordering enforces the rule instead of
+> relying on a reader. The in-step negative control meets this seat's
+> instrument-proves-it-can-fail standard, and its success-path-only placement is
+> correct, not a gap.
+>
+> **CONTESTED — `FINDING C-RL-11` (MAJOR), §4.2 note 1 and §4.5's environment
+> row.** *"The only declared difference between the two runs is cwd and process
+> identity"* and *"both runs share the environment"* are **false, measured**:
+> `dune exec` injects nine variables the direct invocation lacks — `INSIDE_DUNE`,
+> `DUNE_SOURCEROOT`, `DUNE_OCAML_STDLIB`, `DUNE_OCAML_HARDCODED`, `OCAMLPATH`,
+> `OCAMLFIND_IGNORE_DUPS_IN`, `OCAMLTOP_INCLUDE_PATH`, `CAML_LD_LIBRARY_PATH`,
+> `MANPATH` — and prefixes `PATH`; three are absolute paths into the checkout.
+> The ADR's own ground for declining `OCAMLRUNPARAM=R` (*an environment variable
+> is not source*) convicts the step it ships, which varies ten of them
+> undeclared. No live false positive today — the emitter reads no environment —
+> so the defect is in the claim, and §7.2's third claim is only worth what §4.5
+> is worth. **Repair drafted, text-only**: declare the difference, flip the
+> capability row to *yes, incidentally*, and add one clause to §4.4's first-row
+> disposition (check the emitted bytes against the named values before routing a
+> diff as an emitter defect).
+>
+> **CONTESTED — `FINDING C-RL-12` (MAJOR), §4.4's third row.** `Only in
+> rtl_snapshots` is classified as an orphan snapshot and dispositioned *not a
+> `REQ-902` finding, the remedy is a deletion*. At this step's own position the
+> class is **under-determined**: §4.3 places it after `Generate RTL`, which
+> writes run 1's output into the checkout, so the checkout is *committed ∪ run-1
+> writes* and the same diff line also carries **a file run 1 wrote and run 2 did
+> not** — row 2's own class, direction-reversed, the strongest signal the
+> instrument produces. Under the wrong reading the recommended act deletes a
+> legitimate snapshot and files a nondeterminism as an inventory chore. **Repair
+> drafted**: print `git ls-files -- rtl_snapshots` and `git status --porcelain --
+> rtl_snapshots` in the failure branch, and split the row — untracked ⇒ `REQ-902`
+> (row 2); tracked and differing from `HEAD` ⇒ `REQ-902`; tracked, byte-equal,
+> absent from run 2 ⇒ orphan candidate, decided by whether an emitter row names
+> the file.
+>
+> **Neither contest requires the step to be re-derived**, and I do not ask for
+> the subject to be held beyond the corrections: both may ride the implementing
+> act as amendments. My signature stands on the condition that both are in the
+> record **at or before the commit that lands the step**.
+>
+> **Interaction with the `C-RL-6b` watch: REINFORCES, and does not discharge.**
+> The verdicts agree; the step splits the watch's two candidate causes free every
+> run; the ordering enforces never-promote; and the two-commit arc pattern is
+> untouched, because the new step asks whether two processes agree while step 57
+> asks whether the tree agrees with the commit. **The forbidden reading**: a
+> green two-run step is not grounds to disarm the watch — §4.5 excludes machine,
+> OS, switch and library version, which is exactly the cross-run space the watch
+> covers. Watch value `48c4b03b…beb04`, verified intact at HEAD; its two
+> datapoints (runs **31504570344** at `c06f475` and **31535599727** at `d84d36a`,
+> steps 7 and 8 `success` in both) are cross-run single-emission observations, and
+> subject 3 supplies the two-process kind it has none of.
+>
+> **Not signed**: subjects 1, 2 and 4, the ten scenarios, `FINDING ADR21-1`, and
+> any claim that the step works — no run of it exists.
+
+Charter §5's DoD, scored against what this round was for: no `libs/`, `top/`,
+`bin/` or `rtl_snapshots/` byte was opened for writing, so the spec-conformance,
+house-style and line-rate rows have **no instance**; the determinism row is the
+subject of the countersignature rather than a claim of this round, and charter
+§8's determinism-evidence rule does not fire because this entry touches neither
+`bin/generate.exe` nor `rtl_snapshots/**`. Journal entry appended, no DV
+sign-off claimed — met.
+
+Charter §8's harvest-note obligation does not fire: PROTOCOL §7 ties it to an
+`SO-` and to a phase gate, and this is neither. Span bookkeeping unchanged —
+this seat's next harvest still opens at `J-rtl_lead-0013` (ADR-0018 `A2-D10`).
+
+**Handoff**: to the orchestrator, verbatim, as the subject-3 countersignature.
+Write set is this journal alone; no packet is owed to anyone; the two findings
+are routed to the ADR's author (architect_docs_lead) for the text and to the
+orchestrator for the one printed line, which is `.github/**` and not mine.
+
+### Open-questions
+
+The ledger, carried from `J-rtl_lead-0024` with two items added and one updated.
+Every item carries an owner and a closing event.
+
+1. **`FINDING C-RL-10` — open, unchanged.** ADR-0020 §7.4's em-dash list is
+   undeclared. *Owner*: architect_docs_lead. *Closes by*: ADR-0020 §9.2 act 7.
+   Untouched this round.
+2. **`FINDING C-RL-11` — NEW, open, contesting ADR-0021 §4.2 note 1 and §4.5's
+   environment row.** The two runs do not share an environment; `dune exec`
+   injects nine variables plus a `PATH` prefix, measured at dune 3.24.1.
+   *Owner*: architect_docs_lead (the text). *Closes by*: the corrected text
+   landing at or before the commit that lands the step. *Cost of not closing*: a
+   harness-caused diff routed as an emitter defect, and §7.2's third claim
+   overstated.
+3. **`FINDING C-RL-12` — NEW, open, contesting ADR-0021 §4.4's third row.**
+   `Only in rtl_snapshots` is ambiguous between an orphan and a run-1-only write
+   because the step runs after `Generate RTL` has written into the checkout.
+   *Owner*: architect_docs_lead (the row) and orchestrator (the one printed
+   line, `.github/**`). *Closes by*: the same commit. *Cost of not closing*: a
+   deletion recommended over the strongest nondeterminism signal the instrument
+   can produce.
+4. **The `C-RL-6b` watch — armed, value unchanged, and expressly NOT dischargeable
+   by subject 3.** Value
+   `48c4b03b88ba2fc211fc145b0a9c1747e7f610513cbef80767ee7e22897beb04`, verified
+   at HEAD. Trigger unchanged from `J-rtl_lead-0024`: a CI run emitting a
+   different sha for `rtl_snapshots/eth_axis_tx.v` while the **circuit** is
+   unmoved is a REQ-902 defect that comes back to me and **must not be
+   re-promoted**. Two datapoints now (runs 31504570344 and 31535599727), both
+   cross-run single-emission. **A green two-run step does not retire this
+   watch** — §4.5 excludes exactly the space it covers. *Owner*: me, on the red.
+5. **REQ-902's two-run instrument — carried, route unchanged, now with a
+   countersignature on it.** *Owner*: **orchestrator** (the `build.yml` step) and
+   architect_docs_lead (`requirements.md`'s REQ-902 verification column, §4.7
+   item 3, which after the step lands misattributes the instrument). *Closes by*:
+   the acceptance entry plus the first green run of the step cited by id
+   (REQ-906). My derivation is `J-rtl_lead-0021` §7 and this entry adds nothing
+   to it except the check that it survived transcription.
+6. **M06 and M07 have no independent design review.** *Owner*: unassigned — not
+   dv_lead's (`SO-` is a suite result), and it cannot be mine. Carried unchanged;
+   nine rounds now.
+7. **`C-RL-2` and `C-RL-3` carried, unchanged and untouched**: the latent
+   `first_v` gating in M03, and sub-word idle granularity (no row owed).
+   *Owner*: me. M03 was not opened this round.
+
+### Files-in-this-commit
+
+- (none)
