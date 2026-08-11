@@ -4606,3 +4606,40 @@ and the flip mechanics.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0258] 2026-08-11T16:34Z | task:none | The transcription act, eighth of its kind: the second countersignature enters whole with its two narrowings as findings - and the arc's one open disagreement closes with the signer calling the other seat's ground the better one
+
+### Trigger
+
+dv's second §0.5 countersignature landed at 2c5c585 (J-dv_lead-0182,
+journal-only, pure-append verified). Everything signed or narrowed,
+nothing refused; the additivity carry independently derived and
+confirmed at five decompositions including both routes through each
+wrapper; the class ground's load-bearing measurement re-verified at
+the adjudicated head. This entry pairs with the §13 row transcribing
+it.
+
+### What the row carries
+
+The signature's scope, the two narrowings as FINDINGS Q-6/Q-7
+(true-but-incomplete statements, each with a one-clause cure), the
+new FINDING Q-8 (the C-RL-8 event-delay-as-latency conflation at its
+FIFTH site — eth_mac_10g's §7, the wrapper both censuses were keyed
+to miss), the Q-4 location CONCURRENCE in dv's own better-ground
+words, item 53's bounded residue (M05 at a lane-4 start, the one
+module where the straddle test answers two ways today), and the
+implementation fact that the halved default's "assigns nothing" is
+already mechanically a refusal in word_cycles.
+
+### Routing
+
+Q-6, Q-7, Q-8, and the Q-4 row minting → the architect's next round
+(with items 50-third-slice, 69, 70 available to batch). The q arc's
+normative motion is now fully countersigned end to end: two diffs,
+six signatures, zero refusals of text, one refused ground replaced by
+a better one, and the only disagreement of the arc closed by the
+dissenting seat adopting the other's rule as the stronger.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
