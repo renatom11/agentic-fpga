@@ -2882,3 +2882,618 @@ unbroken from `J-dv_lead-0174` through this entry to the next sign-off, where
 ### Files-in-this-commit
 - test/attack_plans/AP-ip_eth_rx_64.md
 - test/attack_plans/AP-xgmii_tx_64.md
+
+## [J-dv_lead-0178] 2026-08-11T15:30Z | task:none | The narrow countersignature paid on a derivation that needed a premise its ruling did not name — and the next family packet written as the proof that six promised repairs landed, with the allow-list and the dispatch precheck naming one instrument set at last
+
+### Trigger
+
+Orchestrator dispatch. **No siblings.** Two acts and one one-line statement:
+
+1. **The §0.6 override countersignature**, narrowed by the architect's own ruling
+   to *what that diff adds* — the precedence sentence, the override recital, the
+   loosening derivation and the two repaired recitals — and explicitly **not** a
+   re-countersignature of the fourth clause's rule, which I countersigned at
+   `J-dv_lead-0173` §(c) and which has been in force since its transcription at
+   `747e561`. The diff is in force meanwhile on the standing §0.6 practice.
+2. **`WO-0081`**, the M04 era's second bench packet, carrying the structural
+   repair escalated at `J-dv_lead-0176` and owned at `J-orchestrator-0249`.
+3. **`FINDING AP-M14-1`'s disposition** — contest or not, one line if not.
+
+**Abort-first head check, before reading anything.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # 2a0a2b1b4caf83f1da5ac4bdca32650d6f6c0d9b
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+Byte-equal to the dispatched spawn-head `2a0a2b1`, tree clean. Neither branch of
+the abort procedure was reached.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md`, in full, before any write
+  (§3 packet classes and the work-order lifecycle, §4/§4.2 entry grammar and
+  set-equality, §6 write scopes, §7's harvest clause, §10's independence rules;
+  charter §3's delegation clause and §8's independence discipline).
+- **The diff under countersignature, read as a diff and then at the source**:
+  `git diff deace39..2a0a2b1 -- docs/specs/requirements.md` (four hunks: the
+  paragraph's opening sentence, the fourth clause's ground, the clause's closing
+  italic, one appended §13 row), then `docs/specs/requirements.md` §0.6 **whole at
+  `2a0a2b1`** — the strobe-timing-window paragraph, all four reference-word
+  clauses and both closing notes — because a countersignature on a clause read
+  only as a diff is a countersignature of a hunk and not of a rule.
+- **The premises the ruling rests on, at the source and not through it**:
+  **REQ-206** (its opening qualifier), **REQ-011** (the `tkeep` = 0 prohibition —
+  see Reasoning 2), **REQ-002** (one word per cycle), §0.5's ΔC, and §0.6's
+  strobe-timing-window paragraph for the floor.
+- **`docs/specs/modules/xgmii_tx_64.md`** — §6.1's normal path and its
+  cycle-by-cycle table, §6.1's FCS paragraph items 1–4, the terminate-and-fill
+  paragraph, **§6.2's state table** (the `Preamble` entry condition, the `Abort`
+  row and its exit, the C-16 paragraph), §6.3 items 1/2/4, §7, **§9** (the one
+  error row, the pinned strobe cycle, the co-occurrence paragraph), §10, §11.3.
+- **`agents/journals/claude_architect_docs_lead_agent.v03.md`** —
+  `J-architect_docs_lead-0040` **whole**: Reasoning 1 (the `ABS-1` ruling and its
+  three additions), 2 (the census and its two unfiled sites), 3 (`AP-M14-1`), 4,
+  5, 6, the Evidence, the 58-row ledger and all five Open-questions — including
+  item 1, which names the derivation it wants checked hardest, and item 2, which
+  is the contest this entry answers.
+- `agents/journals/claude_orchestrator_agent.v02.md` — `J-orchestrator-0249`
+  (the escalation received and owned, with *"the next `WO-` dispatch"* as its
+  closing event).
+- `git diff deace39..2a0a2b1 -- docs/specs/modules/ip_eth_rx_64.md` — read for the
+  `AP-M14-1` disposition (§4.2's port row, §6.1's bound, §7's two bullets, §8,
+  §9, §10's REQ-016 and REQ-606 rows).
+- **`test/attack_plans/AP-xgmii_tx_64.md` at `2a0a2b1`** — §0.1's three standing
+  rules, §0.2's four-item register, §1's status vocabulary, §2's seven
+  obligations, **§4's arithmetic identity**, §4.A–§4.G's rows (families D and E
+  cell by cell, `M04-G9` and `M04-G10` whole), §5, §6, §6.1, §7 and §7.1, §8,
+  §9's three change-log rows.
+- **`agents/handoffs/WO-0080_tb-m04-first-bench.md`** — §0, §1.2/§1.3/§1.4, §2,
+  §3, §4, §5.1–§5.7, §6.0/§6.1, §7, §8, §9.1–§9.7, §10, §11, §12, §13, §14, §15,
+  §16, §17, §18, §19; and all three verdict sections (`RV-0080-VERDICT` §3's six
+  findings and §8's re-issue terms, the `DISPOSITION` §6 minting
+  `FINDING WO-0080-5`, `RV-0080B-VERDICT` §5's tripwire and §6's carried items).
+- **My own entries**, walked rather than recalled: `J-dv_lead-0173` §(c) (the
+  `ABS-1` filing, to check the ruling against what I actually filed),
+  `J-dv_lead-0175`, `J-dv_lead-0176` (Reasoning 11–13, Open-questions 3),
+  `J-dv_lead-0177` (Reasoning 6–9, Open-questions 2–4).
+- **Files of my own DV tree, read as a reviewer, post-verdict, to write a packet
+  against them**: `test/xgmii_tx_64/bench.mli` (whole — it is the contract
+  `WO-0081` extends), `test/xgmii_tx_64/dune`, `test/xgmii_tx_64/test_m04_c.ml`
+  (the unit idiom), `test/xgmii_tx_64/test_m04_a.ml` (the cycle-indexing idiom),
+  and the machinery contracts `test/xgmii/frame.mli`, `test/xgmii/tx_decoder.mli`,
+  `test/xgmii/xgmii_word.mli`, `test/golden/crc32_ref.mli`.
+- **No `libs/**`, `top/**`, `rtl_snapshots/**` or `test/third_party/**` file was
+  opened at this round.** One census command's path set included `libs/**` — see
+  Evidence 7, where it is declared rather than buried.
+
+### Reasoning
+
+#### (a) The §0.6 override countersignature — COUNTERSIGNED, narrowly, with one premise supplied
+
+**1. The scope, taken as narrowed and stated so it cannot be read wider.** The
+architect narrowed what is owed to *the override statement, the loosening
+derivation and the two repaired recitals*, on the ground that the clause's **rule**
+— the reference word for a condition reported on the non-arrival of an input word,
+the ceiling adding ΔC and never an event delay, and the window carrying no
+independent information here — is countersigned at `J-dv_lead-0173` §(c) and in
+force since `747e561`. **I accept the narrowing and I checked that it is honest
+before accepting it**: I re-read the clause whole at `2a0a2b1` and the three
+operative sentences I signed are present unchanged, word for word. A narrowing that
+had quietly moved one of them would have been a re-countersignature wearing a
+narrow one's clothes, and the only way to know is to read the clause rather than
+the diff.
+
+**2. The empty-class derivation — sustained, and it needs a third premise the
+ruling does not name.** This is the thing `J-architect_docs_lead-0040`'s
+Open-question 1 asked me to check hardest, and it is the one place where I have
+something to add rather than to agree with. The ruling's derivation is: REQ-206
+defines the underflow only *after* the transmitter has emitted the frame's start
+character; SPEC-M04 §6.1 emits that character only once a first source word has
+been accepted; therefore every underflowed frame has accepted at least one word,
+and the class in which §0.6's first clause names nothing is **empty**.
+
+Both premises hold at the text. REQ-206: *"If, on any cycle after the transmitter
+has emitted a frame's start character and before it has accepted that frame's
+`tlast` word …"*. SPEC-M04 §6.2's `Preamble` row: *"Entered when: a first source
+word is accepted"*, and its second entry branch (C-16's held word) also requires a
+prior acceptance. So no start character without an accepted word.
+
+**But the clause the derivation is about names the last *octet*, not the last
+*word*.** The step from *"has accepted at least one word"* to *"the first clause
+names one"* needs a word to carry at least one octet, and a stream on which
+`tkeep` = 0 were representable would break it: a frame that accepted only
+zero-octet words would have received no octet, the first clause would name
+nothing, and the class would be non-empty after all — which is exactly the
+consequence Open-question 1 names ("*the clause is a hole-filler and an override
+on different frames, and the precedence sentence would need a scope*"). **The
+premise exists and it is REQ-011**: *"`tkeep` = 0 with `tvalid` = 1 SHALL never be
+produced, so a zero-octet frame is not representable"*, restated at §0.7. With
+REQ-011 the chain closes: accepted word ⟹ at least one octet ⟹ the first clause
+names a word. **So the derivation is right and its statement is one premise short.
+I supply the premise rather than file a finding**, because the conclusion is
+sound, the missing step is a requirement in the same document, and a MINOR finding
+against a ruling that reached the correct result by a complete-but-unstated route
+would spend a round on nothing. It is recorded here so that a later reader
+re-deriving the emptiness does not have to notice REQ-011 unaided.
+
+**3. The loosening derivation — checked, including the half it does not state.**
+The claim is that the fourth clause's window strictly contains the first's: the
+floor is fixed by the *"not earlier than decidable"* rule and is the same under
+both, while the ceiling moves from `A + ΔC` to `R + ΔC`, where `A` is the cycle of
+the last accepted word and `R` the required-and-not-presented cycle, and `R > A`
+because an acceptance needs `tvalid` = 1 and the absence *is* `tvalid` = 0.
+
+The floor half is immediate: §0.6's timing-window paragraph fixes the floor on the
+**condition's** decidability, which no reference word touches. The ceiling half is
+right but it rests on something the sentence leaves implicit — **that no acceptance
+of the offending frame follows `R`.** "Strictly after the last acceptance" is only
+a loosening if the last acceptance is before `R`; if the frame could accept a word
+after the absence, the first clause's reference could be *later* than the fourth's
+and the override would **tighten**. I checked it rather than assuming it, at two
+sites. SPEC-M04 §6.2: the underflow takes `Frame` to **`Abort`**, which *"transmits
+the words already accepted"* and leaves to `Gap`; §9's stream-effect cell says the
+same and adds that the gap is served from that terminate character. So the frame
+closes at the absence and receives nothing further. And the one acceptance that
+*does* happen while another frame is open — C-16's early acceptance at `C + 8` —
+belongs to the **next** frame and cannot occur here anyway, because REQ-206's
+condition ends at the `tlast` acceptance and C-16's cycle is after it. **The
+derivation is sound as stated and stronger than its own sentence; both grounds are
+recorded here so a later reader does not have to re-find them.**
+
+**4. The precedence sentence — countersigned, and one thing I considered filing
+and did not.** *"The first three partition the frames by what the frame received
+while it was open; the fourth overrides the first for the one condition class it
+names."* The operative half is exact: the fourth clause and the first both reach
+one class of frame, and before this diff nothing on the page said which wins — a
+reader could compute either ceiling and cite §0.6 for both. That ambiguity is
+real, the diff removes it, and the direction it removes it in is the one the
+loosening derivation makes harmless.
+
+**What I considered filing**: *"partition"* is loose. Clauses 1 and 3 partition the
+frames (received an octet / received none); clause 2 is a **qualifier on clause 1's
+domain** — what counts as received — and names no cell of its own. A reader
+looking for clause 2's cell finds none. **Recorded as a non-finding, deliberately,
+with the reason**: the sentence's load-bearing half is the precedence, it is
+exact; no window moves under either reading of the word; and filing a MINOR
+against a word choice in the same paragraph one round after `ABS-1` would train the
+next round to read my findings as commentary. I would rather record the
+observation where an auditor can see it was considered than mint it. If a third
+clause is ever added to that paragraph, the word is the place to look first.
+
+**5. The two repaired recitals — checked at the text, and the second is the one
+that matters.** The clause's ground no longer says the first three clauses name no
+word; it says the fourth overrides the first, states the empty class, and states
+what the override does (move the reference later, so the window's floor and its
+reference word become one event). The closing italic no longer says the trap was
+*"a window whose reference word had no referent"*; it says the trap was a
+determinate window measured from the **wrong event**, whose green repeats the
+module's own pin. **The second repair is the one I would have missed**: my finding
+named two sites, and one of them was one sentence away from the other, inside the
+same clause, and I did not see it. That is worth saying plainly — the census the
+architect ran was not diligence about my filing, it was the correction of it.
+
+**6. What this signature does NOT cover, stated because a signature's scope is
+read later by someone who was not here.** Not the rule (already signed). Not
+SPEC-M04 §11.3's Status-column correction, not SPEC-M10 §9's repaired vacuity
+paragraph, and not the `AP-M14-1` diff at SPEC-M14 — the architect states no
+countersignature is owed on any of the three and I agree on its own ground: the
+first two are consequences of this ruling at sites I did not file, carrying no
+rule of their own, and the third is answered at (b) below. And **not** the census
+itself: I have not re-run either slice, and the packet's own §9.1 rule says a set
+claim I did not measure is quoted with its provenance, which is what I do here —
+*four sites found, two of them unfiled, measured by architect_docs_lead at
+`J-architect_docs_lead-0040` Evidence 4, not re-measured by me.*
+
+#### (b) `FINDING AP-M14-1` — no contest, and the ground
+
+**7. I do not contest the bound's normativity.** The one point where the ruling
+exceeds my recommendation is that it landed a scope **plus** a stated lower bound
+(*the record is presented at least one whole cycle before the first payload word,
+on every stimulus REQ-016 permits*), where I recommended only the scope. The
+architect kept a contest open on exactly that. **It is not a new obligation and I
+say so rather than leaving silence to be read as acquiescence**: the bound is
+entailed by two things already normative — §7's per-output-event table (each event
+trails its own deciding input word by one cycle) and REQ-002 (a stream carries at
+most one word per cycle, so input word 3 is never earlier than the cycle after
+input word 2) — so no design meeting §7's table can fail it, and REQ-606 already
+asks for the record *on or before* the first payload word, which a grown lead
+satisfies a fortiori. A rule that no conformant design can fail and that no bench
+can newly assert is a **statement of a consequence**, not an added requirement.
+`M14-F1` asserts neither lead and is unmoved either way. **No contest, no finding,
+and the row's newly-assertable observable stays mine** (Open-questions item 3).
+
+#### (c) `WO-0081` — the scope call, and the row that decided its shape
+
+**8. Families D and E, complete, and not family A's remainder.** The dispatch
+offered family A's remainder, D and E as candidates and left the call to me. I
+took **D (6 rows) and E (5 rows), both complete**, and refused A's remainder, on a
+ground that is in `WO-0080` §1.2's own exclusion table rather than in my
+preference: `M04-A3` drives 100 consecutive frames and `M04-A4` drives three
+predecessors one of which is underflowed — the first needs a **multi-frame
+presenter** and the second needs family G's stall stimulus, and neither exists.
+`M04-B3` and the whole of family F need the same missing presenter. **So A's
+remainder is not a cheap addition to this round; it is the front half of the
+two-frame round**, and my own standing rule is that a capability lands with its
+first consumer — which means the round that builds the multi-frame presenter
+should carry `A3`, `A4`, `B3` and family F together rather than have this round
+build it for one row. Families D and E, by contrast, need **one function of about
+twenty lines** between them, and `WO-0080` §1.3 already said so in writing when it
+deferred D: *"it needs no new capability at all"*. This packet is mostly the
+redemption of that sentence.
+
+**9. `M04-G9` rides, and the ground is its own Observable rather than
+convenience.** `J-dv_lead-0177` §9 left G9 **measured and deliberately
+undischarged**: the landed bench's `assert_instruments_clean` meets its strobe half
+at `P = 1` today, but the run that met it was adjudicated before the row existed,
+and a row written after a run is not discharged by it merely because the run would
+have passed. The dispatch asked me to commission the adjudicating row if this
+packet's scope reaches it, or to name its carrier. **It reaches it, and the reason
+is a fact about the row I had not noticed when I wrote it**: G9's Observable
+requires *"four FCS octets equal to the REQ-305 oracle over the padded 60"* —
+which is **family D's instrument**. Before this packet no unit at M04 compared a
+wire FCS against the oracle over a source frame at all, so the row was not fully
+mountable at any earlier round. **Family D's round is `M04-G9`'s first
+opportunity, not its second**, and commissioning it anywhere else would have been
+the accident I refused last round, arriving one round later.
+
+It rides **without** its family: `G1`–`G8` assert that a strobe **pulses** and need
+a stall schedule whose oracle half does not exist (`AP-M04` §7 item T-3); `G10`
+needs machinery T-7. G9 asserts a **silence** on a clean single-word frame and
+needs neither. The packet says that in those words at §1.4 so that a later reader
+does not read "a family-G row landed" as "family G opened", and `BM8` forbids the
+unit from naming `M04-G4` or `M04-G10` or describing REQ-206 as covered.
+
+**10. The one printed value, and the decision I would most expect to be argued
+with.** `M04-D6`'s Observable requires the oracle's value for the all-zero frame to
+be **printed**. Every `[%expect]` block in `test/xgmii_tx_64/` is empty today, so
+honouring that cell guarantees a red `Run tests` on the first CI reaching, a
+promotion act, and an `RV-` that cannot ACCEPT until the promotion lands (bar
+`M-2` wants a green step). **Three options were live.** (i) Drop the print and
+carry the row on its two OCaml assertions — cheaper, and a **silent deviation from
+a row's Observable cell**, which is the thing I convict other people's instruments
+for. (ii) File against my own plan row and change the cell — available, but the
+cell is right: the value is what makes an anti-vacuity row auditable without
+running anything, which is my own evidence discipline applied to a number. (iii)
+Honour it and pay the promotion. **I took (iii)**, pre-committed the red as
+disposition **class P** so the adjudication is fixed before the facts, confined the
+class to *a diff whose whole content is that one block* so it cannot become a
+general licence, and named the promotion as mine at §19.2 item 6.
+
+**And the rule that makes the promotion safe is the part I want read**: what is
+printed is the **oracle's** four octets and **nothing sampled from the design**.
+A promoted snapshot of a design output would launder a design defect into
+committed evidence at the next promotion; a snapshot of an oracle value can only
+change if the oracle changes. That is trap T13 and bar M-18, and it is the reason
+(iii) is not the reckless option it first looks like.
+
+**11. The structural repair, in three parts, all in the packet.** This is the item
+escalated at `J-dv_lead-0176` and owned at `J-orchestrator-0249` with *"the next
+`WO-` dispatch"* as its closing event.
+- **(a) §17.1 carves the spawn-precheck commands in by name.** `git status
+  --short` and `git rev-parse HEAD`, each once, at the head of the round, before
+  anything is read, output quoted in the journal's Trigger. **This is the ruling
+  my own rev-B verdict made and then failed to land**, and it ends a forced
+  violation that has run for six rounds. The carve-out is deliberately two
+  commands at one point: §17.3 — which forbids reaching for `git status` to
+  enumerate one's own write record — is **unchanged**, and the packet says so in
+  terms, because the act §17.3 forbids is a different act with a different purpose
+  and widening the carve-out to cover it would repair the conflict by deleting the
+  rule.
+- **(b) The tripwire is written in, armed by condition.** `BM17`: once an
+  enumerated allow-list stands at the head of the spawn prompt **and** §17.1
+  carries the carve-out, a further instrument-outside-the-list instance is a
+  bounce on its own, disclosed or not. **(b) of that condition is satisfied by
+  this packet; (a) is the orchestrator's** — so the arming is **measured, not
+  assumed**: §18 item 9 requires the worker to state whether its spawn prompt
+  carried such a list and to quote its first line. I will not infer the state of a
+  prompt I did not read. If it did not, the prior disposition stands and the
+  finding escalates again rather than being charged to the worker; **disclosure is
+  credited in full under both branches**, and the packet says that too, because a
+  tripwire that made disclosure costlier would buy silence.
+- **(c) `FINDING WO-0080-5`'s repair.** §15's class **D2** is restated over *a
+  standing instrument* — decoder, strobe monitor, FCS oracle and its `Frame`
+  wrappers, or the bench's own conservation rule — and routes to **dv_lead in
+  every case**, where the old table named the decoder alone and would have routed
+  a dv-owned instrument defect to the worker through `D4a`–`D4d`. The repair is
+  not academic this round: family D attaches a **third** standing instrument (the
+  oracle), which is exactly the case the old wording mis-routed.
+- **And §17's preamble states the unification and cites the escalation**, so the
+  next auditor can see the repair happened, where, and which finding it discharges,
+  without reconstructing it from three journals.
+
+**12. `FINDING WO-0080-6`'s lesson, discharged by construction rather than by
+promise.** The lesson was that *a packet repair a verdict promises must land
+before the next round meets it* — six were promised at `RV-0080-VERDICT` §8, none
+was made, and the next worker met the same forced conflict uncured. **All six are
+in this packet and §19.3 lists them with their sites** so the discharge is
+checkable rather than asserted: the `Int.rem` gloss at §4.1; the operator-bearing
+reference file at §3 (`test/xgmii_rx_64/test_m03_h.ml`, 16 sites, measured — and
+the reason it matters is that `WO-0080` §3 pointed the worker at two files
+measured afterwards to contain **no modulo at all**, so the cure was in the tree
+and outside every path that packet named); §16.3's operator clause, promoted to
+**item 1** of the unchecked-names list and generalised to *a familiar spelling
+that means something else here*; bar **M-17**, the infix-` mod ` search, executable
+at the worker's own seat, whose base I measured at **2 occurrences, both
+non-expression**, which is why it is stated as an expression bar and not as a
+count; §17.1's carve-out; and `WO-0080` §7.1's reset-cycle wording brought into
+agreement with the bench at §7. **A seventh — `FINDING WO-0080-4`'s scan-domain
+quantifier — is not a site repair but a round-wide rule at §6.0(c)**, because the
+defect it convicted (a universal over a domain the claim cannot survive) has now
+appeared four times in my instruments and a rule is cheaper than four cures.
+
+**13. Size, and the fold I refused.** 12 rows against `WO-0038`'s 11 and
+`WO-0080`'s 13; **1 132 driven cycles, 22 elaborations**, derived unit by unit at
+§10 from the run-length formula, which is **1.08%** of the size class `WO-0070`
+measured — so no probe is required and I state the conditional rather than assume
+it. The ceiling is pre-committed at 1 700 cycles and 28 elaborations. **Refused in
+writing**: folding `M04-E4`'s `P = 1514` run into family D's unit, which drives
+that length already and would have saved 216 cycles and one elaboration. The
+`SO-` coverage map is built by hand from unit titles (§9.7(i)), and a title naming
+rows from two families is read as one claim; 0.2% of the class is not worth that.
+
+**14. What I refused, beyond the fold.** I did not touch `test/**` — not the
+bench, not a unit, not the plan, which is frozen at `deace39`/`2a0a2b1` and read-only
+this round even though `M04-G9`'s Status cell is exactly where a discharge would
+eventually be recorded (it is not recorded on commissioning; it is recorded on an
+ACCEPT). I did not touch `docs/**` or `tools/**`, so `DVC-1a` is still unbuilt and
+every M04 count in the packet is a hand count with its method stated. I did not
+open, offer or imply an `SO-`. I did not lift `AP-M04` §0.2 item 4's REQ-206 bar,
+which this round's `M04-G9` does not reach. I did not re-measure the four `BM16`
+instances `RV-0071-VERDICT` tallied, so that count still stands exactly as it was
+quoted. And I did not rule on the `ABS-1` census's two unfiled sites, which are
+the architect's own finding against its own documents.
+
+### Actions
+
+- Verified the spawn-head precheck; read the charter and PROTOCOL before writing.
+- **Read the §0.6 diff as a diff and then read §0.6 whole at the source**, and
+  re-derived both of the ruling's derivations (the empty class, the loosening)
+  from REQ-206, REQ-011, REQ-002, SPEC-M04 §6.1/§6.2/§9 and §0.6's own floor rule.
+- **Countersigned** the narrowed §0.6 diff at (a) above, with one supplied premise
+  (REQ-011), one recorded non-finding (the word *"partition"*), and the scope of
+  what is **not** signed stated explicitly. **Transcription row drafted** at
+  Evidence 6 for the orchestrator, per the standing two-key practice.
+- **Stated no contest** on `FINDING AP-M14-1`'s disposition, with the ground.
+- **Wrote `agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md`** — the numbering
+  verified by listing `agents/handoffs/` (`WO-0080` is the highest). **Twenty
+  numbered sections, §0 … §19**, counted at the file: 12 rows across 6 units in 3
+  new files, the `run_frames` extension and the `run_lengths` re-expression, the
+  master length table for all **13** lengths driven, **20** review bars
+  (`M-1` … `M-19` with `M-5b`) with every tree-quantified base measured at
+  `2a0a2b1`, **17** bounce
+  conditions including the armed-by-condition tripwire, 13 traps, the repaired
+  disposition table with its new class **P**, and §17's unification preamble.
+- **No git write of any kind**: no `git add`, no `git commit`, no `git push`.
+- **Nothing under `test/**`, `docs/**`, `tools/**`, `libs/**`, `top/**` or
+  `rtl_snapshots/**` was staged, edited or created.**
+
+### Evidence
+
+**1. Precheck and return state.**
+
+```sh
+git status --short   # zero lines at entry; at return, exactly two paths:
+                     #   ?? agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md
+                     #   M  agents/journals/claude_dv_lead_agent.v09.md
+git rev-parse HEAD   # 2a0a2b1b4caf83f1da5ac4bdca32650d6f6c0d9b (unchanged at return)
+```
+
+**2. The diff under countersignature, measured rather than described.**
+
+```sh
+git diff deace39..2a0a2b1 --stat
+#   5 files, 677 insertions, 32 deletions
+#   docs/specs/requirements.md | 52 +-   <- the diff this signature is about
+git diff deace39..2a0a2b1 -- docs/specs/requirements.md
+#   4 hunks: the paragraph's opening sentence (+3/-1); the fourth clause's
+#   ground (+22/-8); the clause's closing italic (+13/-4); one appended §13 row
+```
+
+The three operative sentences countersigned at `J-dv_lead-0173` §(c) are present
+**unchanged** in the clause at `2a0a2b1` (lines 497–514): the reference word is
+*"the cycle on which the word was required and not presented"*; the ceiling is
+*"§0.5's word delay ΔC, and never an event delay"*, with ΔC = **2** at this
+module; and *"the window carries no independent information"* there.
+
+**3. The empty-class derivation, re-derived at the source with its third premise.**
+
+- REQ-206 (`requirements.md:792`): *"If, on any cycle **after the transmitter has
+  emitted a frame's start character** and before it has accepted that frame's
+  `tlast` word …"*.
+- SPEC-M04 §6.2's state table: `Preamble` — *"Entered when: a first source word is
+  accepted"* — is the state that emits the REQ-201 word carrying `/S/`; `Idle`'s
+  own "Leaves to" cell gives the only two entry branches and **both** require a
+  prior acceptance.
+- **REQ-011** (`requirements.md:679`): *"`tkeep` = 0 with `tvalid` = 1 SHALL never
+  be produced, so a zero-octet frame is not representable"* — the premise the
+  ruling does not name and without which "accepted a word" does not yield
+  "received an octet".
+
+Chain: underflow ⟹ start character emitted ⟹ a first source word accepted ⟹
+(REQ-011) at least one octet received while the frame was open ⟹ §0.6's first
+clause names a word. **The class is empty.**
+
+**4. The loosening derivation, re-derived including the closure half.** With `A`
+the cycle of the last accepted word of the offending frame and `R` the
+required-and-not-presented cycle: `R ≠ A` because an acceptance needs `tvalid` = 1
+and `R` has `tvalid` = 0; **no acceptance of that frame follows `R`** because
+SPEC-M04 §6.2 takes the underflow to `Abort` (*"transmits the words already
+accepted"*) and then to `Gap`, and §9's stream-effect cell says the gap is served
+from that terminate character; C-16's early acceptance at `C + 8` belongs to the
+**next** frame and is unreachable here anyway, REQ-206's condition ending at the
+`tlast` acceptance. Hence `A < R`, ceilings `A + 2 < R + 2`, floor identical under
+both (§0.6's timing-window paragraph fixes it on the condition's decidability, not
+on the reference word). **The fourth clause's window strictly contains the
+first's.** Worked at the earliest instance: `A = C`, `R = C + 1`, pin at `C + 1`
+(SPEC-M04 §9), first clause's ceiling `C + 2`, fourth clause's `C + 3` — the pin
+inside both, at the near edge, exactly as the clause's own no-independent-
+information sentence says.
+
+**5. The rows this packet commissions, statused at the tree rather than recalled**
+(`FINDING WO-0080-2` is why this is measured):
+
+```sh
+for r in D1 D2 D3 D4 D5 D6 E1 E2 E3 E4 E5 G9; do
+  grep -oE "^\| \*\*M04-$r\*\* \|.*\| (ASSERT|NO-ASSERT|NO-STIMULUS|RULING|GAP|STRUCTURAL) \|$" \
+    test/attack_plans/AP-xgmii_tx_64.md | grep -oE '\| [A-Z-]+ \|$'; done
+# D1 D2 D3 D4 ASSERT | D5 NO-ASSERT | D6 ASSERT | E1 E2 E3 E4 ASSERT | E5 NO-ASSERT | G9 ASSERT
+```
+
+**Ten ASSERT, two NO-ASSERT, total 12.** Outstanding moves 69 → 57 on an ACCEPT.
+
+**6. The transcription row I owe the orchestrator, drafted** (six columns,
+`docs/specs/requirements.md` §13's shape; the last column is the transcribing
+entry's own id and is the orchestrator's to fill):
+
+| 2026-08-11 | §0.6 (**the fourth clause's override statement, its loosening derivation, and the two repaired recitals**) | **Countersignature transcribed — the `FINDING ABS-1` diff is COUNTERSIGNED and IN FORCE from this row.** dv_lead COUNTERSIGNED at `2a0a2b1`, **narrowly**: this signature covers what that diff adds — the paragraph's precedence sentence, the clause's override recital, the loosening derivation and the repaired closing italic — and is **not** a re-countersignature of the clause's rule, which was countersigned at `J-dv_lead-0173` §(c) and has been in force since `747e561`; the three operative sentences were re-read whole at this SHA and are unchanged. **(1) The empty-class derivation is sustained and needed one premise the ruling does not name.** REQ-206 opens the underflow only after the start character; SPEC-M04 §6.2 enters `Preamble` — the state that emits it — only on a first source word's acceptance; **and REQ-011 forbids `tkeep` = 0 with `tvalid` = 1**, which is the step from *accepted a word* to *received an octet*. Without REQ-011 the class would be empty only contingently and the precedence sentence would need a scope (`J-architect_docs_lead-0040` Open-question 1 asked for exactly this check). **(2) The loosening is a theorem and its unstated half is also true.** The required cycle is strictly after the last acceptance, and **no acceptance of the offending frame follows it** — SPEC-M04 §6.2 takes the underflow to `Abort` and then to `Gap`, and C-16's `C + 8` acceptance belongs to the next frame and is unreachable while REQ-206's condition holds — so the ceiling moves strictly outward while the floor, fixed on the condition's decidability, does not move at all. At the earliest instance: pin `C + 1`, first clause's ceiling `C + 2`, this clause's `C + 3`. **(3) The precedence sentence is countersigned on its operative half** — before it, both clauses reached one class and nothing said which won. One observation is recorded and **deliberately not filed**: *"the first three partition the frames"* is loose, clauses 1 and 3 partitioning while clause 2 qualifies clause 1's domain; no window moves under either reading. **(4) The second repaired recital is the one dv would have missed**: `FINDING ABS-1` named two sites and the clause's own closing italic, one sentence later, was a third. The census that found it, and the two unfiled sites at SPEC-M04 §11.3 and SPEC-M10 §9, are **architect_docs_lead's measurement and are quoted with that provenance, not re-measured here**. **No countersignature is owed or given on those two correction rows, nor on the `AP-M14-1` diff at SPEC-M14** | transcription — no normative text moves in this row; it records that the countersignature §13 says is owed on this diff is paid, with nothing outstanding against it | `FINDING ABS-1` (MINOR), dv_lead, filed at `J-dv_lead-0173` §(c) and ruled at `J-architect_docs_lead-0040`; countersignature of record **`J-dv_lead-0178`** §(a) | `J-orchestrator-NNNN` |
+
+**7. Base figures for `WO-0081`'s review bars, every one measured at `2a0a2b1`**
+(`FINDING K-3`: a bar never run against its own base is a hope):
+
+```sh
+grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .        # 149  (M-3 base)
+git ls-files test/xgmii_tx_64/                                     # 7 paths (M-4 base)
+grep -roh --include=*.ml 'M04-[A-Za-z0-9]*' test/ | sort | uniq -c # 13 ids + 2 bare 'M04-' (M-7 base)
+grep -rn ' mod ' test/xgmii_tx_64/                                 # 2 hits (M-17 base):
+#   bench.mli:151       inside a docstring
+#   test_m04_b.ml:255   inside a string literal
+grep -rn 'Int.rem' test/xgmii_tx_64/                               # 3 sites, all correct spellings
+grep -rc 'Int.rem' --include=*.ml test/ libs/ | grep -v ':0$' | sort -t: -k2 -rn | head
+#   test/xgmii_rx_64/test_m03_h.ml:16   <- the operator file WO-0080 §3 failed to name
+#   then 9, 9, 8, 7 across four more M03 test files; NO libs/** file appears
+grep -rn 'print\|Stdio' test/xgmii_tx_64/*.ml                      # 0 hits (M-18 base)
+```
+
+**One declaration, per charter §8's independence discipline.** The `Int.rem`
+census's path set included `libs/**` for an **operator-spelling count only**. It
+returned **no `libs/**` row**, no `libs/**` file was opened, and nothing about the
+design's behaviour was read or derived — every expectation in `WO-0081` is derived
+from SPEC-M04, requirements.md and committed oracles. Declared rather than buried,
+which is what the charter asks for instead of the read not happening.
+
+**8. The cost arithmetic, derived unit by unit and not estimated.** Run length is
+`27 + ⌊F/8⌋` with `F = max(P,60) + 4`: **35** cycles for `F ∈ 64 … 71`, **216**
+for `F = 1518`. U11 8 runs (35×7 + 216) = **461**; U12 2×35 = **70**; U13 **35**;
+U14 8×35 = **280**; U15 **216**; U16 2×35 = **70**. **Total 1 132 cycles, 22
+elaborations, 22 runs.** Against `WO-0070`'s measured **105 010** cycles:
+**1.08%**. Ceiling pre-committed at 1 700 / 28.
+
+**9. Not reproducible here, and said so**: `dune` is absent from this container
+(ADR-0005, the standing bound) and **no OCaml lands in this round** — the packet is
+prose and no file it commissions exists yet, so there is nothing for `dune
+runtest` to say about it. The CI figures cited in the packet (`build` run
+**31482795659** at `af06c62`) are `J-dv_lead-0176`'s, cited **by reference** and
+not re-measured here.
+
+**10. Independence.** `git status --short` at return lists exactly two paths, one
+of them this journal. No file under `libs/**`, `top/**`, `rtl_snapshots/**` or
+`test/third_party/**` was opened. The `test/**` files read are all my own line's
+artefacts, read as a reviewer and post-verdict, to write a packet against their
+contracts.
+
+### Outcome
+
+**DoD for a countersignature-plus-packet round: met.**
+
+- **§0.6's override diff — `COUNTERSIGNED`**, narrowly and on the scope the
+  architect named. Both derivations re-derived from the source rather than
+  accepted: the empty class **sustained with REQ-011 supplied** as the premise the
+  ruling's statement is short of, and the loosening **sustained with its unstated
+  half proved** (no acceptance follows the absence, per SPEC-M04 §6.2's `Abort`
+  and §9). **Zero findings filed**; one observation recorded as a deliberate
+  non-finding (the word *"partition"*). Transcription row drafted at Evidence 6,
+  last column the orchestrator's.
+- **`FINDING AP-M14-1` — NOT CONTESTED.** The stated lower bound is entailed by
+  §7's per-output-event table and REQ-002 and adds no obligation a conformant
+  design could fail; `M14-F1` is unmoved. One line was asked for and the ground is
+  given with it.
+- **`WO-0081` — ISSUED**, at `agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md`.
+  **12 rows**: family D complete (6), family E complete (5), and `M04-G9` — ten
+  ASSERT, two NO-ASSERT, measured. Six units in three new files; one new bench
+  function (`run_frames`) with `run_lengths` re-expressed over it and the four
+  landed test files kept byte-identical as the regression witness; 1 132 cycles at
+  1.08% of the measured size class. **On an ACCEPT the plan goes to 57 of 82
+  outstanding.** No `SO-`, `BAR T1` still SHUT, REQ-206 still barred from a
+  coverage claim.
+- **The structural repair rides, in three parts**: §17.1's precheck carve-out by
+  name; `BM17`'s tripwire, armed by a **measured** condition the worker reports
+  rather than one I infer; and §15's class D2 restated over *a standing
+  instrument* (`FINDING WO-0080-5`). §17's preamble states the unification and
+  cites the escalation so the repair is visible to an auditor at its own site.
+- **`FINDING WO-0080-6` discharged by construction**: all six promised repairs are
+  in this packet, listed with their sites at §19.3, and the packet **is** the proof
+  they landed rather than a further promise.
+- **Handoff**: one packet to the orchestrator for dispatch to tb_writer. The
+  packet is Summarizable class (PROTOCOL §3) but its §17 and §13 must reach the
+  worker intact — the dispatch's own precheck and the packet's allow-list now name
+  one instrument set, and a summary that dropped either would re-open the conflict
+  this round closes.
+
+**No harvest note is owed.** ADR-0018 and PROTOCOL §7 attach one to every `SO-`
+and every phase gate; this round is neither, and I declare it rather than leave
+silence to be read. The open span still begins at `J-dv_lead-0174` and this entry
+joins it; **five** candidates now wait for the next sign-off.
+
+### Open-questions
+
+1. **The §0.6 fourth clause's empty-class derivation is complete only with
+   REQ-011.** I supplied the premise here rather than filing against the ruling,
+   and I record the alternative I rejected: a MINOR finding asking the clause to
+   name it. **If a later round ever weakens REQ-011's prohibition — or admits a
+   stream on which a zero-octet word is representable — the emptiness fails, the
+   clause becomes a hole-filler *and* an override on different frames, and the
+   precedence sentence needs a scope.** That is the trip condition, stated now so
+   it is not re-derived under pressure. Route: mine to watch; architect's to rule
+   if it fires.
+2. **`M04-G9` is commissioned but not discharged, and the distinction is the
+   whole point.** `WO-0081` U16 gives it its own stimulus (`P ∈ {1, 8}`), its own
+   unit and its own content assertions, so its discharge will rest on an
+   adjudicated run rather than on the incidental silence I measured at
+   `J-dv_lead-0177` §9 and refused to count. **Carrier**: `RV-0081-VERDICT`.
+3. **`M04-E2`'s fill is asserted to the end of a one-frame run, never to a
+   following preamble.** The plan's own Stimulus cell for that row is *"(E1's
+   eight members)"*, so the discharge is on the row's own terms — but the
+   stale-lane-on-the-last-gap-word-before-a-preamble shape is genuinely
+   unreachable here. **Carrier**: the two-frame round (`M04-A3`, `M04-A4`,
+   `M04-B3`, family F), named at `WO-0081` §19.2 item 4 so it is carried rather
+   than inferred.
+4. **`BM17` arms on a condition I cannot measure from this seat.** The enumerated
+   allow-list at the head of the spawn prompt is the orchestrator's and I have not
+   read a spawn prompt. The packet therefore asks the worker to report it as a
+   fact and quote its first line. **If the return is silent on §18 item 9, the
+   tripwire is NOT armed** — an unanswered condition is not a satisfied one, and I
+   will rule it that way rather than infer the prompt's content from the
+   orchestrator's stated intent.
+5. **The U13 promotion is a scheduling dependency on the round's own verdict.**
+   Bar `M-2` wants a green `Run tests`, and the first CI run is expected red by
+   design (class **P**). So `RV-0081` cannot ACCEPT until the snapshot is
+   promoted, and the promotion is **mine** (`test/**`), from CI's own diff, in a
+   separate act. Named at `WO-0081` §19.2 item 6; the orchestrator should expect
+   two CI cycles on this round.
+6. **`DVC-1a` still cannot count an M04 row** — three plans now want it, and every
+   M04 figure in this round's packet is a hand count with its method stated.
+   **Mine**, `tools/**`, outside this round's write set, and it should land before
+   any `SO-` quotes an M04 coverage fraction.
+7. **Five harvest candidates banked for the next `SO-`.** (a)–(d) carried
+   unchanged from `J-dv_lead-0175`/`0176`/`0177` (instrument placement over luck;
+   a carrier must name the commissioning act, not the artefact; a re-test proves a
+   fix only if the instrument is measurably unchanged; a debt total carried across
+   rounds drifts and the census of record is a walk). **(e) new, from this round**:
+   *a repair promised in a review verdict is not a repair — it exists when it is
+   in the artefact the next round reads, and until then the next round meets the
+   defect uncured while the record says it was fixed.* LH1 is `WO-0080` rev A →
+   rev B, where six promised repairs were absent and the forced instrument
+   conflict recurred; LH2/LH3 at the next sign-off. The fifth candidate forming at
+   `J-dv_lead-0177` (three rows stating universals over domains their claims could
+   not survive) **now has its fourth instance** — `FINDING WO-0080-4` — and is
+   answered operationally at `WO-0081` §6.0(c) as a round-wide rule rather than as
+   a fourth cure.
+8. **Standing and untouched by this round**: the transmit-side conservation
+   monitor (`AP-M04` §7 `T-2`); machinery **T-7** and `M04-G10`'s two
+   never-measured routes, with §0.2 item 4's REQ-206 bar still in force; the three
+   `BAR T1` work orders; `SO-xgmii_rx_64.md`'s Stage-3 gate table; and the
+   mutation campaign for families D and E, whose PROTOCOL §10 sequencing point is
+   after `RV-0081`'s ACCEPT and before any `SO-` PASS.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md
