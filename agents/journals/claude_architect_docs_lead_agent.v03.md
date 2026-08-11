@@ -961,3 +961,476 @@ itself); the rest carried.
 ### Files-in-this-commit
 
 - docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md
+
+## [J-architect_docs_lead-0037] 2026-08-11T17:05Z | task:none | The gate file that told a packet it was a gate is repaired, and the gate it named as the carrier is written — a checklist whose first section is a promise not to over-reach, and whose authoring produced two findings that reading about the gate could not have
+
+### Trigger
+
+Orchestrator dispatch naming this round as the carrier Amendment A2 committed me
+to: *"the next architect round opening `docs/gates/`, which is the
+`P1-module-ready` checklist round already owed on ledger item 11"* (A2.4, landed
+`85753b6`, in force at `41fead6`). Two owed items, one round, by A2's own
+sentence:
+
+1. **A2.4's five clerical edits to `docs/gates/lessons-harvest-block.md`**, whose
+   text A2.4 fixed and whose landing `SO-xgmii_rx_64.md` §8.R4.3 lists as owed
+   onward: *"line 5 still carries the over-reach at `41fead6`; text fixed at
+   A2.4 … Not mine to stage."*
+2. **`docs/gates/P1-module-ready-checklist.md`**, measured MISSING by my own
+   ledger at `-0035` and again at `-0036` (Evidence 9 there), and named by
+   `SO-xgmii_rx_64.md` §4.10 as the carrier of the first harvest's Part B.
+
+**Abort-first head check, before opening anything.** `git rev-parse HEAD` →
+`2c38307405eac66796a461bf8d7be25f64ab143f`, byte-equal to the dispatched
+spawn-head `2c38307`; `git status --short` empty. No divergence, nothing
+repaired.
+
+**No lessons-harvest note is owed by this round and none is written.** PROTOCOL §7
+and charter §8 attach the obligation to every `SO-` and every phase gate;
+ADR-0018 §3.1 fires `P<n>-module-ready` *"before the checklist's sign-off section
+may be completed"*. **Authoring the checklist is not convening the gate** — its
+sign-off section is written empty and its boxes are written unchecked. Writing a
+note here would be the `-AUD-53` defect (*"work done between triggers is a
+banking, not a discharge, and calling it one makes the next span's start
+ambiguous"*) committed by the seat that wrote A2-D10. My span stays open and
+opens at `-0035`.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` — §3 (all documentation; the DoD
+  template; gate countersignature **at `P<n>-spec-freeze`**, which is the clause
+  that decides §8 of the new file), §5, §6 (traceability-matrix currency before a
+  module's `P<n>-module-ready`), §8.
+- `agents/PROTOCOL.md` — **§7 in full**, the `P<n>-module-ready` row read
+  character by character; the lessons-harvest paragraph; the signature
+  transcription rule; the hardening paragraph. §3 (an `SO-` is a packet and a
+  merge precondition), §6 (write scopes), **§10** (mutation sequencing and the
+  `N/N` sentence, external anchors).
+- `docs/adr/ADR-0018-...md` — **§A2.4 as the source of this round's five edits**,
+  read at the ADR and not from the dispatch; plus §2 (D1–D7), §3.1, §3.2, §4.1,
+  §4.2, §4.3, §4.4, A1.4, A2.2 (the 7/4 partition table), A2-D1 … A2-D12, A2.8's
+  failure modes, A2.9's not-decided list.
+- `docs/gates/lessons-harvest-block.md` **in full, before editing** — the eleven
+  boxes and the four sites A2.4's items touch.
+- `docs/gates/P1-spec-freeze-checklist.md` **in full** — read for **form**: the
+  per-batch record table, the transcribed-signature blocks, the `C-` ledger with
+  a "must land before" column, the Sign-off section. Its ledger discipline is what
+  §9 of the new file copies.
+- `docs/gates/G0-checklist.md` — the other gate form: numbered items with an
+  Owner, a Status and a Signature column, and an explicit Exit line.
+- `agents/handoffs/SO-xgmii_rx_64.md` — §1.4 (`SC-3`, `SC-4`, `SC-5` read back at
+  `41fead6`), §2.1-M, §2.2-M, §2.8-R, §2.9-R2, §2.10, §2.12, §4.10 (the round-4
+  instantiation and its Part B deferral line), §7.2 (the gate ladder), §8.R4,
+  §8.R4.2, §8.R4.3, **§8.R4.4 (the twelve bounds)**. **Read, never written.**
+- `agents/handoffs/HT-01_first-harvest-transit.md` **in full** — the census, the
+  method, §4's pairing rule **and its appended correction**, §5-pre, §5.
+- `docs/federation/outbox/SO-xgmii_rx_64.md` — header, self-containment
+  statement, tier summary.
+- **The shell, read at source rather than through `HT-01`'s summary of it**:
+  `renatom11/generic-agentic-fpga-org` PR #3 (state, base, file count) and
+  `docs/FEDERATION.md` at shell `main` `2ad82c3` — §4 (the landing fence
+  allocates final ids), §7 (records the sponsor does not sign defer their outer
+  hop), §8.1 step 5 (the maintainer closes the PR **with the id-mapping table**),
+  §10 (origin honesty; no privileged lane).
+- `docs/specs/architecture.md` §4 (the twenty-module inventory and the Path
+  legend), `docs/specs/requirements.md` (REQ-003, REQ-004, REQ-006, REQ-903,
+  REQ-904, REQ-905), `docs/specs/traceability.md` (the REQ-903/904 rows and Open
+  dependencies items 1 and 3), and the eight `§11` deferral rows at SPEC-M06,
+  M14, M15, M17, M19 ×2, M20 ×2.
+- `tools/dv_checks.sh` and `tools/check_emitted_verilog.sh` — read to find out
+  whether REQ-903's and REQ-904's commissioned checks exist. **This is where the
+  round's second finding came from.**
+- `tasks/BOARD.md` — the Gates table (two rows: G0 and P1-spec-freeze; no
+  module-ready row) and the current-milestone block. **Read, never written** —
+  orchestrator scope.
+- `agents/journals/claude_architect_docs_lead_agent.v03.md` at HEAD — `-0036`'s
+  restated ledger, for this round's restatement.
+- **Not read**: no RTL beyond `ls libs/hardcaml_ethernet/src/` for the existence
+  column, no `test/**`, no `docs/reports/audit/**`.
+
+### Reasoning
+
+**1. Why the two items belong in one round, beyond A2 having said so.** A2.4's
+carrier sentence is a write-set discipline, not a dependency claim; the
+dependency is real anyway and runs in the direction that matters. The gate file
+instantiates the block. Had I written `P1-module-ready-checklist.md` against the
+unrepaired block, its harvest section would have inherited a template whose line
+5 still told sign-offs they were gates — and the first gate to instantiate it
+would have been the first reader to hit the defect **in a live gate** rather than
+in a packet. The edit had to land first in the same tree, and it did.
+
+**2. The five edits: what "their text fixed here" actually fixes, item by
+item.** A2.4 gives item 1 as a quotation and items 2–5 as **content** — *"gains
+its site qualifier"*, *"takes the qualified id form of A2.6"*, *"splits under two
+sub-headings … with all eleven box texts unchanged"*, *"gain one line"*. So item
+1 is applied verbatim (re-wrapped to the file's line width, which is not a text
+change) and items 2–5 are applied as the sentences A2.4 specifies, with the
+wording mine and stated here to be mine. Two of them needed a decision A2.4 did
+not make, and both are recorded rather than absorbed:
+
+- **Item 2's second half.** The old sentence ended *"the checklist edit is
+  clerical, commits under `Agent: orchestrator`"* — true at a gate and false at
+  an `SO-`, where the packet commits under the signing seat's trailer. The site
+  qualifier the item adds is exactly what makes that half wrong unqualified, so I
+  scoped it (*"the gate-checklist edit commits under `Agent: orchestrator`"*).
+  **Scoping the consequence is inside the item; it is not a sixth edit.**
+- **Item 3's definitions.** *"Takes the qualified id form of A2.6"* is unusable
+  in the block unless the block says what `<seat>` and `<k>` are, so I imported
+  A2-D6(1)'s two clauses — the minting journal chain, and spans rather than
+  notes. Importing the definition of the form the item adopts is inside the item.
+
+**3. The one edit A2.4 did not enumerate, and why I made it anyway.** §3's Yield
+table carried two placeholder rows, `LC-<harvest-tag>-1` and
+`LD-<harvest-tag>-1`. A2.4 item 3 names §1 item 2 and stops. Leaving the
+placeholders would have left **the block's own example rows minting ids A2-D6
+forbids**, in a template whose whole function is to be copied — and A2-D6 governs
+every id minted after A2's commit, which is now. So I propagated item 3 into the
+two placeholder cells and I am naming it as a propagation, not smuggling it in
+as one of the five. The framing I acted on: item 3's subject is the id form the
+file specifies, and the file specifies it in two places; A2.4 named the normative
+one. **If a later reader judges this a sixth edit, the disclosure is here and the
+diff is two cells.**
+
+**4. The one thing I did not adapt, and it is the harder call.** The preamble's
+surviving clause still reads *"every `SO-<module>.md` sign-off section
+instantiates §3's block **verbatim**"*, which under A2-D1 is now qualified — a
+sign-off takes Part A's boxes and the deferral line, not all eleven. A2.4 fixed
+one sentence of that paragraph and not this one. I applied the fixed text and
+left the neighbour, because the replacement sentence lands **immediately after**
+it and spells the qualification out in terms, and because rewriting text an
+amendment deliberately scoped is how a "clerical edit" becomes a second
+amendment nobody voted on. **Carried as ledger item 44** rather than judged
+harmless.
+
+**5. What a `P<n>-module-ready` checklist is actually for, which is not "a list
+of the three clauses".** PROTOCOL §7's row is one sentence with three clauses. If
+that were the whole gate, the file would be nine lines. Reading the record turned
+up three **more** classes of thing already homed at this gate by artefacts that
+are not the constitution:
+
+- **Requirements whose own verification column names the gate** — REQ-903's
+  repository-surface check (*"a mechanical repository check at each module-ready
+  gate, in two parts"*) and REQ-904's traceability currency (*"before its owning
+  module's `P1-module-ready` gate"*). Neither is a §7 clause; both are normative
+  and both are checkable.
+- **Specification deferrals homed here by name** — eight `§11` rows across six
+  specs, each of which says in its own words that its disposition is reviewed at
+  a module's `P1-module-ready`. Those are mine, deferred by me, and a gate that
+  did not carry them would let eight deliberate deferrals expire silently.
+- **The traceability split** — `traceability.md`'s Open dependencies item 3:
+  *"the architect and dv_lead agree the split at the first module-ready gate"*,
+  with the `PARTIAL` question ruled at WO-0079 to be **this gate's** to decide.
+
+So the file has ten sections and not three, and each row cites the artefact that
+created it. **A gate condition nobody wrote down is a gate condition that does
+not bind.**
+
+**6. §0.2 is first on purpose, and it is this file's whole safety property.** The
+instrument I repaired this round failed by extending its source and citing the
+source for the extension. The obvious way for a new gate checklist to repeat that
+is to encounter a place where the record and a clause do not line up and settle
+it in prose — which is cheap, reads as diligence, and is exactly the A2.1 defect.
+So the file opens by binding itself: every condition cites what creates it, it
+adds no condition of its own, and **a mismatch becomes a numbered open item with
+an owner rather than a sentence**. That rule was not decoration; it fired twice
+within the same round (Reasoning 7 and 8), and both times the cheap move was
+available and refused.
+
+**7. First firing — `G-1`, the mutation clause against the measured column.**
+PROTOCOL §7 says *"auditor's seeded mutations **all killed** by the DV suite"*;
+§10 says *"every PASS reports kills **N/N**"*. M03's class-based era, walked
+campaign by campaign in the packet, is **63 sealed / 61 killed / 1 survived / 0
+green-by-blindness / 1 void**. That is not `N/N` on any reading that ignores the
+columns, and the packet is emphatic that folding them is the thing not to do:
+*"collapsing a never-rendered class into 'killed' would overstate coverage and
+into 'survived' would libel a bench that was never given anything to catch."*
+The survivor `G-c4` has its defect **measured dead at a repaired bench** and the
+void `IC-M5` is narrow — unrenderable *at this design*. Two readings are
+genuinely available: that the clause counts renderings and 61/61 of the killable
+set satisfies it, or that a survivor is a survivor whatever later killed its
+defect. **I took neither.** The auditor owns the mutation ledger (PROTOCOL §10),
+so the verdict is the auditor's to write in its own artefact, and if the clause
+itself needs moving that is an amendment. A gate checklist that ruled this in a
+table cell would be deciding a constitutional reading in the file class that has
+already done that once.
+
+**8. Second firing — `G-4(ii)`, and this one is the argument for writing a gate
+checklist before its gate.** REQ-904 makes traceability currency a gate condition
+and commissions *"a script comparing the REQ id set … asserting exact set
+equality, run in CI"*. I went to look for it. `tools/check_emitted_verilog.sh`
+implements **REQ-903's** two parts, is wired into CI at `build` step 9, and even
+carries the sentence *"REQ-903 passes only when this list is empty; that is a
+`P1-module-ready` condition"* — an instrument that knows which gate it serves.
+**REQ-904's script does not exist**, and `traceability.md`'s own REQ-904 row
+records it: an empty `Test(s)` cell, status `OPEN`, naming the commissioned
+script as the thing it waits for. **A gate condition whose check has never run is
+not a satisfied condition**, and nobody would have noticed at gate time, because
+the row would have been read as "REQ-904, continuous in CI" — which is what the
+requirement says and not what the tree contains. Neither of this round's two
+findings came from reasoning about the gate; both came from opening the artefact
+the gate cites.
+
+**9. Part B, and why box 8 and box 9 are two boxes.** The first harvest's
+collation is deferred here by name. Read at source rather than from `HT-01`'s
+summary: the transit is EXECUTED, the export packet is committed at
+`docs/federation/outbox/SO-xgmii_rx_64.md` (commit `7fb2c99`), and the inbox PR
+is **open** — one PR, one file, base `main` `2ad82c3`, never a merge candidate.
+The shell's own law decides what the two boxes can mean:
+
+- **Box 8** — *exactly one commit*. This repo's side is the outbox commit. The
+  shell's side is whatever protocol-conforming commits its maintainer lands,
+  **counted at the shell**, because a foreign PR is never merged there by design.
+- **Box 9** — *`LC-`/`LD-` → `L-` pairs recorded*. `FEDERATION.md` §4 allocates
+  final ids **at the landing fence**, and §8.1 step 5 has the maintainer close
+  the PR *"with the landing commits **and the id-mapping table**"*. **While the
+  PR is open there is no `L-` id in the world to pair to.** `HT-01` §4 already
+  demoted its own `L-H1-` scheme to a local provisional index by appended
+  correction; the box therefore reads the maintainer's returned mapping **and
+  nothing else**, and I wrote that into the box's annotation so that a future
+  collator cannot discharge it against this repo's own index. A2.8's second
+  failure mode is Part B checked with no shell commit linked; a pairing recorded
+  against ids the fence has not allocated is the same defect wearing the other
+  coat.
+
+**10. Two harvests at one gate — A2-D5's first live instance, arriving one gate
+after it was written.** `-0036` noted that the batching clause was *"the one a
+later round would have discovered at the worst moment — the first gate ratifying
+two sign-offs."* It is not two sign-offs, it is a sign-off's harvest plus the
+gate's own, and the clause covers it identically: **two harvests, two shell
+commits, one per harvest, in harvest order**. The file therefore carries harvest
+1 as Part B alone (its Part A was checked at the packet and discharges the
+sign-off) and harvest 2 as all eleven boxes over the gate's own spans, with
+A2-D3's non-inheritance stated between them. The span-opening line is included as
+a **derived aid** with the derivation shown and the authority left where it
+belongs — each seat's own note — because a gate record that hard-codes five
+openings is a gate record that will be stale the first time a seat harvests
+early.
+
+**11. What I refused, and the list is the interesting part of this round.**
+Beyond `G-1`: I did not check a single box or fill a single signature cell —
+every one of them belongs to a seat that cannot stage this file, which is the
+whole reason the transcription rule exists. I did not invent an architect
+signature: PROTOCOL §7 gives me a countersignature at `P<n>-spec-freeze` and none
+here, so §8 says so in terms rather than leaving a blank row a later reader would
+fill in. I did not pair any `LC-` id to any `L-` id. I did not enumerate which
+modules owe an `SO-` — clause (a) is plural and enumerates nothing, M01 is
+types-only and three modules are structural wrappers, and inventing the
+enumeration in a checklist would be the §0.2 violation with a different subject
+(`G-2`). And I did not touch the ADR, the packet, `HT-01`, `PROTOCOL.md` or
+`tasks/BOARD.md` — the board has no `P1-module-ready` row and adding one is the
+orchestrator's act, not mine.
+
+### Actions
+
+1. **Head check** (`git rev-parse HEAD` → `2c38307…`, clean `status --short`)
+   before opening any file.
+2. **Read A2.4 at the ADR** and the four sites it touches in the block, then
+   **applied the five edits** — item 1 verbatim, items 2–5 as A2.4 fixes their
+   content, with the two in-item decisions of Reasoning 2 recorded.
+3. **Propagated item 3 into §3's two Yield-table placeholder ids** and disclosed
+   it as a propagation (Reasoning 3).
+4. **Verified the box count survived the split**: 11 before, 11 after.
+5. **Authored `docs/gates/P1-module-ready-checklist.md`** — ten sections, the
+   per-module record over all twenty, the DV/mutation/stress rows, the mechanical
+   requirement rows, the eight specification deferrals, both harvests, the
+   signature table and an eleven-row open-items ledger.
+6. **Read the shell at source** — PR #3's state and `docs/FEDERATION.md` §4, §7,
+   §8.1, §10 — rather than relying on `HT-01`'s account of them, and wrote box
+   9's annotation from §8.1 step 5's own words.
+7. **Went looking for REQ-903's and REQ-904's commissioned checks in `tools/`**
+   and corrected two cells of my own draft on what I found (Evidence 5).
+8. **Wrote no harvest note** (Trigger), **checked no box**, **filled no
+   signature cell**, and **edited no file outside the dispatched write set**.
+
+### Evidence
+
+All commands run from a repo checkout at `HEAD = 2c38307`, working tree carrying
+only this round's two files plus this journal.
+
+1. **Head check.** `git rev-parse HEAD` →
+   `2c38307405eac66796a461bf8d7be25f64ab143f`; `git status --short` empty before
+   the round; after it, `M docs/gates/lessons-harvest-block.md` and
+   `?? docs/gates/P1-module-ready-checklist.md`.
+2. **The block still has eleven boxes after the split**, which is the property
+   A2.4 item 4 protects (*"all eleven box texts unchanged and in their present
+   order"*):
+   ```
+   $ grep -c '^- \[ \]' docs/gates/lessons-harvest-block.md
+   11
+   ```
+   Seven under `#### Part A — mining`, four under `#### Part B — collation`, in
+   their present order, no wording moved.
+3. **The over-reach is gone from line 5 and PROTOCOL is untouched**:
+   ```
+   $ grep -n "is not passed" agents/PROTOCOL.md docs/gates/lessons-harvest-block.md
+   agents/PROTOCOL.md:291:later project pulls in only if that domain is its own. A gate is not passed
+   docs/gates/lessons-harvest-block.md:5:verbatim, filling the bracketed fields. **A gate is not passed while any box in
+   ```
+   The clause *"and a module sign-off is not complete"* no longer appears in the
+   file; the sign-off's condition is now stated over Part A.
+4. **The new file's fifteen boxes are 4 + 11**, which is the A2-D2/A2-D1
+   arithmetic made checkable:
+   ```
+   $ grep -c '^- \[ \]' docs/gates/P1-module-ready-checklist.md
+   15
+   ```
+   Four are harvest 1's Part B (§7.1); eleven are harvest 2's full instantiation
+   (§7.3). **None is checked.**
+5. **REQ-903's check exists and runs; REQ-904's does not exist.**
+   ```
+   $ grep -rn "REQ-903" tools/check_emitted_verilog.sh | head
+   …  REQ-903  (a) an .mli for every inventory module, M01 INCLUDED
+   …  note "REQ-903 passes only when this list is empty; that is a P1-module-ready condition"
+   $ grep -rln "REQ-904" tools/
+   (no output)
+   ```
+   And `docs/specs/traceability.md`'s REQ-904 row carries an **empty `Test(s)`
+   cell** with status `OPEN`, naming *"the CI set-equality script requirements.md
+   REQ-904's verification column commissions"*. **Both halves are stated because
+   the negative one is the finding.**
+6. **The shell, read at its own head** (`main` `2ad82c3`): PR #3 `state: open`,
+   `merged: false`, `changed_files: 1`, head branch
+   `inbox/agentic-fpga-nic-SO-xgmii_rx_64`. `docs/FEDERATION.md` §8.1 step 5:
+   *"The foreign PR is then closed with a pointer to the landing commits **and
+   the id-mapping table** (`LC-nn → L-Xnn`, `LD-nn → <PREFIX>-nn`)"*. §4: *"the
+   landing fence allocates final ids"*. **Externally verifiable references, not
+   local commands** (PROTOCOL §4.1(b)); the path is `docs/FEDERATION.md`, which
+   `HT-01` cites as `FEDERATION.md`.
+7. **The outbox commit is real and is one commit**:
+   ```
+   $ git show --stat --oneline 7fb2c99 | head -4
+   7fb2c99 FETCH FIRST catches the shell thirty-one commits ahead …
+    agents/handoffs/HT-01_first-harvest-transit.md   |   49 +-
+    agents/journals/claude_orchestrator_agent.v02.md |   46 +
+    docs/federation/outbox/SO-xgmii_rx_64.md         | 2810 ++++++++++++++++++++++
+   ```
+8. **The eight `§11` rows homed at this gate**, counted rather than remembered:
+   `grep -rn "module-ready" docs/specs/modules/` returns thirteen hits, of which
+   **five are REQ-903 coverage rows** (M01, M05, M16, M19, M20) and **eight are
+   `§11` deferral rows** — M06 11.2, M14 11.2, M15 11.2, M17 11.2, M19 11.2,
+   M19 11.3, M20 11.2, M20 11.3.
+9. **REQ-905's stress list is by name and is quoted as such**: *"M03, M06, M08,
+   M10, M14, M17 and M20 … Structural wrappers M05, M16 and M19 are covered by
+   their children's benches unless the wrapper introduces datapath logic of its
+   own, which puts it on the list by spec diff."*
+10. **The board has no `P1-module-ready` row**: `tasks/BOARD.md`'s Gates table
+    holds exactly two rows, `G0` and `P1-spec-freeze`. Recorded because §10 of
+    the new file asks the orchestrator to add one, and the ask should be
+    measured rather than assumed.
+11. **No simulation, no build.** Nothing in this round has an executable artefact;
+    `dune runtest` is not runnable in this container (ADR-0005) and no claim here
+    depends on it. The CI run ids quoted in the new file are **the packet's**,
+    re-read at the packet, not re-triggered.
+
+### Outcome
+
+**DoD vs the dispatch: met, both items.**
+
+1. **A2.4's five edits are applied**, with item 1 verbatim, items 2–5 as A2.4
+   fixes their content, one in-file propagation disclosed (Reasoning 3) and one
+   neighbouring clause deliberately left with its reason (Reasoning 4). The block
+   is no longer stale against its own normative text, and the deference clause
+   that kept A2 usable in the interval is no longer load-bearing.
+2. **`docs/gates/P1-module-ready-checklist.md` exists**, OPEN, carrying: the
+   twenty-module record with one row supplied; the DV rows and the bound-reading
+   rule with M03's twelve bounds dispositioned; the mutation record with its
+   reading question left open; the line-rate stress row; two normative
+   requirement rows and the traceability split; eight specification deferrals;
+   **both harvests, fifteen unchecked boxes**; the signature table; and an
+   eleven-item open-gate ledger.
+
+**Handoff**: to the orchestrator, as collator and as sole committer. Three things
+are its acts and not mine — the harvest tables and every box (A2-D4), every
+signature transcription, and the `tasks/BOARD.md` gate row the new file's §10
+asks for. To dv_lead and the auditor as the seats whose evidence the gate reads:
+`G-1` needs the auditor's verdict and `G-4(ii)` needs a script that lives in
+dv-scoped `tools/`.
+
+**Not claimed**: that any gate condition is satisfied, that the gate is close, or
+that M03's `PASS` does anything beyond supplying that module's DV rows. **One of
+twenty.**
+
+### Open-questions
+
+**New this round.**
+
+- **The propagation at §3's Yield table is disclosed, not authorised.** A2.4
+  enumerated five edits; I made a sixth cell-level change in the same file for
+  the reason at Reasoning 3. **Owner: me. Closes by: a reader accepting it as
+  item 3's completion, or an Amendment A3 sentence saying otherwise.**
+- **`G-1` is the first gate item that may need an amendment rather than a
+  ruling.** If the auditor's verdict cannot settle *"all killed"* against a
+  measured survivor, the clause itself moves, and PROTOCOL §11 is the route.
+  **Owner: auditor, then me for the drafting. Closes by: the verdict, or an
+  ADR.**
+- **REQ-904's commissioned script has never existed and the requirement reads as
+  though it runs continuously.** **Owner: dv_lead (`tools/` is its scope); me for
+  the `WO-` request. Closes by: the script landing green in CI.**
+
+**Carried, restated in full** (candidate 59), **with an owner and a closing event
+on every item** (candidate 93). Compiled from `-0036`'s restatement. **Closures
+this round: two — items 11 and 42**, which are the two the dispatch named, and
+they closed on each other's carrier exactly as A2.4 predicted. Items 13 and 3 are
+re-measured; the rest carried.
+
+| # | Item | Owner | Closes by | State at this round |
+|---|---|---|---|---|
+| 1 | ADR-0017 §8's PROTOCOL diffs unapplied: `R10`/`R11` refuse commits but appear nowhere in the document that claims to list every rule | orchestrator (apply); me (draft, done) | the next orchestrator round transcribing §8's diffs | carried |
+| 2 | PROTOCOL §5's CI paragraph says "R1–R8" while `check_journals.sh` also checks `R9` | orchestrator | same transcription as #1 | carried |
+| 3 | PROTOCOL §11 does not describe the ADR-0016 §8 transcription mechanic | orchestrator | same transcription as #1 | carried; **half of it is now spent** — A2.4 was the first amendment whose owed edit was inside my own scope, and this round executed it without §11 describing the case. The gap is now evidenced, not predicted |
+| 4 | ADR-0017 §4.4 owes a fifth step: the rotating entry restates any running carry-forward (candidate 59's rule) | me | an ADR-0017 amendment, or a deliberate decision to leave it to practice | carried, practised three times |
+| 5 | ADR-0018 §4.3's `LC-`/`LD-` ids have no per-miner namespace | me | an ADR-0018 amendment, or the collator ruling a scheme | CLOSED at `-0036`; **the block now carries the qualified form** (edit 3), so the codification has reached the instrument a miner actually reads |
+| 6 | `R-SEAL-2` drafted and unproposed | me | a round that proposes it | carried |
+| 7 | ADR-0016 §7.2's immutability question, unanswered for the **active** volume | me | an ADR amendment or an explicit decision that R3 + history suffices | carried |
+| 8 | ADR-0019 is PROPOSED, not accepted; its §7 diffs are orchestrator-scope | orchestrator | acceptance or rejection | carried; cited in the new file's §3 for the transient-branch mechanic |
+| 9 | `agents/journals/INDEX.md` stale at `J-orchestrator-0012`, silent on volumes, records me as "Not yet activated" | orchestrator | a gate-boundary refresh (PROTOCOL §9) | carried; **a gate boundary is now in sight**, which is the event PROTOCOL §9 names |
+| 10 | No owner for rotating a **shared worker-template** journal | orchestrator | a ruling, or an ADR-0017 clause | carried, overtaken |
+| 11 | `docs/gates/P1-module-ready-checklist.md` does not exist | orchestrator (file); me (content) | the checklist landing before the gate convenes | **CLOSED this round** — the file exists, OPEN, ahead of the gate. Its own eleven `G-` items are the gate's ledger and are not carried here |
+| 12 | `P1-spec-freeze-checklist.md`'s ledger `C-7` ordinal | me | the next round opening that checklist | carried — this round opened `docs/gates/` but not that file |
+| 13 | `lessons-harvest-block.md` instantiation per gate | orchestrator | the first gate to instantiate it | carried, **and the instantiation now exists to be filled**: two of them, in the new file's §7.1 and §7.3, with every cell empty and every box unchecked |
+| 14 | `C-5`'s §0.6 repair: vacuity case and the `-0021` case are **different** dispositions | me | any WO next opening `requirements.md` §0.6; owes dv's countersignature | carried, half-repaired at `-0023` |
+| 15 | "Last octet" received-versus-delivered undecided programme-wide (§0.6) | me | a ruling in `requirements.md` §0.6 | carried |
+| 16 | Three handoff packets restate "four classes" | me | a packet-text round | carried |
+| 17 | M03 has no §11 item tracking REQ-901 (e)/(f) to the first co-simulation run | me | the round that opens SPEC-M03 §11 | carried |
+| 18 | REQ-901's configuration clause names three transmit-only parameters | me | a `requirements.md` round | carried |
+| 19 | The reference's disposition of a sub-5-octet frame | dv_lead (measurement); me (ruling) | a co-simulation round that measures it | carried |
+| 20 | The (e)/(f) reading should run over every error class families E–H assert, before Phase 3 is scoped | me, with dv | a scoping round before Phase 3 | carried |
+| 21 | `R-CI-4`'s gate-removal owner | orchestrator | naming the owner | carried |
+| 22 | The M03 RTL non-conformance against §9 ruling 9 | rtl_lead (fix); dv_lead (bug) | a `BUG-` round | carried; **all three landed `BUG-` packets are CLOSED**, so this one has no open sibling to ride |
+| 23 | SPEC-M03 §6.1 item 4 unscoped; §9's "Aborted-and-forwarded" paragraph out of table order; `ifc_check.ml`'s stale note | me (first two); orchestrator (third) | the next round opening each file | carried |
+| 24 | Requirements ledger open: `C-45`, `C-36`, ADR-0012's residual, REQ-007 at two modules, `C-38`, the `DRAFT` header, `C-2`, `C-3`, `C-5`, `C-7`, `C-9`'s REQ-903 half, `C-32`, `C-33`, `C-44` | me | each closes on the round that opens its clause | carried whole; the new file's `G-3` reads the open set at gate time without re-homing a row |
+| 25 | Two re-countersignatures and one concurrence owed at `J-architect_docs_lead-0013`'s SHA | dv_lead | dv countersigning | carried |
+| 26 | The M03-G6 window bound is looser than `-0021`'s ruling | me | reading whether dv tightened G6's window | carried, still unchecked |
+| 27 | dv's re-countersignature owed on the §0.6 diff (`-0023`) | dv_lead | dv countersigning | carried |
+| 28 | dv's re-countersignature owed on the §0.5 + REQ-016 diff (`-0024`) | dv_lead | dv countersigning | carried |
+| 29 | Three module specs owe the same repair, named in §13's row (`-0024`) | me | a batch round over the three | carried |
+| 30 | `AP-xgmii_rx_64.md` §4.I's M03-I4/M03-I5 cells are dv's to edit; joined by `FINDING SO-1-A`'s §6 repair | dv_lead | dv's next plan round | carried |
+| 31 | The design consequence owed as a work order, not absorbed (`-0025`) | me (WO); orchestrator (dispatch) | the WO issuing | carried |
+| 32 | `BUG-0002` cannot close on the `-0025` ruling; M03-I4/I6 remain red | dv_lead | a bug round | carried — the packet reads CLOSED with a stated carve-out, which is what this row tracks |
+| 33 | Option 2 (narrowing REQ-016 at an XGMII port) remains available only as **E2** | orchestrator → sponsor | an E2 escalation, or the option lapsing | carried; still the only E2 on this ledger |
+| 34 | `FINDING CSG-1`'s class request: four cases, three outcomes | dv_lead (carrier); me (class) | the round that lifts `FI-4`/`FI-6` | carried, still unscheduled |
+| 35 | Two of my `-0033` repairs correct dv's finding rather than my own text and dv has not seen them | dv_lead | dv reading them, disputing or not | carried |
+| 36 | The `-0032` countersignature is owed; that diff is not in force until it lands | dv_lead | dv countersigning | carried |
+| 37 | The REQ-110 delivered-octets case has no class and now has a stimulus bar (`-0032`) | me (class); dv (stimulus) | a class ruling | carried |
+| 38 | `WO-0063` phase B's disclosure axis (`-0030`) | dv_lead | that phase closing | carried |
+| 39 | Whether any Phase-1 module other than M03 needs the `-0031` treatment | me | a survey round | carried |
+| 40 | The nine role-rewrites are the weakest part of `-0034`'s nil-domain declaration | auditor (sampling) | an auditor finding, or the collator accepting the tier | carried; the transit's hide test passed them at the source, and the shell's own screens re-run it |
+| 41 | `-0030`'s stated interval is corrected but not retracted | me | nothing repairs it; the correcting notes are the only remedy | carried; A2-D10 makes the correction structural |
+| 42 | A2.4's five clerical edits to `docs/gates/lessons-harvest-block.md` are owed; A2 is in force ahead of them via the block's own deference clause | me | the next round opening `docs/gates/` (item 11's carrier) | **CLOSED this round** — five applied, one propagation disclosed, one neighbour deliberately left (item 44) |
+| 43 | A2 binds without countersignature; a contest by any seat is carried to an Amendment A3 | any contesting seat; me for drafting | the re-verdict reading `SC-12` against A2 without contest, or an A3 landing | **half spent** — the re-verdict read `SC-12` against A2 and returned `PASS` without contest (`J-dv_lead-0168`). The route stays open for the orchestrator and the auditor, neither of which has read A2 against its own practice yet |
+| 44 | The block's preamble still says an `SO-` instantiates §3's block *"verbatim"*, which A2-D1 qualifies; A2.4 fixed the following sentence and not this one | me | the next round opening the block, or an explicit judgement that the following sentence qualifies it | **new this round** |
+| 45 | The `P1-module-ready` checklist opens its own ledger, `G-1 … G-11`; five rows are mine (`G-2` the `SO-`-owing enumeration, `G-3` the spec-freeze residue, `G-4(i)` the matrix, `G-10` the anchor reading, `G-11` the §1.1 tightening) | me for those five; the file names the others' owners | each `G-` row's own closing event | **new this round** |
+| 46 | REQ-904's commissioned CI set-equality script does not exist, while the requirement reads as though it runs continuously | dv_lead (`tools/` scope); me for the `WO-` request | the script landing green | **new this round**, measured at Evidence 5 |
+
+- **No escalation.** Every question in this round was decidable in-role: applying
+  fixed amendment text to my own file, and authoring a checklist in my own write
+  scope. The two questions that were **not** decidable in-role were left as gate
+  items with owners rather than decided (`G-1`, `G-4(ii)`) — which is §0.2 of the
+  new file working on its first day. Item 33 remains the only E2 on this ledger
+  and nothing here touches it. **Charter §7's E5 is not triggered**: no lead
+  disputed anything.
+
+### Files-in-this-commit
+
+- docs/gates/lessons-harvest-block.md
+- docs/gates/P1-module-ready-checklist.md

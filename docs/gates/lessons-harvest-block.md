@@ -2,9 +2,12 @@
 
 **Reusable — this file is a template, not a gate.** Every phase-gate checklist in
 `docs/gates/` and every `SO-<module>.md` sign-off section instantiates §3's block
-verbatim, filling the bracketed fields. **A gate is not passed, and a module
-sign-off is not complete, while any box in the instantiated block is unchecked**
-(PROTOCOL §7).
+verbatim, filling the bracketed fields. **A gate is not passed while any box in
+the instantiated block is unchecked** (PROTOCOL §7). **A module sign-off
+instantiates Part A only** — the seven mining boxes — **and is not complete while
+any of them is unchecked**; Part B's four collation boxes are the collator's acts
+at the gate that ratifies the harvest, and appear in an `SO-` as a named deferral
+line, never as boxes (ADR-0018 §A2.2).
 
 Nothing here is signed. This file never records a harvest; instantiations do.
 
@@ -15,19 +18,24 @@ Nothing here is signed. This file never records a harvest; instantiations do.
 1. Copy §3's fenced block into the gate checklist (or the `SO-` packet's sign-off
    section) under the heading `## Lessons harvest — <gate or SO- tag>`.
 2. Replace `<harvest-tag>` with the gate name (`P1-module-ready`) or
-   `SO-<module>`. It becomes the prefix of every candidate id minted this round:
-   `LC-<harvest-tag>-<n>` for a **general** candidate (tier 1) and
-   `LD-<harvest-tag>-<n>` for a **domain** candidate (tier 2). The two sequences
-   number **independently**, so a regrade before the note is written does not
-   renumber a candidate's neighbours. Ids are never reused (ADR-0018 §A1.4).
+   `SO-<module>`. **The tag names the harvest in the row; it is not part of a
+   candidate id.** Every candidate minted this round carries a **seat-qualified**
+   id: `LC-<seat>-H<k>-<n>` for a **general** candidate (tier 1) and
+   `LD-<seat>-H<k>-<n>` for a **domain** candidate (tier 2), where `<seat>` is the
+   minting journal chain and `<k>` counts that chain's own harvest **spans**. The
+   two sequences number **independently**, so a regrade before the note is written
+   does not renumber a candidate's neighbours. Ids are never reused, and no landed
+   id is renumbered (ADR-0018 §A1.4, §A2.6 — A2-D6, A2-D7).
 3. One row of the span table per agent holding a persistent journal chain —
    today: `architect_docs_lead`, `rtl_lead`, `dv_lead`, `auditor`, `orchestrator`.
    Add a row for any persistent journal that exists at the time of the harvest
    (e.g. `rtl_lead_md` once activated).
-4. The orchestrator fills the table from each agent's harvest note and checks the
-   boxes. **Every cell's authority is the cited `J-<agent>-NNNN` entry** — the
-   checklist edit is clerical, commits under `Agent: orchestrator`, and is the
-   same transcription rule PROTOCOL §7 already uses for signatures.
+4. **At a gate the orchestrator** fills the table from each agent's harvest note
+   and checks the boxes; **at an `SO-` the round that signs the packet does**
+   (A2-D4). **Every cell's authority is the cited `J-<agent>-NNNN` entry at both
+   sites** — the transcription is clerical at either site, the gate-checklist edit
+   commits under `Agent: orchestrator`, and it is the same transcription rule
+   PROTOCOL §7 already uses for signatures.
 5. Delete no rows. An agent with nothing to report gets a row reading `nil` with
    its span interval — a nil yield is declared, never omitted (ADR-0018 D4).
 
@@ -111,8 +119,8 @@ the named pack. The two prefixes number independently.
 
 | id | Rule statement (one line) | Grade | Domain pack | Mined by | Note entry | LH1 provenance | Disposition |
 |---|---|---|---|---|---|---|---|
-| LC-<harvest-tag>-1 | | LH2-g | — | | J-…-NNNN | `<sha>` | transcribed as `L-…` / sponsor-refused |
-| LD-<harvest-tag>-1 | | LH2-d | `<pack-slug>` | | J-…-NNNN | `<sha>` | transcribed as `L-…` in pack / sponsor-refused |
+| LC-<seat>-H<k>-1 | | LH2-g | — | | J-…-NNNN | `<sha>` | transcribed as `L-…` / sponsor-refused |
+| LD-<seat>-H<k>-1 | | LH2-d | `<pack-slug>` | | J-…-NNNN | `<sha>` | transcribed as `L-…` in pack / sponsor-refused |
 
 ### Tier 3 — war stories and local accretions (not transcribed to the shell)
 
@@ -121,6 +129,8 @@ the named pack. The two prefixes number independently.
 | | | LH1 / LH2-g+LH2-d / LH3 / step 2 / step 3 / step 4 | | war story (kept, re-offerable) / local accretion → `<ADR / C-row / R-rule / spec clause>` |
 
 ### Checklist
+
+#### Part A — mining (carried by a sign-off **and** by a gate)
 
 - [ ] **Every persistent-journal agent has a row above**, and every span tiles
       with that agent's previous harvest — no gap, no overlap. (First harvest:
@@ -142,6 +152,9 @@ the named pack. The two prefixes number independently.
 - [ ] **No candidate was edited in transcription.** A defective statement is
       bounced to its author, never rewritten by the collator. (Normalising a
       *pack name* is metadata, permitted, and noted on the line above.)
+
+#### Part B — collation (a gate)
+
 - [ ] **Shell transcription: exactly one commit**, containing the admissible
       candidates — general and domain — with permalinked provenance, and nothing
       else. Commit: `<link>`
@@ -150,6 +163,14 @@ the named pack. The two prefixes number independently.
 - [ ] **Sponsor-visible**: the harvest table and the shell diff were surfaced at
       this gate. Refusals, if any, are recorded as `sponsor-refused` above.
 - [ ] **Harvest declared complete** by the orchestrator: `J-orchestrator-NNNN`.
+
+**In an `SO-` instantiation Part B's four boxes are not rendered as boxes** —
+this line stands in their place, and it names the gate that owes them (A2-D1):
+
+> **Part B — collation, deferred to `<gate>`.** Shell transcription, the
+> `LC-`/`LD-` → `L-` pairing, sponsor visibility and the completeness declaration
+> are the collator's acts at the gate that ratifies this harvest (ADR-0018 §4.2,
+> §4.4, D6; A2.2).
 ```
 
 ---
@@ -159,6 +180,11 @@ the named pack. The two prefixes number independently.
 - **"Harvest" alone means something else in this repo** — a mutation-campaign or
   promotion-block harvest. Always write **lessons harvest** in the new sense
   (ADR-0018 §7.5).
+- **An `SO-`'s Part A check does not discharge the gate's** (A2-D3). A gate's
+  harvest is a different trigger over different spans, so a gate re-checks Part A
+  over its **own** spans and inherits no box from a sign-off — and **several
+  harvests ratified at one gate are transcribed as several shell commits, one per
+  harvest, in harvest order**, never one commit per gate (A2-D5).
 - **You are not the selector.** Collation is clerical: you may bounce a candidate
   to its author for a defective statement, and you may not improve one. A collator
   who edits statements shapes the shell without any note showing it.
