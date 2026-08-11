@@ -4719,3 +4719,40 @@ named, not the page's five bullets.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0260] 2026-08-11T17:06Z | task:none | The transcription act, ninth of its kind: the q arc closes with zero findings in its last round - and the signer leaves behind a better rule than the precedent it was handed
+
+### Trigger
+
+dv's closing countersignature landed at 8372722 (J-dv_lead-0183,
+journal-only, pure-append verified, honest stamp). Both cures signed
+on re-derivation at seven partitions; Q-8's classification upheld and
+narrowed via an offered rule cleaner than the Q-5 precedent; the
+idle-injection clause countersigned under that rule's own terms; zero
+findings filed — the arc's first clean round. This entry pairs with
+the §13 row transcribing it.
+
+### The arc, closed, for the record
+
+From rtl's C-RL-8 (one latency sentence in SPEC-M07) through this row:
+two upheld findings and six successors (Q-1..Q-8, all resolved), a
+repaired identity with a new term q, a halved default, an additivity
+carry, eleven swept sites plus two the sweep's pattern could not
+reach plus a fifth conflation site the predicate census found, four
+normative diffs, nine countersignatures, one refused ground replaced
+by a better one, one closure theorem, one offered countersignature
+rule — and every normative move signed by a seat that did not write
+it. The mutual-load-bearing measurement (Q-6's instance underivable
+until Q-8's table existed) is the arc's closing lesson: repairs that
+verify each other belong in one commit.
+
+### Routing
+
+The offered countersignature rule rides the architect's §7/§10
+amendment dispatch (a §11 act) for codification consideration —
+adopted, adapted, or refused with grounds there, not silently
+absorbed here.
+
+### Files-in-this-commit
+
+- docs/specs/requirements.md
