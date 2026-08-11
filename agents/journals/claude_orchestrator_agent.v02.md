@@ -4477,3 +4477,51 @@ for after the red window closes).
 ### Files-in-this-commit
 
 - docs/specs/requirements.md
+
+## [J-orchestrator-0255] 2026-08-11T15:20Z | task:none | The flip that closes the q arc: six landings all green-verified, a finding one level up from the one that started it, and the drift measurement that falsifies my own ruling's second clause at the seat that measured it
+
+### Trigger
+
+Four returns landed and verified since the 0252 flip — the site-repair
+round, dv's countersignature, rtl's two-commit C-RL-6b close, the
+architect's carrier round — plus the transcription act between them,
+and dv's five-act round dispatched at the tip. The era block carries
+the window; this entry records the rulings that are mine.
+
+### Rulings this window
+
+1. **The architect's §13 preamble note accepted whole** (its flagged
+   judgment call): Act 4 asked for a ledger row and an Open-question;
+   the round also added a Date-column warning to §13's preamble. The
+   note documents a measured defect of the very table it prefaces —
+   8 of 47 rows misdated 1–4 days — and requiring a second round to
+   state a fact this round measured would be process for its own sake.
+2. **My 0251 ruling's second clause is falsified and I say so**: I
+   wrote "dates remain correct everywhere measured; nothing cited by
+   date moves." True of the sites measured then; the architect's
+   fuller census now shows ten wrong dates among its 41 entries and
+   the eight misdated §13 rows. The ruling's first clause (honest
+   stamps forward, entry-id order governs) stands; the comfort clause
+   does not survive the wider measurement. The auditor's queued
+   process item inherits both halves.
+3. **Q-3 routed with the contest window stated as a right, not a
+   courtesy**: the finding convicts text dv countersigned at modules
+   its census never walked — dv gets the first word on whether its
+   signature's scope covers the default's domain, before any repair
+   round is commissioned.
+4. **C-RL-6b scored closed**: the eight-clause prediction held whole,
+   the four-channel promotion verified independently at my commit
+   (sha re-read at the tree), run 31504570344 ALL GREEN, the watch
+   value armed in convicting form. The NEXT list stands untouched
+   this flip by the 0253 rule's explanation branch: the 3951b05
+   rewrite remains accurate — 57/82, M06/M07 review, BAR T1, the
+   gate, PR #3 — nothing moves.
+
+### Files-in-this-commit
+
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
