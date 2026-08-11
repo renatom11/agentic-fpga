@@ -19,6 +19,13 @@
   unchanged and §8's verdict is still UNSET.** What round 1 paid are §3 ledger
   items — carriers — and **a carrier payment adjudicates no criterion of §1**.
   The execution record is §3.0.
+- **Execution — round 1R (repair)**: `J-dv_lead-0164`, base `ee3da9c`. Round 1's
+  `RN-6` check reached a runner and **failed** — `build` run `31442295998`,
+  4 UNDECLARED broken citations, all citing `docs/reports/latency/`, this packet
+  among the four citers. **The catch was a true positive AND the instrument was
+  measuring the filesystem instead of the tracked tree.** Both repaired: §3.0.1
+  records the round, §3.2.1 the resolver, the four dispositions and the evidence.
+  **Not a §7.1 step; no ledger item moves; State stays DRAFT and §8 stays UNSET.**
 - **Signed**: *(unsigned — the executing round signs `J-dv_lead-NNNN` here)*
 
 ---
@@ -480,6 +487,41 @@ it named*** and its residual limb is a separate question; §3.9 is **RE-MEASURE 
 9**, not corrected here, because rewriting a standing set from one spot-check is the
 defect this packet convicts elsewhere.
 
+#### 3.0.1 EXECUTION RECORD — round 1R: the round-1 payment reddened CI, and the red was RIGHT (`J-dv_lead-0164`, base `ee3da9c`)
+
+**Not a step of §7.1. A repair round, opened by the runner's verdict on ledger item 2.**
+`RN-6`'s check reached a runner for the first time at `build` run **`31442295998`**,
+step *"DV mechanical checks"*, and **FAILED**: **4 UNDECLARED broken citations**, all
+four citing `docs/reports/latency/` — **this packet**, `WO-0003_testability-findings.md`,
+`WO-0015_batch-d-countersign.md`, `WO-0018_batch-de-countersign.md`. The same command
+at the same commit in the development container reported **0**. Both numbers were true
+about the tree they measured; only one was true about the **artefact**.
+
+**Two findings, both against me, and both paid here.**
+
+| id | finding | disposition |
+|---|---|---|
+| **`FINDING RN-6-CI-1`** | **The catch is a TRUE POSITIVE.** `docs/reports/latency/` existed in the container as an **empty, untracked** directory (`git ls-files docs/reports/latency` → **0** entries). Git cannot track an empty directory, so the path is absent from **every fresh clone**, and the four citations were broken for every reader who was not sitting in that one container | **ONE TRACKED FILE, NOT FOUR ERRATA** — `docs/reports/latency/README.md`. §3.2's ruling |
+| **`FINDING RN-6-CI-2`** | **The instrument resolved against the FILESYSTEM where the honest test is the TRACKED TREE.** A `-e` test answers a question about the machine the check runs on; the thing the check governs is committed text. **Same species as this programme's circular-pin lesson**: a check that measures the environment it runs in rather than the artefact it governs can be green for a reason that ships with nothing — and its symptom is never a wrong answer, it is a **local/CI divergence** that stays invisible until the day the two environments differ | **RESOLVER REBUILT ON `git ls-files`.** §3.2's `REPAIRED` block |
+
+**Consequence for `SC-13`, stated because it is a criterion this packet is graded by.**
+SC-13 requires every command in the evidence sections to run **from a clean checkout at
+the sign-off SHA**. Run `31442295998` is the proof that `tools/dv_checks.sh` did *not*
+satisfy that at the round-1 SHA: the local answer and the runner answer differed by
+four. It does now, and §3.2 records **how that was verified rather than asserted** — a
+fresh checkout was constructed and the check was run inside it.
+
+**This packet's own citation is REPAIRED, not dispositioned, and the distinction is
+`SC-10`'s.** The `SO-` is one of the four citers. An erratum would have recorded its
+citation of `docs/reports/latency/` as **permanently broken** inside the same document
+that demands every set claim carry provenance — a sign-off packet shipping a
+declared-broken citation of its own. It resolves instead, against the tracked tree, at
+the commit that carries this round.
+
+**Ledger state unchanged: items 3, 4, 6, 7, 8, 9, 11 and 12 remain OWED to round 2.**
+No criterion of §1 is adjudicated here, no bar lifted, no count asserted, no anchor
+claimed, no harvest taken. **State stays DRAFT and §8 stays UNSET.**
+
 ### 3.1 `FINDING K-1` — the repair, and why its position in the round is load-bearing
 
 **The defect**: `WO-0072` §9 fixes three *distinct* dispositions (D1, D2, D3) with three
@@ -534,6 +576,102 @@ figure from a tool that no longer exists at the sign-off SHA.
 packet records what it found, and each unresolved citation is dispositioned (repair in
 scope, or a finding with a carrier). **A check whose first run is green tells you
 nothing about the check** — `FINDING K-3`'s rule, applied to its author's own new bar.
+
+#### 3.2.1 REPAIRED at round 1R — the first CI run caught something real, through an instrument that was itself wrong
+
+The paragraph above expected failures on first run and got four. **It did not expect the
+instrument to be wrong at the same time, and it was.** Run `31442295998`; §3.0.1 states
+the two findings; this block states the repair, the four dispositions and the evidence.
+
+**(1) THE RESOLVER REPAIR — the citation resolver measures the TRACKED TREE.**
+
+The resolver no longer asks the filesystem anything. Its universe is what **git can
+carry in a commit**, built in two forms, and every classification — exact path,
+directory, unique-id prefix, ambiguous prefix — is a pure function over that list:
+
+| universe | built from | used for |
+|---|---|---|
+| **TRACKED** | `git ls-files --cached` | in a clean tree this **is** HEAD's tree, which is exactly what a fresh checkout materialises — so this half reproduces the runner's answer from any machine |
+| **COMMITTABLE** | TRACKED + `git ls-files --others --exclude-standard` | what the check **gates on**, because a round that repairs a citation writes the target file *before* the orchestrator commits it, and gating on TRACKED alone would redden every repair round for having done the repair |
+
+**Neither universe can contain an empty directory** — `--cached` lists blobs,
+`--others` lists files. **The defect that reddened `31442295998` is no longer
+expressible, in either environment, by construction.** A directory citation resolves
+iff something git carries lives under it, which is precisely the condition under which
+a checkout creates that directory. The **citing** side is enumerated from git too, so a
+stray or ignored `.md` in `agents/handoffs/` cannot inject a citation CI will never see.
+
+**The residual gap is printed rather than papered over.** A citation resolving *only*
+through the COMMITTABLE half is reported `PENDING-COMMIT` with its path: it resolves on
+the runner **iff** that path is in the round's commit. It is a notice, not a failure —
+but it is **computed every run**, so unlike a declared exception it cannot rot, and it
+names the one remaining way a local green can differ from a runner green.
+
+**(2) THE FOUR DISPOSITIONS — one tracked file, zero errata.**
+
+All four citations name the **space**, not a document: a write-scope directory
+`PROTOCOL` §6 and charter §1 both name, which had no tracked content and therefore no
+existence in any clone. **None is the `RN-6` defect** (a pointer to a document living
+under another name), so none is an erratum of that class.
+
+| citer | what it cites the space for | disposition |
+|---|---|---|
+| `agents/handoffs/WO-0003_testability-findings.md` | REQ-806's split of duties — dv produces and commits the numbers here, the architect transcribes them | **RESOLVES** |
+| `agents/handoffs/WO-0015_batch-d-countersign.md` | carry-forward **C-23**'s gate: *before any `docs/reports/latency/` artifact quotes* REQ-502's figure | **RESOLVES** |
+| `agents/handoffs/WO-0018_batch-de-countersign.md` | carry-forward **C-24**, C-23's sequel, same gate | **RESOLVES** |
+| `agents/handoffs/SO-xgmii_rx_64.md` (**this packet**) | §7.1's write scope; §7.2's `P1-phase-accept` ladder | **RESOLVES** |
+
+All four are made to resolve **truthfully** by one committed file,
+`docs/reports/latency/README.md`, which states the space's purpose, its owner, that
+**no latency report has yet been written**, and where latency figures live today: the
+REQ-005 per-octet constancy asserted inside the **REQ-004 line-rate stress rows**
+(`AP-M03` §4.L — `M03-L2`, `M03-L3`, `M03-L5`) and the REQ-019 ΔC arithmetic done on the
+specifications at `P1-spec-freeze`. **REQ-006's end-to-end budget is a different
+quantity and no bench has produced it.** The README lists the four citers' obligations
+so the first report's author inherits them, and **quotes no latency figure at all** —
+C-23 and C-24 gate on the first artefact there that quotes REQ-502's number, and a
+README quoting one would discharge neither and trip both.
+
+**Why not four errata**, since the errata table exists and would have been cheaper: an
+erratum declares a citation *permanently broken by ruling*, and this one is **repairable
+by a file inside my own write scope**. Worse, it would rot on a schedule already fixed —
+`P1-phase-accept` requires a latency report **committed under this exact path**, so the
+moment that report lands, four declared errata stop firing and this same check reddens
+on **staleness**. A disposition whose expiry is already on the gate ladder is not a
+disposition. And the fourth citer is this packet, whose `SC-10` forbids exactly that.
+
+**(3) THE PROVENANCE, UPDATED WITH THE COUNTS IT PRINTS.** The census block now prints
+the universe it measured — tracked-path count, uncommitted-path count — above the
+citation counts, plus a `PENDING-COMMIT` line and a closing sentence stating whether
+this run's counts *are* a fresh clone's counts or are conditional on the commit. **Every
+`SC-1`/`SC-10` census quote at step 6 is taken from THIS script**, unchanged in that
+ordering.
+
+**(4) EVIDENCE — the local/CI divergence closed, verified rather than asserted.**
+
+Counts are quoted in the block's own printed order — *total / OK / GLOB / PREFIX /
+errata / UNDECLARED-BROKEN / STALE*.
+
+| # | what was run | result |
+|---|---|---|
+| 1 | repaired check, **locally, on the tree exactly as `31442295998` saw it** | **302 / 289 / 0 / 5 / 4 / 4 / 0** — *character-for-character the counts that run printed.* The divergence is closed at its source: the same command now gives the runner's answer inside the container |
+| 2 | repaired check, locally, at this round's final content | **304 / 295 / 0 / 5 / 4 / 0 / 0**, exit 0, **6 `PENDING-COMMIT`**, each naming `docs/reports/latency/README.md` as its condition |
+| 3 | **a fresh checkout, constructed**: `git archive HEAD \| tar -x` (which contains **no `docs/reports/latency/` at all** — the root cause, shown rather than argued), this round's three payments applied and made tracked, check re-run inside it | **304 / 295 / 0 / 5 / 4 / 0 / 0**, exit 0, **0 `PENDING-COMMIT`** — *citation counts identical to run 2* |
+| 4 | **NEGCTL C** — the CI condition rebuilt at that same content: README removed from git **and** from disk, the empty directory left present on disk | **6 UNDECLARED BROKEN**, FAILED. The repaired instrument still catches the true positive, in the exact shape the runner saw it, and is **not** fooled by the directory being on disk |
+| 5 | **NEGCTL A** — one declared erratum entry deleted | 3 errata, **1 UNDECLARED BROKEN**, FAILED |
+| 6 | **NEGCTL B** — a declared key that can never fire | **1 STALE ERRATUM**, FAILED |
+| 7 | self-test | **21 assertions**, in two halves. The second half runs in a **throwaway git repository**: the empty directory is built on disk, a filesystem resolver is *shown* to answer "exists" for it, and the check is then required to answer MISSING — a control that fails the moment anybody reintroduces a `-e` |
+| 8 | `bash -n tools/dv_checks.sh`; `shellcheck tools/dv_checks.sh` | clean; **exit 0**, matching the file's pre-round baseline |
+
+**The `+2` between run 1's total and run 2's is this round's own text** and is stated
+rather than left as drift: §3.0.1 and §3.2.1 introduce two new `docs/**` citations,
+`docs/reports/latency` and `docs/reports/latency/README.md`, **both of which resolve**.
+The 302 in run 1 is the figure comparable to `31442295998`; **304 is the figure at the
+sign-off SHA**, and step 6's census quotes are taken there, not here.
+
+Runs 2 and 3 answer *"does a local run now report what a fresh checkout reports"* — they
+agree — and run 4 is the proof that the agreement is not vacuous. Run 3 is also the
+form `SC-13` asks for: a command executed from a checkout rather than from a container.
 
 ### 3.3 `FINDING RV-0078-S2-2` — the per-class absolute/agreement accounting
 
@@ -1159,5 +1297,6 @@ writes one token in this section and signs it with its journal entry.**
 
 | date | change | by |
 |---|---|---|
+| 2026-08-10 | **EXECUTION ROUND 1R — the round-1 payment's own CI verdict, and its repair, at base `ee3da9c`.** `RN-6`'s check failed its first runner execution (`build` `31442295998`): 4 UNDECLARED broken citations, all citing `docs/reports/latency/`, **this packet among the four citers**, against 0 locally. **Two findings, both mine, both paid**: `FINDING RN-6-CI-1` — the catch is a TRUE POSITIVE, the directory existed only as an empty untracked directory that git cannot carry, so the path is absent from every fresh clone; `FINDING RN-6-CI-2` — the resolver measured the FILESYSTEM where the honest test is the TRACKED TREE. Repairs: the resolver is rebuilt on `git ls-files` over two universes (tracked / committable), neither of which can contain an empty directory, with `PENDING-COMMIT` printed for a citation resolving only through an uncommitted path; the four citations are dispositioned as **one tracked file, zero errata** (`docs/reports/latency/README.md`), so this packet's own citation ends the round RESOLVING rather than declared-broken (`SC-10`). Header gains an Execution bullet; §3.0.1 records the round; §3.2.1 carries the repair, the dispositions and seven evidence rows including a constructed fresh checkout and three negative controls. **No §7.1 step executed, no ledger item moved, State still DRAFT, §8 still UNSET, no criterion of §1 adjudicated.** | dv_lead, `J-dv_lead-0164` |
 | 2026-08-10 | **EXECUTION ROUND 1 — §7.1 steps 1–5, at base `4e7331b`.** Header gains an Execution bullet; §3.0 records the four ledger items paid (`FINDING K-1`'s message repair in `test_m03_k.ml`; `RN-6`'s gating `docs/**` resolve-check in `tools/dv_checks.sh`, with a self-test, a declared-errata table and a staleness guard; `FINDING RV-0078-S2-11` ruled and executed; `U-1`/`U-2` answered) and raises one finding against this packet's own §3.9 — `FINDING RV-0075-1` is listed as standing and is CLOSED. §3.5 and §3.8 gain their `RULED` blocks: the comparator is opened and prints the agreed values on the passing path; the `U-1`/`U-2` pricing is refused with a price, a bound and a three-trigger expiry. **State still DRAFT, §8 still UNSET, no criterion of §1 adjudicated, no bar lifted, no count asserted, no harvest taken.** | dv_lead, `J-dv_lead-0163` |
 | 2026-08-10 | **Document created as a DRAFT at `49d87af`.** Fourteen sign-off criteria (`SC-1` … `SC-14`); the evidence map over the bench era with its five riders, the ten-campaign mutation era in five columns, the anchor's five classes at run and job ids, the seventeen-class error table, the four bars and the five unreachable instruments; a twelve-item owed ledger with `FINDING K-1` positioned before the family-K rows; the first lessons harvest designed — span opened at `J-dv_lead-0001`, the bank enumerated at its sources across four labelling regimes with three accounting defects named, and a re-labelling method rather than a total; the prohibition register; the Stage-3 statement with its expiry and its (g)/(h) dependency recorded as pending; a twelve-step execution order and the sponsor's gate. **No verdict, no lift, no carrier paid, nothing run.** | dv_lead, `J-dv_lead-0161` |

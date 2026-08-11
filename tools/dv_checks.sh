@@ -178,6 +178,59 @@ run_and_label() { # $1 = human label, $2… = command
 # worked under makes its compliance statement unverifiable against the text it
 # cites. But a declared erratum that NO LONGER FIRES reddens: an allowlist with
 # no staleness check is how a bar decays into a comment.
+#
+# WHAT THIS CHECK RESOLVES AGAINST — THE TRACKED TREE, NEVER THE FILESYSTEM.
+# THIS IS THE REPAIR OF THIS CHECK'S OWN FIRST CI RUN, AND IT IS NOT COSMETIC.
+#
+# `build` run **31442295998**, step "DV mechanical checks": 4 UNDECLARED broken
+# citations, every one of them citing `docs/reports/latency/`. The same command
+# on the same commit in the development container reported **0**. Both numbers
+# were correct about the tree they measured, and only one of them was correct
+# about the ARTEFACT:
+#
+#   `docs/reports/latency/` existed in the container as an EMPTY, UNTRACKED
+#   directory. `git ls-files docs/reports/latency` → 0 entries. GIT CANNOT
+#   TRACK AN EMPTY DIRECTORY, so in every fresh clone the path does not exist,
+#   and the four citations were genuinely broken for every reader who was not
+#   sitting in that one container. The catch was a TRUE POSITIVE.
+#
+# The instrument, however, asked `[ -e ]` — it resolved against the FILESYSTEM
+# THE CHECK HAPPENED TO BE RUNNING ON, while the thing it governs is the
+# COMMITTED TEXT. That is the same defect class as a pin that reads back its own
+# drive: A CHECK THAT MEASURES THE ENVIRONMENT IT RUNS IN RATHER THAN THE
+# ARTEFACT IT GOVERNS CAN BE GREEN FOR A REASON THAT SHIPS WITH NOTHING. Its
+# symptom is not a wrong answer; it is a LOCAL/CI DIVERGENCE, and the divergence
+# is only visible on the day the two environments differ.
+#
+# So the resolver was rebuilt on `git ls-files`, and the universe it resolves
+# against is now, in both directions:
+#
+#   TRACKED       `git ls-files --cached`. In a clean tree this is HEAD's tree,
+#                 which is exactly what a fresh checkout materialises — so this
+#                 half reproduces what CI sees, byte for byte, from any machine.
+#   COMMITTABLE   TRACKED + `git ls-files --others --exclude-standard`, the
+#                 not-yet-tracked files a commit of this working tree would
+#                 carry. This is what the check GATES on, because the round that
+#                 repairs a citation writes the target file before the
+#                 orchestrator commits it, and gating on TRACKED alone would
+#                 redden every repair round for having done the repair.
+#
+# NEITHER HALF CAN CONTAIN AN EMPTY DIRECTORY — `--cached` lists blobs and
+# `--others` lists files. The exact defect that reddened 31442295998 is
+# therefore no longer expressible by construction, in either universe, on any
+# machine. A DIRECTORY citation resolves iff something git carries lives under
+# it, which is precisely the condition under which a fresh checkout creates it.
+#
+# THE RESIDUAL GAP IS PRINTED, NOT PAPERED OVER. A citation that resolves only
+# through the COMMITTABLE half is reported `PENDING-COMMIT` with its path: it
+# will resolve in CI if and only if that path is in this round's commit. That
+# line is a notice and not a failure — but it is computed every run, so unlike a
+# declared exception it cannot rot, and unlike the old `[ -e ]` it names the one
+# way a local green can still differ from a runner green.
+#
+# Both sides are measured from the same universe. The CITING files are
+# enumerated from `git ls-files` too, so an ignored or stray `.md` dropped into
+# `agents/handoffs/` cannot inject phantom citations that CI will never see.
 
 docs_cit_norm() { # $1 = raw token -> trailing markdown/sentence punctuation stripped
   local t="$1" last
@@ -191,40 +244,94 @@ docs_cit_norm() { # $1 = raw token -> trailing markdown/sentence punctuation str
   printf '%s' "$t"
 }
 
-docs_cit_pairs() { # $1 = handoffs dir -> "<citing file>\t<normalised path>", unique
-  local line f tok
-  grep -rHoE '(^|[^[:alnum:]_./-])docs/[A-Za-z0-9_./*-]+' "$1" --include='*.md' 2>/dev/null \
-    | while IFS= read -r line; do
-        f="${line%%:*}"
-        tok="${line#*:}"
-        case "$tok" in
-          *docs/*) tok="docs/${tok#*docs/}" ;;
-          *) continue ;;
-        esac
-        tok="$(docs_cit_norm "$tok")"
-        [ -n "$tok" ] || continue
-        printf '%s\t%s\n' "$f" "$tok"
-      done | sort -u
+# THE MEASUREMENT. Everything below resolves against this list and nothing else.
+# `-c core.quotePath=false` so a non-ASCII path arrives as itself rather than as
+# an escaped octal string that would match nothing.
+docs_cit_universe() { # $1 = repo root, $2 = tracked|committable -> repo-relative paths
+  local root="$1" mode="$2"
+  git -C "$root" -c core.quotePath=false ls-files --cached || return 1
+  [ "$mode" = 'committable' ] || return 0
+  git -C "$root" -c core.quotePath=false ls-files --others --exclude-standard || return 1
 }
 
-docs_cit_classify() { # $1 = tree root, $2 = path -> "OK" | "GLOB" | "PREFIX <hit>" | "MISSING <why>"
-  local root="$1" p="$2" d b n=0 hit='' cand
+docs_cit_files() { # $1 = universe -> the citing files this check reads, from git
+  printf '%s\n' "$1" | grep -E '^agents/handoffs/.*\.md$' | sort -u
+}
+
+docs_cit_unreadable() { # $1 = root, $2 = universe -> citing files git lists that are not on disk
+  local root="$1" f
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    [ -r "$root/$f" ] || printf '%s\n' "$f"
+  done <<EOF
+$(docs_cit_files "$2")
+EOF
+}
+
+docs_cit_pairs() { # $1 = root, $2 = universe -> "<citing file>\t<normalised path>", unique
+  local root="$1" f tok
+  {
+    while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      grep -oE '(^|[^[:alnum:]_./-])docs/[A-Za-z0-9_./*-]+' "$root/$f" 2>/dev/null \
+        | while IFS= read -r tok; do
+            case "$tok" in
+              *docs/*) tok="docs/${tok#*docs/}" ;;
+              *) continue ;;
+            esac
+            tok="$(docs_cit_norm "$tok")"
+            [ -n "$tok" ] || continue
+            printf '%s\t%s\n' "$f" "$tok"
+          done
+    done <<EOF
+$(docs_cit_files "$2")
+EOF
+  } | sort -u
+}
+
+# PURE over the universe: no `-e`, no `-d`, no glob against a disk. A path is
+# present iff git carries it (a blob at that path) or carries something beneath
+# it (which is the only way a checkout ever creates a directory).
+docs_cit_classify_in() { # $1 = universe, $2 = path -> "OK"|"GLOB"|"PREFIX <hit>"|"MISSING <why>"
+  local p="$2"
   case "$p" in *'*'*) printf 'GLOB'; return 0 ;; esac
-  if [ -e "$root/$p" ]; then printf 'OK'; return 0; fi
-  d="$(dirname "$p")"
-  b="$(basename "$p")"
-  if [ -d "$root/$d" ]; then
-    for cand in "$root/$d/$b"*; do
-      [ -e "$cand" ] || continue
-      n=$((n + 1))
-      hit="${cand#"$root/"}"
-    done
+  while [ "$p" != "${p%/}" ]; do p="${p%/}"; done
+  if [ -z "$p" ]; then
+    printf 'MISSING the token is empty once its trailing slashes are stripped'
+    return 0
   fi
-  case "$n" in
-    0) printf 'MISSING nothing resolves, and no name in %s/ begins with "%s"' "$d" "$b" ;;
-    1) printf 'PREFIX %s' "$hit" ;;
-    *) printf 'MISSING AMBIGUOUS prefix — %s names in %s/ begin with "%s"' "$n" "$d" "$b" ;;
-  esac
+  printf '%s\n' "$1" | awk -v p="$p" '
+    BEGIN {
+      pl = length(p); pslash = p "/"
+      i = 0
+      for (k = pl; k >= 1; k--) if (substr(p, k, 1) == "/") { i = k; break }
+      d = (i > 1) ? substr(p, 1, i - 1) : ""
+      b = substr(p, i + 1)
+      dpref = (d == "") ? "" : d "/"
+      dl = length(dpref); bl = length(b)
+    }
+    {
+      if ($0 == p) { exact = 1; next }
+      if (substr($0, 1, pl + 1) == pslash) { isdir = 1; next }
+      if (bl > 0 && substr($0, 1, dl) == dpref) {
+        rest = substr($0, dl + 1)
+        j = index(rest, "/")
+        child = (j > 0) ? substr(rest, 1, j - 1) : rest
+        if (substr(child, 1, bl) == b) kids[child] = 1
+      }
+    }
+    END {
+      if (exact || isdir) { printf "OK"; exit }
+      n = 0; hit = ""
+      for (c in kids) { n++; hit = c }
+      if (n == 0)
+        printf "MISSING nothing git carries resolves it, and no tracked name in %s/ begins with \"%s\"", d, b
+      else if (n == 1)
+        printf "PREFIX %s", (d == "" ? hit : d "/" hit)
+      else
+        printf "MISSING AMBIGUOUS prefix — %d tracked names in %s/ begin with \"%s\"", n, d, b
+    }
+  '
 }
 
 # The declared errata, keyed "<citing file>|<cited path>". Every key here MUST
@@ -251,52 +358,126 @@ docs_cit_erratum() { # $1 = key -> prints the disposition, returns 0 iff declare
 
 # THE SELF-TEST. A check whose first run is green tells you nothing about the
 # check (FINDING K-3's rule, applied to its author's own new bar) — so this bar
-# proves it can still fail, and fail for each of five distinct reasons, before
+# proves it can still fail, and fail for each of a dozen distinct reasons, before
 # it is allowed to say anything passed. Fixtures, not the repository: nothing in
 # this tree can demonstrate that an AMBIGUOUS prefix is refused, because no such
 # ambiguity exists here today.
+#
+# IT HAS TWO HALVES, AND THE SECOND ONE IS THE ONE 31442295998 BOUGHT.
+# Half (1) exercises the CLASSIFIER against a synthetic universe — a path list,
+# the shape `git ls-files` prints, with no disk behind it. Half (2) exercises the
+# MEASUREMENT in a throwaway git repository, because the defect that reddened CI
+# lived in *what the check asked*, not in how it classified the answer, and a
+# synthetic list can never demonstrate that. Half (2) builds the exact CI
+# condition — an empty directory present on disk and absent from git — asserts
+# that a filesystem resolver WOULD have said "exists", and requires this one to
+# say MISSING. That control fails the moment anybody reintroduces an `[ -e ]`.
 docs_cit_self_test() {
-  local ft rc=0 got
-  ft="$(mktemp -d)" || return 1
-  mkdir -p "$ft/docs/adr" "$ft/docs/reports/latency" "$ft/agents/handoffs"
-  : > "$ft/docs/adr/ADR-0001-org-design.md"
-  : > "$ft/docs/adr/ADR-0090-alpha.md"
-  : > "$ft/docs/adr/ADR-0090-beta.md"
+  local ft rc=0 got u u2 tu cu
 
-  expect() { # $1 = label, $2 = expected class, $3 = path
-    got="$(docs_cit_classify "$ft" "$3")"
+  expect() { # $1 = label, $2 = expected class, $3 = path, $4 = universe
+    got="$(docs_cit_classify_in "$4" "$3")"
     if [ "${got%% *}" = "$2" ]; then
-      printf '  ok    %-34s %s -> %s\n' "$1" "$3" "$got"
+      printf '  ok    %-44s %s -> %s\n' "$1" "$3" "$got"
     else
-      printf '  FAIL  %-34s %s -> %s (expected %s)\n' "$1" "$3" "$got" "$2"
+      printf '  FAIL  %-44s %s -> %s (expected %s)\n' "$1" "$3" "$got" "$2"
       rc=1
     fi
   }
 
-  expect 'a resolving path is OK'        OK      'docs/adr/ADR-0001-org-design.md'
-  expect 'RN-6 shape is caught'          MISSING 'docs/adr/ADR-0001.md'
-  expect 'a bolded broken path is caught' MISSING "$(docs_cit_norm 'docs/adr/ADR-0001.md**')"
-  expect 'an interior glob is a pattern' GLOB    'docs/reports/*/x.md'
-  expect 'a unique id prefix resolves'   PREFIX  'docs/adr/ADR-0001'
-  expect 'an AMBIGUOUS prefix is refused' MISSING 'docs/adr/ADR-0090'
+  # ---- half (1): the classifier, over a synthetic universe -------------
+  u='docs/adr/ADR-0001-org-design.md
+docs/adr/ADR-0090-alpha.md
+docs/adr/ADR-0090-beta.md
+docs/reports/audit/AUD-0001-g0-retro.md'
+  u2="$u
+docs/reports/latency/README.md"
+
+  expect 'a resolving path is OK'             OK      'docs/adr/ADR-0001-org-design.md' "$u"
+  expect 'RN-6 shape is caught'               MISSING 'docs/adr/ADR-0001.md' "$u"
+  expect 'a bolded broken path is caught'     MISSING "$(docs_cit_norm 'docs/adr/ADR-0001.md**')" "$u"
+  expect 'an interior glob is a pattern'      GLOB    'docs/reports/*/x.md' "$u"
+  expect 'a unique id prefix resolves'        PREFIX  'docs/adr/ADR-0001' "$u"
+  expect 'an AMBIGUOUS prefix is refused'     MISSING 'docs/adr/ADR-0090' "$u"
+  expect 'a dir with tracked content is OK'   OK      'docs/reports/audit/' "$u"
+  expect 'a trailing ** is emphasis, not glob' OK     "$(docs_cit_norm 'docs/reports/audit/**')" "$u"
+  # The 31442295998 shape, both polarities, at the classifier: a directory is in
+  # the tree IFF something in the tree lives under it.
+  expect 'an EMPTY directory does NOT resolve' MISSING 'docs/reports/latency/' "$u"
+  expect 'one tracked file makes it resolve'  OK      'docs/reports/latency/' "$u2"
+
+  # ---- half (2): the measurement, in a throwaway repository ------------
+  ft="$(mktemp -d)" || { printf '  FAIL  no fixture directory\n'; return 1; }
+  if ! (
+    git init -q "$ft" &&
+    mkdir -p "$ft/docs/adr" "$ft/docs/reports/latency" "$ft/agents/handoffs" &&
+    : > "$ft/docs/adr/ADR-0001-org-design.md" &&
+    cat > "$ft/agents/handoffs/FIXTURE.md" <<'DOCS_CIT_FIXTURE' &&
+see `docs/adr/ADR-0001.md`, **docs/adr/ADR-0001-org-design.md** and `docs/reports/latency/`.
+DOCS_CIT_FIXTURE
+    git -C "$ft" add docs/adr/ADR-0001-org-design.md agents/handoffs/FIXTURE.md
+  ) >/dev/null 2>&1; then
+    printf '  FAIL  the fixture repository could not be built\n'
+    rm -rf "$ft"
+    return 1
+  fi
+  tu="$(docs_cit_universe "$ft" tracked | sort -u)"
+
+  # The CI defect, reproduced …
+  if [ -d "$ft/docs/reports/latency" ]; then
+    printf '  ok    fixture: docs/reports/latency/ is on disk, empty, untracked\n'
+  else
+    printf '  FAIL  fixture: the empty directory was not created\n'; rc=1
+  fi
+  # … and confirmed to be a defect the OLD resolver would have fallen into …
+  if [ -e "$ft/docs/reports/latency/" ]; then
+    printf '  ok    a FILESYSTEM resolver would answer "exists" for it\n'
+  else
+    printf '  FAIL  -e disagrees; this control is not exercising the CI defect\n'; rc=1
+  fi
+  # … and refused, at the measurement rather than at the classifier.
+  if printf '%s\n' "$tu" | grep -q 'latency'; then
+    printf '  FAIL  an empty directory entered the TRACKED universe\n'; rc=1
+  else
+    printf '  ok    the TRACKED universe has no such path — git carries no empty dir\n'
+  fi
+  expect 'so the check says MISSING for it'   MISSING 'docs/reports/latency/' "$tu"
+
+  # The committable half: an uncommitted FILE is visible, an empty directory is
+  # not visible in EITHER universe — which is the property that makes the two
+  # environments agree.
+  : > "$ft/docs/reports/latency/README.md"
+  cu="$(docs_cit_universe "$ft" committable | sort -u)"
+  if printf '%s\n' "$cu" | grep -qx 'docs/reports/latency/README.md'; then
+    printf '  ok    an uncommitted FILE enters the COMMITTABLE universe\n'
+  else
+    printf '  FAIL  the committable universe missed an uncommitted file\n'; rc=1
+  fi
+  expect 'committable: the file resolves it'  OK      'docs/reports/latency/' "$cu"
+  expect 'tracked: it does NOT yet resolve'   MISSING 'docs/reports/latency/' "$tu"
 
   # The extractor's own teeth: it must find the broken citation in a file, and
   # must attribute it to that file. Backticks and bold are in the fixture on
   # purpose — both are how this programme's packets actually write a path.
-  cat > "$ft/agents/handoffs/FIXTURE.md" <<'DOCS_CIT_FIXTURE'
-see `docs/adr/ADR-0001.md` and **docs/adr/ADR-0001-org-design.md**.
-DOCS_CIT_FIXTURE
-  if docs_cit_pairs "$ft/agents/handoffs" | grep -qF $'FIXTURE.md\tdocs/adr/ADR-0001.md'; then
+  if docs_cit_pairs "$ft" "$tu" | grep -qF $'agents/handoffs/FIXTURE.md\tdocs/adr/ADR-0001.md'; then
     printf '  ok    extractor finds and attributes the broken citation\n'
   else
-    printf '  FAIL  extractor did not find/attribute the broken citation\n'
-    rc=1
+    printf '  FAIL  extractor did not find/attribute the broken citation\n'; rc=1
   fi
-  if docs_cit_pairs "$ft/agents/handoffs" | grep -qF $'FIXTURE.md\tdocs/adr/ADR-0001-org-design.md'; then
+  if docs_cit_pairs "$ft" "$tu" | grep -qF $'agents/handoffs/FIXTURE.md\tdocs/adr/ADR-0001-org-design.md'; then
     printf '  ok    extractor strips markdown bold from a good citation\n'
   else
-    printf '  FAIL  extractor did not strip markdown bold\n'
-    rc=1
+    printf '  FAIL  extractor did not strip markdown bold\n'; rc=1
+  fi
+  # And the CITING side is enumerated from git too, so a stray packet on disk
+  # cannot inject a citation CI will never see.
+  cat > "$ft/agents/handoffs/UNTRACKED.md" <<'DOCS_CIT_UNTRACKED'
+cites `docs/adr/ADR-0002.md`
+DOCS_CIT_UNTRACKED
+  if docs_cit_pairs "$ft" "$tu" | grep -q 'UNTRACKED.md'; then
+    printf '  FAIL  an untracked packet injected a citation into the tracked pass\n'; rc=1
+  else
+    printf '  ok    an untracked packet injects nothing into the tracked pass\n'
   fi
 
   unset -f expect
@@ -376,18 +557,63 @@ esac
 printf '=== docs/** citation resolve-check (RN-6) ===\n'
 docs_cit_root="$(cd "$HERE/.." && pwd)"
 docs_cit_dir="$docs_cit_root/agents/handoffs"
-if [ ! -d "$docs_cit_dir" ]; then
+if ! git -C "$docs_cit_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  printf '  %s is not a git work tree. This check resolves against the TRACKED\n' "$docs_cit_root"
+  printf '  tree and here it has nothing to resolve against — FAILED (it cannot\n'
+  printf '  stand down, and it must never fall back to the filesystem: that\n'
+  printf '  fallback is what reddened build run 31442295998).\n\n'
+  status=1
+elif [ ! -d "$docs_cit_dir" ]; then
   printf '  agents/handoffs/ not found at %s — check FAILED (it cannot stand down)\n\n' "$docs_cit_dir"
   status=1
 else
-  dc_total=0; dc_ok=0; dc_glob=0; dc_prefix=0; dc_errata=0; dc_new=0
+  dc_tracked="$(docs_cit_universe "$docs_cit_root" tracked | sort -u)"
+  dc_committable="$(docs_cit_universe "$docs_cit_root" committable | sort -u)"
+  dc_n_tracked=$(printf '%s\n' "$dc_tracked" | grep -c .)
+  dc_n_committable=$(printf '%s\n' "$dc_committable" | grep -c .)
+  dc_n_extra=$((dc_n_committable - dc_n_tracked))
+
+  # A citing file git lists but the working tree does not hold means the two
+  # sides of this measurement disagree, and then no count below is trustworthy.
+  dc_unreadable="$(docs_cit_unreadable "$docs_cit_root" "$dc_committable")"
+  if [ -n "$dc_unreadable" ]; then
+    printf '  UNREADABLE — git lists these citing files and the working tree does not\n'
+    printf '  hold them, so this run cannot measure what it claims to measure:\n'
+    while IFS= read -r dc_u; do
+      [ -n "$dc_u" ] && printf '    %s\n' "$dc_u"
+    done <<EOF
+$dc_unreadable
+EOF
+    status=1
+  fi
+
+  dc_total=0; dc_ok=0; dc_glob=0; dc_prefix=0; dc_errata=0; dc_new=0; dc_pend=0
   dc_fired=''
   dc_prefix_lines=''
-  while IFS=$'\t' read -r dc_file dc_path; do
+  dc_pend_lines=''
+  while IFS=$'\t' read -r dc_rel dc_path; do
     [ -n "${dc_path:-}" ] || continue
     dc_total=$((dc_total + 1))
-    dc_rel="${dc_file#"$docs_cit_root/"}"
-    dc_class="$(docs_cit_classify "$docs_cit_root" "$dc_path")"
+    dc_class="$(docs_cit_classify_in "$dc_committable" "$dc_path")"
+    # PENDING-COMMIT: resolves only through a path git does not yet carry. Not a
+    # failure — it is what a repair looks like before its commit — but printed,
+    # because it is the single remaining way this run can differ from a runner's.
+    if [ "$dc_n_extra" -gt 0 ]; then
+      case "$dc_class" in
+        OK|PREFIX*)
+          case "$(docs_cit_classify_in "$dc_tracked" "$dc_path")" in
+            MISSING*)
+              dc_pend=$((dc_pend + 1))
+              dc_pend_lines="$dc_pend_lines  PENDING-COMMIT  $dc_rel
+                  cites $dc_path -> $dc_class
+                  but ONLY via a path git does not yet carry. CI resolves this
+                  if and only if that path is in this round's commit.
+"
+              ;;
+          esac
+          ;;
+      esac
+    fi
     case "$dc_class" in
       OK) dc_ok=$((dc_ok + 1)) ;;
       GLOB) dc_glob=$((dc_glob + 1)) ;;
@@ -413,12 +639,15 @@ else
         ;;
     esac
   done <<EOF
-$(docs_cit_pairs "$docs_cit_dir")
+$(docs_cit_pairs "$docs_cit_root" "$dc_committable")
 EOF
 
   # Citations by id, accepted on a UNIQUE prefix and listed so the acceptance is
   # checkable rather than inherited.
   [ -n "$dc_prefix_lines" ] && printf '%s' "$dc_prefix_lines"
+
+  # Citations resolving only through a not-yet-committed path.
+  [ -n "$dc_pend_lines" ] && printf '%s' "$dc_pend_lines"
 
   # Staleness: a declared erratum that no longer fires is a FAILURE. Either the
   # path was repaired (delete the entry) or the packet stopped citing it (delete
@@ -438,17 +667,29 @@ $DOCS_CIT_ERRATA_KEYS
 EOF
 
   printf '  ---\n'
-  printf '  %3s  docs/** citations in agents/handoffs/**/*.md (file x path, unique)\n' "$dc_total"
-  printf '  %3s  resolve at the tree\n' "$dc_ok"
-  printf '  %3s  patterns (interior glob) — not citations, not checked\n' "$dc_glob"
-  printf '  %3s  resolve by UNIQUE id prefix (listed above)\n' "$dc_prefix"
-  printf '  %3s  declared errata (listed above; each ruled, none rewritten)\n' "$dc_errata"
-  printf '  %3s  UNDECLARED broken citations\n' "$dc_new"
-  printf '  %3s  stale errata (declared, did not fire)\n' "$dc_stale"
+  printf '  RESOLVED AGAINST THE TRACKED TREE, NOT THE FILESYSTEM (run 31442295998):\n'
+  printf '  %4s  paths git carries here            (git ls-files)\n' "$dc_n_tracked"
+  printf '  %4s  further paths a commit would add  (git ls-files --others --exclude-standard)\n' "$dc_n_extra"
+  printf '  ---\n'
+  printf '  %4s  docs/** citations in agents/handoffs/**/*.md (file x path, unique)\n' "$dc_total"
+  printf '  %4s  resolve at the tracked tree\n' "$dc_ok"
+  printf '  %4s  patterns (interior glob) — not citations, not checked\n' "$dc_glob"
+  printf '  %4s  resolve by UNIQUE id prefix (listed above)\n' "$dc_prefix"
+  printf '  %4s  declared errata (listed above; each ruled, none rewritten)\n' "$dc_errata"
+  printf '  %4s  UNDECLARED broken citations\n' "$dc_new"
+  printf '  %4s  stale errata (declared, did not fire)\n' "$dc_stale"
+  printf '  %4s  resolve ONLY via a not-yet-committed path (PENDING-COMMIT, above)\n' "$dc_pend"
+  if [ "$dc_n_extra" -eq 0 ]; then
+    printf '  The two universes are IDENTICAL at this tree (nothing uncommitted), so\n'
+    printf '  these counts are the counts a fresh clone of this commit reports.\n'
+  else
+    printf '  %s uncommitted path(s) exist here, so this run is the counts a fresh\n' "$dc_n_extra"
+    printf '  clone reports ONLY IF this round commits every PENDING-COMMIT path above.\n'
+  fi
   if [ "$dc_new" -ne 0 ] || [ "$dc_stale" -ne 0 ]; then
     printf '=== docs/** citation resolve-check: FAILED ===\n'
-    printf 'A docs/** path cited in a handoff packet must resolve at the tree, or be a\n'
-    printf 'declared erratum with its ruling. RN-6, WO-0077 §6.\n\n'
+    printf 'A docs/** path cited in a handoff packet must resolve at the tracked tree, or\n'
+    printf 'be a declared erratum with its ruling. RN-6, WO-0077 §6.\n\n'
     status=1
   else
     printf '=== docs/** citation resolve-check: OK ===\n\n'

@@ -1401,3 +1401,426 @@ restatement of *test your test*.
 - test/cosim/canonical.mli
 - test/xgmii_rx_64/test_m03_k.ml
 - tools/dv_checks.sh
+
+## [J-dv_lead-0164] 2026-08-10T23:58Z | task:none | The bar's first run on a runner convicted two things at once — the citation really was broken for every reader outside this container, and the instrument was measuring the container: one tracked file pays the first, `git ls-files` pays the second
+
+### Trigger
+
+Orchestrator dispatch, **sole agent in flight**, opened by the runner's verdict on
+`J-dv_lead-0163`'s own payment. `RN-6`'s resolve-check — ledger item 2 of
+`agents/handoffs/SO-xgmii_rx_64.md`, landed one commit ago — reached CI for the first
+time and **failed**: `build` run **`31442295998`**, step *"DV mechanical checks"*,
+**4 UNDECLARED broken citations**, every one of them citing `docs/reports/latency/`.
+The same script at the same commit in this container reports **0**.
+
+**HEAD verified as my first action, before reading anything**: `git rev-parse HEAD` →
+`ee3da9c06bb77099edbfe6f8bff7f949f61c7d4c`, exactly the stated spawn-head (*"Four
+carriers paid in the draft's own order…"*). **Match**; neither branch of the abort
+procedure ran.
+
+This is **not a step of §7.1**. It is a repair round against a payment already made,
+and I record it as `round 1R` so the two-round shape of the `SO-` execution stays
+legible and a reader can see that no step was executed out of order.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3, §4, §5, §6, §7, §10).
+- `agents/handoffs/SO-xgmii_rx_64.md` — §0.2, §1 (`SC-1`, `SC-3`, `SC-10`, `SC-13`),
+  §3 ledger, §3.0, §3.2, §7.1, §7.2, §10.
+- **The four citing packets, at the citing lines**:
+  `agents/handoffs/WO-0003_testability-findings.md` (REQ-806's testability finding),
+  `agents/handoffs/WO-0015_batch-d-countersign.md` (carry-forward `C-23`),
+  `agents/handoffs/WO-0018_batch-de-countersign.md` (carry-forward `C-24`),
+  `agents/handoffs/SO-xgmii_rx_64.md` (§7.1 write scope, §7.2 gate ladder).
+- **The CI evidence itself**: the failed job log of `build` run `31442295998`
+  (job `93629331615`), read for the printed block rather than for its conclusion —
+  an externally verifiable reference, ADR-0003/F5 sense.
+- `docs/specs/requirements.md` — REQ-004, REQ-005, REQ-006, REQ-019, REQ-806 and
+  §0.5/§1.1, for the README's statement of where latency figures live today.
+- `test/attack_plans/AP-xgmii_rx_64.md` §4.L row headers (`M03-L1` … `M03-L6`), for
+  the same purpose; `docs/specs/modules/` path list, for `nic_top`'s spec existing.
+- `tasks/BOARD.md` §Gates, for the gate state the README asserts.
+- `agents/journals/claude_dv_lead_agent.v08.md` (tail, for the id and the banked
+  candidate sequence).
+- My own artefacts, opened to change them: `tools/dv_checks.sh`,
+  `agents/handoffs/SO-xgmii_rx_64.md`.
+
+**Independence (PROTOCOL §10, charter §8).** **No RTL source was opened.** No file
+under `libs/**`, `top/**` or `rtl_snapshots/**` was read, and no path from those trees
+appears in this round's derivation chain at all.
+
+**Git discipline, stated because this round used git heavily.** Against the programme
+repository I ran **read-only** git only — `rev-parse`, `ls-files`, `status`,
+`log`, `archive`, `remote`. **I ran no `git add`, no `git commit` and no `git push`
+against it, and I did not touch its index.** Every `git init`/`git add` in this round
+happened inside throwaway directories under the session scratchpad, which is also
+where the script's own new self-test fixture lives (`mktemp -d`).
+
+### Reasoning
+
+**1. The red is right, and that has to be said before anything about the instrument.**
+
+`docs/reports/latency/` exists in this container as an **empty, untracked directory**,
+created 2026-08-01. `git ls-files docs/reports/latency` → **0 entries**. **Git cannot
+track an empty directory**: there is no tree entry for it, so it is not in HEAD, not in
+`git archive`, and **not in any fresh clone**. The four packets therefore cite a path
+that does not exist for anyone who is not sitting in this one container — which is
+every reader the citations were written for. **The gate's first catch is a true
+positive, and if I had repaired only the instrument I would have deleted a real
+finding to make my own tool green.** That inversion is the thing I most wanted to
+avoid, and it is why the disposition was ruled before the resolver was touched.
+
+**2. And the instrument is wrong at the same time, in a way I have convicted before.**
+
+The resolver asked `[ -e "$root/$p" ]`. That is a question about **the filesystem the
+check happens to be running on**; the thing the check governs is **committed text**. So
+the same command gave two different answers on the same commit, and the *flattering*
+one was the one its author saw. **This is the circular-pin lesson in another costume**:
+an instrument whose reading is a function of its own environment rather than of the
+artefact under test. Its symptom is never a wrong-looking number — 0 and 4 both look
+fine — it is a **divergence between environments**, invisible until two of them differ
+and unattributable from inside either.
+
+**3. The resolver repair, and the one design decision inside it that is not obvious.**
+
+The universe is now what **git can carry in a commit**, and the classifier is a pure
+function over that list — no `-e`, no `-d`, no disk glob:
+
+- **TRACKED** = `git ls-files --cached`. In a clean tree this **is** HEAD's tree, which
+  is exactly what a checkout materialises. This half is why a local run can now
+  reproduce a runner's answer.
+- **COMMITTABLE** = TRACKED + `git ls-files --others --exclude-standard`.
+
+**The decision: the check GATES on COMMITTABLE, not on TRACKED.** Gating on TRACKED is
+the purer statement and it is wrong in practice, because *the round that repairs a
+citation writes the target file before the orchestrator commits it* — I never stage,
+so the repair is untracked at the moment the check runs. A TRACKED-only gate reddens
+every repair round **for having done the repair**, and a bar that punishes its own
+remedy gets bypassed. **What makes COMMITTABLE safe is the property both halves share:
+`--cached` lists blobs and `--others` lists files, so NEITHER can contain an empty
+directory.** The exact defect that reddened `31442295998` is not expressible in either
+universe, on any machine. A directory citation resolves iff something git carries lives
+under it — precisely the condition under which a checkout creates the directory.
+
+**The residual gap is real and is printed rather than argued away.** A citation that
+resolves *only* through the untracked half is reported `PENDING-COMMIT` with its path
+and the sentence *"CI resolves this if and only if that path is in this round's
+commit."* It is a notice, not a failure — but it is **computed every run**, so unlike a
+declared exception it cannot rot, and it names the single remaining way a local green
+can differ from a runner green. I considered and rejected leaving it silent: the whole
+finding above is that a silent divergence is the dangerous kind.
+
+**Two smaller repairs ride the same rebuild.** The **citing** side is now enumerated
+from `git ls-files` too — a stray or ignored `.md` in `agents/handoffs/` can no longer
+inject a citation CI will never see, which is the same defect in the other direction.
+And a citing file git lists but the working tree lacks is reported `UNREADABLE` and
+**fails**, because when the two sides of the measurement disagree no count below them
+is trustworthy.
+
+**4. The four dispositions: one tracked file, zero errata — and why the cheap route is
+the wrong one.**
+
+All four citations name the **space**, not a document. That already separates them from
+`RN-6`'s own class (a pointer to a document living under another name): there is no
+mis-typed target to disclose, there is a directory the write-scope table in PROTOCOL §6
+and my charter §1 both name and which no clone has ever contained. Four errata were
+available, cheap, and inside a table built exactly for this — and I refused them on
+three grounds:
+
+- **(a) The exception is repairable from inside my own write scope.** An erratum
+  declares a citation permanently broken *by ruling*. Ruling something unrepairable
+  when one file in `docs/reports/latency/**` repairs it is a false statement about the
+  world dressed as a disposition.
+- **(b) The expiry is already on the gate ladder.** `P1-phase-accept` requires the
+  latency report **committed under this exact path**. So the moment the first report
+  lands, four declared errata stop firing and this same check reddens on
+  **staleness** — the guard `LH-cand-L` mints, turned against a repair. **A disposition
+  whose expiry is already fixed by a scheduled obligation is a deferred failure with a
+  known date, not a disposition.**
+- **(c) One of the four citers is the sign-off packet itself.** A packet whose `SC-10`
+  demands every set claim carry provenance cannot ship carrying a **declared-broken
+  citation of its own**; the bar would be teaching its readers that it is optional.
+
+**The README is written to make the citation resolve TRUTHFULLY, which is a stronger
+requirement than making it resolve.** It states the space's purpose and owner, that
+**no latency report has yet been written** (measured, with the command), and where
+latency figures live *today*: REQ-005's per-octet constancy asserted inside the REQ-004
+line-rate stress rows (`AP-M03` §4.L — `M03-L2`, `M03-L3`, `M03-L5`), and REQ-019's ΔC
+ceilings checked at `P1-spec-freeze` as arithmetic on the specifications. **REQ-006's
+end-to-end budget is a different quantity, defined at `nic_top` across §0.4's whole
+chain, and no bench has produced it** — so the reader who follows one of these four
+citations learns why the directory is empty instead of finding a hole. It also lists
+what each of the four citers obliges of the first artefact written there.
+
+**And it quotes no latency figure at all, deliberately.** `C-23` and `C-24` both gate on
+the first artefact in that directory that quotes REQ-502's number; a README that quoted
+one would discharge neither carry-forward and trip both. Writing the *gate* into the
+README while refusing to write the *figure* is the whole distinction, and I have said so
+in the file so a later author cannot mistake the silence for an oversight.
+
+**5. What I did not do.** I did not rewrite a single citing packet body — `RN-6`'s
+ruling that an already-issued instrument is not silently edited is untouched and none of
+the four needed it. I did not widen the check's scope past the ruled minimum. I did not
+move a ledger item, adjudicate a criterion, lift a bar or take the harvest. The `SO-`
+stays **DRAFT** with §8 **UNSET**.
+
+### Actions
+
+1. **Repaired the resolver** in `tools/dv_checks.sh`: new `docs_cit_universe` (two
+   modes), `docs_cit_files`, `docs_cit_unreadable`, and `docs_cit_classify_in` (pure,
+   awk, over the universe) replacing the filesystem-based `docs_cit_classify`;
+   `docs_cit_pairs` now takes the root and the universe. Added the `PENDING-COMMIT`
+   pass, the `UNREADABLE` guard, a not-a-work-tree failure branch, and the
+   header block recording run `31442295998` and the general rule.
+2. **Rebuilt the self-test in two halves** — the classifier over a synthetic universe,
+   and **the measurement inside a throwaway git repository** where the CI condition is
+   physically reconstructed: empty directory on disk, nothing tracked, a filesystem
+   resolver *shown* to answer "exists", and the check required to answer MISSING.
+3. **Wrote `docs/reports/latency/README.md`** — the disposition of all four citations.
+4. **Recorded the round in the packet**: header Execution bullet, §3.0.1 (the round and
+   its two findings, `FINDING RN-6-CI-1` / `RN-6-CI-2`), §3.2.1 (the repair, the four
+   dispositions, eight evidence rows), §10 change log.
+5. Ran the check locally, in a **constructed fresh checkout**, and under **three
+   negative controls**; ran `bash -n` and `shellcheck`.
+
+### Evidence
+
+**(a) The CI verdict this round answers.** `build` run **`31442295998`**, job
+`93629331615`, step *"DV mechanical checks"* — **failed**, printed:
+
+```
+   302  docs/** citations in agents/handoffs/**/*.md (file x path, unique)
+   289  resolve at the tree
+     0  patterns (interior glob) — not citations, not checked
+     5  resolve by UNIQUE id prefix (listed above)
+     4  declared errata (listed above; each ruled, none rewritten)
+     4  UNDECLARED broken citations
+     0  stale errata (declared, did not fire)
+=== docs/** citation resolve-check: FAILED ===
+```
+
+with four `BROKEN` lines, all `cites docs/reports/latency/`. **Externally verifiable
+reference, not a local artefact** (ADR-0003/F5).
+
+**(b) The root cause, measured rather than described.**
+
+```
+$ git ls-files docs/reports/latency | wc -l
+0
+$ ls -d docs/reports/latency
+docs/reports/latency                              (present on disk, empty)
+$ git archive HEAD | tar -t | grep -c '^docs/reports/latency'
+0                                                 (absent from HEAD's tree entirely)
+```
+
+**(c) The divergence, closed at its source.** The repaired check, run **locally in this
+container on the tree exactly as the runner saw it** (before the README existed):
+
+```
+$ bash tools/dv_checks.sh
+   302  docs/** citations in agents/handoffs/**/*.md (file x path, unique)
+   289  resolve at the tracked tree
+     0  patterns (interior glob) — not citations, not checked
+     5  resolve by UNIQUE id prefix (listed above)
+     4  declared errata (listed above; each ruled, none rewritten)
+     4  UNDECLARED broken citations
+     0  stale errata (declared, did not fire)
+     0  resolve ONLY via a not-yet-committed path (PENDING-COMMIT, above)
+=== docs/** citation resolve-check: FAILED ===          (exit 1)
+```
+
+**Character-for-character the counts of run `31442295998`, from the container that used
+to report 0.** That is the whole repair, stated as a measurement.
+
+**(d) After the disposition, locally, at this round's final content:**
+
+```
+$ bash tools/dv_checks.sh
+   396  paths git carries here            (git ls-files)
+     1  further paths a commit would add  (git ls-files --others --exclude-standard)
+   304  docs/** citations in agents/handoffs/**/*.md (file x path, unique)
+   295  resolve at the tracked tree
+     0  patterns (interior glob) — not citations, not checked
+     5  resolve by UNIQUE id prefix (listed above)
+     4  declared errata (listed above; each ruled, none rewritten)
+     0  UNDECLARED broken citations
+     0  stale errata (declared, did not fire)
+     6  resolve ONLY via a not-yet-committed path (PENDING-COMMIT, above)
+=== docs/** citation resolve-check: OK ===              (exit 0; script exit 0)
+```
+
+The six `PENDING-COMMIT` lines are the four original citers plus the two citations this
+round's own §3.0.1/§3.2.1 text adds (`docs/reports/latency` and
+`docs/reports/latency/README.md`), each naming the README as its condition. **The
+`302 → 304` move is my own text and is declared, not drift**: 302 is the figure
+comparable to the CI run, 304 is the figure at the sign-off SHA.
+
+**(e) A FRESH CHECKOUT, CONSTRUCTED — this is how the "same counts a fresh clone
+reports" claim was verified rather than asserted.**
+
+```
+$ git archive HEAD | tar -x -C $FC          # pristine HEAD tree
+$ ls $FC/docs/reports/                       -> audit          (no latency/ — the root cause)
+$ cp tools/dv_checks.sh docs/reports/latency/README.md agents/handoffs/SO-xgmii_rx_64.md  ->  $FC
+$ git init -q $FC && git -C $FC add -A       # everything TRACKED, as after the commit
+$ bash $FC/tools/dv_checks.sh
+   397  paths git carries here            (git ls-files)
+     0  further paths a commit would add  (git ls-files --others --exclude-standard)
+   304  docs/** citations …
+   295  resolve at the tracked tree
+     0 / 5 / 4 / 0 / 0                       (glob / prefix / errata / UNDECLARED / stale)
+     0  resolve ONLY via a not-yet-committed path
+  The two universes are IDENTICAL at this tree (nothing uncommitted), so
+  these counts are the counts a fresh clone of this commit reports.
+=== docs/** citation resolve-check: OK ===              (exit 0)
+```
+
+**Identical citation counts to (d).** This is the `SC-13` form — a command executed from
+a checkout rather than from a container. **Transient and declared ephemeral**
+(ADR-0003/F5): the scratch trees are deleted and are not evidence anyone else can
+re-open; the reproducible form is the four commands above, runnable at the commit SHA.
+
+**(f) Negative controls, all three at the final content, all three ephemeral.**
+
+```
+NEGCTL C — the CI condition rebuilt: README removed from git AND from disk,
+           the empty directory left present on disk:
+  BROKEN   agents/handoffs/SO-xgmii_rx_64.md            (x3 tokens)
+  BROKEN   agents/handoffs/WO-0003_testability-findings.md
+  BROKEN   agents/handoffs/WO-0015_batch-d-countersign.md
+  BROKEN   agents/handoffs/WO-0018_batch-de-countersign.md
+     6  UNDECLARED broken citations
+=== docs/** citation resolve-check: FAILED ===
+
+NEGCTL A — one declared erratum entry deleted:
+  BROKEN   agents/handoffs/WO-0077_family-k-mutation-campaign.md
+     3  declared errata …
+     1  UNDECLARED broken citations
+=== docs/** citation resolve-check: FAILED ===
+
+NEGCTL B — a declared key that can never fire:
+  STALE ERRATUM — declared and did not fire: agents/handoffs/NOSUCH.md|docs/adr/NOSUCH.md
+     1  stale errata (declared, did not fire)
+=== docs/** citation resolve-check: FAILED ===
+```
+
+**A and B are last round's two controls, re-proven against the repaired resolver — the
+teeth were not lost in the rebuild. C is this round's own**, and it is the one that
+matters: the repaired instrument still catches the true positive, **in the exact shape
+the runner saw it**, and is not fooled by the directory being present on disk.
+
+**(g) The self-test — 21 assertions, all `ok`**, including, in a throwaway repository:
+`fixture: docs/reports/latency/ is on disk, empty, untracked` · `a FILESYSTEM resolver
+would answer "exists" for it` · `the TRACKED universe has no such path — git carries no
+empty dir` · `so the check says MISSING for it` · `an uncommitted FILE enters the
+COMMITTABLE universe` · `committable: the file resolves it` / `tracked: it does NOT yet
+resolve` · `an untracked packet injects nothing into the tracked pass`. **The second
+control is the anti-regression one**: it asserts that a `-e` test *would* have said yes,
+so reintroducing one fails the suite rather than silently restoring the defect.
+
+**(h) Static checks.** `bash -n tools/dv_checks.sh` → clean.
+`shellcheck tools/dv_checks.sh` → **exit 0**, matching the file's pre-round baseline
+(`shellcheck` on `git show HEAD:tools/dv_checks.sh` → exit 0). CI does not run
+`shellcheck`; this is a local property I chose not to regress. Two `SC2016`s that the
+first draft of the fixture introduced (backticks inside a single-quoted `printf`) were
+removed by moving both fixtures to quoted here-documents, which is the form this file
+already used.
+
+**(i) What did not change.** `git status --porcelain` lists exactly two modified paths
+and one untracked path, all three in this entry's files list. No `libs/**`, `top/**`,
+`rtl_snapshots/**`, `docs/specs/**`, `docs/adr/**`, `docs/gates/**`, `.github/**` or
+`test/**` path. No `git commit`, no `git push`, no `git add` against this repository, no
+`dune`, no CI trigger.
+
+### Outcome
+
+**Both halves of the dispatch met.**
+
+- **The resolver repair**: `tools/dv_checks.sh` resolves against the tracked tree, gates
+  on the committable universe, prints `PENDING-COMMIT` for the one remaining divergence
+  mode, and reproduces run `31442295998` exactly when run on that run's tree.
+- **The four dispositions**: one tracked file, `docs/reports/latency/README.md`, zero
+  new errata, zero rewritten packet bodies. **The `SO-`'s own citation ends this round
+  RESOLVING** — verified in a constructed fresh checkout, not asserted.
+- **The printed provenance moved with the counts**: the census block now prints the
+  universe it measured above the citation counts and closes with whether those counts
+  *are* a fresh clone's or are conditional on the commit.
+
+**Ledger unchanged.** Items 3, 4, 6, 7, 8, 9, 11, 12 stay OWED to round 2. **State
+DRAFT, §8 UNSET, no criterion adjudicated, no bar lifted, no count asserted, no anchor
+claimed, no harvest taken.**
+
+**One consequence the orchestrator should relay rather than absorb**: the commit MUST
+carry `docs/reports/latency/README.md`. It is the only thing standing between the
+current green and a repeat of `31442295998` — and the check now says so itself, by name,
+on every run until the file is tracked.
+
+**Handoff**: the three files below, staged-ready, trailer `Agent: dv_lead`.
+
+**Harvest — status, not the harvest.** `SC-12` and the draft's §4 place the programme's
+first dv_lead harvest at **step 10**, in the **signing** entry, over the span
+`J-dv_lead-0001 … <signing entry>`. **The span stays OPEN and is not tiled here.** Four
+candidates banked at this entry, continuing regime 1's sequence (`LH-cand-O` was the
+last), **to be re-labelled once** at step 10 with the old label recorded beside:
+
+- **`LH-cand-P`** — *a check that judges committed artefacts must resolve every
+  reference against the version-controlled tree, never against the working filesystem;
+  otherwise it measures the environment it runs in and its green is true only there.*
+  **LH1**: this commit; the identical command reporting 4 on a runner and 0 in a
+  container at one SHA. **LH2-g**: no proper noun. **LH3**: without it two environments
+  disagree with no way to tell from inside either which is right — and the
+  environment-flattering answer is the one the author sees first, so the defect surfaces
+  only when somebody else runs it.
+- **`LH-cand-Q`** — *a store that records only leaf objects cannot represent an empty
+  container, so a namespace that must be citable needs a committed leaf inside it saying
+  what the namespace is for.* **LH1**: this commit; four citations of a directory that
+  existed in exactly one filesystem. **LH2-d**, domain pack **version control** —
+  **not** claimed as LH2-g on purpose: the rule is only true of stores with that
+  property, and stating it without naming the domain would over-generalise it into
+  something false elsewhere. **LH3**: without it, a namespace agreed in governance is
+  absent from every clone and every reference to it is broken while looking fine to its
+  author.
+- **`LH-cand-R`** — *an entry on an exception list whose expiry is already fixed by a
+  scheduled obligation is not a disposition but a deferred failure with a known date;
+  prefer the repair that removes the need for the entry.* **LH1**: this commit; four
+  errata refused because the phase-accept gate requires an artefact at exactly the cited
+  path, which would have staled all four on a scheduled date. **LH2-g**: no proper noun.
+  **LH3**: without it, an exception list fills with entries guaranteed to rot and the
+  staleness guard that protects the bar becomes the thing that reddens a build for
+  performing a repair. **Composes with `LH-cand-L`**, which mints that guard; this one
+  says when not to use the list at all.
+- **`LH-cand-S`** — *an instrument that grades documents by a rule may not itself
+  violate that rule; where it must, the violation is repaired rather than exempted.*
+  **LH1**: this commit; the sign-off packet was one of the four citers of its own
+  gate's broken path. **LH2-g**: no proper noun. **LH3**: without it a bar teaches its
+  readers, by its author's own example, that it is optional — which is cheaper to learn
+  than the bar. **Overlap risk declared**: step 10's walk should test it against
+  `LH-cand-R` and against `(C)`'s observable before admitting both.
+
+**Nil-yield declaration**: none — this round yields four candidates and no war story;
+nothing was considered and rejected as unportable.
+
+### Open-questions
+
+1. **The commit must carry `docs/reports/latency/README.md`.** If it is dropped from the
+   file set, CI reddens with **6** UNDECLARED broken citations — worse than the 4 that
+   opened this round, because this entry's own packet text adds two more. The check
+   prints the condition, so the failure mode is loud, but the dependency is real and I
+   cannot stage it myself.
+2. **`PENDING-COMMIT` is the last environment-dependent line in this check**, and it is
+   a notice rather than a gate. I judged that correct — gating on TRACKED alone punishes
+   the repair round — but it is a judgement, and the auditor may reasonably want the
+   opposite for packets that are *not* repairing a citation. No carrier named; raising
+   it rather than deciding it alone.
+3. **Ledger item 7 (`FINDING WO-0077-A1`, the census repair's ownership) is untouched**
+   by this round and stays owed to round 2. This round moved no census figure other than
+   the `302 → 304` its own text causes, which is declared in (d).
+4. **Round 2's inputs are unchanged and one of them moved under round 1**: `ce5674d`
+   touched `docs/specs/requirements.md`, and §2.4, §5.6 and §6.3 must be written against
+   that file at the sign-off SHA rather than against any earlier reading.
+
+### Files-in-this-commit
+
+- agents/handoffs/SO-xgmii_rx_64.md
+- docs/reports/latency/README.md
+- tools/dv_checks.sh
