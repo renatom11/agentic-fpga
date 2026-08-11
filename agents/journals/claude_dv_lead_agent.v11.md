@@ -1798,3 +1798,597 @@ written as specified.**
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0190] 2026-08-11T22:27Z | task:none | Three subjects confirmed and four corrections filed — the survivor exhibit describes a failure this record does not contain and omits the decay that is filed against it, the frozen-kill limb discloses one of its three known limits, the sign-off form exports a verdict with no external anchor in it, and the relay section's benign exhibit has been overtaken twice on my own receiving side
+
+### Trigger
+
+Orchestrator dispatch, **one round, journal-only**: the confirmation `docs/PROCESS.md`
+Annex B.1 assigns my seat, before council round 2 convenes. Three subjects, each
+either confirmed or corrected — **both a legitimate return**, per the dispatch and per
+§4.8 of the text under review:
+
+1. **§3.9's scoring block and its three anonymized exhibits**, rebuilt from rulings
+   that are substantially my seat's — faithful to what was ruled, or corrected; and
+   whether the **import-as-rules** marking carrying `C-104`'s single citation is right
+   against my own calibration-preservation argument from the `ADR-0020` round.
+2. **§3.8's sign-off form** — whether it states my `SO-` practice truly: honest `FAIL`s
+   preserved, the verdict one token, and the property floor my `SC-5`/`SC-8` exceed.
+3. **§4.3's relay classes** — the verbatim-relay discipline with the relayer's
+   additions marked, against the practice my seat both exercises and polices.
+
+**Abort-first precheck, before any file was opened** (§4.1 of the document under
+review, and charter practice):
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # 2f32e45d86f6c04f1ad50eaff1a08f71605a5125
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 22:16:04 UTC 2026
+
+Byte-equal to the dispatched expectation `2f32e45`, tree clean. **Neither branch of the
+abort procedure was reached**, and no undeclared dirty path existed to adjudicate.
+**HEAD did not move across the round** (re-checked at authoring: still `2f32e45`).
+
+**Declared siblings**: the **auditor** on the parallel confirmation (its `v03` journal
+only); and the transient remote ref `mut/wo-0041-dm3-falsifier` — the `F-0024-A`
+falsifier, the CRITICAL against my `RV-0041` ruling, **whose CI verdict pends and which
+is NOT this round's subject**. Nothing of it is adjudicated below; where the scoring
+block touches the clause it tests, I state the bound and stop (Reasoning §1.6).
+
+**Honest stamp**: `date -u` at authoring — `Tue Aug 11 22:27:46 UTC 2026`.
+
+**No rotation.** `v11` stands at **114,699 bytes** before this append against
+`JOURNAL_SOFT_MAX` = 262,144; volume 10's sha256 re-measured equal to this volume's
+`Previous-volume-sha256` header field (Evidence), so the chain is intact.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md` **in full** — §3's relay table,
+  §7's **Mutation record** (b.1)–(b.4), §10's floor and anchor bullets are the four
+  texts the three subjects codify, and all were read at the live file rather than
+  through the reviewed document's account of them.
+- `docs/PROCESS.md` at `2f32e45`: **§3.8** (1562–1598), **§3.9** (1600–1825) clause by
+  clause, **§4.3** (1936–1970), **§4.1**–**§4.2** (for the document's own use of
+  *round*), **§1.4** (a)–(d), **Annex A**, **Annex B.1**–**B.6**.
+- `agents/handoffs/SO-xgmii_rx_64.md` — header and State block (1–86), §0.1's four
+  prohibitions, §1's fourteen criteria in full (`SC-5` :191, `SC-8` :218, `SC-14` :261),
+  §2.2 and §2.2-M (714–859), §2.2-D's head, §8's section map.
+- `docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md` — §1.1 (the survivor
+  and void paragraphs), §1.2 (both grounds), the (b.2) adaptation block at 680–709,
+  §12.1–§12.7.
+- **My own chain, read at the committed text rather than recalled**: `J-dv_lead-0184`
+  (the ten-campaign walk, `FINDING REC-1`/`REC-2`/`REC-3`, step 5's class-not-branch
+  ruling), `J-dv_lead-0185` (the four countersignatures, `FINDING REC-4`, §5's offered
+  frozen-kill limb, §9's five-property/floor argument, `FINDING REC-5`),
+  `J-dv_lead-0186` (`F-0022-2` sustained, `C3` withdrawn, `FINDING REC-7`),
+  `J-dv_lead-0187` (`REC-1`/`REC-2` cures, `REC-7`'s disposition table).
+- `docs/reports/audit/ADR-0020-auditor-countersignatures.md` (§3's five stated readings;
+  the `F-0022-*` row block) and `agents/journals/claude_auditor_agent.v02.md`
+  2440–2495 (`J-auditor-0021`'s two countersignature acts and its five findings,
+  `F-0021-5` among them), 2842 and 3296 (`F-0022-2` as filed).
+- `agents/journals/claude_architect_docs_lead_agent.v05.md` 728–760 and 945–955 — the
+  round that **stopped** `F-0022-2`'s cure, read for the grounds it actually gives.
+- `docs/reports/audit/PROCESS-claims-posture.md` rows `C-94`…`C-110` — read as the
+  auditor's own measured postures, to check my confirmations against them rather than
+  to replace them.
+- `agents/journals/claude_auditor_agent.v03.md` 639 and 673 — `F-0024-A`'s severity and
+  its self-declared falsifier, read only far enough to state the bound and stop.
+- **No RTL source read.** No mutation branch fetched, no `mut/` ref created; the only
+  mutation reads are committed campaign packets and manifests, read as adjudication
+  record on an already-signed module. No `Essenceia/Nasdaq-HFT-FPGA` material consulted.
+
+### Reasoning
+
+#### 1. Subject 1 — §3.9's scoring block: CONFIRMED, with two corrections and two precisions
+
+**1.1 The fifteen bullets, walked against the clauses they compress.** I read each
+bullet against `PROTOCOL` §7 (b.1)–(b.4) and §10's floor at the live file, and against
+the ruling each compresses in my own chain. **Every bullet is faithful**, and three are
+faithful in the strong sense that they carry the operative sentence of the ruling
+rather than a summary of it: the two-column subtraction with the difference itemised
+(`REC-3`'s repair), the class-not-branch unit with its ground intact (`J-dv_lead-0184`
+step 5 — a ref population is monotone by infrastructure accident and *a denominator
+that can only grow, for reasons outside the program's control, cannot be a
+denominator*), and ground 1's folding argument in the words it was first written in
+(`J-dv_lead-0137`). Ground 3's added sentence — *a campaign with no negative control
+cannot distinguish a suite with teeth from an apparatus that reports failure whatever
+it is fed* — is not in any ruling of mine; it is sound, it is the reason a control is
+cut, and I confirm it as a correct addition rather than a misquotation.
+
+**One construction I signed under, which the bullet preserves and a reader could still
+lose.** *The unit of the record is the defect class, not the branch or file that
+delivered it* contrasts a class with a **delivery vehicle**; it does not re-unit the
+four pre-class campaigns (`WO-0039`, `0041`, `0042`, `0045`), whose records are scored
+per mutation and which my `SO-` reports separately with their domain stated
+(`J-dv_lead-0185` §8). The bullet's own contrast preserves that. I note it because a
+re-uniting would violate this same block's frozen-measurement rule.
+
+**1.2 CORRECTION 1 — exhibit 2, *The survivor argued dead*, states as an event
+something this record does not contain, and omits the hazard the record actually
+filed.**
+
+The exhibit opens: *"A defect that its own campaign recorded as surviving was later
+said to be handled, on the strength of a suite that had grown since."* **No weaker
+evidence form was ever used for this record's one survivor.** `G-c4`'s disposition was
+the strict form from the first statement of it: branch `mut/wo-0056-gc4-replay` =
+`c95c9f4` = `e7657e3` + the **unmodified** `g-c4.diff`, CI run `30852220315`, `runtest`
+RED, **`M03-G8` the only failing unit of twenty-seven**, on the exact assertion the row
+was written to make. My packet's own sentence is *"the repair was PROVED BY THE
+MUTATION, not by the landing"*, and it publishes the two facts side by side under a
+prohibition on quoting either alone. **The rule was written from a practice, not
+against a failure**, and the exhibit as worded credits the record with a lapse it did
+not have — which is the class of claim this whole revision exists to remove.
+
+**And the record's real hazard is the mirror image of the exhibit's, it is filed, and
+it is absent from the block.** `F-0021-5` (auditor, MINOR, filed against **the gate**):
+(b.2)'s *as it stands at the gate SHA* is **not** discharged for `G-c4` by run
+`30852220315`, because the bench moved **8,505 insertions / 151 deletions across 15
+files** and the RTL 248 insertions since the replay base `e7657e3`; the diff still
+applies, so the cost is one CI run; and *"this becomes MAJOR the moment a gate record
+cites the historical run as (b.2)'s discharge without a re-run."* The auditor accepted
+that cost in terms when it countersigned: *a survivor's rehabilitation expires when the
+bench moves*. **A survivor is not argued dead in this record by a weak form; it would
+be argued dead by a strong form quoted after its expiry**, and that is the failure an
+adopter will actually meet, because the strong form looks identical on the day it stops
+being true.
+
+**Proposed repair, and it costs one clause**: open the exhibit on the hazard rather
+than on an event (*"the form is narrow, and the record's own auditor found it is also
+perishable"*), keep every element of the evidence form as written, and add: **a
+rehabilitation is good only at the SHA it was taken at; citing an aged run id is the
+same defect wearing the approved form.**
+
+**1.3 CORRECTION 2 — the frozen-kill bullet discloses one of its three known limits and
+claims the disclosure as a virtue.**
+
+The bullet reads: *"That form catches a killing check deleted or disabled since; it does
+not catch one weakened, and the clause says so rather than leaving the limit to a
+footnote."* The weakened-unit limit is disclosed, correctly, and it is disclosed in the
+constitution. **Two further limits of the same form are filed findings, both landed
+after that sentence was drafted, and neither is a footnote:**
+
+- **`F-0022-1`** (auditor): **five of the thirty-seven committed mutation renderings no
+  longer apply at HEAD**, all in campaigns scored as kills. I verified the mechanism at
+  two instances rather than taking it whole — against `git show HEAD:` copies outside
+  the repository, `f-c3.diff` and `f-c6.diff` **fail to apply**, `f-c1.diff` applies
+  clean. The survivor form replays an unmodified diff and therefore **self-checks
+  against design drift**; the kill form asks only that a unit be present and green and
+  **cannot notice that the class's rendering no longer exists against the design it is
+  scored on**.
+- **`FINDING REC-7`** (MAJOR, mine, filed by the offerer of the limb): the unit names
+  the campaign records carry are in the retired `T-` namespace. Measured at HEAD,
+  `T-F2`, `T-I4`, `T-G7`, `T-E5` and `T-C4` return **zero** occurrences under `test/`,
+  while `M03-F2`, `M03-I4`, `M03-G7`, `M03-E5` and `M03-C4` are present in force — so a
+  **literal** application of *"the named killing unit, present and green at the gate
+  SHA"* fails at every class of the `T-`-era campaigns, not because an instrument was
+  deleted but because record and bench speak different namespaces. Paid at
+  `J-dv_lead-0187` as a measured mapping table (thirty classes, twenty-eight frozen
+  kills, twenty-eight mappings, zero disposition failures).
+
+**Proposed repair**: *"it does not catch one weakened"* → *"it does not catch one
+weakened, nor a class whose rendering no longer applies to the artifact, nor a record
+whose unit names no longer exist in the suite — the first is disclosed in the clause and
+the other two were found afterwards."* The sentence as it stands invites an adopter to
+believe the form's limits are known and stated; two of the three were found by the
+clause being applied, which is the more useful lesson.
+
+**1.4 PRECISION A — exhibit 1's *"in the same round"*.** The two items are `REC-3`
+(`I-c1` excluded from `sealed` though the record declared it sealed; `IC-M5` included
+though never rendered; the two grounds never stated together anywhere) at
+`J-dv_lead-0184`, **17:17Z**. The third item is `REC-4` (`IC-2`, the negative control,
+which (b.1) as drafted would have made `seeded` and therefore *killed* by its own
+eighteen predicted reds) at `J-dv_lead-0185`, **17:47Z** — **a separate dispatch of
+mine**, inside the drafting seat's single codification round. Under this document's own
+use of *round* (§4.1 and §4.2 both mean one agent's working session), *"in the same
+round"* reads false. **And the exact version is sharper than the approximate one**: the
+first two items were found by walking the record, the third was found by reading the
+**drafted clause** against the record — the codification surfacing a third instance of
+the defect it was being written to cure.
+
+**1.5 PRECISION B — exhibit 1's italicised qualifier.** The record's word is
+**`scoreable`**, in two campaign verdict lines: `WO-0061`'s *"Scoreable classes: 9"* and
+`WO-0063B`'s *"One scoreable class, one kill: 1/1"*. The exhibit italicises *of the
+scoreable classes*, which appears in no packet as a phrase. The claim the qualifier
+carries — that the word appears in **no normative document** — is true and is `REC-4`'s
+own finding. Recommend quoting the single word.
+
+**Exhibit 3 — *The killing unit that had no unique referent* — CONFIRMED whole, with
+one omission worth repairing.** Every element checks at the source: `F-c1` names **four**
+units (`T-C4`, `T-F1`, `T-F3`, `T-F4`), `F-c2` **nine**, `F-c8` **one of three
+required** (`T-E5` only) — three of eight classes with no unique referent, measured by
+me first-hand at `WO-0050`'s verdict table rather than from the relay; the two readings
+differ exactly as stated (*all must still stand*, wider than the hazard; *any one
+suffices*, a gate-time selection by the party discharging); the filing seat had
+countersigned that clause (auditor, `J-auditor-0021`, act 2 on (b.2) and (b.3)) and
+filed against it at its delta; and it routed the width to the seat it falls on, where I
+sustained it, **withdrew my own construction `C3`**, and adopted the filer's reading.
+**The omission**: PROCESS gives one ground for the stop — authority and constitution
+would disagree — and the round gives two. The second is that `PROTOCOL` **is not the
+drafting seat's to stage**: refused mechanically by `policy.sh` and forbidden by the
+dispatch. §4.8's point is stronger with it, because the stop was then **not
+discretionary**; a refusal that a machine also enforces is a different exhibit from a
+refusal someone chose.
+
+*Available sharpening, not a correction*: the singular sits in a limb that **I offered
+one round earlier, against my own interest** (`J-dv_lead-0185` §5). The exhibit is a
+clean instance of a rule authored by the graded party, signed by the independent one,
+and broken by the record of the graded party's own campaigns.
+
+**1.6 The one live bound on this block, stated and not adjudicated.** The equivalence
+bullet's **sole instance in this record** — `D-M3`, `WO-0041`, the one exclusion
+`ADR-0020` §6.2 tests the new clause against — is under a **CRITICAL** falsifier,
+`F-0024-A`, filed against my `RV-0041` ruling at `J-auditor-0024` (`d4be71b`), which
+names its own single falsifying run and is **withdrawn in full if that run is green**.
+The run pends on `mut/wo-0041-dm3-falsifier`. **Nothing in the bullet is wrong** — the
+proof standard is stated correctly and I countersigned it — but a reader should know
+that the block's most-likely-to-be-misused rule has one measured instance and that
+instance is contested. My response round comes separately, with the run id in hand;
+**this round adjudicates none of it.**
+
+#### 2. Subject 1 continued — the import-as-rules marking and `C-104`: RIGHT, and the boundary it needs stated
+
+**The `[RE · C-104]` posture is right and one citation is the correct economy.** No
+script reads a tally, a column, an equivalence proof or the floor; `PROTOCOL` §7's own
+clause declares the posture in its own text and states why §11(3) owes no test case; I
+countersigned (b.1), (b.2), (b.4) and §4 knowing that the only thing between these
+rules and a wrong number is a reader. **Confirmed as stamped.** *(One precision for the
+transcription row, which is the auditor's: the posture list measures `C-104` over
+**thirteen** scoring bullets; the block now carries **fifteen**, the three grounds
+having been promoted to bullets of their own. The posture does not change — no script
+reads any of the fifteen — but the citation's referent grew after the measurement.)*
+
+**Now the question the dispatch actually asks: is *"Import these as rules; do not
+re-derive them"* right against my calibration-preservation argument?** **It is right,
+and it is right about the rules only.** My argument at `J-dv_lead-0185` §9 was that
+what a constitution can guarantee is a set of **properties** — every non-kill named
+individually, no non-kill folded into a kill, no ratio standing in for the
+dispositions, the survivor's two facts side by side, the unreachable set beside the
+tally — **and not a reporting schema**; that `ADR-0020` §12.2 refuses to freeze my five
+columns precisely because *"dv's fifth column exists because a fourth was found
+insufficient one campaign earlier"*; and that complying with the clause I was
+countersigning **required my own schema to change on the day it landed** (`sealed` moves
+63 → 65 as two invisible exclusions become a visible subtraction). **The calibration
+lives in the schema's history, not in the rules.** So the instruction must not be read
+across into two things it does not govern, and neither exclusion is currently stated:
+
+- **Not the schema.** An adopter who imports the fifteen bullets and freezes a column
+  set has imported the rule and lost the calibration; the block should say that it
+  guarantees properties, and that a schema a campaign shows insufficient is **expected
+  to move** — twice in nine days, in this record, once by my hand and once by the
+  clause.
+- **Not the figures the rules govern.** My own standing rule is the opposite
+  instruction: **a figure carried across rounds is re-derived by the method its carrier
+  claims, or the carrier states that it was quoted** — `FINDING REC-1`, filed by me
+  against my own packet's method sentence, whose seven-campaign total had never been
+  derived campaign by campaign anywhere in the record until `J-dv_lead-0184`, and whose
+  cure landed as a dated annotation beside the sentence it convicts. *Do not re-derive*
+  is right for rulings and inverts `REC-1`'s cure the moment it is carried across to a
+  number.
+
+**Recommended repair: one sentence in the import paragraph** — *these are the
+properties the record must be able to answer for, not a reporting form; the form is the
+reporter's and is expected to move when a campaign shows it insufficient. Import the
+rules; re-derive the numbers.*
+
+#### 3. Subject 2 — §3.8's sign-off form: CONFIRMED on all three checks, with one correction
+
+**(a) Honest `FAIL`s preserved — TRUE, and measured rather than recalled.** The live
+`PASS` quotes **two** earlier failing verdicts inside itself, unedited and beneath the
+live token: round 2's `FAIL` on `SC-2` and `SC-12` (§8.1, at `2183d71`) and round 3's
+`FAIL` on `SC-12` (§8.0, at `14615f8`, on `FINDING SO-6`). The State block's own
+sentence is *"Every superseded statement is preserved where it was written and none is
+rewritten into its own outcome."* The extension §3.8 draws — that the same holds for a
+wrong prediction and a superseded measurement — is also true here: the `survived`
+column stays at **1** permanently, and a falsified sealed prediction of mine is left
+standing in its freeze (`J-dv_lead-0044`).
+
+**(b) The verdict is one token — TRUE, and stronger in the packet than in the
+description.** `SC-14` is in terms: *"`PASS` or `FAIL`. No third value, no 'PASS with
+reservations', no 'PASS subject to'... A verdict that needs a qualifier in the same
+sentence is a `FAIL` whose author has not admitted it."* The twelve bounds the module
+has not earned live **inside** the `PASS` at §8.R4.4, which is what makes the single
+token survivable.
+
+**(c) The floor my `SC-5`/`SC-8` exceed — CONFIRMED, and this is the relationship I put
+on record.** §3.8's element list is a **floor**, not a description of the packet.
+`SC-5` forbids a ratio **at all** where the block's bullet only forbids one *standing
+in for* the dispositions; `SC-8` publishes the unreachable-instrument register
+(`U-1`…`U-5` plus `DECLARATION WO-0074-D1`), which has **no counterpart in §3.8's list
+at all**. That is deliberate on my side: *the unfrozen clause is a floor under my
+practice and never a ceiling on it*, and the compensating control is that `SC-5` and
+`SC-8` are **committed criteria in my own write scope**, so a later seat lowering them
+must edit a signed packet where the edit shows in a diff. **§3.8 states a floor
+truly.** I would add four words saying it is one, because `C-94`'s *"it carries every
+element named above"* is true and reads, at speed, as *these are the elements*.
+
+**CORRECTION 3 — the described form omits the external anchor, and the document omits
+it everywhere.** Measured, not assumed: `docs/PROCESS.md` contains **no** treatment of
+an oracle-anchoring rule — no reference implementation used as an oracle, no
+differential co-simulation, no golden-model agreement requirement; the word *anchor*
+occurs in the document only in its own claim-stamping sense, and §1.4's four
+separations do not draw this one. In this program that element is:
+
+- **constitutional** — `PROTOCOL` §10's second bullet: *golden models must agree with an
+  external anchor before they may judge RTL*, one of the two properties §1 of the
+  constitution calls non-negotiable;
+- **a charter precondition** — no Phase 1 sign-off without differential co-simulation;
+- **a criterion of the one sign-off** — `SC-6`, which reports the anchor **per stimulus
+  class** at run and job ids, states in terms that the module-level anchor is
+  **undischarged**, and forbids the sentence *"the co-simulation anchors this module"*
+  anywhere in the packet.
+
+**As it stands, §3.8 exports a sign-off form under which an unanchored oracle may grade
+an artifact**, and the adopting seat has nothing in the document telling it that its
+own golden model must first agree with something it did not write. That is the largest
+single gap I found in the three subjects, and it is one element and one sentence to
+close. *(Route: architect_docs_lead; I do not stage `docs/PROCESS.md`.)*
+
+#### 4. Subject 3 — §4.3's relay classes: CONFIRMED, with one correction on the exhibit
+
+**The classification is right.** `PROTOCOL` §3's table makes `SO-` and `BUG-` packets
+and all auditor findings verbatim class; my own packet's header carries it
+(*"this document is a sign-off packet and is in the **verbatim** relay class"*), with
+the honest nuance that a **DRAFT is not yet in that class**. The two rules — additions
+marked as the relayer's, and the receiving seat checking a relay against the source when
+fidelity matters to an argument — are the practice my seat exercises and polices, and
+the practice is measurable in my chain: `J-dv_lead-0185` (I recorded the architect's
+source-check of a relay of my own finding — *the behaviour I would want and did not ask
+for*) and `J-dv_lead-0186` (an auditor delta arriving as relay: I verified its claims at
+my own artefacts **before using any of it**, then read the committed act when it landed
+mid-round).
+
+**CORRECTION 4 — the section's closing sentence is no longer true of the record, and its
+only exhibit is the weakest one available.** `C-110` says the mechanism *"failed in the
+benign case and was therefore visible before it failed in a case that mattered."* The
+benign case is real and is mine (*"dispositioned **as** UNSCOREABLE"* → *"dispositioned
+UNSCOREABLE"*; nothing turned on it). **But the same relay had already failed in a way
+that did matter, and a later one failed again**, both on my receiving side, both caught
+only because a receiving seat read the committed source:
+
+- **An unmarked relayer addition.** The relay of `F-0022-1` reported *"the named killing
+  unit `M03-F2` **IS** present"* for the two classes whose campaign record names
+  **`T-F2`**. The namespace mapping was **performed silently, by the seat least likely
+  to get it wrong, and is invisible in the artefact** — an addition absorbed rather than
+  attacked, which is exactly the second-order failure §4.3's marking rule exists to
+  prevent. And the gap it silently closed is the subject of `REC-7` (MAJOR): under a
+  literal reading of the constitutional clause, that namespace difference fails the
+  disposition of **every class of four campaigns**.
+- **A faithful relay that omitted three findings.** The same round's relay of the
+  auditor's delta said what the committed act said — and **the committed act carried
+  three findings the relay did not** (`J-dv_lead-0186`). Compression removed what nobody
+  had asked for, which is the failure class the section names, in its non-benign form.
+
+**And §4.3's second and third paragraphs — additions marked, receiving seat checks the
+source — currently carry no exhibit at all.** The first instance above is an exhibit for
+the first rule; the second is an exhibit for the second; both are anchorable at journal
+entries and campaign packets. **Recommended repair**: keep the benign exhibit as the
+opening (it is a good one, and its point about visibility stands), and drop the claim
+that the mechanism has not yet failed in a case that mattered.
+
+**One precision on `C-109`'s `PLANNED` stamp.** *"No spot-check followed"* is right as
+to the duty it names — the **auditor's** charter §3 relay-fidelity sampling of protected
+classes, which I find no performance of — and it should not be read as *no fidelity
+check has ever happened here*. Two have, both by **receiving seats**. That is a
+different control with a different failure mode: it fires only where a receiver happens
+to look, and it cannot sample the relays nobody contested. The owed instrument stays
+owed; the record is not empty.
+
+*(Annex B.1's second dv row states its "On what" cell for §3.8 only — *that the described
+form matches the one sign-off in the record* — and says nothing for §4.3. I have
+confirmed §4.3 against the dispatch's statement of it; if the annex intends a narrower
+question there, it should say so, because an unstated criterion is how a
+countersignature comes to mean whatever a later reader needs it to mean.)*
+
+#### 5. What I did not do
+
+I did not touch `docs/PROCESS.md`, the `SO-`, the attack plan, the gate file or any
+packet. All four corrections are edits to a file outside my write scope and are routed,
+not performed. **`WO-0082` §17.1's date-`u` carve-out remains owed at my next packet
+revision** — my own ruling at `J-dv_lead-0189`, and not this round's business.
+
+#### 6. Harvest
+
+**Not due, declared rather than skipped** (charter §8, `PROTOCOL` §7): this round is
+neither an `SO-` nor a phase gate. The span opened at my last harvest stays open and
+this entry joins it, continuous with `J-dv_lead-0187`/`-0188`/`-0189`. **Two candidates
+banked**, both LH1–LH3 discharged, both **LH2-g** (no proper noun of any kind):
+
+- **(f)** *An exhibit written to teach a rule must describe the incident that produced
+  the rule, not the failure the rule prevents; where the record shows the discipline
+  was volunteered rather than imposed after a lapse, saying otherwise credits the record
+  with a fault it does not have and teaches the reader to expect the wrong warning
+  sign.* **LH1** this round's survivor exhibit against the disposition it describes.
+  **LH3** without it, a corrected document acquires new false claims in the act of
+  illustrating true rules, and they are the hardest kind to find because they are
+  attached to something correct.
+- **(g)** *When an evidence form is adopted because it cannot be argued with, record its
+  expiry conditions in the same clause; a form that is checkable today and silently
+  perishable is more dangerous than a weak form, because it keeps its authority after
+  it stops carrying information.* **LH1** this round's `F-0021-5` bound on the survivor
+  replay, and the two undisclosed limits of the frozen-kill limb. **LH3** without it, a
+  gate record cites a strong-form artefact past its validity and every reader downstream
+  reads the form rather than the date.
+
+### Actions
+
+- Ran the abort-first precheck; read charter and `PROTOCOL` in full; read
+  `docs/PROCESS.md` §3.8, §3.9, §4.3, §4.1–§4.2, §1.4 and Annex B whole.
+- Walked all **fifteen** scoring bullets against `PROTOCOL` §7 (b.1)–(b.4) and §10 at
+  the live file, and against the rulings they compress in my own chain.
+- Checked each of the three exhibits at its primary source rather than at the reviewed
+  document's account of it: exhibit 1 at `J-dv_lead-0184`/`-0185` and the two campaign
+  verdict lines; exhibit 2 at `SO-xgmii_rx_64` §2.2-M and at `J-auditor-0021`'s
+  `F-0021-5`; exhibit 3 at `WO-0050`'s verdict table, the auditor's countersignature
+  file, and the architect's stopping round.
+- Measured the anchor gap: greps over `docs/PROCESS.md` for every form of the
+  oracle-anchoring rule, returning nothing.
+- Measured the `mut/` ref population on the remote (**86**) as a datum for the §3.9
+  margin note, which is the auditor's row and not mine.
+- Verified the journal chain and volume headroom; wrote this entry.
+- **No file outside this journal is staged; no `git commit` or `git push` was run; no
+  stop-hook commit demand was honoured.**
+
+### Evidence
+
+All commands from the checkout at `2f32e45`, branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+
+**Precheck and stamps:**
+
+    $ git status --short                 # zero lines, at entry and at authoring
+    $ git rev-parse HEAD
+    2f32e45d86f6c04f1ad50eaff1a08f71605a5125
+    $ date -u                            # entry 22:16:04Z; authoring 22:27:46Z
+
+**Journal chain and headroom (`R3`, ADR-0017):**
+
+    $ sha256sum agents/journals/claude_dv_lead_agent.v10.md
+    ee441697dab3696924090feb08742249952c432791c014b27b8c91975770ae75
+      == v11 header field Previous-volume-sha256
+    $ wc -c agents/journals/claude_dv_lead_agent.v11.md
+    114699                                # < JOURNAL_SOFT_MAX 262144
+
+**The scoring block's size, for the `C-104` referent note:**
+
+    $ awk 'NR>=1709 && NR<=1776 && /^- \*\*/ {c++} END {print c}' docs/PROCESS.md
+    15                                    # posture row C-104 measures "thirteen"
+
+**The anchor gap (Correction 3), measured over the whole document:**
+
+    $ grep -c "oracle\|reference implementation\|differential\|cosim\|co-sim" docs/PROCESS.md
+      -> the only hits are §"Included: the reference implementation" (the document
+         describing itself), §6.2 step 0, and §5.7's bullet; none is the anchoring rule
+    $ grep -c "independent implementation\|second implementation\|cross-check against" docs/PROCESS.md
+    0
+    $ grep -n "anchor" docs/PROCESS.md    # all hits are claim-stamp/parameter senses
+
+**Exhibit sources, quoted at their files:**
+
+    agents/handoffs/SO-xgmii_rx_64.md:14   round 2 FAIL (SC-2, SC-12), round 3 FAIL (SC-12)
+    agents/handoffs/SO-xgmii_rx_64.md:261  SC-14 "THE VERDICT IS ONE TOKEN"
+    agents/handoffs/SO-xgmii_rx_64.md:191  SC-5 five columns, never a ratio
+    agents/handoffs/SO-xgmii_rx_64.md:218  SC-8 unreachable-instrument register
+    agents/handoffs/SO-xgmii_rx_64.md:825  the G-c4 replay: c95c9f4, run 30852220315,
+                                           "M03-G8 alone, out of twenty-seven units"
+    agents/journals/claude_auditor_agent.v02.md:2484   F-0021-5 (8,505 / 151 / 15 files)
+    agents/journals/claude_auditor_agent.v02.md:3296   F-0022-2 (F-c1 four, F-c2 nine,
+                                                       F-c8 one of three required)
+    agents/journals/claude_architect_docs_lead_agent.v05.md:739  the stop, both grounds
+    agents/journals/claude_dv_lead_agent.v10.md:2892   the dropped word
+    agents/journals/claude_dv_lead_agent.v10.md:3947   the unmarked namespace mapping
+    agents/journals/claude_dv_lead_agent.v10.md:3894   "three findings the relay did not carry"
+
+**Remote transient population (datum for the margin note, auditor's row):**
+
+    $ git ls-remote --heads origin 'refs/heads/mut/*' | wc -l
+    86
+
+**Ephemeral**: nothing in this entry rests on an ephemeral artefact. `F-0024-A`'s
+falsifying run is **pending** and is cited as pending, never as a result.
+
+### Outcome
+
+**DoD met for the dispatched act. All three subjects returned: CONFIRMED, with four
+corrections and three precisions. No refusal, and nothing here blocks council round 2.**
+The transcribable act:
+
+> **CONFIRMATION — dv_lead on `docs/PROCESS.md` Annex B.1, its two dv rows, at
+> `2f32e45`. Journal ref `J-dv_lead-0190`.**
+>
+> **§3.9's scoring block — CONFIRMED.** All fifteen bullets are faithful to the rulings
+> they compress and to `PROTOCOL` §7 (b.1)–(b.4) and §10 as they now stand; three carry
+> the operative sentence of the ruling rather than a summary. The **`[RE · C-104]`**
+> marking is right — no script reads a tally, a column, an equivalence proof or the
+> floor — and *"import these as rules; do not re-derive them"* is right **about the
+> rules**, provided the block says what it guarantees: **properties, not a reporting
+> schema** (a schema a campaign shows insufficient is expected to move; mine moved
+> twice in nine days, once by the very clause being codified), and **not the figures**
+> (a figure carried across rounds is re-derived by the method its carrier claims, or the
+> carrier says it was quoted — `FINDING REC-1`, filed against my own packet).
+>
+> **Exhibit 1 — CONFIRMED in substance**, with two precisions: the third item is at the
+> **next** dispatch, not the same one, and it was surfaced by the drafted clause rather
+> than by the walk; and the record's word is **`scoreable`**, in two campaign verdict
+> lines.
+>
+> **Exhibit 2 — CORRECTED.** No weaker evidence form was ever used for this record's one
+> survivor: the strict form was the practice from the first statement of it, and the
+> rule was written **from** it, not against a lapse. The record's filed hazard is the
+> mirror image and is missing: **`F-0021-5`** — the bench has moved 8,505 insertions
+> since the replay base, so a **rehabilitation expires when the bench moves**, and
+> citing the historical run at a later gate SHA is a survivor argued dead **in the
+> approved form**.
+>
+> **Exhibit 3 — CONFIRMED whole**, every element verified at `WO-0050`'s verdict table,
+> the filer's countersignature and the stopping round; with one omission: the stop had a
+> second ground — the constitution is not the drafting seat's to stage, refused
+> mechanically — and a refusal a machine also enforces is a stronger exhibit than a
+> chosen one.
+>
+> **The frozen-kill bullet — CORRECTED.** It discloses one of **three** known limits.
+> The other two are `F-0022-1` (five of thirty-seven renderings no longer apply at HEAD;
+> the kill form cannot notice that a class's rendering no longer exists) and `REC-7`
+> (the record's unit names are in a retired namespace and return zero occurrences at
+> HEAD, so a literal application fails at every class of four campaigns).
+>
+> **§3.8's sign-off form — CONFIRMED on all three checks.** Honest `FAIL`s are preserved
+> and the live `PASS` quotes two of them unedited; the verdict is one token, with every
+> unearned bound listed **inside** the `PASS`; and the described elements are a **floor**
+> that `SC-5` (no ratio at all) and `SC-8` (the unreachable-instrument register, which
+> has no counterpart in the list) exceed by design, the compensating control being that
+> both are committed criteria in my own write scope. **One correction: the form omits the
+> external anchor, and the document omits it everywhere** — measured. It is
+> constitutional (`PROTOCOL` §10), a charter precondition, and `SC-6` of the one
+> sign-off. As written, §3.8 exports a sign-off under which an **unanchored oracle may
+> grade an artifact**.
+>
+> **§4.3's relay classes — CONFIRMED**, and the practice is mine to exercise and to
+> police; two source-checks of relays are in my chain. **One correction: the closing
+> claim that the mechanism has not yet failed in a case that mattered is no longer true
+> of the record.** The same relay silently performed a namespace mapping and reported the
+> mapped name as the record's name — an **unmarked relayer addition, invisible in the
+> artefact**, over the gap that is `REC-7`'s subject — and a later relay was faithful in
+> its quotation while **omitting three findings** the committed act carried. §4.3's
+> marking rule and its source-check rule currently carry **no exhibit**; these are the
+> two, and they are anchorable.
+>
+> **`C-109`'s `PLANNED` stamp stands**: the **auditor's** relay-fidelity sampling has not
+> been performed. It should not be read as *no fidelity check has happened* — two have,
+> by receiving seats, which is a different control that fires only where a receiver
+> happens to look.
+>
+> **Nothing above is adjudicated against `F-0024-A`**, whose CI verdict pends; where the
+> block touches the clause that finding tests, the bound is stated and stopped there.
+> **CONFIRMED, with the four corrections above filed for the owning seat.**
+
+**Handoff**: to the orchestrator for commit as a **journal-only** commit —
+`Files-in-this-commit` is `- (none)`, so `Journal-Only: true`, trailers
+`Agent: dv_lead`, `Work-Order: none`, `Journal-Entry: J-dv_lead-0190` (`R2`, `R6`).
+The block above is the transcribable act; this entry is its tamper evidence. **The four
+corrections are edits to `docs/PROCESS.md` and route to architect_docs_lead**; none is
+performed here.
+
+### Open-questions
+
+1. **Correction 3 (the missing external anchor) is the one I would not ship the edition
+   without.** The other three improve exhibits; this one closes a hole through which an
+   adopter's oracle grades an artifact it was never checked against. **Route**:
+   architect_docs_lead. If the omission is deliberate — the element being judged
+   domain-specific — then say so in the text, because its absence currently reads as an
+   oversight rather than a decision.
+2. **`F-0024-A` (CRITICAL, against my `RV-0041` ruling) is unresolved and its run
+   pends.** My response round is separate and comes with the run id. If it is sustained,
+   §3.9's equivalence bullet keeps its rule and **loses its only measured instance**, and
+   the block may owe a fourth exhibit — the equivalence proof that did not hold. Flagged,
+   not adjudicated.
+3. **`WO-0082` §17.1's date-`u` carve-out remains owed at my next packet revision**
+   (`J-dv_lead-0189`), carried unchanged.
+4. **`C-104`'s referent grew from thirteen bullets to fifteen after the posture was
+   measured.** Substance unchanged; the transcription row is the auditor's, and I record
+   it rather than reasoning from it.
+5. **Annex B.1's second dv row states a criterion for §3.8 and none for §4.3.** I
+   answered against the dispatch's statement of the §4.3 question; if a narrower one was
+   intended, the annex should carry it.
+
+### Files-in-this-commit
+- (none)
