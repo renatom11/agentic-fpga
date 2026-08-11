@@ -4564,3 +4564,45 @@ type error) and accepted.
 ### Files-in-this-commit
 
 - docs/specs/requirements.md
+
+## [J-orchestrator-0257] 2026-08-11T16:19Z | task:none | The flip that records the arc's third generation: the default halved, the additivity headline repaired before its consequence could land beside it - and the disagreement that remains is one sentence about where a correction lives
+
+### Trigger
+
+The architect's adjudication landed at 43c0087 and dv's second §0.5
+countersignature round is dispatched at it. The era block carries the
+window's four landings; this entry records the rulings that are mine
+and the flip mechanics.
+
+### Rulings this window
+
+1. **The ΔC-additivity repair accepted whole** (the round's one
+   uncommissioned edit, flagged for bounce): the Q-3 consequence
+   recital rests on additivity, and publishing a true consequence
+   beside a false headline is the same defect twice. Same acceptance
+   class as the C-RL-8 whole-diff and the §13-preamble rulings —
+   grounds sound, edit inside the commissioned section, separability
+   stated by the author.
+2. **The Q-4 location disagreement routed, not ruled**: the architect
+   adopted dv's ground and refused dv's location (in-cell sentence vs
+   new row) on the frozen-record rule. Both positions are principled;
+   dv's one-sentence response is in its running dispatch; if dv
+   concurs the architect's next round mints the row, and if it
+   contests I adjudicate with both grounds in hand.
+3. **CI adjudication recorded**: 9a596e7 green at run 31509229965 —
+   dv's monitor repair and both changed expect blocks hold; the
+   scratch-driver replication method (compile the changed bodies
+   verbatim against repaired sources when dune is unavailable) worked
+   and is precedent.
+4. **NEXT-list rule**: complied by explanation again — the 3951b05
+   rewrite still names the live fronts (57/82 toward SO-M04, M06/M07
+   review, BAR T1, the gate, PR #3); nothing moves this flip.
+
+### Files-in-this-commit
+
+- tasks/BOARD.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
