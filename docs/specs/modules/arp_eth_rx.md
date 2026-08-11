@@ -692,12 +692,21 @@ after the payload `tlast` word; for a frame with no payload frame it is one
 cycle after the **next** `hdr_valid` pulse, which is the only event that can
 close it.
 
-*That last case is inside requirements.md §0.6's window only vacuously*, because
-a frame with no payload has no "input word carrying the last octet of the
-offending frame" for the window to be measured from — the same vacuity
-carry-forward **C-5** records against `error_underflow` (SPEC-M04 §11.3). This
-specification does not depend on the window: the pulse cycle above is exact and
-computable from the input trace alone, so a bench needs nothing from §0.6 here.
+*That last case has a reference word and the window is determinate on it —
+corrected 2026-08-11, this paragraph having said the opposite* (§13; the same
+misreading `FINDING ABS-1` convicted at requirements.md §0.6 and at SPEC-M04
+§11.3, which this paragraph cited as its authority). A frame with no payload
+frame receives **no octet at all** at this port, which is precisely §0.6's
+**third** clause: the reference word is then the input word carrying the event
+that closed the packet — here the next `hdr_valid` pulse — and the ceiling is ΔC
+beyond it. The window is therefore not vacuous but **redundant**, which §0.6's
+own note for that clause states: the pin above is one cycle after the closing
+event and the ceiling is ΔC beyond the same event — §7 pins ΔC = **4** here — so
+the pin lies well inside the window as a matter of arithmetic, and a green
+against the window is evidence about the window and none about the pin. **The conclusion this paragraph drew does not move**:
+this specification does not depend on the window, the pulse cycle above is exact
+and computable from the input trace alone, and a bench that wants that cycle
+asserts that cycle (§0.6, *"a bound, never a licence"*).
 
 **Which conditions can co-occur on one packet, and what then pulses.**
 
@@ -792,3 +801,4 @@ witnesses this revision's interface.
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
 | 2026-08-11 | **The per-octet-under-injection reading retired by requirements.md §0.5 is repaired at all four sites §13's 2026-08-04 row named for M10, and §7 now names D.** §7's handshake bullet: *"Idle gaps on the payload input (REQ-016) delay everything by exactly 8 octet times per cycle and change nothing else"* is replaced by §0.5's per-output-event rule, with a one-row table — M10 has exactly one output event per opened packet — naming the **deciding input word D** as *the earliest of the payload word carrying ARP octet 27 and the word carrying the event that closed the packet*, which is §6.1's own "earliest of" pair, at a delay of **1 cycle**. §7's latency bullet scopes L = 32 to a gapless stimulus and states the verdict: M10 **fails** §0.5's late-decision test and is that test's worked instance. §3's REQ-016 row and §6.1's gapped paragraph, which both asserted the retired claim in their own words, are repaired with them; §10's REQ-016 hook, which commissioned *"asserting the **constant** of §7"*, commissions the achievable observable instead. **The DRAFT sentence above this table is repaired in the same diff** | no — **no cycle this specification pins moves**: §6.1's table and its `Cp + 4`, §7's L = 32 / h = 0 / ΔC = 4, §9's report cycle and the interface records are untouched, and M10 has no RTL and no bench. What changes is what a bench may assert under injection | none — the retired reading is arithmetically unsatisfiable at a late-deciding module rather than rejected among live alternatives; `requirements.md` §13's 2026-08-04 row gives the same ground for the ruling this discharges | `J-architect_docs_lead-0038` |
+| 2026-08-11 | **§9's vacuity paragraph is corrected: the no-payload case has a reference word, and the window there is redundant rather than vacuous.** The paragraph read *"That last case is inside requirements.md §0.6's window only vacuously, because a frame with no payload has no 'input word carrying the last octet of the offending frame' for the window to be measured from — the same vacuity carry-forward **C-5** records against `error_underflow` (SPEC-M04 §11.3)"*. Both halves are wrong. §0.6's **third** clause — *"a frame that received no octet at all takes its closing word"* — was written for exactly this class and names the input word carrying the closing event, here the next `hdr_valid` pulse; and the SPEC-M04 case it cited as the same vacuity is not vacuous either, which is what `FINDING ABS-1` (dv_lead, `J-dv_lead-0173` §(c), ruled at `J-architect_docs_lead-0040`) convicted at requirements.md §0.6 in the same round. The paragraph now states the determinate reference word and the reason the window is worth nothing here anyway — the pin is the closing event + 1 and the ceiling is the closing event + ΔC = 4 (§7), so the pin sits well inside the window and a green against the window is evidence about the window and none about the pin (§0.6's *"a bound, never a licence"*). **This site was not in the finding's site list**: it was found by a census this round ran over every specification for the retired ceiling phrase, which is the survey carry-forward item 50 has been asking for; ABS-1 named two sites, the census found four, and this is the fourth | no — **editorial**: the paragraph's conclusion is unchanged (this specification does not depend on §0.6's window), the pinned pulse cycle, ΔC, L, h and every strobe are untouched, and no bench asserts the window here | none — a false ground under a true conclusion is a correction of record; requirements.md §13's 2026-08-11 `ABS-1` row carries the ruling that reaches all four sites | `J-architect_docs_lead-0040` |
