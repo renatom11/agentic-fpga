@@ -3288,3 +3288,562 @@ own round citing this entry.
 
 - rtl_snapshots/xgmii_rx_64.v
 - rtl_snapshots/eth_mac_10g.v
+
+## [J-rtl_lead-0013] 2026-08-11T01:20:00Z | task:none | This seat's first lessons harvest, walked end to end over J-rtl_lead-0001 … -0012: fifty candidates minted at the walk from a chain that had banked none, sixteen war stories, and the commissioned worker span declared nil with the decision that emptied it
+
+### Trigger
+
+Orchestrator dispatch, branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`,
+spawn-head `2d47871` (verified: `git rev-parse HEAD` = `2d478718e33744db03afaeafc063f9ec2746ea29`,
+an exact match, so no rollback or descendant check was reached). The dispatch is
+the asking that `FINDING SO-5` says never happened. dv_lead's `SO-xgmii_rx_64`
+verdict is **FAIL** on two criteria, and the second is `SC-12`: PROTOCOL §7 makes
+the lessons harvest a **five-agent** act at every sign-off, and four of the five
+persistent-journal agents — architect_docs_lead, **rtl_lead**, auditor,
+orchestrator — "have never harvested and have never been asked to"
+(`SO-xgmii_rx_64` §8.1, §8.2 item 2). This entry is my fifth of that act.
+
+**Concurrency**: dv_lead's traceability delivery and the auditor's,
+architect_docs_lead's and tb_writer's rounds may be in flight. I wrote exactly
+one file — this journal — and nothing else, so nothing I did can collide with
+any of them.
+
+### Inputs
+
+- `agents/charters/rtl_lead.md` (§3 red lines, §5 DoD, §7 escalation classes,
+  §8 including the **Harvest notes** clause added at `564420f`);
+  `agents/PROTOCOL.md` (§4 entry grammar, §5 R1–R11, §6 write scopes, §7 **Lessons
+  harvest** as amended, §10 independence).
+- `docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md` **in full,
+  including Amendment A1** — §3.2 (the span as an interval), §3.3 (who mines; the
+  commissioning lead mines the worker spans it commissioned), §3.4 (LH1/LH2/LH3),
+  §3.5 (war stories kept), §7.1/§7.2/§7.5 (theatre, self-exculpation, the word
+  collision), §A1.1–A1.3 (the three tiers and the classifier), §A1.8 (the domain
+  grade's failure modes).
+- `docs/gates/lessons-harvest-block.md` — §2's bar table, §2.1's classifier, §3's
+  block, §4's transcriber notes (the two mirror-line signals).
+- `agents/handoffs/SO-xgmii_rx_64.md` §4 in full — §4.1 (form and destinations),
+  §4.2 (the span rule), §4.3 (**the method I executed**), §4.4–§4.8 (dv's walk,
+  yield, war stories, worker spans and instantiated block). Read as method and as
+  the neighbouring seat's yield, so I could declare overlaps rather than
+  re-mint them.
+- **My own chain, read end to end, every entry in full**:
+  `agents/journals/claude_rtl_lead_agent.md`, `J-rtl_lead-0001` … `-0012`,
+  3,290 lines / 212,819 bytes, one volume (no rotation has occurred; ADR-0017
+  §3.2's volumes are a storage fact and this chain has one).
+- `agents/journals/workers/claude_rtl_module_dev_agent.md` — the worker template
+  I commission, read in full: 11 lines, header only, **zero entries**.
+- No `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`, `test/**` or `docs/specs/**`
+  file was opened this round: the harvest's subject is my record, not my RTL.
+- **No Essenceia/Nasdaq-HFT-FPGA material consulted**, for this or anything in it
+  (charter §8, Inputs honesty).
+
+### Reasoning
+
+#### 1. The span, and the measured reason it has never been mined
+
+**Span mined: `J-rtl_lead-0001` … `J-rtl_lead-0012`.** First harvest, so by
+ADR-0018 §3.2 it opens at my first entry; it closes at the last entry before this
+note, which is `-0012`. **This note is carried in `J-rtl_lead-0013`, and my next
+harvest opens at `J-rtl_lead-0013`** — stated so the intervals tile without a
+reader having to guess whether the signing entry was inside or outside its own
+span. (dv's note states its span as `J-dv_lead-0001 … -0165` with `-0165` the
+signing entry; the two conventions differ by one entry, and saying which I used
+is what keeps the tiling checkable rather than conventional.)
+
+**No dv-style bank reconciliation was possible here, and the measurement says
+why.** dv's §4.3 faced four labelling regimes and five accounting defects because
+its chain had been banking candidates for sixty-seven entries. Mine had banked
+**none**:
+
+    $ git show 2d47871:agents/journals/claude_rtl_lead_agent.md \
+        | grep -cE "LH1|LH2-g|LH2-d|LH3|LH-cand|LC-|LD-|lessons harvest"
+    0
+
+Every occurrence of "harvest" in my chain is the **other** sense — the
+snapshot-promotion harvest at `J-rtl_lead-0008` and `-0012` ("the orchestrator
+harvested both promoted snapshots", "the orchestrator's decoded, sha-verified
+harvest of run 30918948889"). That is ADR-0018 §7.5's named collision, observed
+in a second chain independently of dv's.
+
+**And the reason is not negligence, which is a stronger claim here than dv could
+make.** dv's first ninety entries predate ADR-0018; **all twelve of mine do.**
+Measured:
+
+| artefact | commit | UTC |
+|---|---|---|
+| my last entry, `J-rtl_lead-0012` | `42b9df3` | 2026-08-04 14:48:57 |
+| ADR-0018 lands | `ec5d906` | 2026-08-04 17:09:48 |
+| charter §8 gains the harvest clause | `564420f` | 2026-08-04 17:11:45 |
+
+`git merge-base --is-ancestor 42b9df3 ec5d906` succeeds. **The obligation did not
+exist during any round of my span, and this seat has not been activated for a
+work round since.** So the correct reading of the four-fifths gap `FINDING SO-5`
+records is not that four agents skipped a duty; it is that the duty's first
+firing was owed at the first sign-off and was dispatched to one seat of five.
+Nothing in my span was withheld — there was nothing yet to withhold it from.
+
+**The consequence for the method**: the fifty candidates below are **minted at
+this walk**, not extracted from prior notes. There is no earlier total of mine to
+reconcile, no old label to carry beside a new one, and **no figure anywhere in
+this note that was not produced by reading all twelve entries**. Where a number
+appears it is either counted by a command reproduced in Evidence or counted by
+the table it summarises.
+
+#### 2. How I read LH1, stated before I apply it
+
+ADR-0018 §3.4's test is *"a reader at the cited SHA can see the thing going
+wrong."* My chain contains two structurally different kinds of teaching round,
+and collapsing them would either inflate the yield or throw away half of it, so I
+mark every candidate with which kind it is:
+
+- **(F) failure-visible** — a reader at the cited SHA sees a defect: wrong RTL,
+  a false justification in the source, a check convicting a correct artefact, a
+  premise that a later ruling falsified. The strict reading of LH1.
+- **(C) cost-visible** — no defect exists at that SHA; what the reader sees is a
+  decision, the alternative rejected, and the failure mode the entry **names and
+  prices**. Weaker, and I say so: **(C) is the first thing an auditor sampling
+  this note should pull**, because it is the class where a preference can dress
+  as a lesson.
+
+Where a candidate was (C) at the round that taught it **and my own span later
+supplied the failure**, I attach both SHAs and grade it (F). That happened four
+times and it is the most useful thing the walk did: candidates **2, 4, 5 and 9**
+each began as a hazard I had avoided and named, and each was later met by an
+incident in my own span — most sharply candidate 5, where the elasticity I
+rejected at the second entry entered under a ruling at the tenth and cost, at the
+eleventh, very nearly what the rejection had priced.
+
+**Anything that is neither (F) nor (C) — a rule with no inspectable incident
+anywhere in my span — is a war story on LH1 and goes no further.** Sixteen items
+went that way, including several I would have preferred to keep. §5 lists them
+with the criterion each failed.
+
+**Split of the yield: 40 (F), 10 (C).**
+
+#### 3. The classifier, run from the most general honest statement
+
+Step 0 was attempted for all sixty-six items offered (fifty banked + sixteen
+refused). **All fifty survivors passed step 1 with no proper noun**, so the
+yield is **50 `LC-`, 0 `LD-`**, and the block's §4 mirror line obliges me to say
+what that means rather than let it pass.
+
+**My reading, and it is not the flattering one.** ADR-0018 §A1.8(2) warns about a
+yield that is all `LD-`; mine is the inverse, and it deserves the same suspicion,
+so I attempted the domain grade deliberately on the three candidates most likely
+to need it — 5 (a stage that cannot refuse input), 34 (an event inferred from
+absence), 38 (a per-event delay rule and causality). **Every general statement
+survived the hide test**, so by the tie-break the domain noun was decoration and
+`LC-` is the correct routing, not a shortcut past tier 2.
+
+There is a second, structural reason and it is worth recording for whoever mines
+this seat next: **the proper nouns in my chain are overwhelmingly *project*
+nouns** — module ids, requirement ids, signal and port names, spec section
+numbers, carry-forward ids. Those are refused at classifier **step 2**, not
+rescued at step 3. A candidate of mine that cannot be stated generally is
+therefore almost never a domain candidate; it is A1.8(4)'s *domain noun that is a
+project fact in disguise* — "this repository's reading of a standard at a spec
+section" — and it lands in tier 3. **The domain grade was available and was not
+needed; it was not unavailable.** If a later rtl_lead harvest yields `LD-`
+candidates, the likely pack is a framing/alignment one, and this note names no
+pack because it mints none.
+
+#### 4. The self-critical mirror (ADR-0018 §7.2), applied to myself
+
+§7.2 names the finding shape: *a span containing a self-reported defect whose
+harvest note contains no self-critical candidate.* My span's defect record,
+counted rather than characterised:
+
+- **4** defects found by my own review and fixed before return (`f840475`).
+- **2** conformance defects against text frozen all along, surfaced by pricing
+  architect rulings — the closure-per-word reading (`d57e028`) and the
+  sub-five-octet strobe (`1434f27`), the second of which I had escalated myself
+  and then shipped the old behaviour meanwhile.
+- **3** CRITICAL `BUG-` packets from dv_lead, all against M03, all mine
+  (`0b64b68`, `ce00c06`, `b848d56`), each with a Root-cause section stating why
+  my own review missed it.
+- **1** second root cause found by building a fix I had been told to verify
+  rather than rebuild (`fafb83d`).
+- **1** of my own published predictions graded half wrong, by me (`b848d56`).
+- **1** relayed diagnosis refuted — **not** my defect (`ad3a042`).
+
+**Of the fifty candidates, thirty-one convict my own conduct or my own
+artefact** (2, 4, 6, 15, 16, 17, 18, 21, 22, 23, 24, 27, 28, 29, 30, 34, 35, 36,
+37, 40, 41, 43, 45, 48, 49, 50, plus 1, 5, 10, 25, 26 in their failure halves).
+The sharpest three are **17** (preserving behaviour while escalating is a
+decision that ships), **21** (a justification arguing from a value the
+implementation produces) and **37** (a repair lends its quantity unearned
+authority elsewhere) — and none of them would exist if this note had been written
+to look tidy.
+
+#### 5. Overlaps with the neighbouring seat, declared rather than merged
+
+I read dv's §4.5 yield before writing mine, for one reason: to declare relations
+rather than re-mint. ADR-0018's merge rule is **same rule, never merely shared
+subject**, and I hold no authority to merge into another agent's bank, so these
+are **declared to the collator and merged nowhere**:
+
+| mine | dv's | relation |
+|---|---|---|
+| 25 (evidence outside the committed tree is labelled at citation) | `LC-SO-xgmii_rx_64-84` (a check resolves references against the versioned tree) | same hazard, opposite ends — the check's duty vs the citation's |
+| 16 (run the whole clause over the artefact) | `-27` (a rule minted in a document is run over the rest of that document) | same shape, different object: source clause over artefact vs minted rule over its own text |
+| 31 (a prediction names what would refute it **and what that convicts**) | `-72` (a prediction is spent by a comparison that could falsify it) | dv's is about spending, mine about attribution of the refutation |
+| 40 (an instruction calling part of the artefact correct is a prediction) | `-28` (open the source before writing a characterisation of it down) | nearest neighbour in the corpus; different object (artefact under change vs source document) |
+| 50 (an undischargeable obligation is restated every round with its reason) | `-81` (a carried-obligation list goes stale like any measurement) | complementary: mine is the restatement duty, dv's the staleness of the list |
+| 23 (choose checked members by the rule's boundary) | `-46` (predict detection on the defect's firing condition, not the tests' category) | same insight from the design side and the verification side |
+| 4 (a finding count is evidence a review ran, never of what it covered) | ADR-0018 §3.5 (*a bar nothing fails does not select*) | mine is the converse: **a bar that fails something is not thereby exhaustive** |
+
+**One cross-seat pair worth the collator's attention.** dv's `-25` was merged
+across seats (`J-dv_lead-0122` + `J-tb_writer-0028`) because the same rule was
+taught from the reviewer's and the executor's ends. My **12** (never edit the
+check that grades your own output, even when you are right about it) is the
+designer's end of the same separation dv's bank approaches from the verifier's;
+it is **not** the same rule and I do not offer it as a merge, but the two read
+together.
+
+#### 6. THE YIELD — fifty candidates, ids `LC-rtl_lead-H1-<n>`, in entry order
+
+**On the id form.** dv has already minted `LC-SO-xgmii_rx_64-1 … -94` at this
+same sign-off. A second seat minting the same tag would collide in the collator's
+table on every id. I follow the data_wrangler's precedent (`LC-data_wrangler-H1-<n>`,
+`J-data_wrangler-0009`) and use a **seat-scoped tag**: `LC-rtl_lead-H1-<n>`,
+`H1` = this seat's first harvest. `LD-` is unused this round and is reserved
+numbering independently. **Ids are never reused.**
+
+All fifty are grade **LH2-g**, domain pack **—**. LH2's statement discipline is
+discharged in the statement column itself: no module, requirement, carry-forward,
+signal, port, packet, entry or path name appears in any of the fifty rule
+statements. **LH1** is the SHA column plus the entry, with (F)/(C) per §2.
+**LH3** is the last column.
+
+| id | rule statement (most general honest form) | LH1 | LH3 — what breaks without it |
+|---|---|---|---|
+| `LC-rtl_lead-H1-1` | Where a task instruction and the frozen source it derives from disagree about a deliverable, the source governs and the disagreement is returned as a question — an instruction is a summary of the source, and a summary that has gone stale is not an authority. | (F) `189d5b2` / `-0001` | The executor resolves toward whichever is convenient, the divergence is visible nowhere, and a check written against the source fails later at a point where its cause is no longer local. |
+| `LC-rtl_lead-H1-2` | Where an author is barred from testing their own work, prefer the formulation a reviewer can check against the requirement **by reading** over the one that is smaller or faster but whose correctness lives in a derivation only the author performed. | (F) `189d5b2` decision, failure at `1434f27` / `-0001`, `-0006` | The private derivation's error is invisible to review and to the author's own inspection, and surfaces only at the independent oracle — after every later decision has been built on it. |
+| `LC-rtl_lead-H1-3` | When the role that normally reviews a class of work performs that work itself, the record names the review that consequently did not happen and the controls standing in its place. | (C) `f840475` / `-0002` | A later gate counts the self-review as an independent one, and the coverage claim is inflated by exactly the reviews that never occurred. |
+| `LC-rtl_lead-H1-4` | A review's finding count is evidence that the review **ran**, never evidence of what it **covered**; state what was checked and what was not, because a review that reports defects reads as thorough whether or not it was. | (F) `f840475` (four found and reported) against `0b64b68`, `ce00c06`, `b848d56` (three later criticals in the same artefact) / `-0002`, `-0007`, `-0009`, `-0011` | Findings are read as coverage; the untouched region is invisible precisely because the touched region reported well. |
+| `LC-rtl_lead-H1-5` | Where a stage cannot refuse its input, prefer a structure whose delay is a constant of the design over one whose delay is a function of occupancy — an occupancy-dependent delay turns every pinned timing figure into a function of input history. | (F) `f840475` (rejected), arrived at `fafb83d`, cost at `b848d56` / `-0002`, `-0010`, `-0011` | Elasticity enters later under a ruling, and the pinned figures it was keeping constant become stimulus-dependent — which is discovered as a defect in the elastic stage rather than as the price of elasticity. |
+| `LC-rtl_lead-H1-6` | A capacity or depth bound records the premise about the input that it was derived from, at the bound. | (F) `f840475` premise, falsified at `d57e028` / `-0002`, `-0005` | The bound survives the change that invalidates its premise, because nothing tells the changing party that the bound depended on them. |
+| `LC-rtl_lead-H1-7` | Before returning "the source is silent" on a question, search the whole source for the fact rather than the section the asker named — the section pointer is the asker's model of the document, not the document. | (F) `7322c9c` / `-0003` | A fact already fixed elsewhere in the source is invented a second time, and two names now exist for one thing with no rule saying which wins. |
+| `LC-rtl_lead-H1-8` | An artefact a build produces is never hand-authored, and never post-processed, to satisfy a check — however small the edit and however correct the artefact already is. | (C) `7322c9c`, `ad3a042` / `-0003`, `-0004` | The check becomes a test of the post-processing; the false green is permanent, because nothing downstream can distinguish a generated artefact from an edited one. |
+| `LC-rtl_lead-H1-9` | A prediction about a run states what must **not** move as well as what must; the negative half is the control, and without it every observed change is absorbed by the prediction. | (F) `7322c9c` predicted, red landed elsewhere at `ad3a042`, negative half clean at `750be49` / `-0003`, `-0004`, `-0008` | Any failure is triaged as "the expected one", and a second genuine defect arriving in the same run is consumed by the prediction that was meant to expose it. |
+| `LC-rtl_lead-H1-10` | A defect report's stated cause and its proposed repair are the reporter's model of an artefact the reporter usually cannot see; re-derive the mechanism from the artefact before acting on either — and where the model turns on a distinction between two cases, an artefact already committed usually decides it. | (F) `ad3a042`, `d57e028` / `-0004`, `-0005` | The repair is chosen against a distinction that does not exist; it does not fix the failure, and it spends the expensive round that would have found the real mechanism. |
+| `LC-rtl_lead-H1-11` | When a hypothesis is refuted, look for a second refutation that does not share the first's assumptions, and record both. | (C) `ad3a042` / `-0004` | The single supporting artefact is later found unrepresentative and the whole verdict falls with it, with no independent line of argument left standing. |
+| `LC-rtl_lead-H1-12` | A party may not edit the check that grades its own output, **even when it is right that the check is wrong**; it states the defect and the repair as a position and routes them to the check's owner. | (F) `ad3a042` / `-0004` | The record cannot distinguish a correct widening from a self-serving one, so every later reader must re-derive the merits from scratch — and the separation the check existed to enforce is gone whether or not the edit was right. |
+| `LC-rtl_lead-H1-13` | Where a pipeline judges an artefact before the step that publishes it, a failure suppresses its own evidence; publish first and judge second, or the first real failure is undiagnosable. | (F) `ad3a042` / `-0004` | The artefact cannot be published because the check fails on it, and the check cannot be diagnosed because the artefact was never published — a deadlock that becomes permanent the moment anyone works around it once. |
+| `LC-rtl_lead-H1-14` | A check written against the only artefact that existed encodes that artefact's incidental shape as a rule; when the first real subject arrives, the first failure is more likely the check's calibration than the subject's defect — and the check's own comment usually names the qualifiers that were calibrated. | (F) `ad3a042` / `-0004` | The first genuine subject is convicted by a rule that was only ever a description of the bootstrap, and the repair is applied to the subject. |
+| `LC-rtl_lead-H1-15` | An ambiguity resolved in the implementer's favour and declared is not thereby licensed: when it is later ruled the other way, the artefact was non-conformant from the moment it shipped — the round that prices the ruling is a defect discovery, not a change request. | (F) `d57e028` / `-0005` | The work is scheduled and costed as an optional change when it is an owed repair, and every check that passed over the interval is quietly reclassified from "green" to "blind". |
+| `LC-rtl_lead-H1-16` | When a defect is traced to a clause of the source, run the **whole** clause over the artefact; a clause with several cases is repaired in all of them, or the repair is a new and narrower deviation from the same sentence. | (F) `d57e028` / `-0005` | One case is fixed, its siblings under the same sentence stay broken, and the closed report now says the sentence is satisfied. |
+| `LC-rtl_lead-H1-17` | Leaving behaviour unchanged while escalating the question about it is a decision that ships, and it needs the same argument a change would need. Escalating and shipping the old behaviour meanwhile are two acts; only the first is usually recorded. | (F) `d57e028` shipped, convicted at `1434f27` / `-0005`, `-0006` | The escalation is on the record and reads as diligence, while the unargued half is what the artefact actually does until the ruling lands — and it can be wrong for the whole interval. |
+| `LC-rtl_lead-H1-18` | A justification written at a site is an assertion with a lifetime. When the premise it rests on moves, the justification becomes a defect: a change that repairs the behaviour and leaves its now-false reasoning standing has shipped a second one, and it is the one the next reader will trust. | (F) `f840475`→`d57e028`; `1434f27`; `fafb83d`→`b848d56` / `-0005`, `-0006`, `-0011` | The stale reason survives every later review because it reads as the design's own argument, and the next author extends the design along it. |
+| `LC-rtl_lead-H1-19` | When a computed value is ruled out of scope, remove the computation rather than gate its report; a correctly-scoped report over a still-computed value leaves the value available one hop away with its scope now detached from it. | (C) `1434f27` / `-0006` | The next consumer picks the value up without the scope that made it meaningful, and the scope is nowhere near the value to warn them. |
+| `LC-rtl_lead-H1-20` | Where two encodings of "this cannot happen" are equivalent after optimisation, choose the absent one over the constantly-false one: the absent form states the impossibility to the next reader, the constant form states only today's value. | (C) `1434f27` / `-0006` | A later change makes the constant non-constant, and no reader was ever told the case was supposed to be unreachable. |
+| `LC-rtl_lead-H1-21` | A justification that argues from a value the implementation happens to produce, rather than from the operands the requirement names, is a defect wearing a comment — a valid inference from a false premise reads exactly like a correct one. | (F) `1434f27` / `-0006` | The false premise is preserved in the artefact **as an argument**, which protects it from every later reader including its author. |
+| `LC-rtl_lead-H1-22` | Where a specification declares a class of inputs value-independent, an implementation whose observable varies with the values in that class is defective at **every** member — including the members where the value happens to give the right answer. Such a class is discharged by argument over the class, never by sampling it. | (F) `1434f27` / `-0006` | The sampled member passes by arithmetic accident and the accident is recorded as coverage; the class is then believed checked. |
+| `LC-rtl_lead-H1-23` | The members a hand-check is run on — whether inherited from the source's worked example or chosen by the author — are systematically the ones the mechanism already explains. Choose members at the boundary of the rule, and name the branches the chosen members do not reach. | (F) `1434f27`, `0b64b68` / `-0006`, `-0007` | The check is anchored on the cases that cannot discriminate and reports clean, and the clean report is what the next stage relies on. |
+| `LC-rtl_lead-H1-24` | Before repairing a reported observable, enumerate every site that produces it. A repair applied at one of several producers is worse than no repair, because the remaining producers now fail in a condition the closed report says was fixed. | (F) `1434f27` / `-0006` | The bug is closed, the siblings stay open, and their next appearance is triaged against a report that says this cannot be it. |
+| `LC-rtl_lead-H1-25` | Evidence produced by running something that is not in the committed tree is labelled with that fact at the point it is cited. A command that cannot be re-executed at the commit is a report, not evidence, and only the label distinguishes them. | (F) `1434f27` / `-0006` | A citation that cannot reproduce is inherited as one that can, and the first party to try it concludes the artefact changed rather than that the evidence was never portable. |
+| `LC-rtl_lead-H1-26` | Where several writers share one working tree, a claim of confinement is made over the paths the claimant owns — never over the tree being otherwise quiet. A whole-tree cleanliness claim is false the moment a concurrent writer exists, and it is the claim most likely to be copied forward unchecked. | (F) `1434f27` / `-0006` | A blanket stage sweeps another party's work into this one's unit, and the attribution the whole record rests on is wrong in a way no later reader can unpick. |
+| `LC-rtl_lead-H1-27` | A guard that is correct in isolation can be defeated by the **lifetime** of the state it reads; when a guard fails, establish when its input is valid relative to when the guard is evaluated, before changing the guard's condition. | (F) `0b64b68` / `-0007` | The condition is rewritten to cover a case it already covered, the real cause — an earlier consumer clearing the state — survives, and the widened guard now misfires elsewhere. |
+| `LC-rtl_lead-H1-28` | A specification's own worked example is not a test of an implementation: it is the case its author found easiest to write out, and it is systematically the case in which the implementation's branches do **not** separate. | (F) `0b64b68` / `-0007` | Self-review anchors on the one directed case the source supplies, finds it correct, and reports clean over every branch the example never enters. |
+| `LC-rtl_lead-H1-29` | A repair also states, at the site, the fact the design's own narrative had no vocabulary for — because that vocabulary is what determines which review questions get asked, and a defect the narrative cannot express is invisible to review by construction. | (F) `0b64b68`, `fafb83d` / `-0007`, `-0010` | The code is fixed and the reasoning that produced the defect is left intact, so the next consumer of the same relation reproduces it with no reason to look. |
+| `LC-rtl_lead-H1-30` | When a measurement disagrees with the artefact on one entry out of many and agrees on the rest, suspect the instrument's observation point before the artefact; the discriminator is whether the disagreeing entries share a **timing** relation rather than a value relation. | (F) `0b64b68` / `-0007` | A correct artefact is changed to satisfy an instrument's sampling artefact, which corrupts the design and hides the instrument defect behind the repair. |
+| `LC-rtl_lead-H1-31` | A prediction published before a run earns its keep by naming the observation that would refute it **and what that observation would convict**; a prediction that says only what should happen cannot fail informatively. | (F) `0b64b68` / `-0007` | The run comes back ambiguous and the party who wrote the prediction gets to choose, after the fact, which of their claims it tested. |
+| `LC-rtl_lead-H1-32` | Reviewing a generated artefact by line diff measures the generator's naming scheme, not the change. Compare a representation invariant under the generator's incidental choices, and state the normalisation — a reviewer without it will either wave through a large real change or challenge a small one. | (F) `750be49`, `42b9df3` / `-0008`, `-0012` | Thousands of changed lines for a handful of real ones is read as either "all mine" or "something is wrong", and both readings are guesses dressed as review. |
+| `LC-rtl_lead-H1-33` | A landing that publishes an artefact a later process must reproduce states that reproduction as its **own** success criterion, and names itself as the thing to revert if it fails. | (C) `750be49` / `-0008` | A non-reproducing artefact is triaged as a defect of whatever produced the mismatch, rather than of the landing that put an unreproducible object in the record. |
+| `LC-rtl_lead-H1-34` | Where an event is available, do not infer it from the absence of data. An absence coincides with the event only while the input is dense, and that coincidence is exactly what carries the substitution through every review. | (F) `ce00c06` / `-0009` | A gap in the input makes the absence momentarily true, and the consumer acts on an event that did not occur — while the state machine that owns the real event never moves, so nothing else reports it. |
+| `LC-rtl_lead-H1-35` | Where two conditions coincide on every input a system has been exercised with, name which of them each decision is keyed on and the input property that separates them; the separating input is the whole of the untested space. | (F) `ce00c06`, `fafb83d`, `b848d56` / `-0009`, `-0010`, `-0011` | Three different decisions key on three different halves of the same coincidence, and each is discovered separately, as its own critical defect, by the first input that separates them. |
+| `LC-rtl_lead-H1-36` | Designing one side of a rule deliberately does not carry to the other side. Where a rule constrains both an input decision and an output decision, each is written against the rule separately — the second is the one that inherits its correctness by assumption. | (F) `ce00c06` / `-0009` | The deliberate half is cited as evidence the feature was designed, and the assumed half is where the defect is. |
+| `LC-rtl_lead-H1-37` | A repair that reasons carefully about a quantity in one branch lends that quantity unearned authority in every other branch that reads it; after a repair, re-examine the quantity's other consumers. | (F) `ce00c06` / `-0009` | A later reviewer sees a quantity that a recent careful argument relied on and treats its other uses as load-bearing rather than accidental — so the repair hardens the defect next door. |
+| `LC-rtl_lead-H1-38` | A timing rule stated per output event is checked for consistency across stimuli that share a prefix. Where two stimuli identical through a point pin contradictory behaviour at or before it, the rule is unsatisfiable by any causal implementation, and the finding belongs to the rule and not to the implementation. | (F) `ce00c06` / `-0009` | The implementation is repaired again and again against a requirement no implementation can meet, and each round is scored as another failure of the implementer. |
+| `LC-rtl_lead-H1-39` | When fixing a defect exposes a defect in the instrument or the rule that convicted you, fix the first without contesting it and report the second separately, with its proof; bundling the two makes the report read as a defence of the artefact and it will be discounted as one. | (C) `ce00c06` / `-0009` | The genuine finding is filed with the excuse and dies with it, and the unsatisfiable rule stays in force. |
+| `LC-rtl_lead-H1-40` | An instruction that characterises part of an artefact as already correct is a prediction, not a fact — its author has not run the change. Verify it at the level the change will exercise. | (F) `fafb83d` / `-0010` | The unverified region is the one the change moves, and the resulting defect is attributed to the change rather than to the assumption that region was fine. |
+| `LC-rtl_lead-H1-41` | Where two conditions agree on every case the current tests reach, implement the one the source **names**, not the one that is simpler: the cases in which they differ are exactly the cases the clause was written to pin, and their agreement is evidence about the test set, not about the conditions. | (F) `fafb83d` / `-0010` | The simpler condition ships as a silent deviation and is correct on everything anyone runs, until the configuration the clause existed for is exercised. |
+| `LC-rtl_lead-H1-42` | A round instructed to stop and report if a named cost is incurred says explicitly that it was not incurred; silence on a watched condition reads as "not reached" to an optimistic reader and "not checked" to a pessimistic one, and both are guesses. | (C) `fafb83d` / `-0010` | The watched condition's status is unknown at exactly the point a later decision assumes it. |
+| `LC-rtl_lead-H1-43` | A guard on the **number** of items produced cannot see a defect that substitutes one item for another. Where a defect class conserves the quantity a guard counts, that guard's green is evidence about the conservation; state, per guard, which quantity it cannot see. | (F) `b848d56` / `-0011` | The count is right, the terminal marker sits in the right place, and every octet in between is wrong — with a green guard standing over it. |
+| `LC-rtl_lead-H1-44` | A disjunction offered as exhaustive by a party who cannot see the artefact is a hypothesis about its structure; check for a third case in which the observable is conserved by two errors that cancel. The refusal may be right and its ground wrong, and only the ground transfers to the next round. | (F) `b848d56` / `-0011` | The correct conclusion is banked together with the incorrect reasoning that reached it, and the next round reuses the reasoning. |
+| `LC-rtl_lead-H1-45` | Grade a published prediction clause by clause. A prediction right about the mechanism and wrong about the consequence is a different lesson from one wrong about the mechanism, and a whole-prediction verdict loses which. | (F) `b848d56` / `-0011` | "The prediction was wrong" retires a mechanism that was correct and had been derived before any measurement existed. |
+| `LC-rtl_lead-H1-46` | Where a corruption is introduced by one stage and repaired by a later one, prefer the change that stops it being produced: the downstream repair must hold the corrupted object while it repairs it, and that storage is the cost the upstream fix does not pay. | (C) `b848d56` / `-0011` | The repair breaks a resource bound that the corruption itself never threatened, and the bound's breach is discovered as a separate escalation. |
+| `LC-rtl_lead-H1-47` | Prefer a change whose non-effect on the untouched configuration is a **textual identity** over one whose non-effect requires a case analysis; the first is checkable by a reader who does not follow the analysis, and it is the claim a regression will be graded against. | (C) `b848d56` / `-0011` | The no-regression claim rests on an argument that must itself be right, and when a regression appears there is no cheap way to tell whether the change or the argument was wrong. |
+| `LC-rtl_lead-H1-48` | When a change may legitimately move a result the changing party is not permitted to inspect, publish **before the run** the discriminator that separates "the change was wrong" from "the old expectation encoded the defect"; afterwards the two are indistinguishable, and the party who can see the result has no basis to choose. | (F) `b848d56` / `-0011` | A moved expectation is settled by whoever speaks first, and a separation of duties that was meant to strengthen the verdict makes it arbitrary instead. |
+| `LC-rtl_lead-H1-49` | Where a correctness argument rests on the order in which a generator composed two changes, check the generated artefact and not the source: the source states the intent, the artefact states the composition, and only the second can be wrong in a way the author cannot see. | (F) `42b9df3` / `-0012` | Two changes that fight produce something that reads correct at the source and is wrong at the artefact, with no reader ever comparing the two. |
+| `LC-rtl_lead-H1-50` | An obligation a round cannot discharge is restated in that round's own record, with the reason it could not be discharged, at every round until it closes — an obligation mentioned once and then dropped is indistinguishable from one that was met. | (F) `7322c9c` … `42b9df3`, ten consecutive rounds / `-0003` … `-0012` | The obligation ages out of everyone's context while the record still says it was raised, and it is rediscovered by whoever is harmed by its absence. |
+
+**LH1 and LH3 are discharged per candidate in the row**, against the entry cited
+and not against a summary line: every one of the fifty names a commit a reader
+can open and a failure a reviewer could recognise elsewhere. **Not one was
+admitted on an entry that lacked either.**
+
+**Three overlap clusters inside my own bank, declared rather than collapsed** —
+each is *related*, not the same rule, so the merge rule forbids merging them, and
+a collator should read them together: the **coincidence cluster** 5 / 34 / 35 /
+41; the **stale-reasoning cluster** 18 / 21 / 29; the **prediction cluster**
+9 / 31 / 45 / 48.
+
+#### 7. THE WAR STORIES — sixteen, each with the criterion it failed
+
+| # | war story | entry | failed | why |
+|---|---|---|---|---|
+| **R1** | the non-re-abstracting signature idiom for a functor application | `-0001` | **LH2-g and LH2-d** | the portable content is a language idiom, not a rule about how work is done; as a domain candidate the pack would be a language ecosystem and the statement a coding convention |
+| **R2** | confirm in writing a naming convention that many later artefacts will depend on, before the first dependent is written | `-0001` | **LH1** | asked and answered; the convention was ratified and nothing was built wrong. Re-offerable the first time an unratified convention has to be unpicked |
+| **R3** | the build profile's fatal-warning set decides which documentation-only bindings may exist | `-0002` | **LH2-g and LH2-d** | toolchain configuration; as a domain candidate it is a project fact in disguise — this programme's lane, not a domain's |
+| **R4** | where an instruction's illustrative example is inconsistent with its normative clause, implement the clause and flag the example | `-0005` | **LH1** | flagged, never ruled, nothing built wrong. Re-offerable if the example is ever ruled against the clause |
+| **R5** | a defect found on a stimulus the current scope forbids is recorded with the reason it is unreachable, and re-checked when the scope widens | `-0005` … `-0012`, carried six rounds unchanged | **LH1** | never reached; there is no incident to point a reader at. Its portable content survives inside candidate 20 |
+| **R6** | foreign files appearing in a shared working tree mid-round | `-0006` | **subsumed** | its portable content is candidate 26, which already carries it |
+| **R7** | a check that is the only one available is cited with the failures it cannot detect, **every** time it is cited, not once | `-0005`, `-0006`, `-0009`, `-0010`, `-0011` | **LH1** | the discipline held at all five citations; there is no round where the weak check accumulated authority. Re-offerable at the first citation that drops the caveat |
+| **R8** | where the record's grammar expects an attribution token and the dispatch omits one, substitute a stated checkable identifier and say what it stands for | `-0010`, `-0011`, `-0012` | **LH1** | three of my spawns carried no short-id, but the protocol owes a lead none, so the omission is not a defect. **Tier-3 disposition: local-accretion candidate** — if lead rounds should carry an attribution token, that is a protocol clause and orchestrator-scope; not adopted by this note |
+| **R9** | a name that suggests a width or cardinality it does not have | `-0012` | **LH3** | the stated outcome is that a reader may be misled, which is a virtue-shaped failure rather than a concrete one |
+| **R10** | prefer the structure in which a pinned figure falls out of the shape over the one in which it is arranged | `-0002` | **LH1** | vindicated by five consecutive changes in which the figure did not drift — the absence of a failure is not an incident. This is the war story I most expect to return with provenance |
+| **R11** | two formulations of a transform used interchangeably carry the argument that they are the same function | `-0001` | **LH1** | the argument was written and nothing shipped reversed |
+| **R12** | a deliverable discharged by making no change is reported as discharged, with its reason | `-0001`, `-0002` | **LH1** | stated twice, and no round in this span shows an unreported no-op being mistaken for an unperformed task |
+| **R13** | an unconstrained input case is written out rather than left to a library default | `-0001` | **LH1** | no incident in my span; the reasoning that taught it belongs to an ADR written by another seat |
+| **R14** | delegating work whose correctness rests on counter-intuitive constraints requires restating every one of them; where that restatement costs more than the work, the work is not delegable | `-0002` | **LH1** | I never delegated, so no packet ever dropped a constraint. **This is the decision that emptied my worker span** (§8) and it is recorded here rather than banked, because its evidence is an absence |
+| **R15** | a precedent established under an explicit temporary allowance may not be copied into work the allowance does not cover | `-0003` | **LH1** | counterfactual — the copy was refused, so no allowance was widened. Its incident-bearing form lives in the neighbouring seat's exception-list cluster |
+| **R16** | where the feedback loop that catches a mistake is expensive, prefer repetition of a construct already proven in this environment over an abstraction that introduces an unproven one | `-0003` | **LH1** | the abstraction risk never materialised; the four copies worked and the one construct I flagged as unsettleable did not redden |
+
+**R6 is subsumed** (its content is banked as candidate 26). **The other fifteen
+are kept and re-offerable** at a later harvest with new provenance, and a re-offer
+cites this harvest as the one that refused it.
+
+**The bar's own evidence, and it bit harder here than next door.** Sixteen
+refusals against sixty-six items offered — roughly **one in four**, against
+dv's one in eleven. I do not read that as a better chain. It is the direct
+consequence of §2's strict LH1: I refused every rule whose only provenance was a
+hazard I successfully avoided, and my span — twelve entries of design and repair,
+with the design decisions dense at the front — is full of those. **Twelve of the
+sixteen failed LH1 and nothing else** (two failed LH2 at both grades, one failed
+LH3, one is subsumed), which is the honest shape of a first
+harvest over a span whose author mostly got it right the first time and whose
+mistakes, when they came, came as three criticals in one module.
+
+#### 8. THE WORKER SPAN I COMMISSIONED — nil, declared, with its cause
+
+PROTOCOL §7 and ADR-0018 §3.3: *a lead also mines the worker spans it
+commissioned*, and says which spawn short-ids it covered.
+
+| worker journal | span, measured at this SHA | harvest notes | yield |
+|---|---|---|---|
+| `agents/journals/workers/claude_rtl_module_dev_agent.md` | **zero entries** — header only, 11 lines, 364 bytes, unchanged since its seeding | — | **NIL, DECLARED** |
+
+**Spawn short-ids covered: none. I have never issued a `WO-` to a worker, and
+`rtl_module_dev` has never been spawned in this programme.** dv's §4.7 routed
+this journal to me explicitly ("zero entries — not mine to mine (rtl_lead's)"),
+so the two notes tile over it rather than both skipping it.
+
+**The nil is not an accident and the cause is in my own record**, which is why it
+belongs in a harvest note rather than in a footnote. `J-rtl_lead-0002` made the
+implement-versus-decompose call for the whole MAC layer and decided all three
+modules myself, on a stated ground: a worker packet must restate the
+counter-intuitive constraints exactly, an imperfect restatement yields RTL that
+compiles, reads correctly and misses the timing contract by one cycle, and
+writing a packet faithful enough to prevent that **is** writing the contract out
+longhand. Every module in this programme's RTL is therefore mine, and the price
+was stated in the same entry: *"none of the three has independent review, and
+self-review is not review."* Candidate 3 is that price banked; **R14** is the
+decision itself, refused for want of an incident.
+
+So this seat's worker-span yield is nil **because of a lesson, not for want of
+one** — and if `rtl_module_dev` is ever activated, R14 acquires its provenance the
+first time a packet drops a constraint, in either direction.
+
+#### 9. What this note does not do
+
+- It **instantiates no checklist block.** `docs/gates/lessons-harvest-block.md` §3
+  is instantiated once per harvest by the collator, into the gate record or the
+  sign-off section; the mining agent supplies a note and the note's authority is
+  this entry. Instantiating it here would put a second, competing table in the
+  record with no rule saying which the collator reads.
+- It **checks no box** of the block dv instantiated at `SO-xgmii_rx_64` §4.8. Six
+  are unchecked there; **this note makes two of them checkable for one more row**
+  (rtl_lead now has a row and a harvest note) and checks neither, because both are
+  the orchestrator's to check across five agents and three of the five are still
+  outstanding at this SHA.
+- It **allocates no `L-` id and transcribes nothing to the shell.** That transit
+  is the orchestrator's, in exactly one commit, and it is sponsor-visible at the
+  gate; the sponsor may refuse any of the fifty.
+- It **edits no other agent's note, packet or journal**, and it stages no file
+  but this one.
+- It **claims no sign-off, and re-issues nothing.** `SO-xgmii_rx_64` is dv_lead's
+  packet and its re-read is dv_lead's act at a later SHA. This note is one input
+  to the second of the two acts §8.2 names.
+
+### Actions
+
+1. Ran the abort-first head check: `git rev-parse HEAD` → `2d478718…`, matching
+   the dispatch's spawn-head `2d47871` exactly; proceeded without reaching the
+   merge-base branch.
+2. Read the charter, PROTOCOL, ADR-0018 in full including Amendment A1, the
+   harvest block, and `SO-xgmii_rx_64` §4 and §8.
+3. **Walked my own chain end to end** — `J-rtl_lead-0001` … `-0012`, all 3,290
+   lines, each entry read whole rather than sampled — and minted every candidate
+   at its own entry, allocating ids in entry order.
+4. Measured the chain for prior harvest markers (zero) and for the word's other
+   sense (two entries), and established by commit timestamps and ancestry that
+   the whole span predates ADR-0018.
+5. Mined the worker span I commission: read
+   `workers/claude_rtl_module_dev_agent.md` in full and declared it nil with the
+   decision that caused it.
+6. Ran the classifier from the most general honest statement on all sixty-six
+   items offered; attempted the domain grade explicitly on three; refused sixteen
+   to war stories with the criterion each failed.
+7. Read dv's yield to declare cross-seat overlaps rather than re-mint them, and
+   merged nothing into another agent's bank.
+8. Wrote this entry. **No file under `libs/`, `top/`, `bin/`, `rtl_snapshots/`,
+   `agents/handoffs/`, `test/`, `tools/` or `docs/` was created, edited or
+   deleted. No `git commit`, no `git push`, no git write of any kind.**
+
+### Evidence
+
+Reproducible from a checkout at this commit:
+
+```sh
+git rev-parse HEAD                                    # 2d478718e33744db03afaeafc063f9ec2746ea29 at my sitting
+grep -c '^## \[J-rtl_lead-' agents/journals/claude_rtl_lead_agent.md          # 13 with this entry (12 walked)
+wc -l agents/journals/workers/claude_rtl_module_dev_agent.md                  # 11, header only
+grep -c '^## \[J-rtl_module_dev-' agents/journals/workers/claude_rtl_module_dev_agent.md   # 0
+```
+
+**The zero-prior-bank measurement is taken at the parent, deliberately.** Counting
+harvest markers in the file that now contains a harvest note is a self-counting
+measurement, and it is not stable under its own edits — ADR-0018 §1.2 hit exactly
+this and said so. The stable form names the SHA:
+
+```sh
+git show 2d47871:agents/journals/claude_rtl_lead_agent.md \
+  | grep -cE 'LH1|LH2-g|LH2-d|LH3|LH-cand|LC-|LD-|lessons harvest'
+#   0 — the chain had banked nothing before this entry, at any point in its history
+```
+
+**The entry-to-commit map, which is the LH1 column's authority** (every SHA in
+the yield table is one of these twelve, and the mapping is machine-derived from
+the commit trailers, not transcribed from memory):
+
+```sh
+git log --format='%h %(trailers:key=Journal-Entry,valueonly)' --grep 'Agent: rtl_lead'
+```
+
+| entry | commit | entry | commit |
+|---|---|---|---|
+| `-0001` | `189d5b2` | `-0007` | `0b64b68` |
+| `-0002` | `f840475` | `-0008` | `750be49` |
+| `-0003` | `7322c9c` | `-0009` | `ce00c06` |
+| `-0004` | `ad3a042` | `-0010` | `fafb83d` |
+| `-0005` | `d57e028` | `-0011` | `b848d56` |
+| `-0006` | `1434f27` | `-0012` | `42b9df3` |
+
+**The span-predates-the-obligation fact, re-executable:**
+
+```sh
+git log -1 --format='%ad %s' --date=iso 42b9df3   # 2026-08-04 14:48:57 +0000  (my last entry)
+git log -1 --format='%ad %s' --date=iso ec5d906   # 2026-08-04 17:09:48 +0000  (ADR-0018)
+git log -1 --format='%ad %s' --date=iso 564420f   # 2026-08-04 17:11:45 +0000  (charter clause)
+git merge-base --is-ancestor 42b9df3 ec5d906 && echo "span predates the obligation"
+```
+
+**Counts, each equal to the table it summarises and to nothing carried:**
+
+| | measured |
+|---|---|
+| entries walked, `J-rtl_lead-0001 … -0012` | **12** (whole chain; no entry sampled, none skipped) |
+| worker entries walked | **0** — the only worker journal I commission has none |
+| items offered to the bar | **66** |
+| **candidates admitted** | **50**, all `LC-`, all LH2-g |
+| of which LH1 **failure-visible (F)** | **40** |
+| of which LH1 **cost-visible (C)** | **10** |
+| candidates carrying more than one provenance | **14** (2, 4, 5, 6, 8, 9, 10, 17, 18, 23, 29, 32, 35, 50 — of which 5, 9, 18 and 35 carry three or more, and 50 carries ten) |
+| grade `LD-` (tier 2, domain) | **0**, no pack minted, no pack normalised |
+| war stories (tier 3, kept and re-offerable) | **15** |
+| war stories subsumed into a banked candidate | **1** (R6) |
+| tier-3 **local-accretion candidates** recorded, not adopted | **1** (R8, orchestrator-scope) |
+
+**Pack names checked against those in use**: the only pack in the programme is
+`version-control` (dv's single `LD-`). I mint none, so there is nothing to
+normalise and no near-duplicate risk this round.
+
+**Journal size, and a `WARN-JOURNAL` the orchestrator should expect rather than
+triage.** `agents/journals/claude_rtl_lead_agent.md` is **212,819 bytes** at
+`2d47871` (`git show 2d47871:… | wc -c`) and this note is long enough that the
+append **crosses `R10`'s soft threshold `S` = 262,144**. `agent_commit.sh` will
+therefore print `WARN-JOURNAL … rotate to volume 02 at your next entry`. **That
+is expected and is not an error**: `S` warns, only `H` = 524,288 refuses, and `H`
+is not close. The remedy the warning names is for my **next** entry, and I record
+here that **this seat's volume 01 is due to rotate at `J-rtl_lead-0014`** so the
+rotation is a planned act rather than a surprise at the next work round.
+
+I deliberately do **not** quote the post-append byte count. It is a measurement of
+a file whose content is this sentence, so quoting it changes it — ADR-0018 §1.2
+met the same hazard and named it. The script's own report is the figure; the two
+stable numbers are the parent's size and the threshold, and both are above.
+
+**Not claimed, and I say so rather than let the absence read as coverage**: that
+any candidate here is admissible to the shell (that is the sponsor's, at the
+gate); that the harvest is complete (it is not — three of five seats are
+outstanding at this SHA); that any box of the instantiated block is checkable
+(two more rows' worth of one box is all this note supplies); that the walk is
+independent of my own judgement about which of my entries mattered — it is not,
+and ADR-0018 §3.6 chose that trade deliberately, with the auditor's sampling as
+the compensating control. **Nothing in this entry is a verification result and no
+DV sign-off is claimed.**
+
+### Outcome
+
+**This seat's first lessons harvest is complete on substance, and it is the fifth
+of the five acts `FINDING SO-5` names.** Span `J-rtl_lead-0001` … `-0012`, walked
+end to end, twelve entries of twelve; the commissioned worker span declared nil
+with its cause; **50 candidates** minted at the walk from a chain that had banked
+none, all tier-1 general, each with LH1 pinned to one of twelve commits and LH3
+stated; **16 war stories** with the criterion each failed and eleven of them
+failing LH1 alone; **0 domain candidates**, with the reason given rather than
+implied.
+
+Charter §8's harvest-note obligation: **met** — span as an entry-id interval ✔,
+candidates with LH1–LH3 discharged ✔, war stories with the criterion each failed
+✔, nil yields declared explicitly (worker span) ✔.
+
+Charter §5 DoD does not apply to this round: no RTL, no generator change, no
+snapshot, no review verdict, no module. `Files-in-this-commit` is **`- (none)`**
+and the commit needs the **`Journal-Only: true`** trailer (PROTOCOL R2).
+
+**Handoff**: to the orchestrator, as collator — for the gate record's span table
+(my row: span `J-rtl_lead-0001 … -0012`, note `J-rtl_lead-0013`, T1 = 50, T2 = 0,
+T3 = 16) and, when the other seats land, for the single shell commit and the
+`LC-`/`L-` pairing. Two of `SO-xgmii_rx_64` §4.8's six unchecked boxes gain a
+row's worth of substance from this note and neither becomes checkable until
+architect_docs_lead, auditor and orchestrator have mined their own spans.
+
+### Open-questions
+
+1. **For the collator, a convention that needs settling before the shell commit,
+   not after.** dv minted `LC-SO-xgmii_rx_64-1 … -94`; the data_wrangler minted
+   `LC-data_wrangler-H1-<n>`; I have followed the second because the first would
+   collide on every id at a five-agent harvest. **Two conventions are in use for
+   one harvest.** Whichever the collator standardises on, the gate record should
+   state it, because a candidate id that means two things is worse than either
+   scheme.
+2. **The span-boundary convention differs by one entry between the two notes
+   written so far.** dv's interval ends at its own signing entry; mine ends at the
+   entry before this note, per ADR-0018 §3.2's wording. Both tile internally, and
+   they tile with each other only because they are different chains. Worth one
+   line in the gate record so the third, fourth and fifth notes do not each pick
+   independently.
+3. **My LH1 reading is a judgement and it is the auditor's most useful sample.**
+   §2's (F)/(C) split is mine, not ADR-0018's; ten candidates rest on the weaker
+   form and eleven war stories were refused on the stricter one. If the auditor
+   or the sponsor reads LH1 strictly, candidates 3, 8, 11, 19, 20, 33, 39, 42, 46
+   and 47 are the ones that move to war stories — the note is written so that
+   change costs a reader nothing but a column.
+4. **A finding shape I am declaring against my own note, per ADR-0018 §7.2.**
+   Three of my twelve entries are Root-cause entries for criticals in one module,
+   and a harvest whose war-stories table is full of *"I avoided this"* while the
+   yield is full of *"I did this"* would be the self-exculpating shape inverted.
+   The count is in §4 — thirty-one of fifty convict my own conduct or artefact —
+   and I state it so the auditor can check the claim rather than take it.
+5. **Carried into my next work round, unchanged and untouched by this one**: the
+   latent gating on a stimulus the specification forbids (`-0005` … `-0012`); the
+   sub-word-granularity hazard recorded at `-0010`; and the two obligations that
+   stood before `SO-xgmii_rx_64` issued. This is a journal-only round and it moves
+   none of them.
+
+### Files-in-this-commit
+
+- (none)
