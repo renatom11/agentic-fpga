@@ -3903,3 +3903,507 @@ owed.**
 ### Files-in-this-commit
 
 - docs/specs/requirements.md
+
+## [J-architect_docs_lead-0034] 2026-08-11T01:02Z | task:none | My first lessons harvest, walked end to end over the whole chain — ninety-four candidates at their sources, nine war stories, nil domain tier declared with its cause, and two defects found in my own ADRs by executing them
+
+### Trigger
+
+Orchestrator dispatch under **`FINDING SO-5`**, dv_lead's `SO-` verdict: PROTOCOL §7
+makes the lessons harvest a five-agent act, four of the five have never harvested,
+and the not-asked half of that is the orchestrator's, repaired by this dispatch.
+This is my first harvest. No work order; the round produces this journal entry and
+nothing else.
+
+**Abort-first head check, before anything else.** `git rev-parse HEAD` →
+`a8519489aeef8a9505bfb44990fc4d525c0f3aec`, byte-equal to the spawn-head
+`a851948`. No divergence, no `merge-base` call needed. Proceeded.
+
+**Entry id derived from the file.** Volume 02's tail at HEAD is `-0033`; the next
+id `R5` admits is **`-0034`**. Checked rather than assumed — the spawn nominated a
+stale id once already (recorded at `-0032`), and the check costs one `grep`.
+
+**Four declared siblings** (dv delivery, and the auditor, tb_writer and
+data_wrangler harvests), each in its own files. My file set is my journal and
+nothing else, so the disjointness is by construction rather than by care.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` (§8's harvest-note clause, §5 DoD, §7
+  escalation) and `agents/PROTOCOL.md` (§4 grammar, §4.2 files list, §6 scopes,
+  **§7's lessons-harvest paragraph as amended**).
+- `docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md` **in full,
+  including Amendment A1** — my own ADR, re-read as the thing being executed:
+  §3.2 (the span), §3.3 (who mines), §3.4 (the bar), §3.5 (war stories), §4.3
+  (ids), §7.1/§7.2 (theatre and self-exculpation), A1.1–A1.3 (the three tiers and
+  the classifier), A1.3.2(3) (the role-noun count), A1.8(2) (grade inflation).
+- `docs/gates/lessons-harvest-block.md` §2, §2.1 and §3 — the bar and the
+  classifier in short form, and the block a collator will fill from this note.
+- `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md` §4.2, §4.3, §5.1, §6.2 —
+  for the span-across-volumes rule and for this entry's own rotation disposition.
+- `agents/handoffs/SO-xgmii_rx_64.md` **§4 in full** (§4.1 form and ids, §4.2 the
+  span and its correction, §4.3 the bank-at-the-source method and the
+  reconciliation it forces, §4.4 the walk, §4.5 the yield, §4.6 the war stories,
+  §4.7 the worker spans, §4.8 the instantiated block). **Read, never written** —
+  it is dv_lead's packet and a declared sibling is in it.
+- **My own journal chain, both volumes, walked end to end**:
+  `agents/journals/claude_architect_docs_lead_agent.md`
+  (`-0001` … `-0021`, 423,543 bytes) and
+  `agents/journals/claude_architect_docs_lead_agent.v02.md`
+  (`-0022` … `-0033`, 256,156 bytes). Every entry read whole, at its own text.
+- `agents/journals/workers/*.md` — entry counts and a check of who commissioned
+  each spawn (Evidence 5).
+- **Not read**: no RTL, no `test/**`, no `docs/reports/audit/**`, no dv journal.
+  Nothing in this round needed any of it, and three of the four are a sibling's.
+
+### Reasoning
+
+#### 0. The method, stated before executing it, and it is dv's
+
+`SO-xgmii_rx_64` §4.3 fixes the method and I adopted it without amendment: **walk
+the chain from the first entry forward, extract every candidate at its own entry,
+label the whole bank once in entry order, and state the count as a product of the
+walk rather than carrying it from any note.** The one thing I add is the reason it
+matters here: my chain has **no prior bank at all** (Evidence 2), so there is no
+reconciliation to force and no accounting defect to find — the walk *is* the bank's
+first existence. Where dv's §4.3 had to reconcile four labelling regimes, mine has
+to resist the opposite temptation, which is to mine the entries I remember.
+
+I read every entry whole rather than skimming for quotable sentences, and the
+measurement of whether that was worth it is at §5 below: **nine of the sixty-two
+candidates are corrections to my own text**, and none of those nine is in an entry
+whose title suggests it.
+
+#### 1. THE SPAN — and my own last nil declaration stated it wrongly
+
+**No harvest of mine has ever fired.** So, by ADR-0018 §3.2 and the harvest
+block's own first checklist box:
+
+> **Span: `J-architect_docs_lead-0001` … `J-architect_docs_lead-0034`** (this
+> entry), across both volumes of the chain.
+
+**And the correction, which is a defect of mine and not a formatting note.** At
+`-0030` §13 I wrote an explicit nil with the interval *"`[-0022 … -0030]`"* and
+said the first real note's span *"will be stated from `-0022`"*. **That is wrong
+twice.** `-0022` is a **volume boundary**, and ADR-0017 §4.2 and ADR-0018 §3.2
+both say in terms that volumes are a storage fact and never a span boundary;
+and even as a hypothetical the first harvest's span opens at the agent's **first
+entry**, which is `-0001`. Had this harvest been written to that note, it would
+have silently dropped twenty-one entries — the whole of volume 01, which is where
+the freeze, the adjudication and the amendment-mechanic material lives.
+
+**This is the same defect dv found in its own chain** (`SO-` §4.2: *"open since
+`J-dv_lead-0148`"* was the span since the last **banking note**, not since the
+last **harvest**, *"and only one of them tiles"*). Two seats, two chains, one
+error, neither aware of the other's. That is a stronger signal than either
+instance: **a span stated over anything except the record's own monotonic ids
+truncates at whatever boundary the stater had in view**, and it is banked below
+(candidate 58) with both provenances, the second of them mine.
+
+**No unwalked count.** Every entry of both volumes was opened. The surface is
+enumerated at Evidence 1 and 2 rather than asserted.
+
+#### 2. THE WORKER SPANS — nil, declared, with its cause
+
+PROTOCOL §7 obliges a lead to mine the worker spans it commissioned. **I have
+commissioned none, and cannot.** Charter §7: *"Downward: you do not spawn anyone"*;
+charter §4: workers *"never interact with you directly: your specs reach them as
+excerpts inside `WO-` packets written by their leads"*. Checked rather than
+inferred (Evidence 5): every citation of me in a worker journal is a citation of a
+**ruling**, never of a commissioning packet. The four worker templates' spans
+belong to dv_lead and rtl_lead.
+
+> **Worker spans commissioned by architect_docs_lead: NIL, declared, with its
+> cause — the seat has no downward spawn authority.**
+
+#### 3. WHY THE YIELD RATE IS HIGH, said before the number rather than after it
+
+Ninety-four candidates over thirty-three entries is a far higher rate than dv's
+ninety-five over one hundred and sixty-five, and a reader should be suspicious of
+that before I explain it. The explanation is the seat: **every entry in this chain
+is an adjudication or an amendment.** dv's chain is mostly bench rounds, whose
+lessons are concentrated in the rounds that went wrong; mine has no rounds that are
+not about how a document binds, who may change it, and what a signature reaches.
+The chain is the densest possible source for this one class of lesson and a thin
+source for every other, which is also why §6's grade split comes out as it does.
+
+The counterweight I owe under §7.1 is that a candidate must be **expensive**: every
+row below carries a SHA at which a reader can see the thing going wrong, and nine
+of them convict me. The war stories at §7 are where the bar bit.
+
+**The rate is nonetheless the thing to attack in this note.** If a reviewer judges
+that any row below is a restatement of another rather than a distinct rule, the
+merge is owed and the count drops; I applied dv's merge rule (merge only where two
+entries **state the same rule**, never where they merely share a subject) and it
+already collapsed thirty-two rows, but I am the party least able to see a
+thirty-third.
+
+#### 4. THE BANK — sixty-two candidates, in entry order, each at its source
+
+**Ids.** `LC-SO-xgmii_rx_64-ADL-<n>`, and the seat qualifier is **deliberate and
+is a finding against my own ADR**. ADR-0018 §4.3 mints `LC-<harvest-tag>-<n>` with
+no per-miner namespace; five seats harvesting at one tag mint five sequences all
+starting at 1, which collide at collation, and dv has already allocated
+`LC-SO-xgmii_rx_64-1 … -94`. Qualifying the id is the smallest repair available to
+a miner; the ADR amendment is owed and is raised at Open-questions. Banked as
+candidate 61.
+
+**Every statement below is the most general honest statement** (classifier step 0),
+run with the provenance hidden. `LH1` is the SHA column; `LH3` is the "what breaks"
+column; `LH2` grade is at §6.
+
+| id | rule statement (most general honest form) | what breaks without it | LH1: incident SHA(s) · entry |
+|---|---|---|---|
+| **1** | Record each deliberate exclusion as a numbered item carrying the same status as an inclusion. | An absence is indistinguishable from an oversight; it is re-litigated or silently re-added, and nothing can be tested in the negative. | `08899d3` · `-0001` |
+| **2** | A correspondence between two documents that must stay exact is produced by generation and checked by set comparison, never maintained by proofreading. | The two drift while each stays internally consistent, so no reader of either can see it. | `08899d3` · `-0001`; re-run every round to `ce5674d` |
+| **3** | When a reviewer's requested change is right in intent and unsatisfiable as written, apply the intent in a corrected form and record the departure as a contest — never silently improve it. | The re-review compares against a list whose items have quietly changed meaning, and can detect neither the improvement nor an error in it. | `b4b4cf4` · `-0002` |
+| **4** | When two of your own statements disagree, settle it on a ground outside the disputed system. | You pick the reading that matches the most recent draft, and the error survives with a justification attached to it. | `b4b4cf4` · `-0002` |
+| **5** | Where two readings of a standard's convention are both defensible, prefer the one under which the standard's own published figure holds at every configuration it defines. | The other reading makes one configuration exceptional, and the exception is later read as a defect by whatever meets it first. | `b4b4cf4` · `-0002` |
+| **6** | Where two representations differ by a fixed transformation and cost the same, expose the one that needs no conversion at any consumer. | Every consumer, test and oracle applies the same conversion independently; one that forgets produces a plausible wrong answer. | `22145b5` · `-0003` |
+| **7** | Leave an out-of-domain input unconstrained rather than defining it as the identity. | With the identity defined, a caller that reaches the out-of-domain value produces a correct-looking result and the mistake is invisible. | `22145b5` · `-0003`; confirmed `f78766e` · `-0004` |
+| **8** | A frozen document may carry unfinished items, but each must state what a reader may assume meanwhile; an item that cannot state that is open, not deferred. | "Frozen" degrades into either an unattainable bar or a stopped pen, and downstream readers guess. | `f78766e` · `-0004` |
+| **9** | Identifiers cited from outside a document are permanent: close in place, append at the end, never insert or renumber. | Every external citation silently re-points, and a reference that used to be true becomes false with no document changing. | `f78766e` · `-0004`; `1fe71ca` · `-0013`; `ebb3f49` · `-0016`; `3526e79` · `-0032` |
+| **10** | A budget decomposed across components is checkable only in an additive quantity; when every component passes and the composition fails, suspect the unit before the allocation. | The reconciliation is spent lowering per-component limits, which preserves the defect and destroys the headroom. | `f78766e` · `-0004` |
+| **11** | Place a correction where its reader arrives, not where its subject is filed — the right document, and the right row inside it. | The reader derives the corrected-away behaviour from the text they actually hold, and the correction is invisible at the point of use. | `508eea2` · `-0005`; `62c39a7` · `-0017`; `ce5674d` · `-0033` |
+| **12** | Adjudicate the class the corner case is an instance of and state the closure rule; answering the corner answers one question. | Every sibling corner returns as a new question, each costing a round, and the separate answers drift apart. | `508eea2` · `-0005`; `aaa55b2` · `-0008` |
+| **13** | A table complete on some dimensions and summarised on others says which, inside the table. | A reader counts rows and concludes a coverage that was never claimed. | `508eea2` · `-0005` |
+| **14** | A report names where a defect was noticed; the repairing round derives where it lives and covers that — both the other sites restating it and the other components exhibiting it. | The repair leaves the same defect standing where nobody looked, and the document now contradicts itself at the unrepaired sites. | `a9993ff` · `-0006`; `8641455` · `-0010`; `ebb3f49` · `-0016`; `a77017c` · `-0024`; `ce5674d` · `-0033` |
+| **15** | Re-derive the price of an option before rejecting it under deadline. | A stale price decides a question that was never argued, and the record shows a choice made on merit when it was made on an arithmetic error. | `3f6accc` · `-0007` |
+| **16** | Record the rejected alternative in the artefact the decision is cited from, not only in the decider's own log. | A reader who can reach the ruling but not the alternative cannot audit it, and the choice reads as forced. | `3f6accc` · `-0007` |
+| **17** | Take evidence at the artefact's own state; evidence taken at a neighbouring state plus an argument that nothing moved is a claim that decays unchecked. | The connecting argument goes stale silently, and the record then asserts evidence it does not have. | `aaa55b2` · `-0008` |
+| **18** | A deferred item names its closing event, and the round in which that event occurs closes it. | The tracking column becomes decoration, and a genuinely blocking deferral is indistinguishable from a note. | `aaa55b2` · `-0008` |
+| **19** | A defect left unfixed only because fixing it now is expensive is recorded as a defect with its trigger, never as a decision. | The next party to open that region has no reason to fix it, and either re-derives the same trade-off or never sees it. | `aaa55b2` · `-0008` |
+| **20** | When owed changes compete for one round, take those whose cost rises at the next state change and carry those whose cost does not. | The round either takes everything and blows its review surface, or takes the loudest item while a cheap-now/dear-later one rolls into a much larger change. | `d8df28d` · `-0009`; applied `8641455`, `541ea43`; refused `06c1eba`; taken `1fe71ca` |
+| **21** | When two correct measurements of one phenomenon disagree, publish both with the event each is measured to. | The discarded figure resurfaces elsewhere as an apparent contradiction, and every reader who meets it re-derives. | `8641455` · `-0010` |
+| **22** | A rule carried to another component by analogy is re-derived there, and the case distinguishing the analogy from the derivation is constructed. | The transposed rule is confirmed by every ordinary case and fails on a class nobody tests. | `8641455` · `-0010` |
+| **23** | When a checkable claim is falsified, replace it with another checkable claim, never with a hedge. | Hedged text cannot be falsified, so the next error of the same class is undiscoverable — and checkability is what made this one findable. | `8641455` · `-0010` |
+| **24** | An implementation's declared behaviour is evidence of what was built, never of what was required. | The specification silently becomes a description of the code, and the independent check it exists to provide is gone. | `541ea43` · `-0011` |
+| **25** | Before narrowing a specified space, enumerate what has already been commissioned inside it and show each survives. | The narrowing retires a commissioned check, and the retirement surfaces later as an unexplained coverage drop nobody can date. | `541ea43` · `-0011` |
+| **26** | Never normalise an untrusted input into a legal value to make a branch total. | A hostile or malformed input becomes indistinguishable from valid traffic, where an unhandled case fails loudly at the first test. | `541ea43` · `-0011` |
+| **27** | A record of another party's statement is corrected by that party, never by its holder; a later correction is a new record beside it. | The record of an exchange stops being evidence of the exchange, and the correction cannot be dated or attributed. | `06c1eba` · `-0012`; `62c39a7` · `-0017`; `a12ac8f` · `-0030` |
+| **28** | When a sentence carries a rule and an explanatory restatement that disagree, check whether the restatement could be a rule at all before treating the repair as a choice. | A forced disposition is treated as a choice, which drags in an authority the repair never needed and makes an arbitrary pick look adjudicated. | `06c1eba` · `-0012` |
+| **29** | Classify a change on two independent axes — what it changes, and whose approval it needs — and state the discriminator. | One answer silently follows the other: a change that alters nobody's behaviour but moves the text a reviewer's verdict rests on ships without that reviewer. | `1fe71ca` · `-0013`; `ebb3f49` · `-0016`; `62c39a7` · `-0017`; `0caf023` · `-0023`; `a77017c` · `-0024`; `d54c931` · `-0026`; `8725c81` · `-0027`; `a12ac8f` · `-0030`; `b6ef1cb` · `-0031`; `ce5674d` · `-0033` |
+| **30** | Give every change class a deletion test — what would differ if the text were removed — and state it in the record. | A class named without a test drifts to whatever the author wants it to mean this round, and the lightest class absorbs everything. | `8725c81` · `-0027`; `a12ac8f` · `-0030`; `b6ef1cb` · `-0031`; `ce5674d` · `-0033` |
+| **31** | State the fact a deferral rests on, so that when the fact changes the deferral can be revisited without re-arguing it. | A deferral justified by a general preference can never be revisited; it is re-argued from scratch or never. | `1fe71ca` · `-0013` |
+| **32** | A partial pass over a class is evidence about the passing members only if the mechanism is uniform over the class; and a universal checked at one instance — especially the instance an existing worked example made cheap — is not checked. | Two-red-of-three is read as the third being right, and a prediction is "confirmed" at exactly the member where the error is invisible. | `1fe71ca` · `-0013`; `d54c931` · `-0026` |
+| **33** | When an access restriction is relaxed, state the converse obligation it was protecting. | The permission erodes one convenient use at a time, and nobody can point to the step that crossed the line. | `9d357e6` · `-0014` |
+| **34** | If review and enforcement read changes as content diffs, never adopt a dependency whose update appears as an identifier rather than as content. | The change is invisible to every control you have, and no rule catches it because no rule is about it. | `9d357e6` · `-0014` |
+| **35** | Verify an instruction's premise against the artefact before executing it. | An instruction right about the action and wrong about the state produces a false claim signed by the executor, or a refused commit. | `9d357e6` · `-0014`; `a378612` · `-0022`; `a12ac8f` · `-0030`; `3526e79` · `-0032` |
+| **36** | A guarantee that is never exercised is a claim; make the round that introduces it exercise it once. | The guarantee is cited for the life of the project and has never been true. | `9d357e6` · `-0014` |
+| **37** | When an authority approves one question, record in the same document what the approval does not reach. | Decisions made in-role acquire borrowed authority and become unchallengeable by the parties entitled to challenge them. | `d3a5a1d` · `-0015` |
+| **38** | A record of a statement received through an intermediary says so, and names the check that would surface an alteration. | A second-hand record is indistinguishable from a first-hand one, so a relay error is undiscoverable. | `d3a5a1d` · `-0015` |
+| **39** | When a status changes, sweep the body for every sentence the change falsifies. | A corrected header over a stale body is worse than neither, because the header licenses trust in the body. | `d3a5a1d` · `-0015`; `9d357e6` · `-0014`; `62c39a7` · `-0017`; `a378612` · `-0022` |
+| **40** | A universal negative relayed through more than one party is re-measured by whoever writes it into binding text, with the measuring command beside the claim. | Relayed negatives accumulate confidence without accumulating evidence, and the binding text asserts something nobody has checked. | `ebb3f49` · `-0016`; `ce5674d` · `-0033` |
+| **41** | Two exceptions sharing a cause but differing in extent are declared separately, each with the narrowest exclusion it needs. | Merging forces the wider exclusion on both and silently retires the checks the narrower one preserved — the document gets more permissive while looking tidier. | `ebb3f49` · `-0016`; `3526e79` · `-0032` |
+| **42** | State an enumeration, never its count. | The count goes stale at the first addition, reads as prose rather than as a claim, and is the copy every sweep misses. | `ebb3f49` · `-0016`; `62c39a7` · `-0017` |
+| **43** | When the cascade exceeds the round, enumerate the unrepaired sites by name with the verdict for each — including the sites that need no repair — and state the cost of leaving them. | An unnamed cascade is rediscovered by whoever trips on it, and a list of only the failures invites a later reader to "fix" a passing site. | `ebb3f49` · `-0016`; `a77017c` · `-0024` |
+| **44** | When a decision's stated reason has gone stale but the decision has not, repair the reason and leave the decision. | Deleting the reason loses it; rewriting the decision changes something nobody decided to change; leaving it lets a reader derive a false premise from a true sentence. | `62c39a7` · `-0017` |
+| **45** | Before adopting a proposed rule, run it backwards over the history it claims to govern and count what it would have refused. | A rule validated only against the incident that prompted it is measured on a sample of one; it then blocks correct work or is quietly ignored. | `f3f5210` · `-0018` |
+| **46** | Choose a rule's enforcement class from the decidability of its antecedent, not from its importance. | A rule whose antecedent needs judgement about prose, made blocking, refuses the very report that discovers the thing it forbids. | `f3f5210` · `-0018`; `8d83371` · `-0019` |
+| **47** | A namespace that carries an implicit guarantee admits only members that satisfy it. | The first member that does not forces every reader to learn which members are real, and the guarantee stops being usable without a lookup. | `f3f5210` · `-0018` |
+| **48** | A mechanical check earns its value from being uncontestable; do not add a quality condition to it. | Passing starts to look like a quality verdict, and the check is cited as evidence of the thing it never measured. | `f3f5210` · `-0018` |
+| **49** | Declare both edges of a signal you declare to be noise: never a verdict, and never a clearance. | A one-edged declaration becomes a clearance the first time somebody needs one. | `f3f5210` · `-0018`; `3526e79` · `-0032` |
+| **50** | Name, in the document that creates a gate, the way the gate can be satisfied without doing the thing. | The first use of the loophole is indistinguishable from compliance, because nobody wrote down what compliance is not. | `f3f5210` · `-0018` |
+| **51** | The document defining who may change what is never changed by the party citing its own authorisation: the proposer writes the exact text, a different party applies it. | Any party able to author an authorisation can grant itself the change, and the separation the document exists to create is gone. | `8d83371` · `-0019`; reused `ec5d906` · `-0028`, `8734c10` · `-0029`, `3526e79` · `-0032` |
+| **52** | Read the enforcement mechanism before proposing a design it must pass. | A proposal the mechanism cannot implement consumes a review round and returns; the design that survives was never checked against the thing that judges it. | `8d83371` · `-0019` |
+| **53** | Prefer a mechanism needing no exemption mode over one guarded by a mode. | A mode that suspends a check is a mode that can be entered, and the guarantee is only as strong as the discipline around the flag. | `8d83371` · `-0019` |
+| **54** | State which of your supporting arguments does not hold, and delete it from the case. | A case padded with a plausible-but-false argument is re-checked as a whole and discredited as a whole. | `8d83371` · `-0019` |
+| **55** | Record an outcome beside the prediction it tests, leaving the prediction unedited; retire a falsified prediction in the open. | A document that edits its predictions into accuracy destroys the only evidence that it predicted anything. | `acc8145` · `-0020`; `1f3c04c` · `-0025`; `d54c931` · `-0026` |
+| **56** | A summary of a bounded claim is where the bound gets dropped; the section a reader quotes must carry the bound, not only the section that derived it. | The careful statement stays true and unread while the convenient one is cited, and a tool's green result is read as certifying what it does not. | `8d83371` · `-0019` (the overclaim), `acc8145` · `-0020` (the repair) |
+| **57** | File a new case against an existing item only after reading that item's own instances. | Shared vocabulary merges defects with different causes, and the merged item is later closed on evidence from one of them. | `1004384` · `-0021` |
+| **58** | Rule at the narrowest scope that decides the case. | A wider ruling is the same words on a much larger surface to be wrong on, and it drags in approvals the narrow ruling did not need. | `1004384` · `-0021`; `d54c931` · `-0026`; `b6ef1cb` · `-0031` |
+| **59** | When an append-only record is split for size, the split carries forward whatever was cumulative; integrity checks on bytes and identifiers prove nothing was rewritten or dropped and say nothing about what stopped being read. Any interval over that record is stated in the record's own identifiers, never in storage units. | The cumulative part is silently truncated at the boundary — nothing rewritten, nothing dropped, and nobody reads it again; and an interval opened at a storage boundary looks well-formed while skipping everything before it. | `a378612` · `-0022` (found by executing my own ADR); `a12ac8f` · `-0030` (where I then committed the error) |
+| **60** | Quote the arithmetic of a threshold you authored accurately, even when the inflated figure would support the same action. | A gate's credibility is the accuracy with which the parties it governs quote it, and its author is the cheapest place to corrode it. | `a378612` · `-0022` |
+| **61** | An identifier minted per round by several parties independently carries the minting party inside the id. | The sequences collide at collation; the collator must renumber, which either breaks every citation already written or silently re-points them. | this entry; ADR-0018 §4.3 at `ec5d906`; dv's parallel allocation in `SO-xgmii_rx_64` §4.1 |
+| **62** | Restate a routed question in the terms the governing text uses before answering it. | A question posed in the wrong terms is answered correctly and is still wrong, and the wrongness is invisible because the answer matches the question. | `0caf023` · `-0023` |
+| **63** | A general rule must not be defined as whatever its instances declare. | A check derived from the thing it checks passes by construction, and the class of defect it existed to catch becomes undetectable. | `0caf023` · `-0023`; `a12ac8f` · `-0030` |
+| **64** | A question deferred because the answer does not matter is re-tested on every recurrence. | By the second recurrence some later ruling has usually assumed one of the answers, and the deferral is protecting a dependency nobody declared. | `0caf023` · `-0023` |
+| **65** | When a rule is retired as unachievable, state its successor in the same change. | Retiring without replacing moves the derivation to every reader, and it was the derivation that was wrong. | `a77017c` · `-0024` |
+| **66** | State a ruling's falsifiable consequence in the open when you issue it. | A ruling with no scoreable consequence cannot be reviewed, and its errors surface as somebody else's defect. | `a77017c` · `-0024`; `1f3c04c` · `-0025` |
+| **67** | A rule about when a component may act is stated over information the component holds at that moment. | A rule keyed to a fact learned later is not implementable; it is discovered by an implementer rather than a reviewer, after it has been countersigned. | `1f3c04c` · `-0025` |
+| **68** | Distinguish options you may choose from options you may only escalate, and say which each is. | Presenting an escalation-class option as a design alternative lets a decision needing an authority get made in-role. | `1f3c04c` · `-0025` |
+| **69** | A measurement agreeing with a prediction is evidence only if the mechanism producing it is the mechanism the prediction is about. | A defective implementation and a defective rule agree, and the agreement is recorded as the first confirmation of both. | `1f3c04c` · `-0025`; `a12ac8f` · `-0030` |
+| **70** | A specification states the observable and not the mechanism, even when the round was opened by an implementation problem. | Naming the mechanism converts a repair into a design constraint nobody argued for, and the constraint outlives the problem. | `1f3c04c` · `-0025` |
+| **71** | A finding's numbers and its offered repair are separate objects: adopt the numbers, re-derive the wording. | A repair offered alongside a correct finding is frequently the same error one case over, and adopting it re-imports the defect at the cases the finding did not check. | `d54c931` · `-0026`; `a12ac8f` · `-0030`; `ce5674d` · `-0033` |
+| **72** | A repair landing exactly the values a reviewer derived and published needs no further approval from that reviewer — and the properties that make it so are stated, not assumed. | Without the stated properties the standing is a bare claim, and every unsigned repair is permanently contestable. | `d54c931` · `-0026` |
+| **73** | Before writing a measured figure into binding text, ask whether it is a property of the specified thing or of the implementation that produced it. | A figure from one implementation, written normatively, silently specifies that implementation and retracts a freedom the document granted. | `8725c81` · `-0027` |
+| **74** | Make a recurring obligation's skipping visible by requiring each instance to state its coverage as an interval over a monotonic identifier. | Without tiling, a skipped instance is an absence nobody can see, and the practice is believed to be running when it is not. | `ec5d906` · `-0028` — **and the finding that produced this dispatch is its first confirmation** |
+| **75** | Give a judgement criterion one mechanical test runnable without interpretation, and one test aimed at the attack that mechanical test invites. | With only the first, the criterion is gamed by substitution; with only the second, it cannot be adjudicated at a table. | `ec5d906` · `-0028` |
+| **76** | Add a new obligation as a new artefact, never as a box in a completed record. | Added to a closed record it either falsifies the completion or records compliance that never happened. | `ec5d906` · `-0028` |
+| **77** | Make the cheaper category reachable only through an attempt at the stricter one. | A discount available on request is the one every tired party takes first, and the stricter category empties without anyone deciding to empty it. | `8734c10` · `-0029` |
+| **78** | An amendment that relaxes a bar states the measurement that says what the relaxation bought. | Unmeasured, a relaxation cannot be distinguished from a softening, and the next amendment argues from the same absence. | `8734c10` · `-0029` |
+| **79** | Record a deferred decision's shape together with an explicit statement that none of it is in force. | A shapeless deferral is re-derived badly by the next reader; an unmarked shape becomes policy by being read twice. | `8734c10` · `-0029` |
+| **80** | Where two encodings of one distinction are equally expressive, choose the one owing no edits to documents you do not control. | The other mints obligations on parties who did not ask for them, and the change lands half-applied. | `8734c10` · `-0029`; `8d83371` · `-0019` |
+| **81** | A permissive bound states, in its own text, that satisfying it is not conformance. | Stated in one direction only, it is read as a licence by exactly the reader who satisfies it. | `a12ac8f` · `-0030` |
+| **82** | Before narrowing a general rule to defer to a specific one, check the members that have no specific rule. | The carve-out removes the only constraint wherever no instance states one, manufacturing a clause with no referent. | `a12ac8f` · `-0030` |
+| **83** | When two rules appear to conflict, check they are about the same object before reconciling them. | A manufactured reconciliation makes the document say something neither rule said, and both originals lose their force. | `a12ac8f` · `-0030`; `b6ef1cb` · `-0031` |
+| **84** | Remove each of a finding's supporting grounds in turn and check whether it still holds. | A finding resting on a clause under dispute reads as a bootstrap and is refused on that ground alone, however sound its substance. | `b6ef1cb` · `-0031` |
+| **85** | Never pay for a documentation or verification convenience with a constraint on the thing being built. | The cost lands on a party that did not ask for it and outlives the convenience that bought it. | `b6ef1cb` · `-0031` |
+| **86** | When you claim a change needs no approval, state in the record what happens if the other party disagrees, and make that a fresh objection rather than a retroactive condition. | Otherwise every unsigned change is permanently contestable and its in-force status is unknowable. | `b6ef1cb` · `-0031`; `3526e79` · `-0032`; `ce5674d` · `-0033` |
+| **87** | Validate a reading of an external artefact against a path in the same artefact whose correctness is independently known. | A reading that merely explains the observed behaviour is not distinguished from its alternatives, and a rule is then written on the wrong one. | `3526e79` · `-0032` |
+| **88** | Where a record's structure is carried by an in-band delimiter, re-run the structural check after every edit. | A value containing the delimiter silently reshapes the record while the text still reads correctly. | `3526e79` · `-0032`; `b6ef1cb` · `-0031`; `ce5674d` · `-0033` |
+| **89** | When a written procedure has never been followed, ask whether it is executable in the environment before treating the deviation as a lapse. | A procedure that cannot be executed has already been substituted; it is the substitution that needs authorising, not the deviation that needs punishing. | `3526e79` · `-0032` |
+| **90** | Correct a finding's factual recital when carrying it into a durable record, and say in the same breath that the substance is untouched. | An uncorrected recital propagates; a correction without that sentence reads as a rebuttal and the finding is re-litigated. | `3526e79` · `-0032` |
+| **91** | State a prohibition over the situation it excludes, not over the mechanism you believe produces it. | A rule written on a mechanism falls with the mechanism, so a falsified reason falsifies a ruling that was substantively right. | `ce5674d` · `-0033` |
+| **92** | Order an append-only record by a monotonic identifier the writer controls, never by a wall-clock stamp the environment supplies. | A clock that drifts backwards makes the record appear reordered and its ordering unusable as evidence. | `ce5674d` · `-0033` |
+| **93** | A carried-forward list that only grows is not a tracking instrument: each item names the party who can close it and the event that closes it, and each round reports closures. | The list becomes a ritual restatement readers skip, and a blocking item becomes indistinguishable from a note. | `1fe71ca` · `-0013` through `ce5674d` · `-0033` — the ledger grew from eight items to twenty and closed three |
+| **94** | Where a directory is inside several parties' write scope, enumerate a commit's file set explicitly and never take it from a wildcard: scope permits, it does not attribute. | A concurrent party's unfinished work is committed under the wrong identity, destroying its attribution and failing the files-list check. | `a378612` · `-0022`; `a12ac8f` · `-0030`; `b6ef1cb` · `-0031`; `3526e79` · `-0032`; `ce5674d` · `-0033` |
+
+**The count is a product of the walk and of nothing else: ninety-four rows above,
+of which thirty-two are merges of two or more incidents stating the same rule.**
+The merge rule is dv's and I applied it identically — merge only where two entries
+**state the same rule**, never where they merely share a subject, and keep both
+provenances because a candidate with a second incident is stronger.
+
+#### 5. THE SELF-CRITICAL SET — nine candidates that convict me
+
+ADR-0018 §7.2 names the finding shape: *a span containing a self-reported defect
+whose harvest note contains no self-critical candidate.* This span contains several,
+and the note should say which. **Nine of the ninety-four are corrections of my own
+text or my own reasoning**, and they are the ones I would most want a stranger to
+read first:
+
+| candidate | the error it convicts, and where |
+|---|---|
+| **56** | My own `§6.5` overclaim in ADR-0017 — a bound stated carefully in the design section and dropped in the tooling summary, caught by dv, not by me (`8d83371` → `acc8145`). |
+| **59** | My own ADR chains bytes and ids and not meaning (`a378612`) — **and I then committed the exact error it predicts** by opening a span at a volume boundary (`a12ac8f`). |
+| **32** | I verified a disclosed prediction at one length and it was the one length that hides the error (`d54c931`). |
+| **67** | My own `D(m)` ruling demanded hindsight; rtl_lead's escalation against it was sustained against me (`1f3c04c`). |
+| **55** | The falsified prediction retired in the open rather than quietly contradicted — twice (`1f3c04c`, `d54c931`). |
+| **35** | I acted on a dispatch's premise about my own write scope without checking `policy.sh`, which I had open, and `R7` refused the commit (`8d83371`). |
+| **93** | My carried ledger grew monotonically for twenty entries and closed three items. |
+| **91** | The bar at `-0032` survived a falsified mechanism **because it happened to be written on the situation** — recorded at `ce5674d` as the round's lesson rather than as luck. |
+| **61** | ADR-0018's id scheme, mine, has no per-miner namespace and collides the first time two seats harvest at one tag — found by executing it, this round. |
+
+**Two of my three ADRs were found defective by executing them** (ADR-0017 at
+`-0022`, ADR-0018 here). That is the strongest single argument in this note for
+ADR-0018 §3.6's self-mining decision: no third-party miner reading this chain would
+have found either, because both are visible only to someone carrying out the rule.
+
+#### 6. THE CLASSIFIER — run on every candidate, and the tier-2 result is nil
+
+Step 0 was run first on every one of the ninety-four: the most general honest
+statement, with the fewest proper nouns that still says what happened. **Every one
+survived the hide-the-provenance test in its general form.** Not one went hollow,
+so step 1 terminated every candidate at **tier 1**, and `LH2-d` was never reached.
+
+> **Tier 2 (domain): NIL, declared, with its cause.**
+
+**The cause, stated so the nil is scoreable rather than merely asserted.** This
+seat's subject matter is document governance — who may change what, what a
+signature reaches, when a class needs an approval. That vocabulary is *already*
+domain-free: the nouns are "document", "reviewer", "class", "identifier",
+"enumeration". The candidates that *arrived* carrying a domain or project noun were
+generalised by naming the **role** instead, which is A1.3.2(3)'s third case, and I
+counted them because A1.3.2(3) says the amendment is unscoreable without the count:
+
+> **Candidates that reached tier 1 through an honest role-noun rewrite of what
+> looked like a project-noun refusal: NINE** — candidates 11, 14, 22, 41, 63, 67,
+> 73, 82 and 91. In each, the module id was replaced by the module's role (*the
+> stage that re-packs a stream*, *the rule that defers to its instances*, *the
+> component that must act on what it holds now*) and the statement survived the
+> hide test with the domain audience removed as well.
+
+**The mirror line, applied honestly against myself.** A1.8(2) warns that a yield
+all `LD-` and no `LC-` says something about the miner. Mine is the inverse and
+deserves the same suspicion: **ninety-four `LC-` and zero `LD-`.** My reading is
+that it is real rather than flattering — a governance chain has no protocol nouns
+to shed — but the honest caveat is that I am the author of the classifier and the
+party least able to notice that I ran it generously. **The nine role-rewrites are
+the place to attack this note**: if a reviewer judges that any of those nine went
+hollow and I did not notice, it belongs at tier 2 with a pack named, and I would
+rather be told than have the count stand unchallenged.
+
+**And the bar's own evidence**: nine war stories against roughly a hundred and
+three items offered, refused by their author before any collator saw them. The
+war-stories table is not empty (§7), which is what §3.5 asks a harvest to be able
+to say.
+
+#### 7. THE WAR STORIES — nine, each with the criterion it failed
+
+| # | war story | entry | criterion failed | why |
+|---|---|---|---|---|
+| **W1** | Use the warning-suppressing form of an import for a module nothing references, or the build fails under a strict profile. | `-0003` | **LH2 (both grades)** | The portable content is one language's build-profile convention, not a process rule. |
+| **W2** | Encode a zero-length payload as "no frame emitted" rather than as a last word with an empty byte-enable. | `-0002` | **LH2 (both grades)** | Every attempt to state it leaned on the stream type's own field vocabulary and this project's monitor invariants; the portable residue is candidate 41 and is already banked there. |
+| **W3** | Choose a record field name so the generated identifier equals the externally required one. | `-0004` | **LH3** | The stated failure reduces to "the external contract is written in two places", which is candidate 42's, and on its own the rule is a code-generation tip. |
+| **W4** | Do not pin a component exactly at its allocated ceiling with no reserve. | `-0005` | **LH3** | The failure I could state was "a later request arrives as a surprise" — a virtue, not an outcome a reviewer would recognise in another repository. |
+| **W5** | One document, one row-numbering convention. | `-0013` | **LH2** as written | Could not be stated without leaning on the specific paragraph's indexing; the portable half is candidate 9. |
+| **W6** | Do not renumber prose in the same change that pins row indices. | `-0013` | **LH3** | An ordering-of-operations preference with no concrete bad outcome beyond confusion. |
+| **W7** | Record what you did **not** check as data rather than as adjudication. | `-0016` | **subsumed** | Generalises only into candidates 40 and 56, which already carry it with sharper provenance. |
+| **W8** | Do not spend a shared reserve immediately before a gate to match current consumption. | `-0008` | **LH2-g and LH2-d** | Reads as budget hygiene specific to a fixed-allocation scheme; every general form I attempted collapsed into candidate 19. |
+| **W9** | An ordinal inside a tracking row ("the fifth such class") goes stale. | `-0017` | **subsumed** | Candidate 42 already covers it and covers it more generally; kept only because its provenance is the *cost* of 42 being incurred a second time. |
+
+**W7, W8 and W9 are retired as subsumed**; **W1–W6 are kept and re-offerable** at a
+later harvest with new provenance, per §3.5. Recording the re-offer path is not an
+obligation on anyone to revisit the pile.
+
+#### 8. What I did not do
+
+- **No shell transcription, no gate-record edit, no `LC-`/`L-` pairing.** All three
+  are the orchestrator's under §4.1 and §4.2, and a miner that collates its own
+  note is the selector-collator §11(3) rejects.
+- **No candidate from another agent's span.** §3.3: no agent mines another's.
+- **No file outside my own journal.** The four declared siblings are in
+  `agents/handoffs/**`, `test/**`, `docs/reports/audit/**` and their own journals;
+  `agents/handoffs/**` is normally mine and is out of bounds this round, so my file
+  set is `- (none)` by construction rather than by care (candidate 94, applied to
+  myself).
+- **No retro-harvest of the closed gates.** ADR-0018 §9: `G0` and `P1-spec-freeze`
+  are not reopened, and their spans are covered by the interval rule since my first
+  span opens at my first entry — which is exactly what §1 above fixes.
+
+### Actions
+
+- Ran the abort-first head check and derived this entry's id from the file.
+- **Walked my own chain end to end**, both volumes, `-0001` … `-0033`, every entry
+  read whole at its own text; extracted every candidate at its source; labelled the
+  bank once in entry order; applied dv's merge rule.
+- Ran the ADR-0018 A1.3 classifier on every candidate from its most general honest
+  statement, and counted the role-noun rewrites A1.3.2(3) asks for.
+- **Corrected my own `-0030` span statement** and recorded why it was wrong (§1).
+- Checked the worker-commissioning question against the worker journals rather
+  than against my charter alone (Evidence 5).
+- Wrote this harvest note. **No file outside this journal was opened for writing;
+  no git command that writes was run.**
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA.
+
+1. **The surface walked, enumerated rather than asserted.**
+   ```sh
+   for f in agents/journals/claude_architect_docs_lead_agent.md \
+            agents/journals/claude_architect_docs_lead_agent.v02.md; do
+     echo "$f $(grep -c '^## \[J-architect_docs_lead-' $f) $(wc -c < $f)"; done
+   #  …_agent.md      21  423543
+   #  …_agent.v02.md  12  256156   (+ this entry = 13)
+   ```
+   **Thirty-three entries at HEAD, both volumes, all read.** The chain's id
+   contiguity `0001…0033` across the volume boundary is what makes "end to end"
+   checkable, and `scripts/verify_journal_chain.sh` is the command that checks it.
+
+2. **My chain carried no prior bank, which is why there is no reconciliation.**
+   The same loop counting harvest vocabulary
+   (`LH1|LH3|LH2-g|LH2-d|LH-cand-|lessons harvest`) returns **0** for volume 01 and
+   **26** for volume 02 — and every one of the twenty-six is inside `-0028`,
+   `-0029`, `-0030`, `-0032` or `-0033`, i.e. the ADR that *created* the practice,
+   its amendment, and three entries **declaring that no harvest was due**. **No
+   candidate has ever been banked in this chain before this entry.**
+
+3. **Provenance is one commit per entry, mapped mechanically**:
+   `git log --format='%h' --grep='Journal-Entry: J-architect_docs_lead-NNNN$' -1`
+   over `0001…0033` returns the thirty-three SHAs used in the LH1 column, in
+   order: `08899d3 b4b4cf4 22145b5 f78766e 508eea2 a9993ff 3f6accc aaa55b2 d8df28d
+   8641455 541ea43 06c1eba 1fe71ca 9d357e6 d3a5a1d ebb3f49 62c39a7 f3f5210 8d83371
+   acc8145 1004384 a378612 0caf023 a77017c 1f3c04c d54c931 8725c81 ec5d906 8734c10
+   a12ac8f b6ef1cb 3526e79 ce5674d`. **Every LH1 citation in §4 is one of these
+   thirty-three**, so a reader can reach any candidate's incident in one command.
+
+4. **The `-0030` span error, quoted from my own text** rather than characterised:
+   *"the interval `[J-architect_docs_lead-0022 … -0030]` contains no harvest
+   trigger"* and *"the first note under the amended bar remains `SO-M03`'s, where
+   the span will be stated from `-0022`"*. Against ADR-0018 §3.2: *"volumes are a
+   storage fact (ADR-0017), not a span boundary. The first harvest's span opens at
+   the agent's first entry."*
+
+5. **The worker-span nil, checked and not inferred.**
+   `grep -n "architect_docs_lead" agents/journals/workers/*.md` returns twelve
+   lines across the two `tb_writer` volumes; **every one is a citation of a ruling
+   or of my journal as a read input** (`J-architect_docs_lead-0021`, `-0024`,
+   `-0025`, `-0031`), and none names me as the commissioning party. Entry counts at
+   HEAD: `tb_writer` 16 + 18 + 6 = **40**, `data_wrangler` **8**, `formal_dv`
+   **0**, `rtl_module_dev` **0** — all commissioned by dv_lead or rtl_lead, none by
+   me. Charter §7 (*"you do not spawn anyone"*) is the structural reason.
+
+6. **Scope.** `git status --porcelain` at the end of this round reports this
+   journal and whatever the four declared siblings have landed. **My file set is
+   this journal alone**; `Files-in-this-commit` is `- (none)` and the commit is
+   `Journal-Only: true`. Nothing under `docs/`, `agents/handoffs/`, `test/`,
+   `tools/` or any other agent's journal was opened for writing.
+
+7. **`R10` disposition for this entry, stated as a bound rather than a count**
+   (a file cannot quote its own final byte count without changing it). Volume 02
+   stood at **256,156** bytes at HEAD, i.e. **5,988 bytes under `S`** (262,144).
+   This entry is far larger than that, so **the staged active volume crosses `S`
+   and `agent_commit.sh` will emit `WARN-JOURNAL`**. It stays far below `H`
+   (524,288), so the commit is not refused. **Declared, per ADR-0017 §4.4 and the
+   warning's own remedy: volume 03 opens at my NEXT entry,
+   `J-architect_docs_lead-0035`, with `Continues-from: J-architect_docs_lead-0034`
+   and the four chain fields computed from volume 02's committed bytes.** Under
+   candidate 59, that rotation entry owes a restatement of the carried ledger, not
+   a citation across the boundary — which is this harvest's own lesson applied to
+   the next round rather than left for it to rediscover.
+
+8. **No build, no simulation, no CI figure.** ADR-0005 governs; this round is
+   textual and commissions nothing.
+
+### Outcome
+
+**DoD met. First harvest executed, walked end to end, nothing carried from any
+note.**
+
+- **Span**: `J-architect_docs_lead-0001` … `-0034`, both volumes, stated as an
+  entry-id interval so it tiles with my next harvest. My own `-0030` mis-statement
+  of the opening is corrected on the record with the reason.
+- **Yield**: **94 candidates**, all **tier 1 / `LH2-g`**, ids
+  `LC-SO-xgmii_rx_64-ADL-1 … -94`, each with its incident SHA and its stated
+  failure. **32 are merges** of two or more incidents stating one rule, both
+  provenances kept.
+- **Tier 2 (domain)**: **NIL, declared, with its cause** — every candidate survived
+  step 0's general statement, so `LH2-d` was never honestly reachable. **Nine**
+  reached tier 1 through a role-noun rewrite (A1.3.2(3)'s count, which the
+  amendment says it is unscoreable without).
+- **Tier 3**: **9 war stories**, each naming the criterion it failed; three retired
+  as subsumed, six kept and re-offerable.
+- **Worker spans commissioned**: **NIL, declared, with its cause** (no downward
+  spawn authority).
+- **Self-critical set**: **9 candidates convict my own text or reasoning**, and
+  **two of my three ADRs were found defective by being executed** — ADR-0017 at
+  `-0022`, ADR-0018's id scheme here.
+
+**Handoff**: orchestrator, for commit under `Agent: architect_docs_lead`,
+`Work-Order: none`, `Journal-Only: true`,
+`Journal-Entry: J-architect_docs_lead-0034`; then, as collator, into the
+`SO-xgmii_rx_64` sign-off section's instantiated block and, for the admissible
+candidates, into the shell in one commit with permalinked provenance. **I have
+neither collated nor transcribed anything**, and the seat-qualified ids at §4 are
+offered for the collator to normalise if it prefers a different scheme — normalising
+an id is metadata, and §4.1 bars only editing a candidate's statement.
+
+**Staging note.** Stage this journal and nothing else. Four declared siblings are in
+flight in `agents/handoffs/**`, `test/**`, `docs/reports/audit/**` and their own
+journals; staging any of their paths under this entry would fail `R4`, and a foreign
+journal arriving with entries would fail `R8`.
+
+### Open-questions
+
+- **ADR-0018 §4.3 owes an amendment: the `LC-`/`LD-` id scheme has no per-miner
+  namespace.** Five seats harvesting at one tag mint five sequences all starting at
+  1. dv has allocated `LC-SO-xgmii_rx_64-1 … -94`; I have used
+  `LC-SO-xgmii_rx_64-ADL-<n>` as the smallest repair a miner can make unilaterally.
+  The amendment is mine to draft (`docs/adr/**` is my scope) and is **not** taken
+  here, because minting an amendment inside the round it repairs is the shape
+  ADR-0016 §8 refused. **Owner: me. Closes by: the next architect round, or the
+  collator ruling that a different scheme governs.**
+- **The nine role-rewrites are where this note is weakest and I say so rather than
+  waiting to be told.** If any of candidates 11, 14, 22, 41, 63, 67, 73, 82 or 91
+  goes hollow under the general reading, it belongs at tier 2 with a named pack and
+  my nil is wrong by that many. The auditor's sampling duty (§3.6, §7.2) is pointed
+  at exactly this, and I would rather it fired than that the nil stood unexamined.
+- **`-0030`'s stated interval is now corrected but not retracted**, because the
+  entry is append-only. A reader who finds `-0030` and not this entry will read a
+  span opening at `-0022`. That is the reason candidate 59 exists and is also an
+  instance of it; nothing repairs it except this note being the one that tiles.
+- **Volume 03 opens at `-0035`** (Evidence 7), and under candidate 59 that entry
+  owes a full restatement of the carried ledger rather than a citation across the
+  boundary.
+- **The carried ledger is not restated here, deliberately.** This entry is a
+  harvest, not a ruling round; restating twenty items would bury the bank, and
+  candidate 93 says the honest repair is to give each item an owner and a closing
+  event rather than to recopy the list a twenty-first time. **The restatement rides
+  the volume-03 rotation at `-0035`, where candidate 59 requires it anyway** — and
+  that entry should discharge candidate 93 on it at the same time.
+- **No escalation.** Everything in this round was decidable in-role.
+
+### Files-in-this-commit
+
+- (none)
