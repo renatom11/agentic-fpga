@@ -386,19 +386,23 @@ Anything not listed here is constrained by this specification.
   h = 20, ΔC = 4), so the word delay across M16's receive ports is **8 cycles**
   and the front offset is 34 octets.
 
-  On the transmit side the chain is M15 (1 cycle), M09 (0) and M07 (1), and the
-  three constants sum to **two cycles from the cycle M15 accepts the frame's
+  On the transmit side the chain is M15 (1 cycle), M09 (0) and M07 (1), and every
+  one of those figures is an **event delay** rather than a latency: M15's and
+  M07's are each pinned to a word their own module **inserted**, which carries no
+  octet that entered at any input (requirements.md §0.5's inserting-module clause;
+  SPEC-M15 §7 and SPEC-M07 §7 each pin two constants and name which is which).
+  The three sum to **two cycles from the cycle M15 accepts the frame's
   first payload word** — not from the cycle M15 emits body word 0 (carry-forward
   **C-29**, dv_lead; the text this replaces anchored the figure to the wrong
   event). Written out, with C the cycle M15 accepts the frame's first payload
-  word: M15 emits body word 0 at **C + 1** (SPEC-M15 §7's pinned 1 cycle), M09
-  relays it combinationally so M07 accepts it on that same cycle (SPEC-M09 §7,
-  ΔC = 0), and M07 emits its first output word at **C + 2** (SPEC-M07 §7's
-  1 cycle from the acceptance of its own first payload word). So a datagram's
-  first body word reaches `tx`
+  word: M15 emits body word 0 at **C + 1** (SPEC-M15 §7's **event delay** of
+  1 cycle), M09 relays it combinationally so M07 accepts it on that same cycle
+  (SPEC-M09 §7, ΔC = 0), and M07 emits its first output word at **C + 2**
+  (SPEC-M07 §7's **event delay** of 1 cycle from the acceptance of its own first
+  payload word). So M16 presents its **first `tx` word**
 
-  > **one cycle after M15 emits it, and two cycles after M15 accepts the frame's
-  > first payload word.**
+  > **one cycle after M15 emits its first body word, and two cycles after M15
+  > accepts the frame's first payload word.**
 
   Both readings are stated because a monitor is built from one of them: a monitor
   measuring M15's `eth_payload` against M16's `tx` asserts **1**, and one
@@ -406,6 +410,16 @@ Anything not listed here is constrained by this specification.
   visible in SPEC-M13 §6.1's REQ-502 table, where M11 offers at cycle 14 and M07
   outputs at cycle 15. The measurement events are the children's; M16 introduces
   none of its own, because a wire is not a measurement event.
+
+  **Neither figure is the transit of any word's octets, and this section pins no
+  per-octet constant across M16's transmit ports.** Until 2026-08-11 this
+  paragraph said *"a datagram's first body word reaches `tx` one cycle after M15
+  emits it"*, which is false of the octets: M07 inserts fourteen octets ahead of
+  its payload, so the octets of M15's body word 0 leave M16 spread across `tx`
+  words 1 and 2, at C + 3 and C + 4. A monitor may therefore **not** convert
+  either cycle figure above into a per-octet latency, a front offset or an output
+  offset. The composite *is* derivable from the children, and §13's 2026-08-11
+  row derives it and records why it is deliberately not pinned here.
 
   Consequently M16 consumes **none** of requirements.md §1.1's allocation: the
   3 + 1 + 5 = 9 cycles allocated to `Eth_axis_rx`, `Eth_demux` and
@@ -560,3 +574,4 @@ interface, and `tools/check_records_vs_appendix.sh` re-passes on this commit.
 | Date | Change | Breaking? | ADR | Journal |
 |---|---|---|---|---|
 | 2026-08-02 | §7's transmit-chain figure re-anchored: `tx` carries a datagram's first body word **one** cycle after M15 emits it and **two** cycles after M15 accepts the frame's first payload word, with the three children's constants written out cycle by cycle and both readings named so a monitor can be built from either (ledger **C-29**) | no | none — the three constants (M15's 1, M09's 0, M07's 1) are unchanged and correct; only the event they were summed from was wrong, and a §7-built monitor would have asserted 2 where it observes 1 | `J-architect_docs_lead-0008` |
+| 2026-08-11 | **§7's transmit paragraph: the word-transit reading struck, the three composed figures named as event delays, and the composite per-octet constant derived here but deliberately not pinned.** The paragraph claimed *"a datagram's first body word reaches `tx` one cycle after M15 emits it"* — true of the **events** (M15's body word 0 at C + 1, M16's first `tx` word at C + 2) and **false of the octets**: M07 inserts fourteen octets ahead of its payload (SPEC-M07 §6.1), so the octets of M15's body word 0 leave as `tx` words 1 and 2, at C + 3 and C + 4. Both composed 1-cycle figures are pinned to words their own modules *inserted* and are therefore event delays, which requirements.md §0.5's inserting-module clause distinguishes from latencies and which SPEC-M15 §7 and SPEC-M07 §7 now each name explicitly; the wrapper's paragraph had inherited the pre-`C-RL-8` reading in which a module had one constant. **The composite, derived from the children and stated so this finding is checkable at its own site**: per-octet latency is additive along a chain, so from M16's transmit payload port to `tx` it is L = 28 (M15) + 22 (M07) = **50** octet times with h = **0**; the chain inserts 20 + 14 = **34** octets ahead of the frame, so its output offset is 34 mod 8 = **2** and ΔC = (50 + 0 − 2)/8 = **6** — the frame's first octet is at position 2 of `tx` word 4, at C + 6. **Not pinned in §7**, because under §0.5's default (*"a specification stating no q is stating q = 0"*) a wrapper that states nothing is read as q = 0, which at this module is false and would make the composite fail §0.5's whole-number test (50/8 is not an integer) — a freeze-time check convicting a conformant wrapper, the `C-RL-8` shape one level up. That default is under `FINDING Q-3` (requirements.md §13's 2026-08-11 row, architect_docs_lead); a wrapper's transmit constants are pinned in the round that rules it, not in the round that finds it. **No cycle, no child figure and no receive-side constant moves**: §7's receive chain (8 cycles, front offset 34) is untouched, and the two transmit cycle figures are unchanged in value and only renamed | no — **editorial**: one false sentence struck, three figures renamed to the quantity they always were, nothing pinned and nothing built here (M16 has no RTL and no bench names it) | none — a false reading of the octets is corrected rather than chosen among live alternatives; requirements.md §13's 2026-08-11 `C-RL-8` row carries the ruling the renaming follows | `J-architect_docs_lead-0042` |

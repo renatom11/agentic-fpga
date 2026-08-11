@@ -276,9 +276,12 @@ enumerate the obligation without this document.
 pins its exact per-octet constant L; these are the ceilings the specs must fit
 inside. This table is transcribed into `requirements.md` §1.1, where REQ-019
 makes the ceilings normative and gives them a DV observable — a module's
-constant is compared as its **word delay** ΔC = (L + h) / 8, with L the
-per-octet latency and h the front offset of `requirements.md` §0.5. The two
-copies must change together.
+constant is compared as its **word delay** ΔC = (L + h − q) / 8, with L the
+per-octet latency, h the front offset and q the output offset of
+`requirements.md` §0.5. q is 0 at every stage in the table below, none of which
+inserts octets ahead of the frame, so no ceiling and no allocation moves; the
+conversion is written in its general form because the q-free form convicts a
+conformant *inserting* module. The two copies must change together.
 
 | Stage | Front offset h (octets) | Ceiling on ΔC (cycles) |
 |---|---|---|

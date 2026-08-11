@@ -207,16 +207,30 @@ rely on it.
 
 - **Latency**: the module's constant L, stated as an exact number of **octet
   times** per `requirements.md` §0.5 — not a bound — for receive-path modules
-  (REQ-005, REQ-111), together with the module's **front offset h** and its
-  **word delay** ΔC = (L + h) / 8 in cycles, which is the figure
-  `requirements.md` §1.1's ceiling is stated in and the figure REQ-006's
-  end-to-end budget is the sum of (REQ-019). State h explicitly, per start lane
-  where the two differ, and show that (L + h) is a multiple of 8 — a pinned L
-  for which it is not describes a module that cannot exist. Name the two
-  measurement events explicitly. Do not state latency as "word in to word out": at a realigning
-  module or a lane-4 start that names no single event and is not constant. A
-  module seeing XGMII pins one constant per start lane and they differ by no
-  more than one cycle.
+  (REQ-005, REQ-111), together with the module's **front offset h**, its
+  **output offset q** and its **word delay** ΔC = (L + h − q) / 8 in cycles,
+  which is the figure `requirements.md` §1.1's ceiling is stated in and the
+  figure REQ-006's end-to-end budget is the sum of (REQ-019). State h
+  explicitly, per start lane where the two differ. **State q explicitly at any
+  module that inserts octets ahead of the frame** — q is (the octets inserted
+  ahead of the frame) mod 8 — because a specification stating no q is stating
+  q = 0, and that is true only of a module which inserts nothing or inserts a
+  whole number of words. Show that **(L + h − q)** is a multiple of 8 — a pinned
+  L for which it is not describes a module that cannot exist. **Do not write
+  that test in the q-free form (L + h)**: that form is this test evaluated at
+  q = 0, and at an inserting module whose insertion is not a whole number of
+  words it convicts a **conformant** design — a freeze-time check that refutes
+  the module it exists to protect (`requirements.md` §0.5's whole-number bullet;
+  the Phase-1 instances are SPEC-M07, q = 6, and SPEC-M15, q = 4, whose first
+  §7 bullets were written from an earlier revision of *this* bullet and carried
+  its defect). Name the two measurement events explicitly. **A delay pinned to a
+  word the module itself inserted is an event delay, not a latency**: it is a
+  legitimate and often sharper thing to pin, but it is a different quantity with
+  a different value, and a specification pinning both SHALL name which is which
+  (§0.5's inserting-module clause). Do not state latency as "word in to word
+  out": at a realigning module, at an inserting module, or at a lane-4 start
+  that names no single event and is not constant. A module seeing XGMII pins one
+  constant per start lane and they differ by no more than one cycle.
 - **Throughput**: words accepted per cycle, and any cycle in which the module
   cannot accept a word (transmit path only — receive path must always accept,
   REQ-003).
