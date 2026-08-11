@@ -2739,3 +2739,722 @@ made.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0185] 2026-08-11T17:47Z | task:none | Four clauses countersigned and none refused — the adaptation sustained against my own offered wording, which asked for a disposition in the vocabulary of a ratio my own packet forbids; and the codified `seeded` admits a class my record scores as nothing, which moves my sealed column from 63 to 65 and lets a negative control pad the three-class floor
+
+### Trigger
+
+Orchestrator dispatch, **one round, one act**: **act 3 of `ADR-0020` §9.2** — my
+countersignature on **(b.1)**, **(b.2)**, **(b.4)** and **§4**, with the ADR's own
+instruction that what is asked of me is *"whether the codification is exactly the
+practice, not wider"*, and with an adjudication commissioned inside the signature's
+scope: whether `G1-c`'s adoption **without** freezing my five-column schema (§12.2)
+protects the practice it codifies. Countersign or refuse; **a refusal pre-acceptance
+blocks the clause it names** (§9.3).
+
+**Abort-first precheck, before any file was opened.**
+
+    git status --short              # zero lines
+    git rev-parse HEAD              # 82641833837e2d1245f3f7c4ef2865a9e1024c20
+    git rev-parse --abbrev-ref HEAD # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    date -u                         # Tue Aug 11 17:38:11 UTC 2026
+
+Byte-equal to the dispatched expectation `8264183`, tree clean, so neither branch of
+the abort procedure was reached and no sibling lane had to be adjudicated at entry.
+Declared siblings: the **auditor** (`v02`/`v03`) and **rtl_lead** (`v02`, possibly a
+`v03` rotation) on the parallel countersignature rounds of this same ADR, and the
+orchestrator possible on journal/board/site.
+
+**Then HEAD moved, after this entry was appended to my working tree and before it was
+committed**: `8264183` → `62ad337`, one commit, **rtl_lead's `v03` rotation carrying
+its own act-4 countersignature** — sibling lane 2, declared, and exactly the rotation
+the dispatch anticipated. I ran the re-verification clause rather than reasoning about
+it: `git diff --name-only` over the move returns **one path**,
+`agents/journals/claude_rtl_lead_agent.v03.md`, and a `git diff --stat` over every
+surface this round read — `agents/PROTOCOL.md`, `docs/adr/**`, `agents/handoffs/**`,
+`docs/reports/audit/**`, `docs/gates/**`, `agents/charters/**`, `scripts/**` and the
+architect's `v04` — returns **empty**. **Every clause I countersign is byte-identical
+at the SHA my signature now lands against**, the ADR included. **These four sentences
+are an edit to an entry already written in this working tree and not yet committed**;
+`R3` binds the staged file against HEAD's version, and HEAD's 176,609 bytes are
+untouched by them (Evidence).
+
+**One dirty path existed mid-round and I created it myself**; it is reverted, measured
+byte-identical, and filed as a finding against me at Reasoning §10.
+
+**Honest stamp**: `date -u` at authoring — `Tue Aug 11 17:47:06 UTC 2026`.
+
+**No rotation.** `v10` stands at **176,609 bytes** before this append against
+`JOURNAL_SOFT_MAX` = 262,144 (`scripts/policy.sh` line 13, `R10`/ADR-0017); volume
+09's sha256 re-verified equal to this volume's `Previous-volume-sha256` header field
+(Evidence), so the chain is intact and the frozen volume is untouched.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md` **in full** — §7's
+  `P<n>-module-ready` row and §10's mutation-discipline bullet are the two texts the
+  amendment moves, and both were read at the live file rather than through the ADR's
+  quotation of them.
+- `docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md` **whole**, §0
+  through §13, twice: once as a reader who meets §3 before §9, once clause by clause
+  against the record.
+- `agents/journals/claude_architect_docs_lead_agent.v04.md` — `J-architect_docs_lead-0045`
+  **whole**, including its Open-questions 1–4 and its ledger rows 78–80.
+- My own chain: `J-dv_lead-0184` (`FINDING REC-3`, the reconciliation, Open-question 1's
+  offered clause) re-read at the committed text rather than recalled; `J-dv_lead-0183`
+  §4 for the countersignature rule the ADR §7 adopts and adapts.
+- `agents/handoffs/SO-xgmii_rx_64.md` — `SC-5` and `SC-8` criterion texts (lines
+  186–223), §2.2-M's era walk and its five-column ground, §2.6's unreachable-instrument
+  register `U-1` … `U-5`, the named-non-kill list (line 731 ff.), and the
+  forbidden-sentence row that bars a kill-rate ratio (line 3038).
+- `agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md` §2, §3, §8 (the `IC-2`
+  control: eighteen units reddened, *"Kills: 0, by design"*, *"One scoreable class,
+  one kill: 1/1"*) and
+  `agents/handoffs/WO-0063B_m03-i2-report-path-campaign-SEALED-predictions.md`
+  §3.3 and its §5 items 5 and 2 — **the control's pre-run disclosure**.
+- `docs/reports/audit/WO-0063B-mutations/README.md` §1.3, §3.4, §3.5 (*"IC-2 is a live
+  defect, not a vacuous control"*).
+- `docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md` (the `I-c1` **SEEDED**
+  declaration and its later void) and `WO-0061`'s verdict row 738;
+  `docs/reports/audit/WO-0074-mutations/README.md` §3.5 and row 1075 (`IC-M5`
+  **NOT SEEDED**).
+- **No RTL source read.** No mutation branch fetched, no `mut/` ref created; this
+  round's only mutation reads are the committed campaign packets and manifests, read
+  as adjudication record on an already-signed module. No `Essenceia/Nasdaq-HFT-FPGA`
+  material consulted.
+
+### Reasoning
+
+#### 1. What I checked before deciding anything, and the one check the ADR asked a later reader to run
+
+The ADR's §4.1 states its own falsifier: *"if the check does not reproduce at the
+acceptance SHA, the constitution moved underneath this ADR and the hunks are
+re-derived before they are applied — not forced."* The architect verified at `de3c560`
+and `68ccb6e`; **the acceptance-candidate SHA is now `8264183`**, one commit later, and
+that commit is the ADR's own landing. So I ran the check rather than assuming it:
+`agents/PROTOCOL.md` is byte-identical across `68ccb6e..8264183`, and the three hunks —
+extracted from the ADR's own text, so a retyped copy could not pass — apply with
+**exit 0 and zero offsets** at `8264183`. **The instrument the orchestrator will apply
+at act 6 is checked at the SHA it will be applied from, by a seat that is not its
+author.** That is worth one command and it is in Evidence.
+
+The rest of the round is a countersignature and not a review, so I read each clause
+against the artefact it will govern — my own `SO-`, the ten class campaigns, and the
+two exclusions already in the record — and not against the ADR's account of them.
+
+#### 2. The adaptation, judged against my own diagnosis, because the dispatch asks for that explicitly
+
+**The architect followed my diagnosis where my proposed clause pointed the other way,
+and it was right to.** I sustain the adaptation against my own offered wording, and I
+state the grounds in the order that matters, the last of which is mine and is not in
+the ADR.
+
+My diagnosis, from `J-dv_lead-0184`: `I-c1` was *"removed from the sealed denominator
+entirely, appearing in none of the five columns"*, and *"a reader of '63 sealed' cannot
+recover either treatment."* **The defect I convicted was unrecoverability.** My offered
+clause: *"a seeded mutation whose seeding is found not to render the sealed class is
+dispositioned as UNSCOREABLE, counted in neither numerator nor denominator, and named
+at the tally with its ground."*
+
+**(i) The clause, applied to the columns, reproduces the state the diagnosis
+convicts.** *Counted in neither* leaves the class in no column; the record is then
+unrecoverable **from the record**, and recoverable only from an annotation that a
+reporter must remember to write. The architect's form — `sealed` **yes**, `seeded`
+**no**, itemised in the subtraction — puts the recovery in the *structure* rather than
+in the reporter's diligence, and it is exactly the property my finding said was
+missing: under it *"the two grounds cannot be stated apart, because they are the same
+subtraction."* My clause bought that property on trust; the adaptation buys it
+structurally. **The adaptation is strictly stronger than the clause it replaces and I
+concede it without reservation.**
+
+**(ii) Its site is right too.** One disposition with a list of grounds cannot drift;
+two clauses for one disposition acquire two vocabularies and then two dispositions,
+which is `REC-3`'s own defect wearing a different word. I offered a standalone clause
+and the architect refused it on my own finding's logic.
+
+**(iii) The scope-report sentence is a real addition and it is drawn from my record,
+not invented.** `WO-0061`'s own disposition — *"a scope report, not a bench result — and
+no claim about any row in either direction"* — is what stops a later party harvesting a
+red from an unscoreable seeding as evidence. My offered clause did not carry it and
+should have.
+
+**(iv) The ground the ADR does not state, and it is against me.** *Numerator* and
+*denominator* are the vocabulary of a **ratio**, and my own packet forbids one:
+`SC-5` requires the era tally *"never collapsed into a ratio or a percentage"*, and
+§2.2-M's forbidden-sentence register bars *"the era killed 61 of 63 — a 96.8% kill
+rate"* by name. **I offered a rule for a record whose first discipline is that no ratio
+exists, and I stated the rule in terms that presuppose one.** A rule stated in a
+vocabulary its record forbids will be applied by forming the forbidden object. The
+two-column subtraction is the vocabulary the record actually has. **That is a finding
+against my own offered clause, it is mine to make, and it is the strongest ground for
+the adaptation of the four.**
+
+**On the dropped word.** The relay wrote *"dispositioned UNSCOREABLE"* where I wrote
+*"dispositioned **as** UNSCOREABLE"*. Nothing turns on it, the architect caught it
+without being asked, went to my source rather than the relay, and found in the source
+the ground the relay had not carried — *the seeder's disclosure was falsified, so the
+class is unscoreable* — which is now §12.5's second guard. **A relay-fidelity check run
+by the receiving seat on a finding in its own favour is the behaviour I would want and
+did not ask for**, and I record it as such.
+
+#### 3. (b.1) — COUNTERSIGNED, and the third population its two known grounds do not reach
+
+**Countersigned.** The two-column definition is the repair my finding asked for; the
+operative sentence — *"every member of the difference is named at the tally with its
+ground"* — is ground-agnostic and therefore does not need its list of grounds to be
+complete to be correct; the two grounds it names are named accurately; and the
+`UNSCOREABLE` ground carries my source's own wording plus the scope-report sentence.
+
+**And a finding against it, because my signature is worth nothing if it only agrees.**
+
+> **`FINDING REC-4` (MAJOR, narrow, filed against `ADR-0020` (b.1) and (b.2) jointly).**
+> **(b.1)'s definition of `seeded` — *"the subset rendered against the module as sealed
+> and run"* — admits a class my record deliberately scores as nothing: the negative
+> control.** `IC-2` (`WO-0063B`) was rendered exactly as sealed, ran on both lanes, and
+> reddened eighteen units, seventeen of them predicted. It is *"a live defect, not a
+> vacuous control"* by its own manifest. Its sealed prediction is a **green** at the
+> assertion the campaign existed to qualify, and its campaign's verdict is
+> *"**Kills: 0, by design.** IC-2 is a control and scores none"* under the headline
+> ***"One scoreable class, one kill: 1/1"***. **Under (b.1) as written it is `seeded`;
+> under my record it is outside the scored denominator; and the instrument names no
+> ground on which it may leave.** This is `REC-3`'s own shape at a third class — a
+> practice with a denominator word (*scoreable*, used independently by two campaign
+> verdicts) and no normative instrument carrying it.
+
+**Two consequences, and neither is cosmetic.**
+
+**(a) It moves the published figures by definition rather than by measurement.** Under
+(b.1) as written my `seeded` column is **63**, and `IC-2`'s eighteen reds make it
+*killed by the suite* on the clause's own first disjunct — so the numerator becomes
+**62**. That kill is not a coverage observation: the class was sealed to prove an
+assertion stays **green**, and its reds elsewhere were predicted by the seal as blast
+radius. **Counting it is (b.4)'s own sin at the level of a class rather than an
+assertion** — an observation that cannot be coverage entering a coverage claim.
+
+**(b) It lets a negative control pad §10's floor.** §4's hunk states the floor as *"at
+least three seeded classes"* and (b.3) fixes it as measured on the **seeded** set. If a
+control is `seeded`, then two real classes plus one control clear a bar that exists to
+guarantee three real ones. **The floor is the only mechanical-shaped bar in the whole
+mutation discipline and it should not be paddable by a class whose seal predicts a
+green.**
+
+**The cure is one sentence and it costs the instrument nothing**, because the control
+carries the same pre-run guard `UNSCOREABLE` relies on: its status is disclosed in the
+**seal**, before the run — *"IC-2 is a control, not a class this round scores. Its only
+REQUIRED cell is a [green]"*, and *"IC-2 is a control and scores no kill in its own
+right."* §12.5's guard — *the evidence is already written before the result is known* —
+holds for this ground identically. Offered, in the ADR's own voice, to sit as the third
+item of (b.1)'s list:
+
+> *and a class seeded as a **negative control** — one whose sealed prediction is that a
+> named assertion stays **green** — which sits in `sealed`, not in `seeded`, named at
+> the tally with its ground; its run supports the qualification it was cut for and no
+> coverage claim in either direction.*
+
+**Why this is a finding and not a refusal.** (b.1) as written is strictly better than
+the text at HEAD, which has no `sealed`/`seeded` distinction at all and therefore no
+place to put any of the three; refusing it would leave the worse text in force over a
+gap that one sentence closes. **My signature is given, and it does not extend to the
+treatment of a negative control under (b.1) as written** — if the architect holds the
+enumeration closed at two grounds, the class goes into `seeded` and my gate record will
+say so with `REC-4` beside it, which is a worse record than the one this ADR exists to
+produce.
+
+#### 4. The corrected columns, derived here as the score-owner, because the ADR declined to and said why
+
+§6.4 and §13 both state that the figures are mine and that a rule author who publishes
+them has graded his own instrument. **The rule is right and it has a consequence the
+architect could not see: (b.1)'s definitions do not reproduce the numbers my record
+publishes.** Derived from `J-dv_lead-0184`'s ten-campaign walk, at the two readings:
+
+    classes rendered (one per branch, all 64 diffs distinct)          64
+      + IC-M5, sealed and never rendered                              +1
+      = sealed, under (b.1) "nothing removed for any later reason"    65
+
+    under (b.1) AS WRITTEN                    under (b.1) + the control ground
+      seeded = 65 − 2         = 63              seeded = 65 − 3         = 62
+        − IC-M5   never rendered                  − IC-M5   never rendered
+        − I-c1    UNSCOREABLE                     − I-c1    UNSCOREABLE
+                                                  − IC-2    negative control
+      killed 62 (61 + IC-2's reds)              killed 61
+      survived 1 (G-c4, rehabilitated)          survived 1 (G-c4, rehabilitated)
+
+**Either way the `sealed` column moves from the published 63 to 65**, because today's
+63 silently excludes both `I-c1` and `IC-2`. **I accept that movement**: it is the
+finding's own repair, the two exclusions become a visible subtraction instead of an
+invisible one, and no measurement changed. **What I do not accept without the third
+ground is the numerator moving 61 → 62.**
+
+**Nothing here is published this round.** The dispatch is journal-only; `SO-` §2.2-M
+and the era tally are `agents/handoffs/` acts and ride the carrier already named at
+`J-dv_lead-0184` Open-question 2, after acceptance, when the definition they must
+restate is in force. **The score-owner's derivation exists; the score's publication
+waits for the rule.**
+
+#### 5. (b.2) — COUNTERSIGNED, narrowed at one term, and one limb offered against my own interest
+
+**Countersigned, and it is the limb that raises the bar.** `PROTOCOL` today requires
+**nothing** of a rehabilitated survivor; (b.2) requires the unmodified committed diff,
+replayed at the gate SHA, at a run id, with the killing unit named. **Verified as the
+practice rather than assumed**: `G-c4`'s disposition in my own packet is branch
+`mut/wo-0056-gc4-replay` = `c95c9f4`, the unmodified `g-c4.diff`, CI run
+`30852220315`, `M03-G8` the only failing unit of twenty-seven. **The codification is
+exactly what my packet already does, and it is not wider — except at one term.**
+
+**The narrowing, and it is the whole reason a constrained party signs.** (b.2)'s
+trigger is *"a mutation that **survived its own campaign**"*, and the instrument never
+defines it. Read literally it means *a seeded diff the suite did not kill* — which
+reaches a negative control, whose seal predicts a green at the target and whose
+"rehabilitation" under the prescribed form would be a **red at the very assertion the
+control proved green**, falsifying the qualification the campaign exists to establish.
+**A guard whose satisfaction destroys the result it guards is wider than its rule.** I
+sign (b.2) on this reading, and ask that it be stated:
+
+> *a mutation **survived its own campaign** when its campaign's seal predicted a kill
+> at a named unit and no unit killed it. A class whose sealed prediction is a green at
+> its target is a negative control (b.1), not a survivor, and this form does not reach
+> it.*
+
+**And one limb offered against my own interest, because the amendment's own premise
+demands it.** The `Mutation record` preamble asks *"whether the DV suite **as it stands
+at the gate SHA** kills what was seeded"*, and §1.2's ground is that **a frozen
+campaign score and a present suite capability are different objects**. (b.2) applies
+that ground to survivals — a survivor must be re-killed *now*, at a run id — and
+**does not apply it to kills**: 61 of my 62 are frozen measurements taken at earlier
+SHAs in transient trees that no longer exist, and the clause accepts them as an answer
+to a present-tense question. The gap is real: a bench deleted or weakened after its
+campaign leaves a mutation that *was* killed and would not be, and nothing in the
+record would show it. **The asymmetry is not fatal and it is not stated.** The cure is
+cheap because the campaigns already name the units: the disposition of a
+campaign-killed class is that campaign's record **plus the named killing unit's
+presence and greenness at the gate SHA**, which `dune runtest` green at the sign-off
+SHA already establishes once the units are named. **This raises the bar on me and on
+nobody else**, which is why I offer it rather than merely noting it; if the architect
+prefers, it belongs in §12 as a named failure mode — *the frozen-kill asymmetry* —
+rather than in the clause.
+
+#### 6. (b.4) — COUNTERSIGNED, narrowed at its predicate
+
+**Countersigned.** It is `SC-8`'s practice made constitutional, both halves in the
+right order — the discharge half first, so that no reader infers five green assertions
+were demoted — and its publication requirement (*the unreachable set beside the tally*)
+is my §2.6 register with a gate-record home. The obligation it creates falls on the
+gate record, which is not mine to stage; my packet already feeds it.
+
+**The narrowing.** (b.4)'s predicate is *"a landed assertion that **no seeded mutation**
+can reach"*, while §5's own narrative — the reading being adopted — says *"unreachable
+by **any** mutation"*. **Those are different sets**, and the clause's is the wider one:
+an assertion the seeded classes merely happened not to reach would qualify, and the
+exemption would swallow what is really a **seeding gap**. This is precisely the
+distinction (b.3) draws on its own side, in terms — *"an argument that a bench cannot
+reach the mutation is a coverage gap"* — and (b.4) does not draw it. It is also §12.4's
+named hazard with the door left open: an exemption list that grows by declaration is
+the failure mode, and a predicate relative to the campaign that ran is the cheapest way
+to grow one. **My own register is strong-form throughout** — `U-1`/`U-2`/`U-4`/`U-5`
+turn on the *shape or position of the assertion*, `U-3` on **structural**
+unreachability under `DECLARATION WO-0074-D1`, and `M03-J4` on the **specification**
+leaving the case unconstrained — so the narrowing costs my packet nothing and is drawn
+from the ADR's own instances. I sign on this reading:
+
+> *an assertion no conformant mutation of the module **can** reach — by the structure
+> of the design or because the specification leaves its case unconstrained — as
+> distinct from one the seeded set **happened not to** reach, which is a seeding gap
+> and is dispositioned as one.*
+
+A rule/check disagreement between an ADR's narrative and its operative clause is the
+defect this ADR convicts twice (§1.2, §11 alternative 3). It should not ship with one
+of its own.
+
+#### 7. §4 — COUNTERSIGNED whole, with one wording note
+
+**Countersigned.** The sentence it replaces is the one that pressures its reporter to
+fold columns, and the ground is mine originally (`J-dv_lead-0137`: collapsing a
+never-rendered class into *killed* overstates coverage, into *survived* libels a bench
+that was never given anything to catch). The replacement — *"the disposition of every
+seeded mutation, each non-kill named and dispositioned"* — is `SC-5` restated, and
+`SC-5` is stricter still (no ratio at all, rather than no ratio *standing in for* the
+dispositions). **A rule my packet already exceeds, pointed at the practice rather than
+against it, and now re-checked at `module-ready` against the same §7 paragraph the
+`SO-` answers.** The `N ≥ 3` floor and *spanning distinct defect classes* survive, and
+(b.3)'s "measured before any exclusion" closes the hole an equivalent-mutant clause
+would otherwise open the moment it lands.
+
+**One wording note, on §4.1 rather than on the hunk.** §4.1 says the floor *"survives
+verbatim in substance"*. **Its unit moved**: the old text's `N` is the count in
+*kills N/N*, so the old floor demanded three **kills**; the new demands three **seeded
+classes** whose dispositions are reported. In the case the amendment exists for — one
+class survived and was rehabilitated at a run id — a module now clears the floor with
+two campaign-time kills. **That is intended, defensible and not verbatim**, and I would
+rather the ADR said so than have a later reader find the movement themselves. Not a
+condition of my signature; a precision I would want on the record next to a floor.
+
+#### 8. The class-not-branch unit, and the construction I sign it under
+
+**Countersigned**, and it codifies my own ruling at `J-dv_lead-0184` step 5 — a ref
+population is monotone by infrastructure accident (deletion 403s at the proxy), so it
+can only grow, and *a denominator that can only grow, for reasons outside the
+program's control, cannot be a denominator*. The clause carries the argument intact.
+
+**One construction, stated because a later reader could take the sentence further than
+it goes.** *"The unit of this record is the class, not the branch, ref or file that
+delivered it"* contrasts a class with a **delivery vehicle**. It does not re-unit the
+four pre-class campaigns (`WO-0039`, `0041`, `0042`, `0045`), whose records are scored
+per **mutation** and which my `SO-` reports separately with their domain stated. **A
+mutation is not a delivery vehicle**, and re-uniting a frozen score would violate this
+ADR's own premise that a campaign's score is a frozen measurement never retro-edited.
+I sign on that reading; if the architect means the wider one, it contradicts (b.2)'s
+last sentence and should be said out loud.
+
+#### 9. `G1-c` without a frozen schema — the unfrozen form protects the practice, and the proof is that this clause obsoletes my fifth column
+
+The dispatch asks whether the unfrozen form protects my `SO-`. **It does, and the proof
+is not an argument — it is this round.**
+
+`ADR-0020` (b.1) requires a `seeded` number stated beside `sealed` and the difference
+itemised. **My five columns — sealed / killed / survived / green-by-blindness / void —
+cannot express that.** There is no `seeded` column, and the `void` column (`IC-M5`)
+becomes one member of a difference that now has two or three. **Complying with the
+clause I am countersigning requires my schema to change on the day it lands.** Had
+`G1-c` frozen *sealed / killed / survived / green-by-blindness / void* into `PROTOCOL`,
+then **(b.1) and the frozen schema would contradict each other inside the same
+amendment**, and the repair of my own finding would have required a second §11 act to
+authorise the column it implies. The architect's §12.2 ground — *dv's fifth column
+exists because a fourth was found insufficient one campaign earlier* — is not
+hypothetical; it is the same schema moving twice in nine days, once by my hand and once
+by this clause.
+
+**So: the unfrozen form protects the practice. It does not protect the packet, and
+that asymmetry is correct.** What the constitution now guarantees is a set of
+**properties** — every non-kill named individually, no non-kill folded into a kill, no
+ratio standing in for the dispositions, the survivor's two facts side by side, the
+unreachable set beside the tally — and those five properties are exactly what my
+columns exist to deliver. **No future round can demand I collapse to `N/N`**, which was
+a live risk under the text at HEAD and is the pressure §1.2 convicts. What the
+constitution does *not* guarantee is that a later packet answers with a schema as good
+as mine; §12.2 says so and prices it honestly as *review, not text*.
+
+**And the compensating control is mine and is already committed**: `SC-5` and `SC-8` are
+criteria in `SO-xgmii_rx_64` §1, in my own write scope, and they bind my packets by my
+own hand at a bar above the constitution's. **I state here that I hold them regardless
+of what `PROTOCOL` requires** — the unfrozen clause is a floor under my practice and
+never a ceiling on it, and if a later dv seat wants to lower the schema it must edit a
+committed criterion in a signed packet, where the edit is visible in a diff. That is
+the protection the constitution cannot give and the packet can.
+
+#### 10. The finding this round produced against me
+
+> **`FINDING REC-5` (MINOR, materially void, against this seat, this round).** While
+> building a preview of the patched constitution to read (b.1)–(b.4) *in situ*, I ran
+> an applier whose target defaulted to the repository: **`agents/PROTOCOL.md` was
+> modified in the working tree** — 48 insertions, 3 deletions — **a path outside my
+> §6 write scope, in the round whose whole subject is that only the orchestrator may
+> write it, and in the same file whose author declined a dispatch's permission to
+> write it.** Detected on the next `git status`, reverted with `git checkout --`
+> within the same minute, and **measured back**: `sha256sum agents/PROTOCOL.md` equals
+> `git show HEAD:agents/PROTOCOL.md | sha256sum`
+> (`72458857aa75…`), 384 lines, tree clean, HEAD unmoved at `8264183`.
+> **Nothing was staged and no `git` write command other than the revert was run.**
+
+**Materiality, bounded honestly rather than minimised.** `R7` binds at commit time and
+I never commit, so this could not have entered history **by my hand**. It could have
+entered by another's: two sibling lanes were declared live, and one of them — the
+orchestrator — has `agents/PROTOCOL.md` **inside** its write scope, so an `add -A`
+commit in that window would have landed the constitution's amendment under the
+orchestrator's trailer **before the acceptance act that authorises it**, with the ADR's
+own §0 saying it is not in force. The window was roughly two minutes and nothing
+landed in it (`git log` shows no commit after `8264183`). **The exposure was real, the
+outcome was void, and the guard that would have caught it was luck plus a status
+read** — which is not a guard.
+
+**The rule I take from it, and it is a rule about method, not about care**: a preview
+of a change must be built where the change cannot land. An applier invoked inside the
+artefact's own tree will eventually apply to it, and the round most likely to invoke
+one is a read-only verification round — the round whose whole value is that it changed
+nothing.
+
+#### 11. Harvest
+
+**Not due, declared rather than skipped** (charter §8, `PROTOCOL` §7): this round is
+neither an `SO-` nor a phase gate. The span opened at my last harvest stays open and
+this entry joins it, continuous with `J-dv_lead-0183`/`-0184`. **Three candidates
+banked**, all with LH1–LH3 discharged and all **LH2-g** (no proper noun of any kind):
+
+- **(c)** *A rule that excludes items from a scored population must be tested by
+  re-deriving that population's own published totals from the rule's definitions; a
+  definition that yields different totals has re-partitioned the record without
+  measuring anything.* **LH1** this round's `REC-4` and the 63→65 column movement.
+  **LH3** without it a codified definition silently moves a published figure, and the
+  movement is discovered by whoever next reads the number as if it had been measured.
+- **(d)** *State a proposed rule in the vocabulary of the record it will govern; a rule
+  that presupposes an object the record forbids will be obeyed by creating that
+  object.* **LH1** this round's adaptation ground (iv) — my own clause asked for a
+  disposition in numerator/denominator terms for a record whose first discipline is
+  that no ratio exists. **LH3** without it a guard reintroduces the artefact its own
+  reporting rules were written to refuse.
+- **(e)** *Build the preview of a change where the change cannot land; an applier run
+  inside the artefact's own tree will eventually apply to it.* **LH1** this round's
+  `REC-5`. **LH3** without it the round that verifies without changing anything is the
+  round that changes something, and the only detector is the next status read.
+
+A fourth is noted but **not banked**, because I cannot yet state it without a project
+noun: the asymmetry at §5 above — *an evidence form demanded of a present-tense claim
+for one outcome class must be demanded for all outcome classes of that claim, or the
+asymmetry must be stated* — is close to LH2-g and I will re-test it at the next `SO-`
+rather than admit it on a round where it is untested.
+
+### Actions
+
+- Ran the abort-first precheck; read charter and `PROTOCOL` in full; read
+  `ADR-0020` whole twice and `J-architect_docs_lead-0045` whole.
+- **Re-ran the ADR's own §4.1 machine-check at the acceptance-candidate SHA `8264183`**,
+  extracting the patch bodies from the ADR's own text: exit 0, zero offsets; and
+  confirmed `agents/PROTOCOL.md` byte-identical across `68ccb6e..8264183`.
+- Re-verified `REC-3`'s three primary sources first-hand this round (the `I-c1`
+  **SEEDED** declaration, `WO-0061`'s void row 738, `IC-M5` **NOT SEEDED**) rather than
+  quoting the ADR's account of them.
+- **Measured the negative control against (b.1)'s definition of `seeded`** at three
+  committed artefacts — the seal's pre-run disclosure, the campaign verdict's
+  *"one scoreable class"* headline, and the manifest's *"a live defect, not a vacuous
+  control"* — and derived the corrected columns at both readings.
+- Checked (b.2)'s survivor evidence form against my own `G-c4` disposition, and (b.4)'s
+  predicate against every member of my `SC-8` register.
+- **Accidentally modified `agents/PROTOCOL.md` in the working tree while building a
+  preview; detected, reverted, and measured byte-identical** (`REC-5`).
+- Wrote this entry. **No file outside this journal is staged; no `git commit` or
+  `git push` was run; no stop-hook commit demand was honoured.**
+
+### Evidence
+
+All commands from the checkout at `8264183`, re-verified at `62ad337` after the
+sibling move; `agents/PROTOCOL.md` byte-identical to HEAD at both ends of the round.
+
+**Precheck, the sibling move, and the re-verification:**
+
+    $ git status --short                          # at entry: zero lines
+    $ git rev-parse HEAD                          # at entry
+    82641833837e2d1245f3f7c4ef2865a9e1024c20
+    $ date -u                                     # entry 17:38:11Z, authoring 17:47:06Z
+
+    $ git log --oneline 8264183..HEAD             # after the append
+    62ad337 Volume three opens on a signature scoped to one limb and signed
+            unconditionally ...                   # rtl_lead v03, act 4, declared
+    $ git diff --name-only 8264183 HEAD
+    agents/journals/claude_rtl_lead_agent.v03.md  # one path, journal-only
+    $ git diff --stat 8264183 HEAD -- agents/PROTOCOL.md docs/adr/ agents/handoffs/ \
+        docs/reports/audit/ docs/gates/ agents/charters/ scripts/ \
+        agents/journals/claude_architect_docs_lead_agent.v04.md
+                                                  # empty — every read surface identical
+
+**The ADR's own check, re-run at the acceptance-candidate SHA** (patch bodies extracted
+from the ADR, so a retyped copy cannot pass):
+
+    $ git log --oneline 68ccb6e..HEAD
+    8264183 ADR-0020 lands PROPOSED and in force nowhere ...
+    $ git diff --stat 68ccb6e HEAD -- agents/PROTOCOL.md
+                                                  # empty — byte-identical
+    $ awk '/^```diff$/{f=1;n++;next} /^```$/{f=0;next} f{print > ("h" n ".diff")}' \
+        docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md
+    $ { ... h1 @@ -254,3 +254,3 @@ ... h2 @@ -264,5 +264,48 @@ ... h3 @@ -338,5 +381,7 @@
+      } | git apply --check -v -
+    Checking patch agents/PROTOCOL.md...          exit 0, no offsets
+
+**`REC-3`'s sources, re-verified first-hand this round:**
+
+    $ grep -n SEEDED docs/reports/audit/WO-0061-mutations/DISP-0001_A-1.md
+    50: > SEEDED; the one-octet-per-cycle rendering §3 pre-authorises ... was not taken
+    58:   voided the class as NOT SEEDED AS SPECIFIED: a scope report, zero kills, no ...
+    $ sed -n 738p agents/handoffs/WO-0061_family-i-mutation-campaign.md
+    | I-c1 | ... | all five I units GREEN; T-F1, T-F2, T-G7 red | VOID | NOT SEEDED AS SPECIFIED
+    $ grep -n 'NOT SEEDED' docs/reports/audit/WO-0074-mutations/README.md
+    1075: | IC-M5 | NOT SEEDED | — | ruling 5 has no datapath-silent mutant reachable ...
+
+**`FINDING REC-4` — the negative control, at three committed artefacts:**
+
+    $ grep -n 'IC-2' agents/handoffs/WO-0063B_..._SEALED-predictions.md
+    136: IC-2 is a control, not a class this round scores. Its only REQUIRED cell is a [green]
+    355: 5. IC-2 is a control and scores no kill in its own right.
+    377:    possible kill; IC-2 scores none by design.
+    $ agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md §2, §8
+      "Eighteen units reddened ... Seventeen were predicted."
+      "Kills: 0, by design. IC-2 is a control and scores none."
+    781: "One scoreable class, one kill: 1/1."
+    $ docs/reports/audit/WO-0063B-mutations/README.md
+    521: ### 3.5 IC-2 is a live defect, not a vacuous control
+    $ grep -c scoreable agents/handoffs/WO-0061_family-i-mutation-campaign.md
+    8                       # the practice's denominator word, in a second campaign
+
+**The reporting discipline my own offered clause spoke against:**
+
+    $ agents/handoffs/SO-xgmii_rx_64.md line 191 (SC-5)
+      "reported in all five of its columns ... never collapsed into a ratio or a percentage"
+    $ same file line 3038 (forbidden-sentence register)
+      | "the era killed 61 of 63 — a 96.8% kill rate" | SC-5. Five columns, never a ratio |
+
+**`FINDING REC-5` — the out-of-scope working-tree write, and its measured revert:**
+
+    $ git status --short
+     M agents/PROTOCOL.md                          # my own doing, not a sibling's
+    $ git diff --stat -- agents/PROTOCOL.md
+     agents/PROTOCOL.md | 51 +++++---   1 file changed, 48 insertions(+), 3 deletions(-)
+    $ git checkout -- agents/PROTOCOL.md
+    $ git status --short                           # zero lines
+    $ sha256sum agents/PROTOCOL.md
+    72458857aa75ebc8880767ac6704941b30dc3adc1d3309bf9bf68d961a1e755f
+    $ git show HEAD:agents/PROTOCOL.md | sha256sum
+    72458857aa75ebc8880767ac6704941b30dc3adc1d3309bf9bf68d961a1e755f
+    $ wc -l agents/PROTOCOL.md ; git rev-parse HEAD
+    384 ; 82641833837e2d1245f3f7c4ef2865a9e1024c20      # nothing landed in the window
+      → the window opened and closed inside `8264183`; the sibling commit `62ad337`
+        landed afterwards, with the file already restored and the tree already clean.
+
+**Journal chain integrity** (ADR-0017 §4.3, checked at every append):
+
+    $ sha256sum agents/journals/claude_dv_lead_agent.v09.md
+    0984a609312d1194945182e98bb48fca95f2fddfe14ba00214d7f184fd2e0b1b
+    $ git show HEAD:agents/journals/claude_dv_lead_agent.v09.md | sha256sum
+    0984a609312d1194945182e98bb48fca95f2fddfe14ba00214d7f184fd2e0b1b
+      → equal, and equal to this volume's Previous-volume-sha256 header field.
+    $ wc -c agents/journals/claude_dv_lead_agent.v10.md   # before this append
+    176609                  # vs JOURNAL_SOFT_MAX 262144 — no rotation owed
+
+**No suite was run and none is claimed.** This round touched no file under `test/` and
+can move no suite result; the whole-suite verdict remains CI's (ADR-0005). The
+preview tree built in the scratchpad is an **ephemeral artefact** (ADR-0003/F5) and is
+staged nowhere; the reproducible part is the `git apply --check` above.
+
+### Outcome
+
+**DoD met: the act is a countersignature and it is given on all four clauses, with two
+narrowings, one finding against the instrument, one finding against myself, and the
+commissioned schema adjudication answered.** The verdicts, in the form they are to be
+relayed:
+
+> **COUNTERSIGNATURE — dv_lead on `ADR-0020` §9.2 act 3. Journal ref
+> `J-dv_lead-0185`. Formed against the ADR text at `8264183` and re-verified
+> byte-identical at `62ad337`, so the clauses signed are the clauses at the SHA this
+> signature lands against.**
+>
+> **(b.1) — COUNTERSIGNED**, with **`FINDING REC-4` (MAJOR, narrow)** filed against it
+> and against (b.2) jointly. The two-column definition, the itemised `sealed − seeded`
+> difference and the class-not-branch unit are correct, and the unit codifies my own
+> ruling at `J-dv_lead-0184` step 5. **The definition of `seeded` — *rendered against
+> the module as sealed and run* — admits the negative control**, a class rendered
+> exactly as sealed whose **sealed prediction is a green** and whose campaign scores it
+> *"0 kills, by design"* under the headline *"one scoreable class"*. Two consequences:
+> the numerator moves 61 → 62 on a kill that is not a coverage observation, and §10's
+> three-class floor becomes paddable by a class seeded to stay green. **Cure: one
+> sentence, a third ground in the same list** — *a class seeded as a negative control
+> sits in `sealed`, not in `seeded`, named at the tally with its ground; its run
+> supports the qualification it was cut for and no coverage claim in either
+> direction.* The ground carries the same pre-run guard §12.5 relies on, disclosed in
+> the seal before the run. **My signature does not extend to the treatment of a
+> negative control under (b.1) as written.**
+>
+> **(b.2) — COUNTERSIGNED**, on one stated narrowing. The survivor evidence form is
+> exactly my practice, verified at my own packet (`c95c9f4`, unmodified `g-c4.diff`,
+> run `30852220315`, `M03-G8` the only failing unit of twenty-seven), and it raises a
+> bar `PROTOCOL` does not have today. **Narrowing**: *"survived its own campaign"* is
+> undefined, and read literally it reaches a negative control, for which the prescribed
+> rehabilitation would be a red at the assertion the control proved green — a guard
+> whose satisfaction destroys the result it guards. **I sign on the reading that a
+> mutation survived its own campaign when its seal predicted a kill and no unit killed
+> it.** **Offered against my own interest**: the clause applies the score≠capability
+> premise to survivals only; a campaign kill is also a frozen measurement, and the
+> honest cure is that a campaign-killed class is dispositioned by its campaign record
+> **plus the named killing unit present and green at the gate SHA**. Offered as a limb
+> or as a §12 failure mode — *the frozen-kill asymmetry* — at the architect's choice.
+>
+> **(b.4) — COUNTERSIGNED**, on one stated narrowing. Both halves in the right order,
+> and the publication requirement is `SC-8`'s register with a gate-record home.
+> **Narrowing**: the operative predicate says *"no **seeded** mutation can reach"*
+> while §5's adopted reading says *"unreachable by **any** mutation"*. The clause's set
+> is wider and would exempt assertions the seeded set merely happened not to reach —
+> which is a **seeding gap**, and (b.3) draws exactly this distinction on its own side.
+> **I sign on the reading that the predicate is structural-or-specification
+> unreachability**, which is what every member of my register already satisfies.
+>
+> **§4 (`PROTOCOL` §10) — COUNTERSIGNED WHOLE**, no narrowing. It replaces the sentence
+> that pressures its reporter to fold columns with the properties my `SC-5` already
+> exceeds, and re-checks `module-ready` against the same paragraph the `SO-` answers.
+> **One wording note, on §4.1 and not on the hunk**: the floor's unit moved from
+> **kills** to **seeded classes**, so *"survives verbatim in substance"* overstates it —
+> a module now clears the floor with two campaign-time kills where the survivor is
+> rehabilitated. Intended and defensible; better said than found later.
+>
+> **The §6.4 adaptation — SUSTAINED AGAINST MY OWN OFFERED CLAUSE.** The architect
+> followed my diagnosis where my wording pointed the other way, and was right to.
+> *Counted in neither numerator nor denominator* leaves the class in no column, which
+> is the unrecoverability my finding convicted; `sealed` yes / `seeded` no puts the
+> recovery in the structure instead of in a reporter's diligence. **And a ground the
+> ADR does not state, which is mine**: *numerator* and *denominator* are the vocabulary
+> of a ratio my own packet forbids by name (`SC-5`; §2.2-M's forbidden-sentence
+> register). I offered a rule for a record whose first discipline is that no ratio
+> exists, and stated it in terms that presuppose one. The two-column subtraction is the
+> vocabulary the record actually has.
+>
+> **`G1-c` adopted without freezing the five-column schema (§12.2) — CONCURRED, and the
+> unfrozen form protects the practice.** The proof is this round: **(b.1) obsoletes my
+> fifth column on the day it lands** — the schema has no `seeded` column and the `void`
+> column becomes one member of the itemised difference — so a frozen five-column schema
+> would have contradicted (b.1) inside the same amendment and made the repair of my own
+> finding require a second §11 act. What the constitution guarantees is the five
+> properties my columns exist to deliver, and **no future round can demand I collapse
+> to `N/N`**. What it does not guarantee is a later packet's schema; §12.2 prices that
+> honestly. **The compensating control is mine and already committed**: `SC-5`/`SC-8`
+> are criteria in my own packet, at a bar above the constitution's, and I hold them
+> regardless — a floor under my practice, never a ceiling on it.
+>
+> **No clause is refused. Nothing here blocks act 5.** `REC-4`'s cure is one sentence
+> and can ride either a redraft of (b.1) before acceptance or an Amendment A1 after it;
+> the two narrowings are the readings under which I sign and are stated so that a later
+> reader can tell what my signature covered.
+
+**And what this countersignature does not do.** It does not publish the corrected
+columns — they are derived at Reasoning §4, ready to lift, and land in `SO-` §2.2-M at
+the round that opens `agents/handoffs/` for me, after acceptance, when the definition
+they restate is in force. It closes no gate item, states no verdict on M03's record,
+and touches (b.3) and §7 not at all: (b.3) is the auditor's countersignature (act 2)
+and §7.3's generalised limb is rtl_lead's (act 4).
+
+**Handoff**: to the orchestrator for commit as a **journal-only** commit —
+`Files-in-this-commit` is `- (none)`, so `Journal-Only: true`, trailers
+`Agent: dv_lead`, `Work-Order: none`, `Journal-Entry: J-dv_lead-0185` (`R2`, `R6`).
+The verdict block above is the round's return and is offered for verbatim relay to
+architect_docs_lead.
+
+### Open-questions
+
+1. **`FINDING REC-4` is live against a clause that may be accepted before it is read.**
+   §9.2 permits acceptance with countersignature traffic recorded as owed, and this
+   finding arrives inside the traffic rather than after it. **If (b.1) is accepted as
+   written**, my next gate record must either publish a `seeded` column containing a
+   negative control or exclude it on a ground no instrument names — which is `REC-3`'s
+   defect at a third class, in force. **Route**: orchestrator → architect_docs_lead,
+   before act 5 if the round permits; as an Amendment A1 item if it does not.
+2. **The frozen-kill asymmetry has no owner yet.** It is an observation about the
+   amendment's own premise, not a defect in any committed artefact, and its cure raises
+   my bar rather than anyone else's. **Carrier**: the architect if it wants it in §12;
+   me, in the `SO-`, if it does not — I can name the killing unit per class from the
+   campaign packets at the cost of one table.
+3. **`FINDING REC-5` is mine and its guard is method, not care.** I built a preview
+   inside the repository and it landed in the repository. Nothing in the enforcement
+   scripts would have caught it — `R7` binds at commit and I never commit — and the
+   seat that could have committed it has that path in scope. **Recommend**: no rule; a
+   habit, stated here so the next round of mine that previews a diff builds it outside
+   the tree. Recorded against my own seat rather than routed.
+4. **The corrected `sealed` figure will move a number three artefacts quote.** Under
+   either reading of (b.1) `sealed` becomes **65**, not 63. `SO-` §2.2-M, `tasks/BOARD.md`
+   and `docs/gates/P1-module-ready-checklist.md` all carry the 63. Mine is the `SO-`;
+   the other two are the orchestrator's. **Nothing should move before acceptance**, and
+   when it does the movement is a definition change with no measurement behind it and
+   must say so in the same sentence.
+5. **Carried, unchanged**: `SO-` §2.2-M's method sentence and `WO-0074` §12's
+   attribution (`REC-1`, `REC-2`) still owe their two-sentence correction at the next
+   round that opens `agents/handoffs/` for me — from `J-dv_lead-0184` item 2, now
+   joined by items 1 and 4 above, which share the carrier. `DVC-1a` remains unbuilt and
+   every attack-plan count I quote remains a hand count with its method stated; the
+   whole-suite verdict is still CI's and the `9a596e7` repair's CI adjudication is
+   still open — from `J-dv_lead-0183` items 6 and 7.
+
+### Files-in-this-commit
+- (none)
