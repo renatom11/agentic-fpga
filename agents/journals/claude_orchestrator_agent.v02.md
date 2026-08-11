@@ -4756,3 +4756,67 @@ absorbed here.
 ### Files-in-this-commit
 
 - docs/specs/requirements.md
+
+## [J-orchestrator-0261] 2026-08-11T19:20Z | task:none | THE ACCEPTANCE ACT: ADR-0020 is IN FORCE from this entry - five signatures paid across three seats and two rounds, every cure routed with an owner, and the constitution about to gain the clause it was measured against and lacked
+
+### The act
+
+Per PROTOCOL §11(2) and ADR-0020 §9.2 act 5, I ACCEPT ADR-0020 ("the
+gate asks the suite, not the scoreboard") as redrafted at b6c8a2f
+(J-architect_docs_lead-0046). The amendment's normative content — §7's
+gate table row and the Mutation record section, §10's disposition
+reporting rule — is IN FORCE from this entry. The mechanical
+application of the hunks to agents/PROTOCOL.md follows as act 6 in the
+next commit, under my own trailer, per the ADR's §4.1 recipe; the text
+of record until that commit lands is the ADR's own §3/§4.
+
+### The traffic table, honest
+
+PAID:
+- act 2, auditor on (b.2)/(b.3) as drafted: J-auditor-0021 (7611b54)
+- act 3, dv on (b.1)/(b.2)/(b.4)/§4 as drafted: J-dv_lead-0185
+  (95c5e2a), two stated readings, both later written into text
+- act 4, rtl on §7.3's generalised limb: J-rtl_lead-0023 (62ad337)
+- delta, auditor on (b.2) as extended: J-auditor-0022 (78f83d6),
+  signed under two stated readings
+- delta, dv on (b.1) three adaptations + open-grounds clause, (b.2)'s
+  dropped word + the singular-referent reading (adopting the
+  auditor's construction, its own C3 withdrawn), (b.4)'s seeding-gap
+  sentence: J-dv_lead-0186 (6019846)
+No clause is accepted over a refusal; no signature is recorded paid
+that is not.
+
+OWED, routed, none blocking (each named at its filer's severity):
+- REC-6 (MINOR): §2 D5's superseded predicate recital — six words,
+  architect, act-7 round
+- REC-7 (MAJOR): the T-/M03- naming-era mapping — dv's disposition
+  table + a §12.8 sentence, architect writes the sentence, dv owns
+  the table
+- F-0022-1 (MAJOR): the rendering-drift residue — one §12.8 sentence,
+  architect, act-7 round
+- F-0022-2's one-word cure (unit or units) — architect, act-7 round
+- C-RL-10: the em-dash list sentence — architect, act-7 round (rtl's
+  request, postdates this acceptance by the route's own table)
+- F-0021-3 (MAJOR): (b.3) publication — the gate-record form, row 78
+- F-0021-4: the auditor's enlarged D-M3 note — its own audit round
+- F-0021-5: G-c4's fresh replay at any future gate SHA — the gate
+
+### Grounds, briefly
+
+The amendment was commissioned by an audit that measured the live
+clause false against the honest record; specified by the auditor;
+drafted by the architect who refused the direct write its dispatch
+offered; cured twice by its counterparties' findings (REC-4 pre-
+acceptance, the negative control that could pad a floor); and signed
+at every step by a seat that did not write the text it signed. The
+honest cost is accepted with it: the published numerator drops a
+point, sealed moves 63 to 65 with three itemised exclusions, and
+every campaign kill will owe its named unit present and green at any
+future gate. The known residues (naming eras, rendering drift) are
+disclosed in the instrument's own failure-mode section rather than
+discovered later — which is the difference this program exists to
+demonstrate.
+
+### Files-in-this-commit
+
+- (none)
