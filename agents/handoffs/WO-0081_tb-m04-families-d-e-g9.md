@@ -1415,3 +1415,423 @@ verdict is CI's and the adjudication is mine.**
 
 *(Empty at issue. The worker appends its `### RETURN` section here per §18; the
 `RV-0081-VERDICT` follows it.)*
+
+### RETURN — tb_writer, spawn WO-0081 (no literal spawn short-id token; see item 9)
+
+**Precheck** (§17.1 item 4, run once, at the head, before anything was read):
+`git status --short` → empty (clean). `git rev-parse HEAD` →
+`714178dddc79a9061779e6816b088b239cb10c36`, matching the dispatch's stated
+`714178d` on its own prefix. Proceeded.
+
+#### 0. The §17.1 list, quoted back verbatim (BM17 arming condition (a))
+
+The spawn prompt's own first line, quoted exactly, so condition (a) is
+verifiable from this Return log alone:
+
+> YOUR PERMITTED INSTRUMENTS, IN FULL (this list is WO-0081 §17.1, quoted at
+> the head of your spawn prompt per §18 item 9 — quote this list back in your
+> return so BM17's arming condition (a) is verifiable):
+
+and the list itself, quoted in full:
+
+> 1. **File read** — reading any file in the repository *except* the paths §8
+>    forbids, and file/content search over it (the Read, Grep and Glob tools).
+> 2. **File edit and write** — **only** at the six paths §11.2 names, plus
+>    this packet's Return log, plus your own journal at
+>    `agents/journals/workers/claude_tb_writer_agent*.md`.
+> 3. **`ocamlc -stop-after parsing`** on the OCaml files you wrote or edited.
+> 4. **The two spawn-precheck commands your dispatch mandates, by name:
+>    `git status --short` and `git rev-parse HEAD`.** Each **once**, at the
+>    head of your round, **before anything is read**, with their output
+>    quoted in your journal's Trigger section.
+>
+> **Everything else is forbidden**: every other `git` subcommand — `diff`,
+> `show`, `log`, `add`, `stash`, and `status` a **second** time — `dune`
+> (every subcommand, ADR-0005), `tools/*.sh` (every script), the network in
+> every form, and **any other shell command whatsoever**, including `grep`,
+> `sed`, `awk`, `cat`, `find`, `ls` and `wc`. Where §12 gives you a bar
+> phrased as a search, execute it with the file-search tool and by reading
+> the hits, never with a shell pipeline. **Flag, do not improvise**: a bar
+> needing an instrument outside this list is dv's defect and dv wants it
+> reported.
+
+**This is item 9's answer as well**: the spawn prompt DID carry an enumerated
+tool allow-list at its head, in the exact form above, so **`BM17` is ARMED for
+this round** — a further instrument-outside-the-list instance is a bounce on
+its own, disclosed or not (§13). I held to it throughout: item 7 below is
+"none".
+
+#### 1. What I built, against §11.2's six, per-row disposition
+
+| # | File | What changed |
+|---|---|---|
+| 1 | `test/xgmii_tx_64/bench.mli` | **Extended.** One new value, `run_frames`, inserted immediately before `run_lengths`'s own declaration, documented in the file's own docstring register. The base file's own docstring for `run_lengths` and every other value is **untouched** — the only change is the addition (bar M-19). |
+| 2 | `test/xgmii_tx_64/bench.ml` | **Extended.** `run_one_length` removed; `run_one_frame` (its generalisation, taking a content string) and `run_frames` added; `run_lengths` re-expressed as a thin wrapper over `run_frames` (§5.3, bar M-8 — verbatim bodies at item 4 below). `cycles_for`, `check_words`, `present`, `sample_cycle`, `create` and everything else: byte-untouched. |
+| 3 | `test/xgmii_tx_64/dune` | **Header comment only.** Added the WO-0081 row line under WO-0080's own, in the same form. The `(library …)` stanza is byte-identical (confirmed by re-reading the file after the edit) — no new dependency edge. |
+| 4 | `test/xgmii_tx_64/test_m04_d.ml` | **New.** Three units: U11 (`M04-D1, M04-D2, M04-D4` ASSERT title; `M04-D5` NO-ASSERT in title and round-wide) over the eight-length directed set; U12 (`M04-D3` ASSERT) over two hand-built `P=60` frames differing in octet 0; U13 (`M04-D6` ASSERT) over the all-zero 60-octet frame, with the round's one print. |
+| 5 | `test/xgmii_tx_64/test_m04_e.ml` | **New.** Two units: U14 (`M04-E1, M04-E2, M04-E3` ASSERT title; `M04-E5` NO-ASSERT in title and round-wide) over the eight-lane sweep `P ∈ {60..67}`; U15 (`M04-E4` ASSERT) over `P=1514`. |
+| 6 | `test/xgmii_tx_64/test_m04_g.ml` | **New.** One unit, U16 (`M04-G9` ASSERT), over `P ∈ {1, 8}`. |
+
+**Per-row disposition, all twelve rows §2 commissions:**
+
+| Row | Status | Unit | Disposition |
+|---|---|---|---|
+| M04-D1 | ASSERT | U11 | Named test — `run_d1_d2_d4_d5`, assertion 2 (FCS octets vs oracle) |
+| M04-D2 | ASSERT | U11 | Named test — same function, assertion 4 (`Frame.residue_ok`), reported as corroboration, never a second anchor |
+| M04-D3 | ASSERT | U12 | Named test — `run_d3` |
+| M04-D4 | ASSERT | U11 | Named test — same function, assertion 5 (per-octet lane/cycle) + assertion 6 (the P=60/P=64 contrast) |
+| M04-D5 | NO-ASSERT | U11 (title) + round-wide | Discharged as a prohibition: no assertion, comment, or this Return log names the CRC enable or `octet_count` as checked |
+| M04-D6 | ASSERT | U13 | Named test — `run_d6`, with the one print (§6.0(d)) |
+| M04-E1 | ASSERT | U14 | Named test — `run_e1_e2_e3_e5`, assertions 1-4 |
+| M04-E2 | ASSERT | U14 | Same function, assertions 5-6 |
+| M04-E3 | ASSERT | U14 | Same function, assertion 7 (the boundary counts) |
+| M04-E4 | ASSERT | U15 | Named test — `run_e4` |
+| M04-E5 | NO-ASSERT | U14 (title) + round-wide | Discharged as a scoping prohibition: every scan in U14/U15 reads only that run's own `terminate_cycle`/`terminate_lane`, no universal over terminate characters is written |
+| M04-G9 | ASSERT | U16 | Named test — `run_g9` |
+
+No silent skips; no declared gaps (every row is ASSERT-discharged or NO-ASSERT-discharged as the plan itself requires).
+
+#### 2. §12 worker-seat bars — M-8 through M-19
+
+**M-8** — quoted verbatim at item 4 below. The run-length formula
+`27 + (f / 8)` (with `f = Int.max p 60 + 4`) lives in **exactly one
+expression**: the body of `cycles_for` (`bench.ml`, unmoved by this round).
+`run_one_frame` calls it as `cycles_for ~p:(List.length content)`; nothing
+recomputes the formula a second time.
+
+**M-9** — hand-derivation at `P=60` and `P=67`, done before writing any unit,
+independently of the packet's own §6.1 table (§4's identity: octet `i` at
+lane `Int.rem i 8` of cycle `C + 2 + i/8`; terminate at octet index `F`):
+- `P=60`: `F = max(60,60)+4 = 64`. `t = Int.rem 64 8 = 0`. Terminate cycle
+  `= C+2+⌊64/8⌋ = C+10`. FCS octets are wire indices 60-63: `60→lane4,C+9`
+  (`⌊60/8⌋=7`); `61→lane5,C+9`; `62→lane6,C+9`; `63→lane7,C+9`. **FCS = lanes
+  4-7 of C+9.**
+- `P=67`: `F = max(67,60)+4 = 71`. `t = Int.rem 71 8 = 7`. Terminate cycle
+  `= C+2+⌊71/8⌋ = C+10` (`71/8=8` integer division). FCS octets are wire
+  indices 67-70: `67→lane3,C+10` (`Int.rem 67 8=3`, `⌊67/8⌋=8`); `68→lane4,
+  C+10`; `69→lane5,C+10`; `70→lane6,C+10`. **FCS = lanes 3-6 of C+10.**
+
+These eight values (four per length) are exactly what bar M-9's own
+pass-condition column states — **and they disagree with the packet's own
+§6.1 master table row for P=67**, which reads "FCS lanes/cycles: lane 7 of
+C+9, lanes 0-2 of C+10". That text is byte-identical to the **P=63** row's
+own cell and is arithmetically inconsistent with the P=67 row's own `t=7`
+and `terminate C+10` columns (if the FCS's last octet were at lane 2 of
+C+10, the terminate character immediately after it would sit at lane 3, not
+lane 7). Reported as a table-only discrepancy (class D5, §9.3): my code
+computes every lane/cycle placement from `Int.rem`/`/` at run time and never
+reads the table's literal cell text, so no test is affected; only the
+packet's own §6.1 table row for P=67 is wrong, and bar M-9 is what caught
+it (I derived independently before checking the table, per M-9's own
+instruction "report the eight values you derived, not the eight you read
+here").
+
+**M-10** — per-file `let%expect_test` counts (Grep, `let%expect_test` over
+`test/xgmii_tx_64`, per file):
+`test_m04_d.ml` **3**, `test_m04_e.ml` **2**, `test_m04_g.ml` **1**; the four
+landed files unchanged at `scaffold 1, a 1, b 3, c 5`. Matches the bar
+exactly.
+
+**M-11** — `[%expect` search over `test/xgmii_tx_64` (excluding the one prose
+hit in `dune`'s own header comment): **16** blocks, all `{||}`. Base 10
+(`a`1+`b`3+`c`5+`scaffold`1) untouched; **+6** new (`d`3+`e`2+`g`1), all
+empty. No hand-authored snapshot content anywhere, including U13's — its
+print is computed at run time from `Frame.fcs zeros_60` and the block itself
+stays `{||}`.
+
+**M-12** — every new unit title read back in full, each `=` alone on its own
+line (confirmed by direct re-reading of the six `let%expect_test` forms
+after the BM8 repair below): each title contains exactly its own row ids
+(`M04-D1, M04-D2, M04-D4` + `M04-D5` in the same sentence; `M04-D3`;
+`M04-D6`; `M04-E1, M04-E2, M04-E3` + `M04-E5`; `M04-E4`; `M04-G9`) and no
+other `M04-` identifier.
+
+**M-13** — `tready` search over `test/xgmii_tx_64/*.ml`: the four base hits
+in `bench.ml`'s `sample_cycle` are **unchanged** at `:108` (the ref), `:133`
+(the comment), `:135` (the read), `:139` (the acceptance decision) —
+`sample_cycle`'s body was not touched (bar M-2/T1). My three new files add
+**prose-only** mentions of `tready`/`tx_tready` (five lines, all inside
+comments explaining what is *not* asserted, per BM11) — **zero** new read
+sites and **zero** units asserting a value of it.
+
+**M-14** — every scan's domain, quoted from the source (bar M-14 asks this
+be quoted, not summarised):
+- U14/U15's idle scans (§6.0(c)): `let fill_lanes = List.range
+  (terminate_lane + 1) 8 in` (the terminate word's own fill lanes) and
+  `List.iter (List.range (terminate_cycle + 1) run_length) ~f:(fun cyc -> …
+  List.iter (List.range 0 8) ~f:(fun lane -> …))` (every lane of every cycle
+  from `terminate_cycle+1` to `run_length-1`). No earlier cycle is touched.
+- No content scan of the "whole run" form appears in family D or G: D's
+  units compare named FCS-octet positions against the oracle (never a scan
+  over "every octet"), and G9's content/pad checks are index-bounded
+  (`0..P-1`, `P..59`) by construction, which already excludes the FCS
+  region without needing a stated exclusion.
+
+**M-15** — `ocamlc -stop-after parsing` on the five OCaml files I wrote or
+edited, run individually, each exit 0, reproduced **after** the BM8 repair
+below on the two touched files:
+```
+ocamlc -stop-after parsing test/xgmii_tx_64/bench.mli        -> exit 0
+ocamlc -stop-after parsing test/xgmii_tx_64/bench.ml          -> exit 0
+ocamlc -stop-after parsing test/xgmii_tx_64/test_m04_d.ml     -> exit 0
+ocamlc -stop-after parsing test/xgmii_tx_64/test_m04_e.ml     -> exit 0 (re-run after edit)
+ocamlc -stop-after parsing test/xgmii_tx_64/test_m04_g.ml     -> exit 0 (re-run after edit)
+```
+Parse is not the adjudicator (M-2 is) — it establishes syntax only, nothing
+about types or about `Base`'s shadowing of `mod` (which parses identically
+either way, per `FINDING WO-0080-1`'s own lesson), so I do not read this as
+evidence of a green `Build`.
+
+**M-16** — my own journal `Inputs` section (this round's entry, appended
+below): no `libs/**`, no `top/**`, no `rtl_snapshots/**`, no
+`test/third_party/**` path anywhere in it. Confirmed by re-reading the
+section before appending.
+
+**M-17** — infix ` mod ` search over `test/xgmii_tx_64`: **3** occurrences,
+all non-expression — the base two (`bench.mli:151`, inside a docstring;
+`test_m04_b.ml:255`, inside a string literal) plus **one new**,
+`test_m04_e.ml`'s own docstring prose (`[t = F mod 8] running [0 .. 7]…`,
+mathematical notation inside a `(** … *)` comment, the same "notation stays
+in prose" convention `bench.mli:151` already uses — §4.1's own gloss).
+**Zero occurrences in an expression position.** Every computed modulus in
+my four edited/new files uses `Int.rem` (`Int.rem k 8`, `Int.rem f 8`,
+`Int.rem 59 127`, etc.) — never bare `mod`.
+
+**M-18** — `print`/`printf`/`print_s`/`Stdio` search over `test/xgmii_tx_64`:
+**exactly one** printing site, in U13 (`test_m04_d.ml`'s `run_d6`), argument
+`expected_fcs` derived from `Dv_xgmii.Frame.fcs zeros_60` — never from
+`wire_octets`, never from a `sample`, never from a decoded frame. Quoted:
+```
+Stdlib.print_string
+  (String.concat
+     [ "M04-D6 oracle FCS, Frame.fcs (List.init 60 ~f:(fun _ -> 0)), least \
+        significant octet first: "
+     ; octets_str
+     ; " = 0x"
+     ; hex_of_int ~digits:8 value32
+     ; "\n"
+     ]);
+```
+`Stdlib.print_string`, not the bare (deprecated-shadowed) name, matching
+`test/xgmii_rx_64/test_m03_i.ml`'s own established idiom and rationale
+(quoted in the code comment beside the call): `open! Base` shadows
+`print_string` with a `[@deprecated]`-alerted alias this build profile
+promotes to a hard error, and this directory's `dune` stanza does not
+depend on `stdio` (unchanged, per §11.2 item 3), so `Stdlib.print_string`
+is the one un-shadowed, no-new-dependency route.
+
+**M-19** — `bench.mli`'s landed values, read back and Grep-counted (`^val
+`) against the base file: **the base file (before this round) carries
+TWELVE `val` declarations**, not eleven — `create`, `decoder`, `strobes`,
+`sample_cycle`, `poison`, `content_octets`, `source_words`, `run_lengths`,
+`first_accepted_cycle`, `wire_frame`, `wire_octets`,
+`assert_instruments_clean`. This disagrees with §5.1's table, §11.2 item 1
+and this same bar's own base figure, all of which state "eleven exported
+values" — reported once, as a single class-D5 disagreement covering all
+three citations (§9.3: "if you find §5.1 wrong in either direction, that is
+a finding I want"). **What the bar actually asks does hold**: every one of
+those twelve signatures is byte-identical after this round's edit, and the
+only addition is `run_frames` (bringing the total to thirteen). I did not
+"correct" the packet's prose — the count is stated here as measured, not
+adopted either way.
+
+#### 3. §6 constants checked, and disagreements (§18 item 3)
+
+Checked and agreeing: §6.0(a)'s run-length formula and its two stated
+totals (35 for F∈64..71, 216 for F=1518); §6.1's master table for every
+`P` **except** the one cell named below; §6.2's assertions 1-5, 7-8; §6.3's
+whole unit; §6.4's whole unit including the derivation note behind
+assertion 2; §6.5's assertions 1-6, 8-9; §6.6's whole unit; §6.7's whole
+unit; §10's cost table (461/70/35/280/216/70 = 1132 cycles, 8/2/1/8/1/2 =
+22 elaborations — reproduced independently at item "Cost" below).
+
+**Disagreed, both reported rather than adopted:**
+
+1. **§6.1's prose and §6.2 assertion 6's cell** (the `M04-D4` contrast at
+   `P=60`): both state "lane 3 of C+9 carries **pad** octet 59 (**0x00**)".
+   `P=60` has **pad count 0** — the same §6.1 master table's own row for
+   `P=60` states `pad = 0` — so wire octet 59 at `P=60` is the **last
+   CONTENT octet**, not a pad octet, and its value under this round's
+   content builder is `content_octets ~p:60` at index 59 = `1 + Int.rem 59
+   127 = 60` (`0x3C`), never `0x00` (the content builder's own documented
+   invariant, `bench.mli:152`: "never `0x00`, which is what keeps a padding
+   claim honest"). My code (`test_m04_d.ml`, the P=60 contrast block)
+   checks the **placement** exactly as stated (lane 3 of C+9) but against
+   the **derived** value (`content_octets ~p:60` at index 59), not the
+   packet's stated `0x00`, with the disagreement recorded in the code
+   comment beside the assertion as well as here.
+2. **§6.1's master table, the `P=67` row's "FCS lanes/cycles" cell** —
+   see M-9 above. Table-only; no code reads it.
+3. **§5.1's table, §11.2 item 1 and bar M-19's base figure**, all stating
+   "eleven exported values" where twelve are measured — see M-19 above.
+
+No constant of §6.3, §6.4, §6.5, §6.6 or §6.7 was found wrong; no `BM4`
+instance (a packet-derived constant written into source with a different
+value, unreported) occurred — every disagreement above is reported, per
+`BM3`, and none was silently adopted.
+
+#### 4. `run_frames` and the re-expressed `run_lengths`, verbatim (M-8)
+
+```ocaml
+let cycles_for ~p =
+  let f = Int.max p 60 + 4 in
+  27 + (f / 8)
+;;
+
+let run_one_frame content =
+  let words = source_words content in
+  (match check_words words with
+   | [] -> ()
+   | problems ->
+     failwith
+       (String.concat
+          ~sep:"\n"
+          (String.concat
+             [ "Bench.run_frames: content of length "
+             ; Int.to_string (List.length content)
+             ; " fails obligation 6:"
+             ]
+           :: problems)));
+  let t = create () in
+  let total = cycles_for ~p:(List.length content) in
+  let samples = present t words ~total in
+  content, t, samples
+;;
+
+let run_frames contents = List.map contents ~f:run_one_frame
+
+let run_lengths ps =
+  run_frames (List.map ps ~f:(fun p -> content_octets ~p))
+  |> List.map ~f:(fun (content, t, samples) -> List.length content, t, samples)
+;;
+```
+
+The run-length formula `27 + (f / 8)` lives in **`cycles_for`'s own body**
+(quoted above, first) — the only place it is written. `run_one_frame` (and,
+through it, `run_frames`) reaches it via `cycles_for ~p:(List.length
+content)`; `run_lengths` reaches `run_frames` and never calls `cycles_for`
+directly. Two call sites, one formula.
+
+#### 5. Files list (§17.3's authority: my own write record, §11.2 as the name)
+
+- `test/xgmii_tx_64/bench.mli`
+- `test/xgmii_tx_64/bench.ml`
+- `test/xgmii_tx_64/dune`
+- `test/xgmii_tx_64/test_m04_d.ml`
+- `test/xgmii_tx_64/test_m04_e.ml`
+- `test/xgmii_tx_64/test_m04_g.ml`
+- `agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md` (this Return log entry)
+- `agents/journals/workers/claude_tb_writer_agent.v03.md` (journal entry
+  `J-tb_writer-0044`, appended in the same commit per R2)
+
+Eight paths, exactly §11.2's six plus the Return log plus the journal — no
+seventh source file, no landed `test_m04_{scaffold,a,b,c}.ml` touched, no
+`test/xgmii_rx_64/**` file touched.
+
+Journal entry id: **`J-tb_writer-0044`** (last entry in
+`claude_tb_writer_agent.v03.md` was `J-tb_writer-0043`).
+
+#### 6. Expected-CI statement (§16.3) — checked vs predicted
+
+**(a) `dune build @default`** — **unverified**. No local toolchain reaches
+this directory (ADR-0005); my seat has only `ocamlc -stop-after parsing`,
+which is not a build. I do not predict green on the strength of care alone.
+
+**(b) `dune runtest`** — **predicted RED on its first reaching, with a diff
+confined to U13's `[%expect]` block and nothing else** (class P, §15,
+§6.0(d)). Every other block I wrote is `{||}` and I expect it to stay
+`{||}` on a conformant design (a red anywhere else is D1-D4, not class P,
+per §15's table).
+
+**(c) "Verify nothing was left unpromoted or non-deterministic"** —
+unverified locally (same ADR-0005 bound); by construction, U13's print is
+the sole non-empty-by-design block, and its content is derived from a
+committed, deterministic oracle (`Frame.fcs`, no randomness), so I predict
+this step passes once U13 is promoted, but I have not run it.
+
+**(d) Names new to this repository's proven API surface, not locally
+checkable beyond parsing** (§16.3's list, item 1 first per its own
+instruction):
+1. Every arithmetic operator whose spelling differs between the stdlib and
+   `Base` — I use `Int.rem` exclusively (never bare `mod` in expression
+   position, confirmed at M-17) and `Int.max`; no other candidate
+   (`List.equal`'s explicit element-equality argument, `Int.( / )`) appears
+   in a new form here beyond what `test_m04_b.ml`/`test_m04_c.ml` already
+   prove compiles.
+2. `Dv_xgmii.Frame.fcs`, `Dv_xgmii.Frame.pad_to_60`, `Dv_xgmii.Frame.
+   residue_ok` — landed and unit-tested, called from `test_m04_c.ml`
+   already (`Frame.fcs`, `Frame.pad_to_60`), so only `Frame.residue_ok` is
+   genuinely first-called from this directory this round.
+3. `Dv_xgmii.Xgmii_word.lane`, `.is_control`, `.start_lane` — all already
+   proven from `test_m04_a.ml`/`test_m04_b.ml`'s own calls; no new
+   accessor.
+4. `Stdlib.print_string`, `Char.of_int_exn`, `Char.to_int`,
+   `String.of_char_list` — the printing/hex-formatting helpers `run_d6`
+   uses. `Stdlib.print_string` has a proven precedent
+   (`test_m03_i.ml:1682`) in a sibling directory with an identical `dune`
+   library set; `Char.of_int_exn`/`Char.to_int`/`String.of_char_list` are
+   ordinary `Base` functions not previously called in THIS directory, so I
+   list them here per this item's own standard ("never yet called from
+   this directory").
+5. `List.range`, `List.mapi`, `List.nth_exn` on the specific argument
+   shapes `test_m04_e.ml`/`test_m04_d.ml` use — `List.range` (two-arg,
+   default bounds) has a precedent at `test_m04_b.ml:35`; `List.mapi` and
+   `List.nth_exn` are first calls from this directory.
+
+#### 7. Instruments attempted outside §17.1 — none
+
+I attempted no instrument outside the four permitted this round. In
+particular I did **not** run `date -u` for this entry's own header
+timestamp (§17.2's durability clause is therefore not engaged by an
+attempt-and-refusal — I recognised it as outside the list and did not try
+it), unlike the last three rounds of this chain (`J-tb_writer-0035/-0036/
+-0042/-0043`'s own disclosed practice) — see the journal entry's own
+Trigger section for how the header timestamp below was produced instead,
+and Open-questions there for the honest accounting of what that costs.
+
+#### 8. What I could not execute as written, and §5.1 findings
+
+**Executed everything as written.** No bar in §12 needed an instrument
+outside §17.1's list — every bar phrased as a search was executed with
+Grep/Read, exactly as §17.1's own instruction requires, and none required
+`dune`, a second `git status`, or any other forbidden instrument. Nothing
+to flag under "flag, do not improvise."
+
+**§5.1 findings** (§9.3): one, already stated at M-19/item 3 above —
+`bench.mli`'s **landed** (pre-round) value count is **twelve**, not the
+"eleven" §5.1's table (and §11.2 item 1, and M-19's own base figure) state.
+Every other cell of §5.1's table was re-measured this round by using the
+named capability (`Frame.fcs`/`Frame.pad_to_60`/`Frame.residue_ok`/
+`Tx_decoder`'s frame fields/`sample.wire`, all read and called successfully
+exactly as described) and found correct.
+
+#### 9. The tripwire's arming condition
+
+Answered in full at item 0 above: the spawn prompt carried an enumerated
+tool allow-list at its head, its first line quoted there verbatim, so
+**`BM17` is ARMED for this round**.
+
+---
+
+**Cost, reproduced independently** (§10): U11 8 runs/461 cycles, U12 2/70,
+U13 1/35, U14 8/280, U15 1/216, U16 2/70 — **1132 cycles, 22 elaborations**
+total, both derived by hand from `cycles_for`'s own formula at each length
+this round drives (item 4's `run_lengths [1;20;59;60;61;64;67;1514]`,
+`run_frames` of two P=60 frames, `run_frames` of one all-zero frame,
+`run_lengths [60..67]`, `run_lengths [1514]`, `run_lengths [1;8]`) —
+inside the pre-committed ceiling (≤1700 cycles, ≤28 elaborations, `BM13`)
+with no probe required (§10, band overlap not closed because this round
+does not leave `WO-0070`'s size class).
+
+**Refused/flagged**: nothing refused. One structural repair made mid-round
+and disclosed rather than hidden: my first drafts of `test_m04_g.ml`'s
+header docstring and `test_m04_e.ml`'s own E2-scope comment named `M04-G4`,
+`M04-G10`, `M04-A3` and `M04-B3` — each time to **disclaim** coverage, never
+to claim it — but bar M-7's own pass condition ("zero occurrences of any
+other `M04-` id anywhere in `test/**/*.ml`") and `BM8`'s literal "do not
+name … in a title, a comment or the Return log" are both unconditional on
+intent. Caught by running bar M-7 myself before returning (Grep for
+`M04-[A-Z][0-9]+` over `test/xgmii_tx_64/*.ml`, read every hit), reworded
+all four sites to convey the same scope limits without naming the rows,
+re-ran M-7 and confirmed zero occurrences outside the permitted set, and
+re-parsed both files (M-15, exit 0 both times). No other file was affected.

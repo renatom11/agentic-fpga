@@ -170,6 +170,29 @@ val content_octets : p:int -> int list
     for every full word. *)
 val source_words : int list -> Dv_monitors.Stream_word.t list
 
+(** [run_frames contents] — the general runner (WO-0081 §5.3): each element of
+    [contents] is one frame's DA-through-payload octet string. Checks the
+    result against obligation 6's source contract ([failwith]ing, naming
+    every violation, BEFORE a single cycle is driven), elaborates a FRESH
+    {!t} per frame (independent instances, exactly as {!run_lengths}), and
+    drives it for [27 + (max (List.length content) 60 + 4) / 8] cycles
+    through the reactive presenter of the module docstring's second section
+    — the SAME liveness bound and [P-ACCEPT] precondition {!run_lengths}
+    enforces, because both runners share this one presenter rather than
+    each carrying its own copy of the guards. Returned in the order
+    [contents] was given, each entry carrying THE CONTENT STRING IT DROVE
+    (never a caller's memory of it — the M03-I2 member (iii) discipline
+    {!sample}'s own [offered] field already applies per cycle, applied here
+    per frame) so a row can compare against what was actually presented.
+
+    {!run_lengths} is a thin wrapper over this function:
+    [run_lengths ps = run_frames (List.map ps ~f:(fun p -> content_octets
+    ~p)) |> List.map ~f:(fun (content, t, samples) -> (List.length content,
+    t, samples))] — the run-length formula lives in exactly one expression,
+    shared by both callers rather than duplicated (WO-0081 §5.3, bar
+    M-8). *)
+val run_frames : int list list -> (int list * t * sample list) list
+
 (** [run_lengths ps] — the one shared runner (WO-0080 §5.7, on [WO-0038]'s
     own [run_directed_lengths] precedent): for each [p] in [ps], builds
     [content_octets ~p] and {!source_words} of it, checks the result against

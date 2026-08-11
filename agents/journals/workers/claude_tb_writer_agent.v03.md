@@ -3129,3 +3129,358 @@ to flag under E6.
 - test/xgmii_tx_64/dune
 - test/xgmii_tx_64/test_m04_b.ml
 - agents/handoffs/WO-0080_tb-m04-first-bench.md
+
+---
+
+## [J-tb_writer-0044] 2026-08-11T13:00Z (estimated, see Open-questions) | task:WO-0081 | Families D and E complete, plus M04-G9 — six new expect-test units across three new files, `run_frames` built and `run_lengths` re-expressed over it; two spec-table disagreements and one bench.mli-count disagreement reported; a mid-round BM8/M-7 self-repair on four out-of-scope M04- mentions
+
+### Trigger
+Direct dispatch (no chat-visible "work-order id + spawn UTC timestamp" token
+in the literal PROTOCOL §4.1 form — same situation this chain's own prior
+entries record, `J-tb_writer-0035/-0036/-0042/-0043`) to execute WO-0081 in
+full: families D and E complete (eleven ASSERT + one NO-ASSERT rows split
+D5/E5), plus the one family-G row that rides this round, `M04-G9`.
+**Precheck** (§17.1 item 4, run once, at the head, before anything was
+read): `git status --short` → empty. `git rev-parse HEAD` →
+`714178dddc79a9061779e6816b088b239cb10c36`, matching the dispatch's stated
+`714178d` on its prefix. Proceeded.
+
+### Inputs
+Read in full, in this order: `agents/charters/tb_writer.md`;
+`agents/PROTOCOL.md` §2-6 and §10 (full document read); the work order
+`agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md` in full, both page-reads
+(§0 through §19, the twelve rows' own Observable cells at §2, the arithmetic
+identity at §4, the derived-constants tables at §6, the review bar at §12,
+the BOUNCE conditions at §13, the traps at §14, the disposition table at
+§15, §16's incremental discipline, §17's allow-list and its own history, and
+§18's Return-log shape). `test/attack_plans/AP-xgmii_tx_64.md` §4.D
+(M04-D1..D6), §4.E (M04-E1..E5) and the `M04-G9` row of §4.G, read directly
+in the plan itself per WO-0081's own instruction that the Observable cell is
+the contract, not the packet's index. `docs/specs/modules/xgmii_tx_64.md`
+(SPEC-M04) in full — §1 through §13, with particular weight on §6.1's FCS
+paragraph (items 1-4) and terminate-and-fill paragraph, §6.2's state table,
+§6.3's five unconstrained items, §7's timing contract (the C-14/C-16
+carry-forwards, the two latency constants and their non-substitutability),
+§9's errors table and its strobe-cycle paragraph, and §11.3/§13's spec-diff
+rows (the 2026-08-11 ABS-1 correction). `docs/specs/requirements.md` §0.3,
+§0.6 (all four reference-word clauses), §1 (REQ-011, REQ-012, REQ-015,
+REQ-016, REQ-021), §3 (REQ-201..REQ-210 in full) and §4 (REQ-301..REQ-306 in
+full, including the two constants' provenance note). `test/xgmii_tx_64/
+bench.mli` and `bench.ml` in full, at HEAD, before editing either.
+`test/xgmii/frame.mli`, `test/golden/crc32_ref.mli`, `test/xgmii/
+tx_decoder.mli`, `test/xgmii/xgmii_word.mli`, `test/monitors/stream_word.
+mli`, `test/monitors/strobe_monitor.mli`, `test/xgmii_probe/xgmii_probe.ml`,
+`test/axi64_probe/axi64_driver.ml` — all read in full, as the packet
+directs, before writing family D. `test/xgmii_tx_64/test_m04_c.ml` in full,
+for the unit idiom (`fail row msg`, the `List.find samples` indexing
+pattern, the shape of a length-iterating unit). `test/xgmii_tx_64/
+test_m04_a.ml` and `test_m04_b.ml` in full, for the preamble-check idiom and
+the directed-length-set idiom respectively (the `octet_value` accessor,
+`assert_instruments_clean`'s call site, the `String.concat` error-message
+convention). `test/xgmii_tx_64/dune` and `test/xgmii_rx_64/dune`, both in
+full (the latter for its own header-row-list convention and its documented
+`Stdlib.print_string` idiom at `test_m03_i.ml`, cited by WO-0081 §3 "for the
+OPERATOR and not the idiom" — I read the citing paragraph, not the whole
+16-site file, since the operator (`Int.rem`) was already proven at
+`bench.ml`/`test_m04_b.ml`). `test/xgmii_rx_64/test_m03_i.ml`, the one
+`Stdlib.print_string` call site and its surrounding comment (not the whole
+file), for U13's print-mechanism precedent. My own last entry,
+`J-tb_writer-0043`, re-read for the ID to increment (0043 → 0044) and for
+its own Open-questions section's account of this chain's `date -u`
+history (see Reasoning and Open-questions below).
+
+**Not read, confirmed**: `libs/**` (in particular
+`libs/hardcaml_ethernet/src/xgmii_tx_64.ml`), `rtl_snapshots/**`, `top/**`,
+`bin/**`, `test/third_party/**`, `Essenceia/Nasdaq-HFT-FPGA`. No RTL reached
+this round's context at any point — every expected value in this round's six
+units is `Dv_xgmii.Frame.fcs`/`.pad_to_60`/`.residue_ok` (reaching
+`Dv_golden.Crc32_ref`, the REQ-305 bit-serial reference), a value derived
+from `Bench.content_octets`, or a raw sample read through
+`Dv_xgmii.Xgmii_word`'s accessors — never the design's own output, a
+loopback, or the standing decoder's own REQ-202 verdict (WO-0081 §9.5,
+trap T5, BOUNCE BM12).
+
+### Reasoning
+**The shape of the round, following WO-0081 §16.1's own order.** `bench.mli`
+then `bench.ml` first (the one change that could break something already
+green), then `test_m04_d.ml` (U11, U12, U13 — U11 first because every other
+family-D unit's shape follows it), then `test_m04_e.ml` (U14, U15), then
+`test_m04_g.ml` (U16), then the `dune` header row last, once the row list
+was final. Each file was parsed with `ocamlc -stop-after parsing`
+immediately after being written, one file fully on disk before the next
+(§16.1's own incremental-write discipline).
+
+**`run_frames`, and why a thin wrapper rather than a second runner.** §5.3
+names the shape exactly: `run_one_length`'s body generalises to
+`run_one_frame` (taking a content string instead of a length `p`), and
+`run_lengths` becomes `run_frames (List.map ps ~f:content_octets) |>
+List.map ~f:(...)`. The alternative — a second, independent runner
+duplicating `check_words`/`present`/`cycles_for` — was rejected exactly as
+§5.3 itself argues: obligation 6's contract check, the liveness bound and
+`P-ACCEPT` are the three guards every row's arithmetic rests on, and a
+second copy is a second place for them to drift. `cycles_for`'s own
+signature (`~p:int -> int`) did not need to change: `F` depends only on
+`List.length content`, so `run_one_frame` calls `cycles_for
+~p:(List.length content)` and the formula body is written exactly once,
+which is what bar M-8 checks and what item 4 of the Return log quotes
+verbatim.
+
+**Family D's own claim, and why the header docstring states it before any
+code.** WO-0081 §0's whole point — the standing wire decoder judges REQ-202
+against the WIRE's own self-consistency, never against the SOURCE frame the
+bench built — is the one conceptual fact every family-D assertion rests on,
+so I wrote it into `test_m04_d.ml`'s own module docstring before the first
+`let`, the same discipline `test_m04_c.ml`'s own header uses for its
+pad-coverage point. `M04-D1`'s own assertion (2) is therefore stated as a
+comparison against `Frame.fcs (Frame.pad_to_60 content)` — never against
+`wire_frame`'s own self-read, never against a second decode — with the
+length check (assertion 3, `Frame.fcs` returns exactly 4 octets) stated
+first exactly as WO-0081 §6.2 row 3 asks, "so a length mismatch is not read
+as a value mismatch."
+
+**Two independent hand-derivations before trusting the packet's own table
+(bar M-9), and what they found.** Deriving `P=60` and `P=67` by hand from
+§4's identity, before reading the master table's own cells for those rows,
+is what bar M-9 asks for — and it is what caught the P=67 row's own text
+being a byte-identical copy of the P=63 row's cell (wrong for P=67: my
+derivation and M-9's own stated check value both give "lanes 3-6 of C+10,"
+not the table's stated "lane 7 of C+9, lanes 0-2 of C+10"). Separately,
+§6.2 assertion 6's own cell states the P=60 contrast octet (wire index 59)
+as "pad octet 59 (0x00)" — but P=60 has pad count **zero** by the same
+master table's own row, so index 59 is the LAST CONTENT octet, and the
+content builder's own documented invariant (`bench.mli:152`, "never
+`0x00`") makes "(0x00)" arithmetically impossible for this round's
+stimulus. Both are reported in the Return log as class-D5 disagreements
+(§9's own words: "the last several rounds of this chain were each decided
+by a defect in my instructions rather than in the work") rather than
+adopted — my code computes the P=60 contrast value from `content_octets
+~p:60` at index 59, not from the packet's stated literal, and reads every
+P=67 lane/cycle placement from `Int.rem`/`/` at run time rather than from
+the table's own cell text, so neither disagreement touches a single
+assertion's correctness — only the Return log's own honesty about the
+packet.
+
+**A third disagreement, found by executing bar M-19 rather than trusting
+its own stated base figure.** Grep-counting `^val ` in `bench.mli` before my
+edit returns **twelve**, not the "eleven" §5.1's table, §11.2 item 1 and
+M-19's own base figure all state (`create`, `decoder`, `strobes`,
+`sample_cycle`, `poison`, `content_octets`, `source_words`, `run_lengths`,
+`first_accepted_cycle`, `wire_frame`, `wire_octets`,
+`assert_instruments_clean`). §9.3's own instruction — "if you find §5.1
+wrong in either direction, that is a finding I want" — is what this is: a
+measured count, not an assumed one, reported once as covering all three
+citations of the same number.
+
+**A mid-round self-repair, caught by running my own bars before returning
+rather than after.** My first drafts of `test_m04_g.ml`'s header docstring
+(the "what this unit may NOT claim" section) and `test_m04_e.ml`'s own
+E2-scope comment named `M04-G4`, `M04-G10`, `M04-A3` and `M04-B3` by name —
+every instance a DISCLAIMER ("this unit does not discharge…", "no … claim
+here"), never a claim of coverage. Running bar M-7 myself (Grep for
+`M04-[A-Z][0-9]+` across `test/xgmii_tx_64/*.ml`, reading every hit) before
+finalising the round surfaced all four sites at once: bar M-7's own pass
+condition ("zero occurrences of any other M04- id anywhere in
+`test/**/*.ml`") and BOUNCE `BM8`'s own wording ("do not name M04-G4 or
+M04-G10 in a title, A COMMENT or the Return log") are both unconditional on
+intent — a disclaimer still names the row, and naming is what both
+instruments measure. I reworded all four sites to convey the identical
+scope limit (what the unit does and does not discharge, and why) without
+the literal identifier strings, re-ran the same Grep sweep and confirmed
+zero occurrences of any id outside the 13 previously-commissioned +
+2 bare tokens + 12 this-round set, and re-ran `ocamlc -stop-after parsing`
+on both touched files (exit 0, both). This is exactly the class of finding
+`WO-0081` §17.1's own closing instruction asks for ("flag, do not
+improvise") applied to my own draft rather than to the packet — I did not
+discover it from an external bar failing on landed code; I found it by
+executing the packet's own bars against my own draft before calling the
+round done, which is what §12's "worker" column commissions me to do.
+
+**The print mechanism for U13 (bar M-18, §6.0(d), trap T13).** This
+directory's `dune` stanza carries the identical library set
+`test/xgmii_rx_64/dune`'s own stanza does, minus `stdio` in both — so
+`test_m03_i.ml:1671-1682`'s own documented reasoning (`open! Base` shadows
+`print_string` with a `[@deprecated]`-alerted alias this build profile
+promotes to a hard compile error; `Stdio.Out_channel.output_string` is
+unavailable without a `dune` edit WO-0081 §11.2 item 3 forbids;
+`Stdlib.print_string` reaches the compiler's own un-shadowed primitive and
+needs no new dependency) transfers exactly, and I used the identical
+idiom rather than inventing a second one. The argument is
+`Frame.fcs zeros_60` — the ORACLE's value, computed at run time — formatted
+through two small `Base`-only helpers (`hex_digit`, `hex_of_int`) built from
+`Char.of_int_exn`/`Char.to_int`/`String.of_char_list` rather than
+`Printf.sprintf`, to avoid introducing a name this directory has never
+proven compiles when a `Base`-only equivalent was available at no extra
+risk.
+
+**Promotion discipline.** No `[%expect]` block promoted this round — every
+block I wrote stays `{||}` (bar M-11, ADR-0005 rule 2), including U13's,
+whose printed content is CI's own diff to promote, in a separate act,
+dv_lead's (§6.0(d) rule 2, class P, §15). Charter §3's "never promote expect
+output without eyeballing the waveform" therefore has no promotion event to
+apply to this round; what stands in its place is the derivation record
+above and in the Return log, checked against the spec's own timing
+clauses (§4's identity, §6.1's cycle table, §7's C-14/C-16 carry-forwards)
+before a single assertion was written, not after a run went green.
+
+### Actions
+- Read the WO-0081 packet in full, the charter, PROTOCOL §2-6/§10,
+  SPEC-M04 in full, the requirements.md sections named above, the eight
+  `.mli`/`.ml` machinery files named above, `test_m04_a/b/c.ml`, and the
+  plan's own §4.D/§4.E/`M04-G9` rows.
+- Edited `test/xgmii_tx_64/bench.mli`: added `run_frames`'s declaration and
+  docstring, inserted immediately before `run_lengths`'s own (untouched)
+  declaration.
+- Edited `test/xgmii_tx_64/bench.ml`: removed `run_one_length`; added
+  `run_one_frame` and `run_frames`; re-expressed `run_lengths` as a thin
+  wrapper over `run_frames`. `cycles_for`, `check_words`, `present`,
+  `sample_cycle`, `create`, `content_octets`, `source_words`,
+  `first_accepted_cycle`, `wire_frame`, `wire_octets`,
+  `assert_instruments_clean`: byte-untouched.
+- Created `test/xgmii_tx_64/test_m04_d.ml`: U11 (`M04-D1, M04-D2, M04-D4,
+  M04-D5`, eight-length directed set), U12 (`M04-D3`, two hand-built P=60
+  frames via `run_frames`), U13 (`M04-D6`, the all-zero frame via
+  `run_frames`, the round's one print).
+- Created `test/xgmii_tx_64/test_m04_e.ml`: U14 (`M04-E1, M04-E2, M04-E3,
+  M04-E5`, the eight-lane sweep P∈{60..67}), U15 (`M04-E4`, P=1514).
+- Created `test/xgmii_tx_64/test_m04_g.ml`: U16 (`M04-G9`, P∈{1,8}).
+- Repaired both `test_m04_g.ml` and `test_m04_e.ml` mid-round: reworded four
+  sites naming `M04-G4`/`M04-G10`/`M04-A3`/`M04-B3` (all disclaimers) to
+  convey the same scope limits without the literal identifiers, per bar
+  M-7 and BOUNCE BM8 (see Reasoning).
+- Edited `test/xgmii_tx_64/dune`: added the WO-0081 row line under
+  WO-0080's own, in the same form; the `(library …)` stanza itself
+  untouched (re-read after the edit to confirm).
+- Ran `ocamlc -stop-after parsing` on all five OCaml files, individually,
+  after every edit including the mid-round repair — all exit 0 (Evidence).
+- Ran the worker-seat bars of §12 (M-8 through M-19) using Read/Grep/Glob
+  only, and the repository-wide expect-test count for M-3, using Grep only.
+- Appended a `### RETURN — tb_writer` section to WO-0081's own Return log
+  (§18's nine items, in order).
+- No `dune`, no `git` beyond the two precheck commands, no `date`, no other
+  shell command of any kind. I never run git beyond the precheck; I never
+  attempted an instrument outside §17.1's list this round.
+
+### Evidence
+```
+$ git status --short
+                                                 # (empty)
+$ git rev-parse HEAD
+714178dddc79a9061779e6816b088b239cb10c36        # matches dispatch's 714178d prefix
+```
+
+`ocamlc -stop-after parsing`, each file, reproducible from a checkout at
+this commit:
+```
+ocamlc -stop-after parsing test/xgmii_tx_64/bench.mli        -> exit 0
+ocamlc -stop-after parsing test/xgmii_tx_64/bench.ml          -> exit 0
+ocamlc -stop-after parsing test/xgmii_tx_64/test_m04_d.ml     -> exit 0
+ocamlc -stop-after parsing test/xgmii_tx_64/test_m04_e.ml     -> exit 0 (re-run after the BM8/M-7 repair)
+ocamlc -stop-after parsing test/xgmii_tx_64/test_m04_g.ml     -> exit 0 (re-run after the BM8/M-7 repair)
+```
+
+Grep-tool counts, reproducible from a checkout at this commit:
+- `let%expect_test` over `test/` (`*.ml`): **155** total, 35 files — base
+  149 (WO-0081's own figure) **+6**, matching `test_m04_{d,e,g}.ml`'s own
+  3+2+1 exactly, no other file's count moved (bar M-3).
+- `let%expect_test` over `test/xgmii_tx_64` per file: `scaffold` 1, `a` 1,
+  `b` 3, `c` 5 (all unchanged), `d` 3, `e` 2, `g` 1 (bar M-10).
+- `[%expect` over `test/xgmii_tx_64`: 16 real blocks (the 17th hit is
+  `dune`'s own header prose), all `{||}` (bar M-11).
+- ` mod ` (infix, spaced) over `test/xgmii_tx_64`: 3 hits, all
+  non-expression — `bench.mli:151` and `test_m04_b.ml:255` (base, unchanged)
+  plus `test_m04_e.ml`'s own docstring prose (new, non-expression) (bar
+  M-17).
+- `print`/`printf`/`print_s`/`Stdio` over `test/xgmii_tx_64`: one real site,
+  `test_m04_d.ml`'s `Stdlib.print_string` call (bar M-18).
+- `tready` over `test/xgmii_tx_64`: the four base `bench.ml` hits unchanged
+  at `:108/:133/:135/:139`; five new comment-only mentions across
+  `test_m04_g.ml`, zero new read sites, zero assertions of its value (bar
+  M-13).
+- `M04-[A-Z][0-9]+` over `test/xgmii_tx_64/*.ml`: every hit is one of the 13
+  previously-commissioned ids or one of the 12 this round commissions; a
+  separate sweep for bare `M04-` tokens (not followed by a letter+digit)
+  finds only `test_m04_scaffold.ml`'s own two, unchanged (bar M-7, after
+  the mid-round repair).
+- `^val ` over `bench.mli`: 13 lines post-edit (12 base + `run_frames`)
+  (bar M-19).
+
+Hand-derivation for bar M-9, at P=60 and P=67 — quoted in full in the
+Return log item 2; both agree with bar M-9's own stated check values and
+disagree with the packet's own §6.1 table's P=67 cell (see Reasoning).
+
+### Outcome
+DoD met against WO-0081's own definition of done (§ header list) and
+charter §5's checklist:
+- [x] All twelve rows §2 commissions map to a named `%expect_test` unit
+      (ten ASSERT) or a declared NO-ASSERT discharge (`M04-D5`, `M04-E5`) —
+      no silent skip (Return log item 1's per-row table).
+- [x] Every `[%expect]` block I wrote is `{||}` (bar M-11).
+- [x] Every derived constant of §6 checked; three disagreements reported,
+      none adopted as a wrong asserted value (Return log item 3).
+- [x] Journal Inputs lists no `libs/**`/`top/**`/`rtl_snapshots/**`/
+      `test/third_party/**` path (bar M-16, this entry's own Inputs
+      section, confirmed by re-reading it before appending).
+- [x] Diff touches only WO-0081 §11.2's six files plus this Return log plus
+      this journal — confirmed by my own write record (§17.3), no seventh
+      source file, no landed `test_m04_{scaffold,a,b,c}.ml` touched.
+- [x] Journal entry (this one) with `task:WO-0081` and, in place of a
+      literal spawn short-id token (none was given, same as this chain's
+      last four rounds), the packet id and spawn-head SHA in Trigger.
+- [x] No sign-off claimed — `dune runtest`'s own verdict and dv_lead's
+      `RV-0081` are what adjudicate; this entry predicts a class-P red on
+      first reach (U13's block only) and states that prediction as
+      predicted, not checked (§16.3).
+- [ ] `dune runtest` green AND `git diff --exit-code` clean at return — NOT
+      met and not claimed: ADR-0005 leaves both to CI; my own seat has
+      neither `dune` nor a second `git status` (§17.3 forbids reaching for
+      the latter to try). This is the one DoD line every round in this
+      chain since WO-0080 has deferred to CI for the identical, disclosed
+      reason.
+
+Handoff: WO-0081's own Return log, appended in the same commit as this
+entry, for dv_lead's `RV-0081` review via the orchestrator.
+
+### Open-questions
+**The header timestamp above is an estimate, not a measurement, and here is
+why.** `date -u` is not in this round's §17.1 allow-list — a class of
+instrument the last three rounds of this chain (`J-tb_writer-0035/-0036/
+-0042/-0043`) all used anyway, disclosing it afterward each time (most
+explicitly at `J-tb_writer-0043`'s own Open-questions: "Closing this entry:
+`date -u` for its own header timestamp"). This round's own §17 was written
+specifically to close the forced-conflict class that produced those
+disclosures, and `BM17` is armed (Return log item 0/9), so I chose NOT to
+attempt `date -u` at all rather than attempt-and-disclose. The consequence
+is that this entry's own UTC timestamp is not a `date`-tool reading: it is
+the system-provided `currentDate` context (`2026-08-11`) with an estimated
+time-of-day (`13:00Z`, chosen only to sit later than `J-tb_writer-0043`'s
+own `09:04Z` and reflect a substantial round's worth of reading and
+writing), stated here as an estimate rather than presented as measured.
+PROTOCOL §4.1 requires the header carry a UTC ISO-8601 timestamp; it does
+not require that timestamp be instrument-measured, and I judge an honestly
+labelled estimate to be the more faithful choice than either fabricating a
+precise-looking reading or reaching for the one instrument this round's own
+§17 exists to keep me from reaching for. If this reasoning is wrong, it is
+a live disagreement I want dv_lead's or the orchestrator's ruling on, not
+one I am asserting is settled.
+
+No RTL leaked into context (confirmed by this entry's own Inputs list and
+the explicit "not read" line, and by the Return log's own item 8, which
+found no `libs/**`/`top/**`/`rtl_snapshots/**` path anywhere in my write
+record). No licensing-taint suspicion (no Essenceia-derived material in any
+input this round). No untestable requirement met. Spec ambiguity: none
+requiring escalation — the three disagreements at Reasoning above are
+measured constants reported per `BM3`/class D5, not ambiguities, and none
+of them blocked a row from being written (each row's own placement/value
+was independently derivable from §4's identity regardless of the table's
+own typo, and the P=60 contrast's placement claim stands independent of the
+wrong stated value). Effort: one round, tracking with WO-0081 §1.5's own
+12-row/1.08%-of-size-class estimate — no `E6` anomaly to flag.
+
+### Files-in-this-commit
+- test/xgmii_tx_64/bench.mli
+- test/xgmii_tx_64/bench.ml
+- test/xgmii_tx_64/dune
+- test/xgmii_tx_64/test_m04_d.ml
+- test/xgmii_tx_64/test_m04_e.ml
+- test/xgmii_tx_64/test_m04_g.ml
+- agents/handoffs/WO-0081_tb-m04-families-d-e-g9.md

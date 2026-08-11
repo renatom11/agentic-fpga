@@ -7,6 +7,14 @@
 ;            C4, C5 ASSERT, C6 NO-ASSERT (eleven ASSERT + two NO-ASSERT rows,
 ;            plus U1, the scaffolding smoke unit with no row id) — seven
 ;            files, ten %expect_test units
+;   WO-0081  D1, D2, D3, D4, D6 ASSERT, D5 NO-ASSERT; E1, E2, E3, E4 ASSERT,
+;            E5 NO-ASSERT; G9 ASSERT (ten ASSERT + two NO-ASSERT rows,
+;            families D and E complete) — three new files (test_m04_d.ml,
+;            test_m04_e.ml, test_m04_g.ml), six %expect_test units;
+;            bench.mli/bench.ml extended by one function, run_frames, with
+;            run_lengths re-expressed over it (§5.3) — the four landed
+;            test_m04_{scaffold,a,b,c}.ml files unmodified (regression
+;            witness, §5.2)
 ; When a packet adds rows, add its line — WO-0038's own dune header found
 ; the staleness this rule guards against (see test/xgmii_rx_64/dune's own
 ; history) and this header follows that precedent from its first commit.

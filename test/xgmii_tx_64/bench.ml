@@ -309,9 +309,13 @@ let cycles_for ~p =
   27 + (f / 8)
 ;;
 
-let run_one_length p =
-  let octets = content_octets ~p in
-  let words = source_words octets in
+(* WO-0081 §5.3: the general runner. [run_one_length] is gone — its body is
+   now [run_one_frame] taking a content string directly, and [run_lengths]
+   below is a thin wrapper so the run-length formula ([cycles_for], above)
+   and the obligation-6 / liveness-bound / P-ACCEPT guards ([check_words],
+   [present]) are shared rather than duplicated (bar M-8). *)
+let run_one_frame content =
+  let words = source_words content in
   (match check_words words with
    | [] -> ()
    | problems ->
@@ -319,15 +323,23 @@ let run_one_length p =
        (String.concat
           ~sep:"\n"
           (String.concat
-             [ "Bench.run_lengths: P="; Int.to_string p; " stimulus fails obligation 6:" ]
+             [ "Bench.run_frames: content of length "
+             ; Int.to_string (List.length content)
+             ; " fails obligation 6:"
+             ]
            :: problems)));
   let t = create () in
-  let total = cycles_for ~p in
+  let total = cycles_for ~p:(List.length content) in
   let samples = present t words ~total in
-  p, t, samples
+  content, t, samples
 ;;
 
-let run_lengths ps = List.map ps ~f:run_one_length
+let run_frames contents = List.map contents ~f:run_one_frame
+
+let run_lengths ps =
+  run_frames (List.map ps ~f:(fun p -> content_octets ~p))
+  |> List.map ~f:(fun (content, t, samples) -> List.length content, t, samples)
+;;
 
 let first_accepted_cycle samples =
   match List.find samples ~f:(fun (s : sample) -> s.accepted) with
