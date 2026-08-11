@@ -3330,3 +3330,121 @@ condition; C9 still owes one spec round.
 
 ### Files-in-this-commit
 - docs/specs/requirements.md
+
+## [J-orchestrator-0233] 2026-08-11T02:20Z | task:none | The orchestrator's first harvest: the seat that spawns everything walks its own record at last - eighteen candidates, one ruling, and seven errors that each bought a rule
+
+### Method, stated before the yield
+Span: J-orchestrator-0001 ... J-orchestrator-0232, both volumes,
+232 entries. Walk method: every title read in full (the titles in
+this chain are one-line rule statements by construction); bodies
+consulted where the title alone did not carry the rule; the v02
+span (0147-0232) was authored by this seat in the live session and
+is known whole. This is a walked count with a declared method, not
+a remembered one. Owed under FINDING SO-5; the orchestrator is one
+of PROTOCOL 7's five harvest agents.
+
+### RULING O-1 (the auditor's collation question, decided here)
+The LC- id space gains a SEAT QUALIFIER: each seat mints under
+LC-<seat>-H<harvest#>-<n> (the auditor's LC-SO-xgmii_rx_64-AUD-n
+and data_wrangler's LC-data_wrangler-H1-n are conformant as minted
+and are not renumbered). dv_lead's unqualified LC-SO-xgmii_rx_64-1
+... -94 is grandfathered as the dv seat's first-harvest range. The
+collator merges BY TAG and never renumbers; a merge records both
+provenances. This row is the allocator the concurrent harvests
+lacked.
+
+### The yield: 18 candidates (LC-orchestrator-H1-1 ... -18)
+1. In-flight agent work is never committed before its author
+   returns and its files-list verifies against the write record;
+   external pressure to commit it is refused every time. Negative
+   instance that proved it: 0125 (my R1 violation carrying dv's
+   in-flight countersignature). LH1: 0125 + the standing refusals
+   throughout v02.
+2. Every dispatch opens with an abort-first HEAD check, and the
+   check reads DIRECTION by merge-base, not equality - ancestor
+   means rollback, descendant means verify disjointness. LH1:
+   0219, 0222 (incidents three and four); the upgraded form held
+   at every spawn since.
+3. Agent liveness is read from deliverable and scratchpad mtimes,
+   never from the transcript file; a buffered transcript is a
+   known false-positive. LH1: the corrected stall heuristic at
+   0227's arc (the RV-STAGE1 round's false signature).
+4. Preserve before restore: every recovery diffs the doomed state
+   to scratchpad before any reset. LH1: six incidents, zero loss,
+   0219/0222/0229 and the silent-death partials.
+5. Push-before-pause: a landing is not done until pushed, so an
+   ephemeral container never holds the only copy. LH1: 0229
+   (incident six - a five-hour pause, a reclaimed container, a
+   three-command recovery).
+6. A freeze reference in a dispatch predates every commit that
+   could move the frozen thing, and names a RUN, never a literal
+   stored inside the file it protects. LH1: 0226 (the circular
+   pin).
+7. A dispatch carrying a finding block-quotes the finding's own
+   text, so the assignee reads the source and the dispatch cannot
+   disagree with it. LH1: the fourth dispatch error's hardened
+   form (RV-C3ALPHA conduct ruling), applied at every dispatch
+   since.
+8. A dispatch that names journal-chain state derives it from
+   git show HEAD:<journal> at dispatch time, exactly as rotation
+   hashes are derived. LH1: 0231 (the fifth error - a stale
+   entry id quoted one volume behind).
+9. The dispatch author's obligation when a dispatch and a
+   committed artifact disagree: the artifact governs, and the
+   author's repair is to quote from the file, never from memory
+   of it. Seven dispatch errors in this record, all mine, all
+   caught by assignees - the control working in the wrong
+   direction until the form changes made it structural. LH1: the
+   error ledger across 0226/0228/0231/0232 and the SO-5
+   five-agent misread.
+10. Two rounds run concurrently iff their write sets are named
+    disjoint in BOTH dispatches and verified disjoint at BOTH
+    landings; the packet is never shared. LH1: the declared-
+    sibling arcs at 965f6ee..ce5674d and the five-way harvest
+    fan-out.
+11. No orchestrator commit lands during an open round unless
+    disjointness is verified first and the open round is named in
+    the entry. LH1: 0211's rule, held at every board flip since.
+12. A journal rotation's chain header is computed independently
+    by dispatcher and author and verified both sides at the
+    landing. LH1: dv v06-v07-v08, workers v02-v03, auditor v01-v02.
+13. Verdicts and findings travel in the author's words - quote or
+    pointer, never summary - to the sponsor and across seats.
+    LH1: the standing verbatim-relay practice; the WO-0077
+    9.1/9.2 relay landed at the auditor's harvest.
+14. The incident journal is written at the recovery, in the same
+    session, not reconstructed later. LH1: 0219/0222/0229 and the
+    incident-five record at 0227.
+15. The board updates in the same commit as the state change it
+    describes, and a stale inventory is repaired by MEASUREMENT,
+    never arithmetic. LH1: 0224 (59-with-six-families corrected
+    to 85-by-ls-remote, staleness disclosed).
+16. A silent worker death leaves no task record; the respawn
+    reissues the identical dispatch with an anti-collision
+    precheck and a resource-compactness hint, after partials are
+    preserved and discarded. LH1: incident five at 0227.
+17. A refused instrument attempt goes in the journal, not in the
+    void - durability applies to refusals. LH1: the durability
+    clause's uses across the campaign and cosim arcs (proxy 403s,
+    egress denials).
+18. The stop condition is pre-registered with the answer not in
+    hand, and it is retired on an answer, never on a timeout.
+    LH1: adopted from dv's practice at the C2 arc and applied to
+    my own stall thresholds; the generalization is this seat's.
+
+### War stories (kept, not offered)
+- The sponsor's secret-name typo (CLOUDFARE) found by asking for
+  a screenshot rather than re-deriving the pipeline. Fails LH3:
+  ordinary debugging judgement, no sharp rule.
+- The 12-hour heartbeat chain surviving six wakeups with state
+  intact. Fails LH2-g: the rule it suggests is candidate 5 said
+  smaller.
+
+### Nil declarations
+No LD- (domain) candidates: this seat owns no domain artifact.
+Worker spans: none commissioned by this seat directly (workers are
+commissioned by leads; their spans are their leads' to mine and
+their own harvests are landed this arc).
+
+### Files-in-this-commit
+- (none)
