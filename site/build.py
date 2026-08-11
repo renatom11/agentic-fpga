@@ -181,6 +181,7 @@ PAGES = [
     ('block-diagram.html', 'BLOCK DIAGRAM'),
     ('spec-atlas.html', 'SPEC ATLAS'),
     ('org-chart.html', 'ORG CHART'),
+    ('process.html', 'PROCESS'),
     ('backlog.html', 'BACKLOG'),
 ]
 
@@ -551,8 +552,117 @@ backlog = head_block('agentic-fpga — backlog & progress',
 </body></html>
 '''
 
+# ---- the process document page (docs/PROCESS.md, rendered) ------------------
+# Minimal converter for exactly the markdown subset PROCESS.md uses (h1-h4,
+# hr, tables, flat ul/ol, bold/italic/inline-code, internal #anchors; external
+# links degrade to bare text per T7 while the repo is private). If the doc
+# grows a construct this subset misses, the page shows it as plain text
+# rather than silently dropping it — check the render after edits.
+
+def _slug(text):
+    s = re.sub(r'[^a-z0-9 -]', '', text.lower())
+    return re.sub(r'-+', '-', s.replace(' ', '-')).strip('-')
+
+def _inline(text):
+    t = html.escape(text, quote=False)
+    t = re.sub(r'`([^`]+)`', r'<code>\1</code>', t)
+    t = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', t)
+    t = re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)', r'<i>\1</i>', t)
+    t = re.sub(r'\[([^\]]*)\]\((#[^)]*)\)', r'<a href="\2">\1</a>', t)
+    t = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', t)
+    return t
+
+def md_to_html(md):
+    out, para, lst, tbl, li_buf = [], [], None, [], []
+    def flush_para():
+        if para:
+            out.append('<p>' + _inline(' '.join(para)) + '</p>'); para.clear()
+    def flush_li():
+        if li_buf:
+            out.append(f'<li>{_inline(" ".join(li_buf))}</li>'); li_buf.clear()
+    def flush_list():
+        nonlocal lst
+        flush_li()
+        if lst: out.append(f'</{lst}>'); lst = None
+    def flush_table():
+        if tbl:
+            head, *body = [r for r in tbl if not re.match(r'^\|[\s:|-]+\|$', r)]
+            cells = lambda r: [c.strip() for c in r.strip().strip('|').split('|')]
+            out.append('<div class="mtable"><table><tr>' +
+                       ''.join(f'<th>{_inline(c)}</th>' for c in cells(head)) + '</tr>' +
+                       ''.join('<tr>' + ''.join(f'<td>{_inline(c)}</td>' for c in cells(r)) +
+                               '</tr>' for r in body) + '</table></div>')
+            tbl.clear()
+    for line in md.split('\n'):
+        if tbl and not line.startswith('|'): flush_table()
+        m = re.match(r'^(#{1,4}) (.*)$', line)
+        if m:
+            flush_para(); flush_list()
+            n = len(m.group(1)); txt = m.group(2)
+            out.append(f'<h{n} id="{_slug(txt)}">{_inline(txt)}</h{n}>')
+        elif line.strip() == '---':
+            flush_para(); flush_list(); out.append('<hr>')
+        elif line.startswith('|'):
+            flush_para(); flush_list(); tbl.append(line)
+        elif re.match(r'^- ', line):
+            flush_para()
+            if lst != 'ul': flush_list(); out.append('<ul>'); lst = 'ul'
+            else: flush_li()
+            li_buf.append(line[2:])
+        elif re.match(r'^\d+\. ', line):
+            flush_para()
+            if lst != 'ol': flush_list(); out.append('<ol>'); lst = 'ol'
+            else: flush_li()
+            li_buf.append(re.sub(r'^[0-9]+[.] ', '', line))
+        elif not line.strip():
+            flush_para(); flush_list()
+        else:
+            if lst and line.startswith('  '):
+                li_buf.append(line.strip())
+            else:
+                para.append(line.strip())
+    flush_para(); flush_list(); flush_table()
+    return '\n'.join(out)
+
+PROCESS_CSS = """
+.doc h1 { margin-top:1.2rem; }
+.doc h2 { font-size:1.35rem; margin:2.8rem 0 .7rem; border-top:1px solid var(--line); padding-top:1.6rem; }
+.doc h3 { font-size:1.08rem; margin:2rem 0 .5rem; }
+.doc h4 { font-size:.95rem; margin:1.5rem 0 .4rem; color:var(--ink-2);
+  font-family:'Plex Mono',monospace; letter-spacing:.04em; }
+.doc p, .doc li { max-width:76ch; }
+.doc li { margin:.3rem 0; }
+.doc hr { border:0; border-top:1px solid var(--line); margin:2rem 0; }
+.doc code { font-family:'Plex Mono',monospace; font-size:.86em; background:var(--chip);
+  border:1px solid var(--line); border-radius:5px; padding:.06em .35em; }
+.doc .mtable { overflow-x:auto; margin:.8rem 0 1.4rem; }
+.doc .mtable table { border-collapse:collapse; font-size:.9rem; min-width:480px; }
+.doc .mtable th, .doc .mtable td { border:1px solid var(--line); padding:.45rem .7rem;
+  text-align:left; vertical-align:top; }
+.doc .mtable th { background:var(--chip); font-family:'Plex Mono',monospace;
+  font-size:.74rem; letter-spacing:.06em; text-transform:uppercase; }
+"""
+
+process_md = open(os.path.join(ROOT, 'docs', 'PROCESS.md')).read()
+process = head_block('agentic-fpga — the process',
+                     'agentic-fpga — the process, project-agnostic') + f'''
+<style>{STYLE}{PROCESS_CSS}</style>
+{nav('process.html')}
+<div class="wrap doc">
+  <span class="eyebrow">agentic-fpga / process</span>
+  {md_to_html(process_md)}
+  <div class="foot">Rendered verbatim from
+  <span class="mono">docs/PROCESS.md</span> at commit
+  <a class="mono" href="{REPO_URL}/commit/{head_sha}" target="_blank" rel="noopener">{head_sha}</a>
+  · {gen_date} · authored by the org's architect seat, rendered by its orchestrator.</div>
+  <!-- regenerate: python3 site/build.py -->
+</div>
+</body></html>
+'''
+
 open(os.path.join(PUB, 'index.html'), 'w').write(index)
 open(os.path.join(PUB, 'backlog.html'), 'w').write(backlog)
+open(os.path.join(PUB, 'process.html'), 'w').write(process)
 
 # ---- site chrome on the artifact pages (idempotent) -------------------------
 CHROME_START = '<!-- site-chrome-start -->'

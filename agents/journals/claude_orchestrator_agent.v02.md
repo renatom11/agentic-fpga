@@ -4888,3 +4888,51 @@ front, and SO-M04 remains the long pole.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0264] 2026-08-11T20:03Z | task:none | The sponsor's document is on the record and on the site: fourteen hundred lines with zero project nouns, rendered by a converter built for exactly its subset - and the page's first reader will be the person who asked for it
+
+### Trigger
+
+The architect's three-act round landed at f67a57a: docs/PROCESS.md
+(the sponsor's commission, project-agnostic, anonymisation measured at
+zero hits), the ADR-0020 status flip in the four-element form, and the
+requirements §13 pointer. The document went to the sponsor directly on
+landing; this entry pairs with the site wiring and the flip.
+
+### The site wiring (my act)
+
+build.py gains a minimal markdown renderer scoped to exactly the
+subset PROCESS.md uses (h1-h4, hr, tables, flat lists, bold/italic/
+inline-code, internal anchors; external links degrade to bare text
+per T7 while the repo is private), a PROCESS nav pill, and a
+process.html page rendering the document verbatim from docs/ at each
+regeneration — so the page can never go stale relative to the source
+the way the NEXT list once did; it re-renders on every build by
+construction. Render verified: zero leftover markers after the
+list-continuation fix (bold spans crossing wrapped list lines — found
+by counting, not by reading), 8 sections, 58 list items, 2 tables,
+matching the source's own census; every heading id matches the
+document's contents anchors.
+
+### Rulings and carriers
+
+1. The read-and-confirm round the architect requested (its document
+   describes other seats' disciplines uncountersigned) is QUEUED:
+   dv/rtl/auditor each read the part describing their discipline and
+   confirm or correct — journal-only, after the current queue's
+   heads.
+2. Item 70's third exhibit (the status flip moved in-force text with
+   no ADR, flagged by its own author) rides the architect's ledger.
+3. NEXT-list rule: complied by explanation — the document is
+   delivered, not a live front; the five bullets stand.
+
+### Files-in-this-commit
+
+- tasks/BOARD.md
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/process.html
+- site/public/spec-atlas.html
