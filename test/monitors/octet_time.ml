@@ -6,8 +6,8 @@ let of_axi64 ~cycle ~byte_position = (8 * cycle) + byte_position
 let cycles_floor l = l / 8
 let front_offset ~strip_octets ~start_lane = strip_octets + start_lane
 
-let word_cycles ~front_offset l =
-  let sum = l + front_offset in
+let word_cycles ?(output_offset = 0) ~front_offset l =
+  let sum = l + front_offset - output_offset in
   if sum < 0 || sum mod 8 <> 0 then None else Some (sum / 8)
 ;;
 
@@ -30,20 +30,25 @@ let of_words words =
 module Latency = struct
   type observed =
     { front_offset : int
+    ; output_offset : int
     ; latencies : int list
     ; word_delay : int option
     ; frames : int
     ; octets : int
     }
 
-  (* One accumulator per observed front offset. [reference] is the first L seen
-     in this class, which is what a later divergence is reported against — the
-     per-class version of the single reference the tagger used before WO-0012.
-     §0.5's "Start lanes" paragraph is why the classes exist: at the XGMII
-     boundary a conformant module has one constant per start lane, not one
-     constant. *)
+  (* One accumulator per observed (front offset, output offset) pair.
+     [reference] is the first L seen in this class, which is what a later
+     divergence is reported against — the per-class version of the single
+     reference the tagger used before WO-0012. §0.5's "Start lanes" paragraph is
+     why the classes exist: at the XGMII boundary a conformant module has one
+     constant per start lane, not one constant. §0.5 makes q, like h, a property
+     of the module AND the start lane, so the class key is the pair; Phase 1 has
+     no module with two start lanes and q ≠ 0, and keying on the pair is what
+     stops that from being an assumption. *)
   type cls =
     { h : int
+    ; q : int
     ; mutable ls : int list (* distinct, unsorted *)
     ; mutable reference : int option
     ; mutable n_frames : int
@@ -55,6 +60,7 @@ module Latency = struct
     ; strip_octets : int
     ; tail_octets : int
     ; front_offsets : int list
+    ; output_offsets : int list
     ; ceiling : int option
     ; pending : int array Queue.t (* input frames not yet matched, oldest first *)
     ; mutable classes : cls list
@@ -64,11 +70,20 @@ module Latency = struct
     ; mutable rev_errors : string list
     }
 
-  let create ~name ~strip_octets ~tail_octets ~front_offsets ?ceiling () =
+  let create
+    ~name
+    ~strip_octets
+    ~tail_octets
+    ~front_offsets
+    ?(output_offsets = [ 0 ])
+    ?ceiling
+    ()
+    =
     { name
     ; strip_octets
     ; tail_octets
     ; front_offsets
+    ; output_offsets
     ; ceiling
     ; pending = Queue.create ()
     ; classes = []
@@ -88,11 +103,11 @@ module Latency = struct
     | None -> error t "frame_dropped with no input frame pending"
   ;;
 
-  let class_of t ~h =
-    match List.find_opt (fun c -> c.h = h) t.classes with
+  let class_of t ~h ~q =
+    match List.find_opt (fun c -> c.h = h && c.q = q) t.classes with
     | Some c -> c
     | None ->
-      let c = { h; ls = []; reference = None; n_frames = 0; n_octets = 0 } in
+      let c = { h; q; ls = []; reference = None; n_frames = 0; n_octets = 0 } in
       t.classes <- c :: t.classes;
       c
   ;;
@@ -111,11 +126,12 @@ module Latency = struct
           <- Some
                (Printf.sprintf
                   "frame %d octet %d has latency %d octet times; every earlier octet at \
-                   front offset %d had %d (REQ-005, requirements.md §0.5)"
+                   front offset %d%s had %d (REQ-005, requirements.md §0.5)"
                   frame
                   octet
                   latency
                   c.h
+                  (if c.q = 0 then "" else Printf.sprintf " / output offset %d" c.q)
                   r))
   ;;
 
@@ -219,17 +235,36 @@ module Latency = struct
                 (match t.front_offsets with
                  | [] -> "(none)"
                  | ds -> String.concat ", " (List.map string_of_int ds)));
-         if out_times.(0) mod 8 <> 0
+         (* §0.5's output offset q, computed from the trace rather than taken on
+            trust, exactly as h is above: q is the position, within the output
+            word ΔC's output event names, of the frame's first octet at that
+            output — and [out_times.(0)] is that octet's output octet time. At a
+            module that inserts nothing the declared set is [[0]] and this is
+            REQ-021's producer-side alignment; at one that inserts they part
+            company, because REQ-021 aligns the first octet the module *emits*
+            and q measures the first octet it *forwards*, which is a later octet
+            in a later word (§0.5's q paragraph says exactly this). Only the
+            module's own §7 says which value is legal. *)
+         let q = out_times.(0) mod 8 in
+         if not (List.exists (fun d -> d = q) t.output_offsets)
          then
            error
              t
              (Printf.sprintf
-                "frame %d: the first emitted octet has octet time %d, which is not byte \
-                 position 0 of a word — the output stream is not word-aligned at its \
-                 producer (REQ-021)"
+                "frame %d: the frame's first octet at the output has octet time %d, i.e. \
+                 byte position %d of its word, which is not an output offset this \
+                 module's spec §7 pins (declared: %s) — at a module that inserts nothing \
+                 this is REQ-021's producer-side alignment failing; at one that inserts, \
+                 q is (the octets inserted ahead of the frame) mod 8 and, like h, is a \
+                 property of the module and the start lane and not a free choice \
+                 (requirements.md §0.5)"
                 t.frames_compared
-                out_times.(0));
-         let c = class_of t ~h in
+                out_times.(0)
+                q
+                (match t.output_offsets with
+                 | [] -> "(none)"
+                 | ds -> String.concat ", " (List.map string_of_int ds)));
+         let c = class_of t ~h ~q in
          for j = 0 to got - 1 do
            note
              t
@@ -250,16 +285,17 @@ module Latency = struct
 
   let observed t =
     List.sort
-      (fun a b -> compare a.front_offset b.front_offset)
+      (fun a b -> compare (a.front_offset, a.output_offset) (b.front_offset, b.output_offset))
       (List.map
          (fun c ->
            let latencies = List.sort compare c.ls in
            let word_delay =
              match latencies with
-             | [ l ] -> word_cycles ~front_offset:c.h l
+             | [ l ] -> word_cycles ~front_offset:c.h ~output_offset:c.q l
              | [] | _ :: _ :: _ -> None
            in
            { front_offset = c.h
+           ; output_offset = c.q
            ; latencies
            ; word_delay
            ; frames = c.n_frames
@@ -307,12 +343,13 @@ module Latency = struct
             (match o.word_delay with
              | None ->
                [ Printf.sprintf
-                   "front offset %d: L = %d gives (L + h) = %d, which is not a multiple \
-                    of 8 — requirements.md §0.5 makes the word delay a whole number, so \
-                    no conformant module has this pair"
+                   "front offset %d, output offset %d: L = %d gives (L + h − q) = %d, \
+                    which is not a multiple of 8 — requirements.md §0.5 makes the word \
+                    delay a whole number, so no conformant module has this triple"
                    o.front_offset
+                   o.output_offset
                    l
-                   (l + o.front_offset)
+                   (l + o.front_offset - o.output_offset)
                ]
              | Some d ->
                (match t.ceiling with
@@ -350,7 +387,11 @@ module Latency = struct
                 b.front_offset
                 da
                 db
-                (abs ((8 * db) - b.front_offset - ((8 * da) - a.front_offset)))
+                (abs
+                   ((8 * db)
+                    - b.front_offset
+                    + b.output_offset
+                    - ((8 * da) - a.front_offset + a.output_offset)))
             ]
           | Some _, None | None, Some _ | None, None -> [])
         (adjacent classes)
@@ -420,9 +461,14 @@ module Latency = struct
                (if d <= ceiling then "<=" else ">")
                ceiling)
       in
+      (* q is printed only where it is non-zero, on §0.5's own convention that a
+         specification stating no q is stating q = 0 — so every report of a
+         module that inserts nothing or inserts whole words is byte-unchanged by
+         this parameter's arrival. *)
       Printf.sprintf
-        "  h=%d %s %s frames=%d octets=%d"
+        "  h=%d%s %s %s frames=%d octets=%d"
         o.front_offset
+        (if o.output_offset = 0 then "" else Printf.sprintf " q=%d" o.output_offset)
         l_text
         delay_text
         o.frames

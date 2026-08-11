@@ -45,7 +45,7 @@
       without it M03's own frame cannot be handed to this tagger without lying
       about its input trace.
     - the {b front offset h} of §0.5, which is what the word delay
-      [ΔC = (L + h)/8] is computed from. §0.5 states it as "(the octets the
+      [ΔC = (L + h − q)/8] is computed from. §0.5 states it as "(the octets the
       module removes from the front of the frame) + (the position, within the
       input word named by the measurement event, of the frame's first octet)",
       so at M03 it is {b 8} at a lane-0 start and {b 12} at a lane-4 start — a
@@ -84,17 +84,50 @@
     classes is checked against §0.5's own bound: ordered by ascending h,
     [ΔC(larger h) ∈ { ΔC(smaller h), ΔC(smaller h) + 1 }].
 
+    {2 The output offset q, and why this module carries it}
+
+    §0.5's third quantity, added by the `C-RL-8` ruling and countersigned at
+    [J-dv_lead-0180]: the {b output offset q} is the position, within the output
+    word ΔC's output event names, of the first octet {e of the frame} at that
+    output; equivalently (the octets the module inserts ahead of the frame)
+    mod 8. It is the exact mirror of h's second term — h measures where the
+    frame's first octet sits inside the {e input} word the measurement event
+    names, q where it sits inside the {e output} word ΔC counts to — and like h
+    it is a property of the module {e and the start lane}, pinned in the module
+    spec §7 and not a free choice. q = 0 at every module that inserts nothing
+    and at every module whose insertion is a whole number of words, which is
+    every Phase-1 module except {b M07} (q = 6, a 14-octet insertion) and
+    {b M15} (q = 4, a 20-octet insertion).
+
+    {b Why an instrument that ignored it was a defect and not merely
+    incomplete.} Keyed on h alone this module's conversion returns [None] for
+    M07's (h = 0, L = 22) and M15's (h = 0, L = 28) and prints "no conformant
+    module has this pair" — refusing two {e conformant} designs in those words.
+    That is the same shape as [SCR-M03-I4] and as [FINDING AP-M04-1]: machinery
+    built from an arithmetic statement no conformant design can satisfy. The
+    finding against this file is [FINDING Q-1]'s consequence in DV's own lane
+    ([J-dv_lead-0180] §6): a checker parameterised over the quantities a rule
+    names is a site of that rule, and no search for the rule's subjects finds
+    it, because it names none of them.
+
+    {b REQ-021 does not make q zero and this module must not assume it does.}
+    REQ-021 aligns the first octet a module {e emits}; q measures the first
+    octet it {e forwards}, which at an inserting module is a later octet in a
+    later word. So [Latency.frame_out]'s check on the first output octet's byte
+    position is a check against the module's {e declared} [~output_offsets],
+    which is REQ-021's alignment exactly when that set is [[0]].
+
     {2 Cycles: one normative conversion, one superseded}
 
     C-1 is CLOSED and SEALED (dv_lead's batch-B countersignature at f78766e):
-    §0.5 now converts a latency constant to cycles as the word delay
-    [ΔC = (L + h)/8], and that is the unit of §1.1's ceilings and REQ-006's
+    §0.5 converts a latency constant to cycles as the word delay
+    [ΔC = (L + h − q)/8], and that is the unit of §1.1's ceilings and REQ-006's
     budget. [word_cycles] is that conversion and takes [~front_offset], not the
-    correspondence term; it returns [None] rather than truncating when
-    [(L + h)] is not a multiple of 8, because §0.5 makes that closure normative
-    ("ΔC is a whole number … A specification pinning an L for which it is not
-    describes a module that cannot exist"). Silently rounding past a free check
-    is how a spec defect reaches a sign-off packet.
+    correspondence term, plus [?output_offset]; it returns [None] rather than
+    truncating when [(L + h − q)] is not a multiple of 8, because §0.5 makes
+    that closure normative ("ΔC is a whole number … A specification pinning an L
+    for which it is not describes a module that cannot exist"). Silently
+    rounding past a free check is how a spec defect reaches a sign-off packet.
 
     [cycles_floor] is §0.5's superseded conversion, [floor (L / 8)]. It is kept
     — it is what the C-1 finding is {e about}, and the regression test needs to
@@ -114,10 +147,15 @@ val cycles_floor : int -> int
     [~start_lane:4 = 12] — SPEC-M03 §7's two rows. *)
 val front_offset : strip_octets:int -> start_lane:int -> int
 
-(** The normative conversion: [word_cycles ~front_offset:h L = Some ((L + h)/8)]
-    when [(L + h)] is a non-negative multiple of 8, and [None] otherwise (§0.5:
-    ΔC is a whole number). *)
-val word_cycles : front_offset:int -> int -> int option
+(** The normative conversion:
+    [word_cycles ?output_offset:q ~front_offset:h L = Some ((L + h − q)/8)] when
+    [(L + h − q)] is a non-negative multiple of 8, and [None] otherwise (§0.5:
+    ΔC is a whole number). [?output_offset] defaults to 0, which is §0.5's own
+    default — a specification stating no q is stating q = 0 — so every call
+    written before q existed keeps its meaning and its answer. At M07 it is 6
+    and at M15 it is 4, and without it those two conformant modules are refused
+    (see "The output offset q" above). *)
+val word_cycles : ?output_offset:int -> front_offset:int -> int -> int option
 
 (** Octet times of the octets a word carries, ascending; the empty list for a
     word with [tvalid] = 0. Reads only positions whose [tkeep] bit is set
@@ -132,16 +170,22 @@ val of_words : (int * Stream_word.t) list -> int array
 module Latency : sig
   type t
 
-  (** One front-offset class: every frame whose observed h was the same value.
-      A non-XGMII module has one class; M03 has two (SPEC-M03 §7). *)
+  (** One class: every frame whose observed (h, q) pair was the same. A
+      non-XGMII module that inserts nothing has one class; M03 has two
+      (SPEC-M03 §7). The key is the pair because §0.5 makes q, like h, a
+      property of the module {e and the start lane}. *)
   type observed =
     { front_offset : int
+    ; output_offset : int
+          (** the observed q of this class — the byte position, within the
+              output word ΔC names, of the frame's first octet at the output.
+              0 at every Phase-1 module but M07 (6) and M15 (4). *)
     ; latencies : int list
           (** distinct L values observed in this class, ascending; exactly one
               on a conformant module *)
     ; word_delay : int option
-          (** [ΔC = (L + h)/8] when the class has a single L and the pair closes
-              mod 8; [None] otherwise *)
+          (** [ΔC = (L + h − q)/8] when the class has a single L and the triple
+              closes mod 8; [None] otherwise *)
     ; frames : int
     ; octets : int
     }
@@ -157,6 +201,14 @@ module Latency : sig
         lane. [[8; 12]] at M03; [[14]] at M06; [[0]] at a non-stripping stage.
         A frame whose observed h is outside this set is reported as an error,
         not silently classified.
+      - [output_offsets]: the q values the module's spec §7 pins, one per start
+        lane, defaulting to [[0]] — §0.5's own default, a specification stating
+        no q is stating q = 0. [[6]] at M07 and [[4]] at M15, the two Phase-1
+        modules whose insertion is not a whole number of words. A frame whose
+        observed q is outside this set is reported, on the same discipline as
+        h: at a module declaring [[0]] that report {e is} REQ-021's
+        producer-side alignment failing; at an inserting module it is a q the
+        specification does not pin.
       - [ceiling]: the §1.1 ceiling on ΔC, when the module has one (4 at M03).
         Supplied, the tagger reports a ΔC above it as a REQ-019 failure; the
         cost C-1's closure imposes on a sign-off packet is then paid by the
@@ -166,6 +218,7 @@ module Latency : sig
     -> strip_octets:int
     -> tail_octets:int
     -> front_offsets:int list
+    -> ?output_offsets:int list
     -> ?ceiling:int
     -> unit
     -> t
@@ -260,11 +313,13 @@ module Latency : sig
   val first_offender : t -> string option
 
   (** Structural and derived problems: an output frame with no matching input;
-      a frame whose octet count does not match input − strip − tail; an output
-      frame that is not word-aligned (REQ-021); an observed front offset outside
-      the declared set (§0.5); an (L + h) that is not a multiple of 8 (§0.5); a
-      ΔC above the declared ceiling (REQ-019); two start-lane classes whose word
-      delays are further apart than §0.5's bound. *)
+      a frame whose octet count does not match input − strip − tail; an observed
+      output offset outside the declared set — which at a module declaring
+      [[0]] is an output frame that is not word-aligned (REQ-021); an observed
+      front offset outside the declared set (§0.5); an (L + h − q) that is not a
+      multiple of 8 (§0.5); a ΔC above the declared ceiling (REQ-019); two
+      start-lane classes whose word delays are further apart than §0.5's
+      bound. *)
   val errors : t -> string list
 
   (** [is_constant] and no errors. *)

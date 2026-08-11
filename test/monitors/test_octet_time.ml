@@ -391,13 +391,24 @@ let%expect_test "§0.5's start-lane bound: a lane-4 word delay two cycles longer
     |}]
 ;;
 
-let%expect_test "a producer that does not realign is caught by REQ-021 and by §0.5's closure" =
+let%expect_test "a producer that does not realign is caught by §0.5's output offset (REQ-021)" =
   (* A 14-octet stripping stage (REQ-021: Ethernet strips 14) whose first
-     output octet lands at byte position 4 instead of 0. Two things follow and
-     both are reported: the output stream is not word-aligned at its producer,
-     and (L + h) is no longer a multiple of 8, so the word delay does not
-     exist. Before WO-0012 [word_cycles] truncated that quotient and printed a
-     plausible number for a design that cannot exist (requirements.md §0.5). *)
+     output octet lands at byte position 4 instead of 0. It declares the output
+     offsets its spec §7 pins — [[0]], the default, because it inserts nothing —
+     and its observed q of 4 is outside that set. At a module declaring [[0]]
+     that report IS REQ-021's producer-side alignment failing; §0.5's q
+     paragraph is why the two are one check and not two.
+
+     What this case also shows, and could not before q existed: the DERIVED
+     closure error is not a second, independent conviction here, and never was.
+     With h and q both computed from the trace,
+     (L + h − q) = 8·(⌊out(0)/8⌋ − ⌊in(0)/8⌋) identically — an arithmetic
+     identity, not a property of this stimulus — so the closure cannot fail on
+     any materialised trace, and before q it was the alignment condition
+     reported a second time in different words (that is why this block used to
+     print two errors for one defect). The live closure check is [word_cycles]
+     applied to figures a specification PINS, asserted directly below; that is
+     where the M07/M15 false refusal lived and where it is repaired. *)
   let ci = 3 in
   let co = 6 in
   let strip = 14 in
@@ -418,19 +429,149 @@ let%expect_test "a producer that does not realign is caught by REQ-021 and by §
   Octet_time.Latency.frame_in tagger input;
   Octet_time.Latency.frame_out tagger output;
   List.iter print_endline (Octet_time.Latency.errors tagger);
-  expect_int ~what:"word_cycles refuses (L + h) = 28" ~expected:(-1)
+  expect_int
+    ~what:"word_cycles at q = 0 refuses (L + h − q) = 28"
+    ~expected:(-1)
     (Option.value ~default:(-1) (Octet_time.word_cycles ~front_offset:14 14));
-  expect_int ~what:"errors reported" ~expected:2 (List.length (Octet_time.Latency.errors tagger));
+  expect_int ~what:"errors reported" ~expected:1 (List.length (Octet_time.Latency.errors tagger));
+  expect_int
+    ~what:"the observed word delay is still measured and reported"
+    ~expected:3
+    (Option.value ~default:(-1) (Octet_time.Latency.word_delay tagger));
   verdict tagger ~expect_clean:false;
   [%expect {|
-    frame 0: the first emitted octet has octet time 52, which is not byte position 0 of a word — the output stream is not word-aligned at its producer (REQ-021)
-    front offset 14: L = 14 gives (L + h) = 28, which is not a multiple of 8 — requirements.md §0.5 makes the word delay a whole number, so no conformant module has this pair
-    word_cycles refuses (L + h) = 28 = -1
-    errors reported = 2
+    frame 0: the frame's first octet at the output has octet time 52, i.e. byte position 4 of its word, which is not an output offset this module's spec §7 pins (declared: 0) — at a module that inserts nothing this is REQ-021's producer-side alignment failing; at one that inserts, q is (the octets inserted ahead of the frame) mod 8 and, like h, is a property of the module and the start lane and not a free choice (requirements.md §0.5)
+    word_cycles at q = 0 refuses (L + h − q) = 28 = -1
+    errors reported = 1
+    the observed word delay is still measured and reported = 3
     [eth-strip-misaligned] frames=1 octets=46 latency=CONSTANT per front offset (1 class)
-      h=14 L=14 word_delay=(undefined) frames=1 octets=46
-      ERROR: frame 0: the first emitted octet has octet time 52, which is not byte position 0 of a word — the output stream is not word-aligned at its producer (REQ-021)
-      ERROR: front offset 14: L = 14 gives (L + h) = 28, which is not a multiple of 8 — requirements.md §0.5 makes the word delay a whole number, so no conformant module has this pair
+      h=14 q=4 L=14 word_delay=3 <= ceiling 3 frames=1 octets=46
+      ERROR: frame 0: the frame's first octet at the output has octet time 52, i.e. byte position 4 of its word, which is not an output offset this module's spec §7 pins (declared: 0) — at a module that inserts nothing this is REQ-021's producer-side alignment failing; at one that inserts, q is (the octets inserted ahead of the frame) mod 8 and, like h, is a property of the module and the start lane and not a free choice (requirements.md §0.5)
+    VERDICT ok
+    |}]
+;;
+
+let%expect_test "§0.5's output offset: M07's and M15's pairs are MEASURED, not refused" =
+  (* The repair FINDING Q-1's consequence in this lane commissioned
+     (J-dv_lead-0180 §6, Open-question 2). Both traces are built from the two
+     specifications' own derivations and from no RTL: SPEC-M07 §7 has payload
+     octet k accepted at octet time 8C + k and leaving at 8C + 8 + 14 + k, so
+     L = 22 with h = 0, q = 14 mod 8 = 6 and ΔC = (22 + 0 − 6)/8 = 2;
+     SPEC-M15 §7 is the same at 20 octets, L = 28, q = 4, ΔC = 3. Keyed on h
+     alone this tagger returned None for both and printed "no conformant module
+     has this pair" — refusing two conformant designs in those words. *)
+  let case ~name ~insertion ~expected_l ~expected_q ~expected_delta =
+    let c = 5 in
+    let payload = 24 in
+    let input = Array.init payload (fun k -> (8 * c) + k) in
+    let output = Array.init payload (fun k -> (8 * c) + 8 + insertion + k) in
+    let tagger =
+      Octet_time.Latency.create
+        ~name
+        ~strip_octets:0
+        ~tail_octets:0
+        ~front_offsets:[ 0 ]
+        ~output_offsets:[ expected_q ]
+        ()
+    in
+    Octet_time.Latency.frame_in tagger input;
+    Octet_time.Latency.frame_out tagger output;
+    (match Octet_time.Latency.observed tagger with
+     | [ (o : Octet_time.Latency.observed) ] ->
+       expect_int ~what:(name ^ " h") ~expected:0 o.front_offset;
+       expect_int ~what:(name ^ " q") ~expected:expected_q o.output_offset
+     | [] | _ :: _ :: _ ->
+       print_endline (name ^ ": EXPECTED exactly one front-offset class");
+       incr failures);
+    expect_int
+      ~what:(name ^ " L")
+      ~expected:expected_l
+      (Option.value ~default:(-1) (Octet_time.Latency.constant tagger));
+    expect_int
+      ~what:(name ^ " word delay")
+      ~expected:expected_delta
+      (Option.value ~default:(-1) (Octet_time.Latency.word_delay tagger));
+    expect_int
+      ~what:(name ^ " errors")
+      ~expected:0
+      (List.length (Octet_time.Latency.errors tagger));
+    tagger
+  in
+  let m07 = case ~name:"M07" ~insertion:14 ~expected_l:22 ~expected_q:6 ~expected_delta:2 in
+  let _m15 = case ~name:"M15" ~insertion:20 ~expected_l:28 ~expected_q:4 ~expected_delta:3 in
+  (* The refusal that is removed, and the two that are NOT. A repair that made
+     the conversion accept everything would be worse than the defect it cures,
+     so the retired default is shown still refusing M07's pair — which is
+     correct arithmetic about the pair (h = 0, L = 22) and wrong only when that
+     pair is read as a conformant module's whole story — and a triple that does
+     not close is shown still refused with q present. *)
+  expect_int
+    ~what:"the q-free default still refuses M07's (h = 0, L = 22)"
+    ~expected:(-1)
+    (Option.value ~default:(-1) (Octet_time.word_cycles ~front_offset:0 22));
+  expect_int
+    ~what:"with q = 6 it returns SPEC-M07 §7's own ΔC"
+    ~expected:2
+    (Option.value ~default:(-1) (Octet_time.word_cycles ~output_offset:6 ~front_offset:0 22));
+  expect_int
+    ~what:"with q = 4 it returns SPEC-M15 §7's own ΔC"
+    ~expected:3
+    (Option.value ~default:(-1) (Octet_time.word_cycles ~output_offset:4 ~front_offset:0 28));
+  expect_int
+    ~what:"the closure still bites with q present: L = 23, h = 0, q = 6"
+    ~expected:(-1)
+    (Option.value ~default:(-1) (Octet_time.word_cycles ~output_offset:6 ~front_offset:0 23));
+  (* And the case §0.5 makes a SPECIFICATION defect rather than a module one: a
+     module that inserts fourteen octets and states no q. The tagger convicts
+     the declaration — not the design — and measures ΔC = 2 all the same,
+     because the word delay is a property of the trace. *)
+  let undeclared =
+    let c = 5 in
+    let payload = 24 in
+    let input = Array.init payload (fun k -> (8 * c) + k) in
+    let output = Array.init payload (fun k -> (8 * c) + 8 + 14 + k) in
+    let tagger =
+      Octet_time.Latency.create
+        ~name:"M07 with no q declared"
+        ~strip_octets:0
+        ~tail_octets:0
+        ~front_offsets:[ 0 ]
+        ()
+    in
+    Octet_time.Latency.frame_in tagger input;
+    Octet_time.Latency.frame_out tagger output;
+    tagger
+  in
+  List.iter print_endline (Octet_time.Latency.errors undeclared);
+  expect_int
+    ~what:"undeclared q: errors reported"
+    ~expected:1
+    (List.length (Octet_time.Latency.errors undeclared));
+  expect_int
+    ~what:"undeclared q: the word delay is measured anyway"
+    ~expected:2
+    (Option.value ~default:(-1) (Octet_time.Latency.word_delay undeclared));
+  verdict m07 ~expect_clean:true;
+  [%expect {|
+    M07 h = 0
+    M07 q = 6
+    M07 L = 22
+    M07 word delay = 2
+    M07 errors = 0
+    M15 h = 0
+    M15 q = 4
+    M15 L = 28
+    M15 word delay = 3
+    M15 errors = 0
+    the q-free default still refuses M07's (h = 0, L = 22) = -1
+    with q = 6 it returns SPEC-M07 §7's own ΔC = 2
+    with q = 4 it returns SPEC-M15 §7's own ΔC = 3
+    the closure still bites with q present: L = 23, h = 0, q = 6 = -1
+    frame 0: the frame's first octet at the output has octet time 62, i.e. byte position 6 of its word, which is not an output offset this module's spec §7 pins (declared: 0) — at a module that inserts nothing this is REQ-021's producer-side alignment failing; at one that inserts, q is (the octets inserted ahead of the frame) mod 8 and, like h, is a property of the module and the start lane and not a free choice (requirements.md §0.5)
+    undeclared q: errors reported = 1
+    undeclared q: the word delay is measured anyway = 2
+    [M07] frames=1 octets=24 latency=CONSTANT per front offset (1 class)
+      h=0 q=6 L=22 word_delay=2 frames=1 octets=24
     VERDICT ok
     |}]
 ;;

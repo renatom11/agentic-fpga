@@ -844,7 +844,8 @@ read to establish it.
      `C + m + 2`*, at lane = byte position (REQ-012, no rotation). So its output
      octet time is `8(C + 2 + ⌊j/8⌋) + (j mod 8) = 8C + 16 + j`.
    - **`L = 16` octet times, for every frame octet, of every frame, at every
-     length.** It *is* a constant — M04 passes §0.5's straddle test (`h ≡ 0`) and,
+     length.** It *is* a constant — M04 passes §0.5's straddle test (`h ≡ 0`
+     **— RE-PINNED, see the second closing note below**) and,
      having no late-decided output framing, its late-decision test as well — but
      it is **not the 8 that §7 pins**.
    - §7's 8 is the delay between **two events**: the acceptance handshake and the
@@ -879,6 +880,38 @@ read to establish it.
      output word carrying an octet **of the frame**, never to a word the module
      inserted ahead of it), which gives ΔC = 2 and L = 16 by the identity and
      agrees with the per-octet route. Both halves are closed.
+   - *Second closing note — the straddle citation re-pinned, 2026-08-11
+     (`J-dv_lead-0181`).* **The bullet above cites §0.5's straddle test in the
+     keying §0.5 has since retired, and the citation — not the verdict — is what
+     moves.** The test is now **(h − q) ≡ 0 (mod 8)** (requirements.md §0.5,
+     `C-RL-8`, countersigned `J-dv_lead-0180`), and the source this plan cites
+     was repaired at **`292596c`**: SPEC-M04 §7 now reads *"straddle,
+     **(h − q) ≡ 0 (mod 8)**, both terms 0 here because M04 removes nothing and
+     inserts a whole number of words"* (`J-architect_docs_lead-0042`, SPEC-M04
+     §13's row of the same date). **The verdict does not move and no figure in
+     this document does either**: q = 0 at M04 by two independent routes —
+     *positional*, §6.1 puts frame octet 0 at lane 0 of `C + 2`; *modular*, the
+     insertion is the seven preamble octets and the SFD, 8 mod 8 = 0 — measured
+     at `J-dv_lead-0180` §4, so (h − q) = (0 − 0) ≡ 0 and **M04 passes the
+     straddle test under both keyings**. `M04-J1`, `M04-J3` and `M04-J4` are
+     untouched, `L = 16`, `h = 0`, `ΔC = 2` and the event delay of 8 octet times
+     are untouched, and **no row is added, converted or re-statused**.
+     **The bullet above is the only site in this document that states the test
+     rather than evaluating it**, measured at this commit and reported with the
+     measurement's own reflexivity, per §0.1(i): a `grep` for the retired
+     conversion `(L + h)` over this file returns **one** hit and that hit is
+     **this note's own quotation of it**, so the count outside this note is
+     **zero**; a `grep` for `h ≡ 0` returns **two** lines, the bullet above and
+     this note, and the bullet is the only citation. A census run against a file
+     that now contains the census's own search string has to say so, or the next
+     reader re-runs it and reads a discrepancy where there is none. **One
+     label is corrected in the same act, because it is mine and it travelled**:
+     `J-dv_lead-0180` Open-question 2 and SPEC-M04 §13's 2026-08-11 row both
+     name this site *"`AP-xgmii_tx_64` §4.D"*. §4.D is this plan's **FCS**
+     family and contains no latency citation; the site is **§8 item 1's
+     derivation**, here. The content, not the label, is what identifies it —
+     `LH-0180-3` one turn further on, since a section label can be wrong at
+     authorship where a line number merely goes stale.
 2. **REQ-901 declares no divergence class at the M04 boundary**, and its own text
    forbids citing a class not listed there. Needed before any TX co-simulation
    result may be cited by a sign-off packet. **Route**: architect_docs_lead.
