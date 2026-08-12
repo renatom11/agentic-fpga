@@ -5269,3 +5269,62 @@ sal-framework.md. Volume arithmetic before this append: 250,546 + entry <
 - docs/reports/process-council/round-2/outsider.md
 - docs/reports/process-council/round-2/sal-framework.md
 - docs/reports/process-council/round-2/verdict.md
+
+## [J-orchestrator-0268] 2026-08-12T00:06Z | task:none | The one thing was done first: a blank adopter executed the adoption order for real and returned eighteen halts — the design transferred almost whole, the machinery was invented at one hundred percent, and the two acts that grant authority were absent from the handover by construction
+
+### Trigger
+
+The council's One Thing (round-2 verdict) executed BEFORE any editorial
+repair, as it instructs: a cold adopter — a fresh agent with no authorship of
+the document and a world containing ONLY the document as received — executed
+§6.2 literally in a clean repository. This entry lands the halt log VERBATIM
+at docs/reports/process-council/round-2/adoption-run-halt-log.md.
+
+### The measurement (the file is the record)
+
+**Eighteen halts: 3 STOPPED, 15 PROCEEDED-BY-IMPROVISATION.** The three
+STOPPED are structural, not editorial: HALT-01 (the shell named without any
+identifier — Steps 0, 2, 4 and half of 5 converted from adopt-and-verify to
+reconstruct-from-prose, the exact failure §6.0 predicts of prose-only export);
+HALT-14 (sponsor ratification — the one act nobody inside can perform has
+nobody outside to perform it in a solo cold boot, making the document's own
+Definition of Done formally unsatisfiable there, "which the document, to its
+credit, would call the honest result"); HALT-16 (start-the-work, blocked by
+the open gate per §1.7's own rule). The fifteen improvisations are the
+council's finding 4 made quantitative: every concrete carrier — entry syntax,
+trailer keys, marker names, path layouts, table syntax, rule numbers, one
+threshold the text calls "stated" but never states — was invented. The
+adopter's sentence for the hazard: "My machinery enforces *a* version of the
+rules; nothing can show it enforces *their* version." The run also surfaced
+one internal posture contradiction the three reviewers and five advisors all
+missed (C-09 stamped [MC] against C-67's "No script anywhere") and reproduced
+the §6.2-vs-§1.7 ordering contradiction live — the improvised cure being a
+baseline exemption the source itself forbids. Definition-of-Done evaluation:
+2 MET, 2 PARTIAL, 1 MET-with-deviation; self-test 13/13 green from a clean
+clone; and by the document's own falsifiable bar the claim "we adopted it"
+may not be made. The replicability verdict, quoted: design "yes, to a
+striking degree"; machinery "no: roughly one hundred percent of the
+executable layer is my invention, constrained but never determined by the
+prose."
+
+### Plan of record (mine)
+
+The revision work order is now complete evidence, not testimony: the four
+verdict tiers PLUS the eighteen halts, each an attempt that bounced, cited by
+identifier — the one evidence form the document itself teaches. The architect
+revision round dispatches next with both artifacts; round 3 convenes on the
+revised document under the same Sal-first topology. The adopter's working
+tree (15 commits, 11 through its reconstructed gate under seat identities,
+live-fire bounce evidence) stays in the session scratchpad as the run's
+substrate; the halt log is the committed record.
+
+### Verification
+
+Halt log copied byte-for-byte from the adopter's world (22,372 bytes);
+nothing was written outside the adopter's directory during the run; the
+repository tree carried no other changes at landing. Volume arithmetic
+before this append: 255,565 + entry vs 262,144 — measured at authoring; this
+entry lands in the volume its arithmetic permits.
+
+### Files-in-this-commit
+- docs/reports/process-council/round-2/adoption-run-halt-log.md
