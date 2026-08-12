@@ -133,7 +133,7 @@ let preamble_word =
        if k = 0
        then of_int ~width:8 start_char, vdd
        else if k = 7
-       then of_int ~width:8 sfd_char, gnd
+       then of_int ~width:8 sfd_char, vdd
        else of_int ~width:8 preamble_filler, gnd))
 ;;
 
