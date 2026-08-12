@@ -1549,3 +1549,68 @@ about ten minutes, mine.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0297] 2026-08-12T18:52Z | task:none | The lifecycle story is rewritten from the record: thirty-nine beats that happened, not twenty-eight that could have - the blocked first gate, the refused spec, the surviving mutant two blind seats pointed at, the sign-off that failed twice
+
+### Trigger
+
+Sponsor verdict on the beat script: structure and animation now good, but the
+28 steps "are horrible, feel like an AI wrote it, and dont actually give
+anything insightful... This is supposed to be a demonstration of super
+impressive capability." Direction: redo the steps as a sufficient project,
+reference what this NIC program actually did, and let the count grow — 28
+feels short against how much really happens.
+
+### The correction, understood
+
+The old script narrated the framework's mechanics in the abstract — "workers
+build in parallel under their leads" — which is documentation, not a story.
+The record itself is the story, and it is more impressive than anything
+invented: this program's own arc supplied every beat that matters. The rewrite
+is 39 beats, 225 timeline seconds, in six phases, and the events are real:
+
+- The G0 arc: the auditor put the ORGANIZATION on trial before any hardware,
+  and its CRITICAL finding blocked the first gate until re-verified. The gate
+  chip now carries a "G0" label from that beat on.
+- The spec arc: twenty module contracts before any code; a hundred-plus
+  numbered requirements; the testability review that asks one question of
+  every row (can a test fail this?); the spec REFUSED with sixteen defects
+  before the sponsor froze it. New beat texture: a requirement number is an
+  address, so a verdict traces back to the braindump sentence that asked.
+- The build arc: paired packets cut at the same moment; the bench writer's
+  packet deliberately omitting the RTL; the attack plan as rows-of-ways-to-be-
+  wrong before any test exists; the gate refusing the ORCHESTRATOR's own
+  commit (a rename declared as one touch where the rule counts two — my real
+  conviction, generalized); the two-run byte-determinism check; the interface
+  dispute settled by written decision record; the abort-state finding pinned
+  as a permanent test; co-simulation against the sponsor-supplied reference
+  implementation — agreement with a stranger, not self-consistency.
+- The proving arc, the crown of the real program: predictions sealed BEFORE
+  defects exist including the predicted MISSES; thirteen sabotages planted
+  blind; twelve kills; and the survivor — with the seal predicting a miss in
+  exactly the region the blind saboteur chose, two independent seats
+  triangulating one real coverage gap. Then the gap closed, the survivor
+  re-run and killed, the copy burned.
+- The gate arc: the fourteen-criteria sign-off that FAILS round one — the
+  chip now shows FAIL in red before PASS, mirroring the real M03 sign-off's
+  two honest failed rounds — then the harvest, the four signatures each
+  citing a journal entry, the sponsor last, and the zoom-out: that was ONE
+  module of twenty, the next pair already cut.
+
+Also landed: an Attack plans chip in the verification group with its own
+click card (coverage means rows discharged, not lines executed); sign-off and
+gate stamps moved to timeline-driven labels so they can change state; page
+subtitle and footer rewritten — the footer now says plainly that the run is
+modelled on the real program this site documents and that the named events
+happened. The harness now also walks all 39 beats and asserts the label
+sequences (ISSUED-BOUNCED-ACCEPTED-ISSUED, FAIL-PASS) besides pressing play.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
