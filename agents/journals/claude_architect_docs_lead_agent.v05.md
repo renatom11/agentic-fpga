@@ -3387,3 +3387,254 @@ separations that a replicator inherits as controls.
 
 ### Files-in-this-commit
 - docs/PROCESS.md
+
+## [J-architect_docs_lead-0054] 2026-08-12T03:12:46Z | task:none | The fifth edition, written from an outside grading with no council in front of it: provenance demoted out of running text into seventy annex pointers, a greppable sentinel put in front of every preserved false claim, the unmeasured surface given a derived seam — and the one debt the grading named still not built, on grounds and with a due date
+
+### Trigger
+
+Orchestrator dispatch, sponsor-directed, single-seat by the sponsor's own
+instruction quoted in the dispatch: *"Without going through a crazy multi agent
+process to make edits to it, what feedback can you incorporate from this? take
+it and turn around another version of the process.md file."* No work order; no
+council precedes this round; council rounds 4 and 5 are scheduled to audit the
+result afterwards. Precheck expectation HEAD = `1b684c7` on
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` — mandatory first reads.
+- `docs/reports/process-council/sponsor-report-card-2026-08-12.md` — the driving
+  input: thirteen graded dimensions, verbatim, with the orchestrator's two marked notes.
+- `docs/reports/process-council/round-3/cold-reader-A.md`, `…/cold-reader-B.md` —
+  the fourth edition's condition B.0.1, executed twice over.
+- `docs/reports/process-council/round-3/adoption-run-2-halt-log.md` — condition
+  B.0.2; 17 halts, 0 stopped; HALT-06 and HALT-12 read in full.
+- `docs/PROCESS.md` at `1b684c7` — read end to end (5,044 lines) before editing.
+- **Not read, deliberately**: `docs/reports/audit/PROCESS-claims-posture.md`.
+  Its `git diff --stat` was taken (162 insertions at `22c60fb`); no line of its
+  contents was opened. Ground: B.2 item 8 / B.10 refusal 3.
+
+### Reasoning
+
+The report card is a grading, not a verdict, and it carries no acceptance tests.
+That changes what a round written from it may claim. B.9's rows could record a
+test outcome; B.10's rows cannot, so each records **what changed and what would
+falsify the change**, and the judgement of whether the change was the right one
+is routed to B.0.3 rather than asserted here. This edition's largest exposure is
+structural and is stated in the document rather than left to be found: written
+single-seat, the seat that chose the repairs is the seat that judged them —
+§5.7's root class at the document level.
+
+**Conciseness (C+) — pointerization, never deletion.** The card names one
+recurrence ("the ledger fact recurs at four sites"); a sweep found seven facts
+at three or more sites. Every one was collapsed to a single canonical statement
+plus one-line pointers, and the canonical site is always the section that owns
+the fact rather than the one that quotes it most memorably. The round-3 fence
+was the binding constraint and it held mechanically, not by intention: §5 comes
+out at exactly its original line count with three passages touched (two
+sentinels, one pointer), and §3.9's scoring block is byte-identical over 92
+lines. Deleting a load-bearing statement to shorten the document would have
+traded a C+ for a regression in the two dimensions that scored A.
+
+**Human readability (B−) — the parenthetical was the wrong container, not the
+wrong content.** Both cold readers converged on the same shape: genealogy inside
+running text. The repair is a convention rather than a purge — the **annex
+pointer**, a backticked `[B.9·2]` — because the genealogy is load-bearing for
+the fork contract and for anyone auditing whether a change had a source. Seventy
+pointers were minted. Backticks are deliberate: they keep a pointer lexically
+distinct from a posture stamp, which is also bracketed. The four named passages
+were repaired in the cold readers' own terms: the opening leads with a
+declarative sentence; §1.1 and §1.5 now let the re-derived table lead with the
+disputed count demoted beneath (a reader cannot execute *disbelieve this
+sentence* from inside the sentence); §3.3 gets a three-line cast list before the
+placeholders are used; the minting blockquote's first token is `PROPOSAL`.
+
+**The seam (A−) — the cheapest mechanical form that is checkable.** Candidates
+were a per-section marker and an index column. I took the index column because
+it is derived by one printed command rather than asserted per paragraph, and
+because it reuses the navigation aid a reader is already in. The measure is the
+count of posture-row citations inside each heading's span; `· 0` marks a section
+wholly outside the spine. Its two limits are stated where it is declared — it
+counts citations rather than claims, and it cannot see unmeasured text sitting
+beside a measured sentence — so only the zero cells carry a complete statement.
+An over-claimed seam would have been worse than none.
+
+**Retrieval safety (C) — the marker has to travel with the text.** One uniform
+token, `SUPERSEDED — historical record, not current law:`, immediately before
+every preserved claim this document no longer asserts, so that any retrieval
+fragment containing the false sentence contains the marker by construction
+rather than by layout. Two things had to be got right: the census is stated
+where the convention is declared and is re-derivable by one `grep -c`; and the
+token is **never broken across a line**. The re-wrap pass split it on first
+application and the census fell from 50 to 30 — a marker split by a line break
+is a marker a grep does not find, which is the whole of what it was for. That is
+now a stated rule of the convention.
+
+**Adoptability (B+) — the schedule rows move, the grade is not argued with.**
+The card's "zero of re-test" cell predates run two by hours. I updated B.0 from
+`OPEN — CONDITION` to `EXECUTED-WITH-ANCHORS` and left the grade alone: a
+document that answers its own grading is a document grading itself. §6.2 now
+carries both runs in one table, and the honest reading of 18/3 → 17/0 is stated
+against the temptation to read a flat halt count as failure or a zero stop count
+as success: *the order has stopped being unexecutable and has not yet become
+determinate.*
+
+**HALT-06 — adopting the run's invention rather than inventing my own.** The
+contradiction is real and survives the reorder: the text brands a recorded
+baseline forbidden while prescribing no mechanism that is not one. Run two built
+the missing piece and argued it was the *loud* baseline the text demands. I
+adopted its form and credited it, because a mechanism proven under live
+execution beats one drafted at a desk, and because the run is entitled to
+authorship of what it invented. What the adoption adds is the general property
+the run could not state for itself: **a baseline is quiet when only the tool
+that reads it knows it exists, and loud when the gate record, the audit and
+every run of the re-check say so** — which is what an adopter needs if they
+build a different resolution.
+
+**HALT-12 — a cost class, not an anecdote.** The first live fire found the
+adopter's own machinery broken. §6.2 budgeted the platform and the scripts and
+never budgeted this. The repair route already exists — the amendment procedure
+authored at act 1d and bound at Step 4 — so the addition is one budget line plus
+the reason the omission was dangerous: an order that treats its own first
+failure as an accident invites a bypass of the gate just installed, on the day
+the adopter is least able to judge whether that is safe.
+
+**The debt (B+) — restated, quoted, dated, and still not built.** Building the
+drift check means landing a test in one of two repositories during a round
+commissioned for a document revision. I will not quietly widen a revision into
+an engineering round; that is a reason and not an excuse, and it is the third
+consecutive edition to say so, which is exactly the pattern the card scored. The
+strongest honest act available was to put the grading's own sentence, unedited,
+in the ledger row it convicts, beside the hazard this seat had already filed
+against itself — a named debt can substitute for the repair, and converting
+naming into scheduling moves the substitution one level up rather than removing
+it — and to give the item its first due date.
+
+**Temperature (A, "occasionally tips into self-parody").** Three flourishes
+quieted, each one restating a point the preceding sentence already carried.
+Content, stamps and pointers in those passages are intact; only temperature
+moved. I stopped at three: the aphoristic register is what makes the failure
+museum transfer, and sanding it flat would cost the dimension that scored A to
+buy a comment on it.
+
+**Mid-round sibling event.** Three sibling landings intervened (`232f90f`,
+`144c1fb`, `22c60fb`). The inward half of §4.2 was executed rather than assumed,
+and one of the three moved the posture list — the artifact every stamp here
+cites and the one this seat refuses to open. The resolution is the one the
+document's own rules give: state the date of the refusal, not a claim about the
+contents. §1.1's row and B.2 item 8 now say the *"owed"* cells are true as this
+seat last read the record and may be stale by one landing, and name the party
+who can close it.
+
+### Actions
+
+Edited `docs/PROCESS.md` only, in ten asserted passes plus two wrap passes
+(every replacement required to match exactly once, so a silent partial edit
+aborts):
+
+1. Head rewritten: declarative first sentence, provenance demoted, edition
+   anchor → **fifth edition · 2026-08-12**, basis = the report card's committed
+   path, sibling landings recorded.
+2. Two new dialect entries: the **superseded-text sentinel** (with census and
+   the no-line-break rule) and the **annex pointer**.
+3. Boundary block rewritten to point at the seam instead of declaring there is none.
+4. 70 annex pointers minted; genealogy parentheticals removed from running text.
+5. 47 margin sites prefixed with the sentinel.
+6. Dedupe: seven recurring facts collapsed to one canonical site plus pointers.
+7. Targeted repairs: §1.1 and §1.5 table-leads-count-demoted; §3.3 cast list and
+   opening line; `PROPOSAL` first token; §2.6 duplicate-id note moved to ride
+   the table; *seeded* → *seeding* at B.1; Annex-C pointer at the head of Annex B.
+8. §6.2: two-run table, the pair's limits, the cost budget, and the founding
+   declaration adopted from run two.
+9. Annex sub-items promoted to real headings — `A.1`–`A.9`, `B.1`–`B.10`,
+   `C.1`–`C.4` — and the index re-derived with the seam column.
+10. Annexes: B.0 → executed with anchors + new condition B.0.3; B.1 rows; B.2
+    item 9 restated with the grading quoted; B.6 anchors; B.9 item 1's
+    acceptance test recorded PASSED; **B.10** written (17 items, 6 refusals).
+
+Ran no git write command of any kind. Did not stage, commit or push.
+
+### Evidence
+
+Reproducible from a checkout at this commit.
+
+- **Index is byte-exact against its own printed command** (the discipline the
+  fourth edition adopted, re-verified after every pass):
+  the awk one-liner printed beside the subsection index in `docs/PROCESS.md`
+  (fence-tracking heading scan, with a per-section count of `C-nn` citations)
+  → **86 lines**, identical to the list rendered in the document (verified by
+  `diff` against the rendered block; zero differences).
+- **Heading count**: 62 → **86** (+24: `A.1`–`A.9` = 10 rows incl. A.6b,
+  `B.1`–`B.10` = 10, `C.1`–`C.4` = 4).
+- **Sentinel census**: `grep -c 'SUPERSEDED — historical record, not current law:' docs/PROCESS.md`
+  → **50**; `grep -c 'SUPERSEDED' docs/PROCESS.md` → **50** (no fragment lines,
+  i.e. the token is unbroken everywhere). 50 = **47 margin sites** + 3
+  declaration/record occurrences (two in *The dialect*, one in B.10 item 5) —
+  the arithmetic stated in the document itself.
+- **Pointer census**: grep the backticked annex-pointer form (regex
+  `\[B\.[0-9]*·[0-9]*\]` between backticks) over `docs/PROCESS.md`
+  → **70** (52 → B.8/B.9, 16 → B.10, 2 → B.2).
+- **Round-3 fence held, mechanically**: §5 is 275 lines before and after, with
+  28 changed lines across three passages (two sentinels, one pointer); §3.9's
+  scoring block (`The rules that transfer:` → `*Three anonymized patterns`) is
+  **byte-identical**, 92 lines.
+- **Marked-reference figure re-derived by the method its carrier claims**:
+  `git ls-remote --refs origin | awk '$2 ~ /refs\/heads\/mut\//' | wc -l` → **86**,
+  unchanged; `git branch -r --merged HEAD | grep -c 'mut/'` → **0**. The
+  campaign/probe split is marked in the text as quoted, not re-derived.
+- **Fences balanced**: 22 fence lines, parity 0 at EOF.
+- **§4.2 inward check**: `git merge-base --is-ancestor 1b684c7 HEAD` → true;
+  `git log --oneline 1b684c7..HEAD -- docs/PROCESS.md agents/journals/claude_architect_docs_lead_agent.v05.md`
+  → **0 commits**. Zero intersection with this round's paths.
+- **Posture list**: `git diff --stat 1b684c7..HEAD -- docs/reports/audit/PROCESS-claims-posture.md`
+  → 162 insertions at `22c60fb`. **File statistics only; no content read.**
+- **Size**: `wc -l -c docs/PROCESS.md` → **5,446 lines / 384,659 bytes**, from
+  5,044 / 351,443. **Delta: +402 lines, +33,216 bytes.** Net growth despite the
+  dedupe pass, and the composition is worth stating: B.10 and the expanded
+  §6.2/B.0 are roughly 300 of those lines, the seam column and 24 new headings
+  another ~50, the sentinels ~40; the dedupe returned roughly 60 lines. **This
+  edition did not make the document shorter and does not claim to have.**
+
+### Outcome
+
+Definition of done for a sponsor-directed doc round: **met**, with two items
+declined on stated grounds and recorded in the document.
+
+All fourteen dispatch items dispositioned: 1–6 and 8–14 **applied**; item 7 (the
+drift check) **restated with its grading quoted and a due date, not built** —
+the refusal is recorded in the document at B.10 refusal 2 and B.2 item 9, not
+only here. Two further refusals recorded in B.10: the core/memoir separation
+(NOT ATTEMPTED for a second edition running, ground: a single seat should not
+take a structural decision about what the document *is*), and the posture list
+(NOT TOUCHED for a fourth edition running).
+
+Handoff: `docs/PROCESS.md` back to the orchestrator for verification and commit.
+Nothing staged. The council rounds that audit this edition are written into the
+document as dated condition **B.0.3**, owned by a council and commissioned by
+the sponsor via the orchestrator, due before any sixth edition.
+
+### Open-questions
+
+1. **The posture list moved under this round and this seat did not read it.**
+   Whether `22c60fb` discharges, partly discharges or leaves untouched the
+   re-measurement owed at B.2 item 8 is the auditor's to state. Until it does,
+   every *"owed"* cell in this document about that artifact carries a stated
+   one-landing staleness risk. Routed, not adjudicated.
+2. **This edition is its own weakest exhibit, again and for a new reason.** The
+   fourth edition's was that its only reviewers were the parties it describes;
+   this one's is that it had no reviewers at all before landing. B.0.3 is the
+   scheduled repair and it is not this seat's to perform.
+3. **The seam is coarse and says so.** A section reading `· 7` may be seven
+   measured sentences in four hundred unmeasured ones. The complete instrument
+   is the auditor's re-measurement, not a better column.
+4. **Three of B.10's seventeen items rest on cold-reader judgement rather than
+   on a measurement** — which passages were "most needing repair" is a reader's
+   verdict, and two readers agreeing is two data points. The demotions they
+   produced are reversible and the superseded text is preserved under the
+   sentinel, so a council that disagrees can restore rather than reconstruct.
+5. **B.9 refusal 1's endorsement is now overdue rather than open.** The
+   core/memoir separation was named as the fifth edition's act and is not it.
+   The two dimensions it would move most are the two that scored lowest.
+
+### Files-in-this-commit
+- docs/PROCESS.md
