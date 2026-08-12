@@ -478,11 +478,11 @@ const $ = id => document.getElementById(id);
 const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 const BEATS = [
- {ph:'ADOPT', t:0, d:5, bt:'An empty project, an absurd goal',
-  ax:'The goal: a 10-gigabit Ethernet network card — wire to parsed frames — designed, built and proven by AI agents, with one human setting direction. Agents forget everything between sessions, so nothing can live in anyone’s head. Before any engineering, an organization has to exist as files.',
+ {ph:'ADOPT', t:0, d:5, bt:'A 10G Ethernet subsystem built by agents',
+  ax:'The design target is a 10 Gigabit Ethernet subsystem: an XGMII MAC with ARP, IPv4 and UDP paths, specified, implemented and verified by AI agents under one human sponsor. The agents keep no state between sessions, so no design context survives in an agent\'s memory. The organization has to exist as files in the repository before any RTL is written.',
   acts:[]},
- {ph:'ADOPT', t:5, d:7, bt:'The machinery arrives before the agents do',
-  ax:'The framework is adopted whole: a commit gate that refuses rule-breaking changes, a checker that re-verifies all history on every push, a self-test that attacks the rules to prove they still hold, and empty templates for everything else. None of it is built here. Rebuilt machinery drifts; adopted machinery keeps its guarantees.',
+ {ph:'ADOPT', t:5, d:7, bt:'The framework is adopted before project detail',
+  ax:'The framework arrives whole: a commit script that refuses rule-breaking changes, a CI job that re-verifies the full commit history on every push, a self-test that constructs a violating commit for each rule, and empty templates for everything else. None of it is written for this project. It is adopted rather than rebuilt, so the enforcement cannot drift from the version that was tested.',
   acts:[{k:'tok',f:'@left',to:'rp-scripts',kind:'kit',s:.05,e:.5},
         {k:'born',w:'g-shell',s:.3},
         {k:'born',w:'rp-const',s:.35},{k:'born',w:'rp-scripts',s:.4},
@@ -491,32 +491,32 @@ const BEATS = [
         {k:'born',w:'rp-gate',s:.7},{k:'born',w:'rp-ci',s:.74},
         {k:'born',w:'g-seats',s:.78},
         {k:'sweep',s:.8,e:1}]},
- {ph:'ADOPT', t:12, d:6, bt:'The founding agent writes its own cage',
-  ax:'A first session opens and fills in the template: which seats exist, which files each may touch, what must go to the human and when. Every rule it writes will bind it. From the very next commit, the gate it just configured starts refusing it like anyone else.',
+ {ph:'ADOPT', t:12, d:6, bt:'The founding agent fills in the constitution',
+  ax:'One session opens the template and completes it: which seats exist, the write scope of each, and the thresholds at which a problem goes to the sponsor. That session becomes the orchestrator seat. The rules it wrote bind it too, and from its next commit onward the commit script it configured checks its work like any other seat\'s.',
   acts:[{k:'spawn',w:'ag-orch',s:.05},
         {k:'tok',f:'ag-orch',to:'rp-const',kind:'write',s:.2,e:.6,
          ent:'Constitution instantiated: seats, write scopes, escalation thresholds'},
         {k:'flash',w:'rp-const',s:.6,e:.85},
         {k:'tok',f:'ag-orch',to:'rp-seat-spec',kind:'write',s:.55,e:.92,
          ent:'Charters written for every seat; journals opened empty'}]},
- {ph:'ADOPT', t:18, d:5, bt:'The one thing agents cannot do',
-  ax:'The founding agent granted its own permissions, and no organization can legitimize itself. The human reads the rules and ratifies them. It is the shortest step on this page and nothing that follows is valid without it.',
+ {ph:'ADOPT', t:18, d:5, bt:'The sponsor ratifies the constitution',
+  ax:'The founding agent wrote its own permissions into the constitution, so the organization that produced it cannot accept it. The sponsor reads the rules, the seats and the write scopes, and signs. No work that follows is valid without that signature.',
   acts:[{k:'tok',f:'rp-const',to:'ag-sponsor',kind:'read',s:.05,e:.4},
         {k:'tok',f:'ag-sponsor',to:'rp-const',kind:'gold',s:.5,e:.82},
         {k:'stamp',w:'st-rat',s:.85},{k:'flash',w:'rp-const',s:.85,e:1}]},
- {ph:'COMMISSION', t:23, d:6, bt:'The braindump',
-  ax:'The human says what they want, messily: a NIC that can parse a market data feed at wire rate, latency over area, these standards, this part. It lands in the repository verbatim. Two months from now, when someone asks why requirement 84 exists, the answer is a sentence in this file.',
+ {ph:'COMMISSION', t:23, d:6, bt:'The sponsor\'s brief lands in the repository',
+  ax:'The sponsor states the intent in their own words: a UDP receive path fast enough to sit under a market-data feed handler, latency prioritised over area, and the standards the design must obey. The text is committed as written. When someone later asks why REQ-004 fixes 10 000 consecutive minimum-length frames as the stress case, the answer is a sentence in this file.',
   acts:[{k:'born',w:'g-inputs',s:.3},
         {k:'tok',f:'ag-sponsor',to:'rp-brief',kind:'gold',s:.1,e:.55},
         {k:'born',w:'rp-brief',s:.5},{k:'flash',w:'rp-brief',s:.55,e:.9}]},
- {ph:'COMMISSION', t:29, d:5, bt:'The homework arrives with it',
-  ax:'IEEE 802.3 clauses, an existing open-source Ethernet implementation to compare against, the FPGA part’s limits. The reference implementation matters most: it means the finished design can be graded against an independent second opinion, not against its own tests alone.',
+ {ph:'COMMISSION', t:29, d:5, bt:'Standards, a reference design and the binding limits',
+  ax:'The brief arrives with the material the project must build against: the IEEE 802.3 clauses that govern the MAC, and an open-source Verilog receive module vendored at a pinned upstream commit. The limits in force in Phase 1 are architectural: one 64-bit XGMII word per cycle, a pinned latency constant per module, and no PMA, PCS, serdes or 64b/66b logic. The FPGA part is deliberately not chosen yet.',
   acts:[{k:'tok',f:'ag-sponsor',to:'rp-refs',kind:'gold',s:.05,e:.4},
         {k:'born',w:'rp-refs',s:.35},
         {k:'tok',f:'ag-sponsor',to:'rp-cons',kind:'gold',s:.4,e:.72},
         {k:'born',w:'rp-cons',s:.68}]},
- {ph:'COMMISSION', t:34, d:7, bt:'Before hardware: the org audits itself',
-  ax:'The first thing put on trial is the organization. An auditor re-checks every founding commit and files a CRITICAL finding that blocks the first gate — which is the system working. The block is argued, repaired, re-verified, and only then signed. No hardware work was trusted to rules that had never caught anything.',
+ {ph:'COMMISSION', t:34, d:7, bt:'The organization is audited before any RTL',
+  ax:'The auditor puts the founding commits on trial and files a CRITICAL finding: the protocol\'s §3 contradicts its §6, so the auditor cannot execute the work-order lifecycle it is assigned. The finding blocks the founding gate. It is dispositioned by decision record, re-verified by the auditor, and the gate closes only then.',
   acts:[{k:'spawn',w:'ag-audit',s:.05},
         {k:'tok',f:'rp-const',to:'ag-audit',kind:'read',s:.15,e:.38},
         {k:'tok',f:'jr-orch',to:'ag-audit',kind:'read',s:.28,e:.5},
@@ -525,24 +525,24 @@ const BEATS = [
          ent:'Audit of the founding itself: one CRITICAL, gate blocked until re-verified'},
         {k:'flash',w:'rp-gates',s:.8,e:1},
         {k:'off',w:'ag-audit',s:.95}]},
- {ph:'SPECIFY', t:41, d:4, bt:'The specification lead is seated',
-  ax:'The orchestrator spawns the specification lead, which reads its charter and the braindump before anything else — it has no memory of any previous session, and the files are the only briefing there is.',
+ {ph:'SPECIFY', t:41, d:4, bt:'The specification lead is spawned and briefed',
+  ax:'The orchestrator spawns the specification lead; it is the only seat that may spawn another. The new session has no memory of any previous one, so its briefing is entirely files: its own charter, the sponsor\'s brief, the reference material, and the protocol that will grade every commit it makes.',
   acts:[{k:'spawn',w:'ag-spec',s:.15},
         {k:'tok',f:'rp-seat-spec',to:'ag-spec',kind:'read',s:.35,e:.8}]},
- {ph:'SPECIFY', t:45, d:6, bt:'Questions before prose',
-  ax:'Where the braindump is ambiguous, the lead asks instead of guessing: does latency mean first-byte-in to parsed-output, or wire to wire? Is the feed format fixed? Each answer becomes part of the record. A wrong guess here would be built into hardware and found in a lab.',
+ {ph:'SPECIFY', t:45, d:6, bt:'Ambiguities go back to the sponsor',
+  ax:'Where the brief is ambiguous the lead asks instead of assuming. The receive latency budget is one such question: the sponsor delegates the number, and the specification pins the measurement points — the XGMII word carrying the start character to the first word of that frame\'s UDP payload, at most 24 cycles. The answer is committed beside the question that prompted it.',
   acts:[{k:'tok',f:'rp-brief',to:'ag-spec',kind:'read',s:.03,e:.28},
         {k:'tok',f:'rp-refs',to:'ag-spec',kind:'read',s:.12,e:.36},
         {k:'tok',f:'ag-spec',to:'ag-sponsor',kind:'direct',s:.4,e:.6},
         {k:'tok',f:'ag-sponsor',to:'ag-spec',kind:'direct',s:.62,e:.82}]},
- {ph:'SPECIFY', t:51, d:6, bt:'Twenty contracts before any code',
-  ax:'The design is cut into twenty module contracts — receiver, transmitter, checksums, parser, arbitration — each an interface promise another module can build against without seeing inside. The decomposition is itself reviewable: it is a document, and it will be attacked like one.',
+ {ph:'SPECIFY', t:51, d:6, bt:'Twenty module contracts define the decomposition',
+  ax:'The design is partitioned into twenty modules — XGMII receive and transmit, CRC-32, the ARP, IPv4 and UDP paths, arbitration, the top level — and each gets a written interface contract that a neighbouring module can be built against without reading its internals. The partition is a document like any other, so it is reviewed before anything is implemented.',
   acts:[{k:'born',w:'g-spec',s:.55},
         {k:'tok',f:'ag-spec',to:'rp-spec',kind:'write',s:.2,e:.7,
          ent:'Architecture: twenty module contracts, every interface named'},
         {k:'born',w:'rp-spec',s:.65},{k:'flash',w:'rp-spec',s:.7,e:1}]},
- {ph:'SPECIFY', t:57, d:6, bt:'A hundred and ten numbered requirements',
-  ax:'Workers draft requirement batches under the lead, one packet each, then are gone. Every requirement gets a number because a number is an address: a test can point at REQ-084 and a verdict can be traced back through it to the braindump sentence it came from.',
+ {ph:'SPECIFY', t:57, d:6, bt:'Requirements are numbered so tests can cite them',
+  ax:'The lead writes the requirements in batches, a hundred and ten of them, each carrying a permanent number. The number is an address: REQ-004 is the line-rate invariant, 10 000 consecutive 64-octet frames at start-to-start spacings alternating 10 and 11 cycles. A test cites REQ-004, and the verdict on that test traces through the requirement to the sentence in the brief that asked for it.',
   acts:[{k:'spawn',w:'ag-ws1',s:.05},{k:'spawn',w:'ag-ws2',s:.1},
         {k:'tok',f:'ag-ws1',to:'rp-reqs',kind:'write',s:.25,e:.55,
          ent:'Requirements batch: framing and error handling, numbered'},
@@ -551,8 +551,8 @@ const BEATS = [
         {k:'born',w:'rp-reqs',s:.5},
         {k:'tok',f:'rp-reqs',to:'ag-spec',kind:'read',s:.66,e:.86},
         {k:'off',w:'ag-ws1',s:.9},{k:'off',w:'ag-ws2',s:.94}]},
- {ph:'SPECIFY', t:63, d:6, bt:'Can a test fail this?',
-  ax:'The verification lead is seated early, before anything is built, to put one question to every requirement: could a test fail this as written? A hundred-plus rows get a verdict each. The ones that cannot fail — aspirations, vagueness — are rewritten now, while rewriting is cheap.',
+ {ph:'SPECIFY', t:63, d:6, bt:'Every requirement is checked for testability',
+  ax:'The verification lead is seated before any implementation exists and asks one question of every row: can a test fail this as written. The review returns sixteen diffs; a second work order applies them and a re-review closes all sixteen. Rows no test can fail are repaired while the cost of repair is a document edit.',
   acts:[{k:'spawn',w:'ag-verif',s:.05},
         {k:'tok',f:'rp-reqs',to:'ag-verif',kind:'read',s:.2,e:.45},
         {k:'born',w:'g-trail',s:.5},{k:'born',w:'rp-find',s:.52},
@@ -562,42 +562,42 @@ const BEATS = [
         {k:'tok',f:'ag-spec',to:'rp-reqs',kind:'write',s:.86,e:1,
          ent:'Untestable requirements rewritten in place; each disposition answered'},
         {k:'flash',w:'rp-reqs',s:.9,e:1}]},
- {ph:'SPECIFY', t:69, d:6, bt:'The spec is refused. Twice.',
-  ax:'Draft batches come back with defect lists — an ambiguous edge case here, a contradiction between two clauses there — and the refusals are recorded, not smoothed over. A specification that has survived attack is worth freezing. One that has only been read is not.',
+ {ph:'SPECIFY', t:69, d:6, bt:'Batches are bounced before they freeze',
+  ax:'A specification freezes only with a green interface-check run at the freeze SHA and the verification lead\'s testability countersignature. Batch D does not get one on first reading — it is withheld, and issued only after a re-review — and batch F freezes only after a defect is repaired in a follow-up work order. Both rounds stay in the gate record.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-spec',kind:'write',s:.05,e:.35,
          ent:'Spec batch refused: sixteen defects, each with the text that must change'},
         {k:'flash',w:'rp-spec',s:.3,e:.55},
         {k:'tok',f:'rp-spec',to:'ag-spec',kind:'read',s:.4,e:.6},
         {k:'tok',f:'ag-spec',to:'rp-spec',kind:'write',s:.65,e:.92,
          ent:'All sixteen applied; the refused clauses re-reviewed one by one'}]},
- {ph:'SPECIFY', t:75, d:5, bt:'The freeze',
-  ax:'The human signs the specification. Twenty contracts are now frozen: from here on, the spec changes only by formal amendment with a decision record, because a spec that can drift quietly cannot anchor anything. Everything built or tested from now on cites a frozen line.',
+ {ph:'SPECIFY', t:75, d:5, bt:'The specification is frozen at a sponsor gate',
+  ax:'The sponsor signs the spec-freeze gate with twenty of twenty specifications FROZEN and every countersignature in place. A frozen contract can then change only by amendment carried by a decision record. From this point every implementation and every test cites a frozen requirement line.',
   acts:[{k:'tok',f:'rp-spec',to:'ag-orch',kind:'read',s:.05,e:.3},
         {k:'tok',f:'ag-orch',to:'ag-sponsor',kind:'direct',s:.34,e:.58},
         {k:'tok',f:'ag-sponsor',to:'rp-spec',kind:'gold',s:.62,e:.85},
         {k:'stamp',w:'st-spec',s:.9}]},
- {ph:'BUILD & VERIFY', t:80, d:5, bt:'Two packets, cut at the same moment',
-  ax:'The orchestrator cuts the receiver’s work orders in a pair: build it, and independently, test it. Each packet names its spec sections, its deliverables and its boundaries. The two assignees will not coordinate; the frozen spec is their only shared reference, and that is deliberate.',
+ {ph:'BUILD & VERIFY', t:80, d:5, bt:'One module, two independent work orders',
+  ax:'The orchestrator issues the receive module\'s work as a pair: one order to implement it, one to verify it. Each order names its spec sections, its deliverables and its boundaries. The two assignees do not coordinate, and the frozen specification is their only shared reference.',
   acts:[{k:'tok',f:'rp-spec',to:'ag-orch',kind:'read',s:.02,e:.25},
         {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.3,e:.7,
          ent:'WO-001 issued: build the receiver to its frozen contract'},
         {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.38,e:.78,
          ent:'WO-002 issued: attack the receiver’s contract, independently'},
         {k:'born',w:'rp-wo',s:.65},{k:'flash',w:'rp-wo',s:.7,e:1}]},
- {ph:'BUILD & VERIFY', t:85, d:5, bt:'The wall between building and grading',
-  ax:'The implementation lead picks up the build packet; verification already holds the other. From this point the two lines share nothing but the spec. The seat that builds a thing never writes the tests that grade it — the one rule this entire page exists to demonstrate.',
+ {ph:'BUILD & VERIFY', t:85, d:5, bt:'Implementation and verification hold different paths',
+  ax:'The two lines share the frozen specification and nothing else. The implementation lead\'s write scope is libs/**; the verification lead\'s is test/**, and the commit script\'s path-isolation check refuses any staged path outside the committing seat\'s scope. The seat that implements a module cannot write the tests that grade it.',
   acts:[{k:'spawn',w:'ag-impl',s:.08},
         {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.3,e:.68},
         {k:'tok',f:'rp-wo',to:'ag-verif',kind:'read',s:.3,e:.68}]},
- {ph:'BUILD & VERIFY', t:90, d:6, bt:'The attack plan',
-  ax:'Before writing a single test, verification enumerates attacks: rows and rows of specific ways the receiver could be wrong — a truncated frame, a corrupted checksum that still matches, backpressure at the worst cycle — each with the observation that would expose it. Tests exist to discharge rows. Coverage means rows discharged, not lines executed.',
+ {ph:'BUILD & VERIFY', t:90, d:6, bt:'The attack plan enumerates ways to be wrong',
+  ax:'Before any testbench is written, verification enumerates the ways the receive module could be wrong: a terminate character in each of the eight lanes, a start in lane 4 while the previous frame is still draining, an error character inside a frame, a corrupted frame whose FCS still checks. Each row names the observation that would expose the fault. No code or functional coverage is collected; the measure is rows discharged.',
   acts:[{k:'born',w:'g-ver',s:.35},
         {k:'tok',f:'rp-spec',to:'ag-verif',kind:'read',s:.05,e:.3},
         {k:'tok',f:'ag-verif',to:'rp-ap',kind:'write',s:.35,e:.75,
          ent:'Attack plan opened: rows for framing, corruption, timing, backpressure'},
         {k:'born',w:'rp-ap',s:.7},{k:'flash',w:'rp-ap',s:.75,e:1}]},
- {ph:'BUILD & VERIFY', t:96, d:6, bt:'The bench writer never sees the code',
-  ax:'A worker builds the benches from the spec and the attack plan. Its packet deliberately omits the RTL — it could not test the implementation against itself if it tried. Meanwhile the lead builds an independent reference model of correct behaviour from the same frozen text.',
+ {ph:'BUILD & VERIFY', t:96, d:6, bt:'The testbench worker is not given the RTL',
+  ax:'A worker writes the bench from the specification and the attack plan. Its packet omits the RTL by design, so the tests cannot be written to agree with the implementation. The verification lead builds its reference model from the same frozen text, and the protocol requires that model to agree with an external anchor before it may judge RTL.',
   acts:[{k:'spawn',w:'ag-wv1',s:.05},
         {k:'tok',f:'ag-verif',to:'rp-model',kind:'write',s:.2,e:.5,
          ent:'Reference model built from the spec alone'},
@@ -605,8 +605,8 @@ const BEATS = [
         {k:'tok',f:'ag-wv1',to:'rp-tb',kind:'write',s:.45,e:.8,
          ent:'Benches derived from attack rows; the packet contains no RTL'},
         {k:'born',w:'rp-tb',s:.75}]},
- {ph:'BUILD & VERIFY', t:102, d:7, bt:'The receiver takes shape',
-  ax:'Build workers work the packet in parallel: 64 bits of wire per cycle, frame boundaries found, checksums verified at line rate. Every landing carries its journal entry — trigger, reasoning, evidence — because the gate refuses work without one. The record stays complete under deadline pressure, which is exactly when diligence fails.',
+ {ph:'BUILD & VERIFY', t:102, d:7, bt:'The receive module is implemented',
+  ax:'The module is implemented as a 64-bit datapath, with frame delineation from the XGMII start and terminate characters at both start lanes and CRC-32 across the frame. The FCS is removed by where tkeep and tlast fall in a fixed-delay cut-through pipeline, never by holding octets back to the end of a frame. That is what makes the pinned latency constant and frame extraction compatible. Every commit carries its author\'s journal entry, and the commit script refuses one without it.',
   acts:[{k:'spawn',w:'ag-wi1',s:.03},{k:'spawn',w:'ag-wi2',s:.08},
         {k:'born',w:'g-prod',s:.3},
         {k:'tok',f:'ag-wi1',to:'rp-rtl',kind:'write',s:.2,e:.5,
@@ -616,17 +616,17 @@ const BEATS = [
          ent:'Checksum verification at line rate; every cited requirement quoted'},
         {k:'tok',f:'ag-wi1',to:'rp-rtl',kind:'write',s:.62,e:.9,
          ent:'Error propagation: corrupt frames marked, never silently dropped'}]},
- {ph:'BUILD & VERIFY', t:109, d:5, bt:'The gate has no rank',
-  ax:'A commit is refused — and it is the orchestrator’s own. It declared one file touched where the rule counts two. The most privileged seat in the organization is bounced by machinery it configured itself, which is the only kind of rule that means anything: one that binds its author.',
+ {ph:'BUILD & VERIFY', t:109, d:5, bt:'The commit script refuses the orchestrator',
+  ax:'A commit is refused, and it is the orchestrator\'s own. It staged a rename while its journal entry declared a single path; the set-equality check compares the declared file list against the staged set, and a rename stages two. The seat with the widest write scope is blocked by the script it configured, because the check reads the staged diff and the seat\'s identity does not enter it.',
   acts:[{k:'tok',f:'ag-orch',to:'rp-gate',kind:'refused',s:.15,e:.85}]},
- {ph:'BUILD & VERIFY', t:114, d:6, bt:'Even the build is on trial',
-  ax:'The server rebuilds the hardware description twice, in two separate processes, and the generated bytes must match exactly. Then it re-runs every rule over the entire history. Nondeterminism, an unpromoted snapshot, a rule broken years back — all fail the same wall. Nothing merges by being plausible.',
+ {ph:'BUILD & VERIFY', t:114, d:6, bt:'CI checks determinism and the full history',
+  ax:'The RTL is Hardcaml elaborated to Verilog, so CI generates it twice — the second run in a separate process from a scratch working directory — and requires the two trees to match byte for byte. The same step then appends one byte to a copy and confirms the comparator reddens, so an inert check cannot pass for a green one. A second workflow re-runs every protocol rule across the entire commit history, because an append-only guarantee cannot be re-checked incrementally.',
   acts:[{k:'flash',w:'rp-ci',s:.1,e:.5},
         {k:'sweep',s:.15,e:.6},
         {k:'flash',w:'rp-rtl',s:.55,e:.85},
         {k:'sweep',s:.62,e:.98}]},
- {ph:'BUILD & VERIFY', t:120, d:6, bt:'Bounced, with a numbered list',
-  ax:'A worker’s return falls short and the lead sends it back with six numbered defects. The next round answers them item by item, and both rounds stay in the packet forever. In this organization a bounce is not a failure; it is the review working at its designed pressure.',
+ {ph:'BUILD & VERIFY', t:120, d:6, bt:'The first bench packet is bounced',
+  ax:'The first receive-module bench returns with its eleven rows accepted on substance and three defects listed: an unread record field that will fail the build under warning 69, a second mechanical defect, and one coverage gap. Revision two is accepted, and that acceptance is then withdrawn — the lead re-reads what it had cleared on a hand scan and puts the packet back to BOUNCED.',
   acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.3,
          ent:'Return submitted for the checksum unit'},
         {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.32,e:.52},
@@ -634,97 +634,97 @@ const BEATS = [
          ent:'BOUNCED: six defects, each with the line and the spec clause it violates'},
         {k:'tok',f:'rp-wo',to:'ag-wi2',kind:'read',s:.78,e:.95},
         {k:'flash',w:'rp-wo',s:.5,e:.9}]},
- {ph:'BUILD & VERIFY', t:126, d:5, bt:'Round two closes the packet',
-  ax:'All six answered, the return is accepted, and the packet reaches its final state with its whole history readable: issued, returned, bounced, answered, accepted. Ask in a year why this unit handles padding the way it does, and the argument is still there.',
+ {ph:'BUILD & VERIFY', t:126, d:5, bt:'The sixth round closes the work order',
+  ax:'Later rounds find a bench driving every schedule backwards, then four more bench defects with zero convictions of the RTL. Round six adjudicates the outstanding experiment: the prediction is falsified, the defect is confirmed, and BUG-0001 is opened against the module. The packet reaches ACCEPT at round six with every round still readable inside it.',
   acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.35,
          ent:'Second return: all six defect items answered with evidence'},
         {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.38,e:.6},
         {k:'tok',f:'ag-impl',to:'rp-wo',kind:'write',s:.62,e:.9,
          ent:'ACCEPTED; the bounce and its answers preserved in the packet'},
         {k:'flash',w:'rp-wo',s:.85,e:1}]},
- {ph:'BUILD & VERIFY', t:131, d:6, bt:'Two leads, one seam, settled in writing',
-  ax:'Implementation and verification read the same interface clause differently: when the consumer stalls, who holds the data? Neither lead may decide alone — the seam belongs to the specification lead, who rules in writing with a decision record. The losing interpretation is preserved with the reasons it lost, so it cannot come back as a fresh idea.',
+ {ph:'BUILD & VERIFY', t:131, d:6, bt:'An interface question is settled by decision record',
+  ax:'A frozen interface leaves a question open: the header records carry valid and no ready, so a transmit-path module that must be able to refuse a frame has no acceptance event. The specification lead rules in writing — the header and the first payload word are offered together and held until that word is accepted — and the record keeps both rejected alternatives with the grounds they lost on.',
   acts:[{k:'tok',f:'ag-impl',to:'ag-spec',kind:'direct',s:.05,e:.28},
         {k:'tok',f:'ag-verif',to:'ag-spec',kind:'direct',s:.12,e:.35},
         {k:'tok',f:'ag-spec',to:'rp-dr',kind:'write',s:.45,e:.8,
          ent:'Decision record: stall semantics at the seam; two readings, one ruling, grounds preserved'},
         {k:'born',w:'rp-dr',s:.75},{k:'flash',w:'rp-dr',s:.8,e:1}]},
- {ph:'BUILD & VERIFY', t:137, d:6, bt:'A finding: state leaks across an abort',
-  ax:'A bench catches the receiver holding stale state after an aborted frame — the next frame inherits garbage. Filed as a MAJOR finding against a named requirement, repaired, and the failing case pinned into the suite permanently. The bug can never return unnoticed; the test that caught it outlives it.',
+ {ph:'BUILD & VERIFY', t:137, d:6, bt:'A length sweep convicts the receive module',
+  ax:'A directed bench sweeps frame lengths 64 through 71 at both start lanes and prints delivered octets against expected. Lengths 65 to 68 over-deliver — 62 against 61, 64 against 62, 66 against 63, 68 against 64 — and 69 to 71 are clean: the module emits k − 4 extra octets whenever a final word carries more than four delivered octets. It is filed as BUG-0001 at CRITICAL, and the fix is confirmed at a named CI run.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-find',kind:'write',s:.05,e:.35,
          ent:'MAJOR: state persists across abort; the next frame inherits it'},
         {k:'tok',f:'rp-find',to:'ag-impl',kind:'read',s:.4,e:.6},
         {k:'tok',f:'ag-impl',to:'rp-rtl',kind:'write',s:.65,e:.9,
          ent:'Abort path cleared; the failing case now a permanent regression test'},
         {k:'flash',w:'rp-find',s:.85,e:1}]},
- {ph:'BUILD & VERIFY', t:143, d:7, bt:'Co-simulation against a stranger',
-  ax:'The finished receiver runs frame-for-frame against the independent reference implementation the sponsor supplied — one no agent here wrote. Millions of frames, outputs compared byte by byte, as a blocking check. Passing your own tests proves consistency. Agreeing with a stranger proves correctness.',
+ {ph:'BUILD & VERIFY', t:143, d:7, bt:'Co-simulation against a vendored reference',
+  ax:'The receive module is co-simulated against axis_xgmii_rx_64 from verilog-ethernet, vendored at a pinned upstream commit and written by no agent here. Two frames have been compared end to end, word by word — tkeep, tlast, tuser and octets — under Icarus Verilog in its own CI job, with no divergence. Widening the stimulus is an open item. The reference implements no frame-length logic, so the runt and oversize requirements rest on directed tests.',
   acts:[{k:'tok',f:'rp-refs',to:'rp-model',kind:'read',s:.05,e:.3},
         {k:'flash',w:'rp-model',s:.3,e:.6},{k:'flash',w:'rp-rtl',s:.35,e:.65},
         {k:'tok',f:'ag-verif',to:'rp-tb',kind:'write',s:.55,e:.85,
          ent:'Co-simulation green: frame-for-frame agreement with the reference implementation'},
         {k:'sweep',s:.7,e:1}]},
- {ph:'PROVE', t:150, d:6, bt:'The auditor re-runs the record',
-  ax:'The auditor returns and replays the evidence: the commands other seats recorded are re-executed to check the outputs still come out as claimed. Two do not reproduce; that becomes a finding. It can write only its own reports — an auditor that could fix things would have a stake in what it finds.',
+ {ph:'PROVE', t:150, d:6, bt:'The auditor re-runs the recorded evidence',
+  ax:'The auditor re-runs commands other seats recorded as evidence and compares the result against the claim. One figure does not reproduce: the claim that the same 8,505 lines of bench movement sit under all 61 kills measures five different figures at the five campaign bases, and 41 lines in one file at the last four. The auditor\'s write scope covers its own reports, so it files the finding and cannot repair it.',
   acts:[{k:'spawn',w:'ag-audit',s:.05},
         {k:'tok',f:'jr-impl',to:'ag-audit',kind:'read',s:.2,e:.45},
         {k:'tok',f:'jr-verif',to:'ag-audit',kind:'read',s:.35,e:.6},
         {k:'tok',f:'ag-audit',to:'rp-aud',kind:'alert',s:.65,e:.9,
          ent:'Evidence replay: two recorded commands failed to reproduce; finding filed'}]},
- {ph:'PROVE', t:156, d:5, bt:'The seal',
-  ax:'Now the test suite itself goes on trial. Before any defect exists anywhere, the verification lead seals predictions: thirteen classes of bug, eleven it expects the suite to catch — and two it expects to MISS. Predicting your own blind spots, in writing, before the exam is printed: that is what makes the score mean something.',
+ {ph:'PROVE', t:156, d:5, bt:'Predictions are sealed before any defect exists',
+  ax:'Before a campaign runs, the verification lead commits its predictions as a file: which bench unit reddens for each seeded class, frozen against the SHA a green control run executed, and frozen before any diff exists. A withheld result that is not a committed artefact counts as a claim and not a seal. Scoring against a prediction made in advance keeps the pass criterion from being set after the result is known.',
   acts:[{k:'born',w:'g-mem',s:.3},
         {k:'tok',f:'ag-verif',to:'rp-camp',kind:'write',s:.1,e:.6,
          ent:'SEALED: thirteen defect classes predicted, including two expected misses'},
         {k:'born',w:'rp-camp',s:.55},{k:'stamp',w:'st-seal',s:.7},
         {k:'flash',w:'rp-camp',s:.6,e:1}]},
- {ph:'PROVE', t:161, d:7, bt:'Thirteen sabotages, planted blind',
-  ax:'The auditor writes thirteen realistic bugs into an isolated copy — padding off by one, a checksum folded in the wrong order, a control flag silently ignored — without ever seeing the sealed predictions. Sealer and saboteur are blind to each other by construction. Neither can teach to the test.',
+ {ph:'PROVE', t:161, d:7, bt:'Seeded defects are authored blind',
+  ax:'The auditor authors one defect per class against a pinned base SHA: the oversize threshold off by one, error_bad_fcs pulsed for a truncated frame, an oversize frame truncated correctly and never reported. It works from the specification and the RTL and opens no file under test/, so it does not know how many bench units exist or what they assert. Each diff sits on its own never-merge branch, marked at its own site.',
   acts:[{k:'born',w:'x-iso',s:.15},
         {k:'tok',f:'ag-audit',to:'x-iso',kind:'bug',s:.3,e:.55},{k:'bug',w:'bug1',s:.55},
         {k:'tok',f:'ag-audit',to:'x-iso',kind:'bug',s:.5,e:.72},{k:'bug',w:'bug2',s:.72},
         {k:'tok',f:'ag-audit',to:'x-iso',kind:'bug',s:.68,e:.9},{k:'bug',w:'bug3',s:.9}]},
- {ph:'PROVE', t:168, d:6, bt:'The suite meets the sabotage',
-  ax:'Every planted bug runs against the full suite. Twelve die on contact — benches built from attack rows catch what they were built to catch, and the sealed predictions hold. A test suite that has never faced sabotage is a claim. This one is now a measurement.',
+ {ph:'PROVE', t:168, d:6, bt:'Ten campaigns, scored in five columns',
+  ax:'Each seeded class is run against the full regression and scored against the seal. The class-based era closes at 63 sealed, 61 killed, 1 survived, 0 green-by-blindness, 1 void, and the columns sum to 63; four earlier campaigns killed 15 of 15. The tally is never folded into a ratio, because a rate erases the two columns that say the test was not a real test.',
   acts:[{k:'flash',w:'x-iso',s:.05,e:.45},
         {k:'tok',f:'x-iso',to:'rp-camp',kind:'read',s:.5,e:.75},
         {k:'flash',w:'rp-camp',s:.75,e:1}]},
- {ph:'PROVE', t:174, d:6, bt:'One survives — and two blind seats had pointed at it',
-  ax:'One bug passes every test: nothing in the suite ever varies the gap timing it corrupts. Here is the astonishing part — the sealed predictions called a miss in exactly that region, and the saboteur, blind to the seal, chose the same hole from the other side. Two independent seats triangulated one real coverage gap. The survivor is the campaign’s yield.',
+ {ph:'PROVE', t:174, d:6, bt:'One class survives every unit in the suite',
+  ax:'G-c4 seeds an ungated Discard state and survives all twenty-five bench units. The cause sits in the attack plan\'s own numbers: its rows place the injected character 100 octets past the truncation point, while the epoch it had to land in is 82 octets wide, so it overshoots by nineteen. The gap was in the plan the tests were written from, and the mutation is what exposed it.',
   acts:[{k:'flash',w:'x-iso',s:.05,e:.5},
         {k:'flash',w:'rp-camp',s:.3,e:.7},
         {k:'tok',f:'x-iso',to:'ag-verif',kind:'read',s:.55,e:.85}]},
- {ph:'PROVE', t:180, d:6, bt:'The hole is closed and the copy burned',
-  ax:'A new attack row names the missed axis; a bench extension drives it; the survivor is re-run on a throwaway branch and dies. Then the sabotaged copy is discarded — it never merges. The suite is permanently stronger than it was before the attack, which is the entire point of attacking it.',
+ {ph:'PROVE', t:180, d:6, bt:'The gap is closed and proved by replay',
+  ax:'Two new rows drive the epoch the old ones missed. The unmodified G-c4 diff is then replayed against the extended suite on a throwaway branch: CI run 30852220315, red, with M03-G8 the only failing unit of twenty-seven. The branch never merges. The campaign\'s survived column stays at one, because a score is what that campaign measured and is never retro-edited.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-ap',kind:'write',s:.05,e:.32,
          ent:'New attack row: the gap-timing axis the survivor exposed'},
         {k:'tok',f:'ag-wv1',to:'rp-tb',kind:'write',s:.35,e:.62,
          ent:'Bench extended along the missed axis; survivor re-run and killed'},
         {k:'flash',w:'rp-tb',s:.6,e:.85},
         {k:'gone',w:'x-iso',s:.9}]},
- {ph:'PROVE', t:186, d:5, bt:'Straight to the human',
-  ax:'One audit finding is graded critical, and it travels the one path that skips everyone: auditor to sponsor, unedited. Not even the orchestrator that spawned the auditor sits on that wire. Bad news is the one cargo that must never be summarized by anyone with a stake in it.',
+ {ph:'PROVE', t:186, d:5, bt:'A critical finding routes straight to the sponsor',
+  ax:'The auditor grades one finding CRITICAL and files it against the verification lead\'s reasoning: an equivalence proof whose stated tightest case cannot exist. That class reaches the sponsor verbatim, and the orchestrator that spawned the auditor may not summarise it. The finding names in advance the one run that would refute it, and is withdrawn in full when that run comes back green.',
   acts:[{k:'tok',f:'ag-audit',to:'ag-sponsor',kind:'alert',s:.15,e:.75}]},
- {ph:'GATE', t:191, d:5, bt:'The sign-off fails. That is a feature.',
-  ax:'Fourteen criteria stand between the receiver and done: every attack row discharged, co-sim green, campaign scored, evidence reproducible. Round one fails two of them, and FAIL is written into the record as a verdict. A sign-off that cannot fail is a rubber stamp, and this one just proved it can.',
+ {ph:'GATE', t:191, d:5, bt:'Fourteen criteria stand between the module and done',
+  ax:'The sign-off packet lists fourteen criteria: the attack plan preceding the first test, every requirement hook mapped, the suite green at the sign-off SHA on a named run id, the line-rate stress at 10 000 frames, the mutation tally in five columns, the evidence reproducible. Round two scores twelve met and two not met, and the verdict is one token: FAIL.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-so',kind:'write',s:.15,e:.6,
          ent:'Sign-off round one: FAIL — two of fourteen criteria unmet, named'},
         {k:'born',w:'rp-so',s:.55},{k:'flash',w:'rp-so',s:.6,e:1}]},
- {ph:'GATE', t:196, d:5, bt:'Fourteen of fourteen',
-  ax:'The two gaps are closed and the verdict flips on re-measurement: PASS on every criterion, each with the exact commands to reproduce it. The failed round stays on the record beside the pass. Anyone, at any time, can re-run the whole claim.',
+ {ph:'GATE', t:196, d:5, bt:'Round three fails on a new ground',
+  ax:'Round three clears one of the two criteria and fails again on the other, on a ground the previous round could not reach. Round four passes all fourteen at a stated SHA, each criterion carrying the commands that produce its result. Both failing rounds are preserved beneath the passing one, unedited, and no superseded statement is rewritten into its own outcome.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-so',kind:'write',s:.15,e:.6,
          ent:'Sign-off round two: PASS, fourteen of fourteen, reproduction commands attached'},
         {k:'flash',w:'rp-so',s:.6,e:1}]},
- {ph:'GATE', t:201, d:6, bt:'The harvest',
-  ax:'Before the gate closes, every seat re-reads its own journal hunting for lessons worth keeping — and rewrites them to hold in any project, or they are worthless to the next one. The near-miss becomes a museum exhibit. Saying “found nothing” is allowed, but it must be said on the record.',
+ {ph:'GATE', t:201, d:6, bt:'The lessons harvest blocks the sign-off',
+  ax:'A gate is not passed while any box of the lessons-harvest block is unchecked. The verification lead walks its own journal from the first entry to the 165th: 98 bankings, 95 distinct candidates, nine war stories, each recorded with the criterion it failed. Four of the five persistent-journal seats had not harvested at all, and that is the criterion that stayed NOT MET across two rounds.',
   acts:[{k:'tok',f:'jr-spec',to:'ag-spec',kind:'read',s:.05,e:.3},
         {k:'tok',f:'jr-impl',to:'ag-impl',kind:'read',s:.15,e:.4},
         {k:'tok',f:'jr-verif',to:'ag-verif',kind:'read',s:.25,e:.5},
         {k:'tok',f:'ag-impl',to:'rp-museum',kind:'write',s:.55,e:.8,
          ent:'Harvest: the abort-state class generalized into a lesson any project can use'},
         {k:'born',w:'rp-museum',s:.75},{k:'flash',w:'rp-museum',s:.8,e:1}]},
- {ph:'GATE', t:207, d:6, bt:'Four signatures, then the human’s',
-  ax:'The gate checklist closes signature by signature, and each one cites an entry in the signer’s own journal — a claim with an address, not a checkbox. The auditor countersigns with one caveat recorded rather than waived. The sponsor, as always, signs last.',
+ {ph:'GATE', t:207, d:6, bt:'The gate file is open and says so',
+  ax:'A signature on a gate checklist is a reference to the signing seat\'s own journal entry, transcribed by the orchestrator, and no box is checked by its author. The module-ready gate is open: one Phase-1 module carries a PASS sign-off and nineteen do not, stated in the file\'s first line. The checklist was written before its evidence arrived.',
   acts:[{k:'tok',f:'ag-impl',to:'rp-gates',kind:'write',s:.05,e:.28,
          ent:'Gate signed: implementation, citing the sign-off and the repaired finding'},
         {k:'tok',f:'ag-verif',to:'rp-gates',kind:'write',s:.2,e:.42,
@@ -734,12 +734,12 @@ const BEATS = [
         {k:'tok',f:'ag-sponsor',to:'rp-gates',kind:'gold',s:.62,e:.85},
         {k:'flash',w:'rp-gates',s:.85,e:1}]},
  {ph:'GATE', t:213, d:5, bt:'That was one module of twenty',
-  ax:'Everything you just watched — the paired packets, the blind benches, the sabotage, the failed and passed sign-off — was ONE module. The orchestrator cuts the next pair and the loop begins again, nineteen more times, each pass inheriting a stronger suite and a bigger museum.',
+  ax:'The paired work orders, the blind bench, the ten mutation campaigns and the sign-off that failed twice all covered the receive module. Seven of the twenty modules have RTL, and one carries a PASS sign-off. The transmit module\'s campaign is manifested — thirteen classes, one diff each — with no branch cut and no run scored.',
   acts:[{k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.2,e:.6,
          ent:'Next pair issued: the transmitter — the loop begins again'},
         {k:'flash',w:'rp-board',s:.55,e:.9},{k:'flash',w:'rp-wo',s:.6,e:.95}]},
- {ph:'GATE', t:218, d:7, bt:'The agents leave; the record stays',
-  ax:'Every session that did this work is gone, and its memory with it. What remains is the repository: hundreds of commits, each carrying its author’s reasoning; every refusal, bounce, sabotage and signature still readable. A brand-new team — human or agent — could pick this up cold and know exactly where it stands. That was the point all along.',
+ {ph:'GATE', t:218, d:7, bt:'The sessions end; the repository remains',
+  ax:'Every session that did this work has ended and its context is gone. The repository holds more than six hundred commits, each paired with the journal entry its author wrote for it, with every refusal, bounce, seeded class, withdrawn finding and signature still readable. A new team, human or agent, can reconstruct the state of the project from the files.',
   acts:[{k:'off',w:'ag-wi1',s:.15},{k:'off',w:'ag-wi2',s:.2},{k:'off',w:'ag-wv1',s:.25},
         {k:'off',w:'ag-spec',s:.35},{k:'off',w:'ag-impl',s:.4},{k:'off',w:'ag-verif',s:.45},
         {k:'off',w:'ag-audit',s:.5},{k:'off',w:'ag-orch',s:.65},
@@ -1057,147 +1057,147 @@ const SEATNAME = { 'jr-orch':'Orchestrator','jr-spec':'Specification lead','jr-i
 const DATA = {
 "sponsor": [
 "Sponsor",
-"The one human. Sets the project's scope and technical vision, ratifies the constitution, approves the escalation rules and any exported lessons, and signs gates. Design choices, work routing and review verdicts are explicitly not theirs — a single status file tells them when something needs their attention."
+"The single human on the project. Sets scope and technical direction, ratifies the constitution, approves any lesson exported for reuse, and signs the gate checklists; design choices, task routing and review verdicts are not the sponsor's. Two duties are the sponsor's alone: enabling branch protection once, without which the append-only journal holds only by convention, and planting unannounced process violations to see whether the auditor catches them."
 ],
 "sessions": [
 "Agent sessions",
-"Agents live here — started for a session, then gone. They forget everything between sessions and cannot be relied on to remember or self-report accurately, which is the founding reason everything on the right exists as files. A dashed slot is a seat with no session running; a solid one is live."
+"An agent runs as one session and does not persist beyond it. Nothing carries over between sessions, and an agent's own account of its work is not treated as evidence, so roles, rules, work and results are held as files. A dashed slot is a seat with no session running; a solid slot is a live one."
 ],
 "orch": [
 "Orchestrator",
-"The only agent that may spawn other agents, and the only one that commits — each seat's work lands under that seat's name. It plans, routes packets, relays messages word for word with any additions of its own marked, and escalates to the sponsor. Total file access, and one hard prohibition: it never writes the substance itself."
+"The only agent that may spawn other agents, and the only one that commits — each seat's work is committed under that seat's name. It plans, routes packets, relays messages between seats verbatim with its own additions marked, and escalates to the sponsor. Its write scope covers every path, and it authors none of the substance: work, evidence and verdicts come from other seats."
 ],
 "spec": [
 "Specification lead",
-"Turns the sponsor's braindump and reference material into specifications and numbered requirements — numbered so a test can point at exactly what it verifies. Owns the decision records and the documentation. Nothing is built that it hasn't specified; when leads disagree about where their work meets, it settles the dispute in writing."
+"Turns the sponsor's braindump and the reference material into the specification and its numbered requirements; the numbers let a test cite exactly what it verifies. Owns the decision records and the documentation. Nothing is built that it has not specified, and where two leads read an interface differently, it rules on the boundary in writing."
 ],
 "impl": [
 "Implementation lead",
-"Owns everything that ships as the product. Breaks the specified work into task packets, has workers build them, and reviews each return line by line — bouncing what falls short, accepting what meets the spec. It never writes the tests that will grade its own output."
+"Owns the product source — everything that ships. Breaks specified work into task packets, has workers build them, and reviews each return against the spec, accepting it or bouncing it with a numbered defect list. It does not write the tests that grade its own output."
 ],
 "verif": [
 "Verification lead",
-"Owns the tests, the reference models and the measurements, and issues the pass/fail sign-offs that every merge requires. It derives its tests from the specification, never from the implementation — checking what was promised, not what was built."
+"Owns the testbenches, the reference models and the measurements, and issues the pass/fail sign-off a module needs before it can be declared ready. Its tests are derived from the specification and not from the RTL, so what they check is what was specified."
 ],
 "audit": [
 "Auditor",
-"Audits every seat, including the orchestrator that spawns it — partly by re-running the commands other seats recorded as evidence, to check the results actually come out as claimed. It may write only its own reports, so it cannot fix what it finds: an auditor that repairs things has an incentive to find only what it can repair. Its critical findings reach the sponsor unedited."
+"Audits every seat, including the orchestrator that spawns it, partly by re-running the commands other seats recorded as evidence and checking that the output still comes out as claimed. Its write scope is its own reports, so it cannot repair what it finds: an auditor that repairs defects has an incentive to report only the ones it can repair. Critical findings reach the sponsor unedited."
 ],
 "worker": [
 "Worker",
-"A short-lived agent spawned for exactly one task, given only that task's context, returning exactly what the packet asks, then discarded. It has its own charter and its own journal like any other seat — its output is reviewed by its lead before it counts."
+"A short-lived agent spawned for one task packet, given only that packet's context, returning only what the packet asks, then gone. It has a charter and a journal like any other seat, and its lead reviews the return before it counts as delivered."
 ],
 "repo": [
 "The repository",
-"The project's entire world: every role, rule, task, decision and proof exists as files here, because agents forget everything between sessions. Version control permanently records every change, its author and its explanation — and the record is the only channel from one session to the next."
+"Every role, rule, task, decision and piece of evidence exists as a file here, because no state survives between agent sessions. Version control records each change with its author and its explanation, and that record is the only channel from one session to the next."
 ],
 "gate": [
 "The commit gate",
-"The first enforcer: a script that checks every rule before a change can be saved, and refuses violations outright. It runs on the agent's own machine, which means it can be skipped there — which is exactly why there is a second enforcer behind it."
+"The commit script is the sanctioned path to git commit. It checks the staged change against the protocol rules and refuses a commit that breaks one — work staged without a journal entry, or a path outside the committing agent's write scope. It runs on the agent's own machine, where a plain git commit would bypass it, so the same checks run again on the server."
 ],
 "ci": [
 "Continuous integration",
-"The second enforcer, sitting behind the first: an automatic checker on the shared server that re-runs every rule across the project's entire history. A change that dodged the local gate is caught here before it can merge, so skipping the first check buys nothing."
+"The same rule checks, re-run in CI on every push. Append-only cannot be verified incrementally, so the journal check re-walks the whole pushed history rather than the new commits alone. A commit that bypassed the local script fails here before it can merge."
 ],
 "const": [
 "The constitution",
-"One shared rules file every agent must read before acting. Most of it is the framework's standard template — how work moves, how reasoning is preserved, how enforcement works — with this project's specifics filled in: how the roles map onto its seats, which files each seat may edit, and the escalation thresholds. The founding agent writes it, which means it wrote the rules that bind it and granted its own permissions, so the human ratifies it before real work begins. Amending it takes a decision record accepted by a different role, an updated self-test if enforcement changes, and a countersignature from a role the new rule will constrain — who may legitimately refuse."
+"One shared rules file every agent reads before acting: the seats, the paths each may edit, how work moves, and the escalation thresholds. The founding agent writes it, so it authored the rules that bind it; the sponsor ratifies it before real work starts. Amending it takes a decision record accepted by a different role, an updated enforcement self-test where enforcement changes, and a countersignature from a role the new rule constrains."
 ],
 "scripts": [
 "Enforcement scripts",
-"The runnable half of the framework: the commit script and the server checks that mechanically refuse a rule-breaking commit. Adopted with the shell rather than rebuilt, because a rule enforced by a script holds under pressure and a rule enforced by good intentions does not."
+"The commit script and the CI checks that mechanically refuse a rule-breaking commit; they are adopted with the framework rather than rewritten per project. Every rule in the constitution states the grade it holds — machine-checked, review-enforced, performed once, or planned — and names the residue its enforcement cannot reach, with a seat on the hook for that gap."
 ],
 "selftest": [
 "Enforcement self-test",
-"A suite that deliberately constructs a rule-breaking commit for each rule and proves the script still refuses it. Whenever an amendment changes enforcement this must be updated too — the rules get tested the same way the product does."
+"A suite that builds a deliberately rule-breaking commit for each rule and checks that the script still refuses it. It runs in CI on every push. An amendment that changes enforcement semantics has to add or update a case here, so the enforcement is regression-tested the way the design is."
 ],
 "roster": [
 "Roster",
-"One file listing every seat with links to its charter and journal. A brand-new agent can reconstruct who exists and who owns what from this file alone."
+"One file listing every seat with links to its charter and its journal. A newly spawned agent can reconstruct which seats exist and what each one owns from this file alone."
 ],
 "board": [
 "Program board",
-"The live picture: current milestone, open tasks, gate status, pending escalations. The single status file the sponsor watches — when something needs the human, it says so here."
+"Live program state: current milestone, open work orders, gate status and pending escalations. It is the status file the sponsor reads, and it names whatever is waiting on a sponsor decision."
 ],
 "gatesbox": [
 "Gate checklists",
-"A gate is a committed checklist that must be fully signed before the project advances a stage, and each signature points to an entry in the signing seat's own journal saying it signs. Not a checkbox: a claim you can follow to its evidence."
+"A gate is a committed checklist that must be fully signed before the project advances a stage. Each signature is a reference to an entry in the signing seat's own journal, so a signature can be followed to the reasoning and evidence behind it."
 ],
 "ladder": [
 "Escalation ladder",
-"A fixed set of problem classes — from a routine blocker to a critical audit finding — each with its defined route upward. It decides what reaches the human and what gets settled below, so escalation is a rule rather than a judgement call made in the moment."
+"Six numbered classes reach the sponsor: phase-gate approval, scope change, toolchain and licensing, critical audit findings, a two-lead deadlock surviving one round of written argument, and budget or schedule anomalies. Everything else is decided inside the organization. The classes are fixed in advance, so escalation is not a judgement call made at the time."
 ],
 "brief": [
 "Braindump",
-"What the sponsor actually wants, in their own words: goals, priorities, the shape of the thing, what matters and what does not. Unstructured and incomplete is fine — it is the raw material the specification is made from. What matters is that it lands in the repository rather than staying in a conversation, so a requirement can later be traced back to the sentence that asked for it."
+"What the sponsor wants, in the sponsor's own words: goals, priorities, the shape of the design, what matters and what does not. It is unstructured and incomplete, and it is not itself a specification — the specification lead derives the numbered requirements from it."
 ],
 "refs": [
 "Reference material",
-"The standards the project must obey, reference designs, prior art, datasheets — everything the organization has to build against but did not write. Supplied by the sponsor at the start and read by the specification lead before it drafts anything."
+"The standards the design must conform to, reference designs, prior art and datasheets — material the organization builds against but did not write. It includes the independent implementation vendored as the co-simulation anchor. The sponsor supplies it at the start, and the specification lead reads it before drafting anything."
 ],
 "cons": [
 "Target constraints",
-"The limits the finished thing must live inside: the part it runs on, the resources available, the performance it has to hit. Constraints given up front become requirements that can be tested, rather than surprises discovered late."
+"In Phase 1 the limits are architectural, not device-level: the part is deliberately not yet chosen, and the RTL carries no vendor primitive and no constraint file. What binds is a 64-bit datapath at one word per cycle, the 14.88 Mpps minimum-frame rate 802.3 fixes at 10 Gb/s, a pinned per-module latency constant, and the exclusion of PMA, PCS, serdes and 64b/66b. Each is a numbered requirement a test can check."
 ],
 "charter-orch": [
 "Orchestrator · charter",
-"Write scope: everything — it is the only seat that commits, and it commits each other seat's work under that seat's name. Duties: plan, route packets, spawn sessions, relay between seats word for word, escalate to the sponsor. Done means the work landed with its author's journal entry attached. Its sharpest clause is a prohibition: with total file access, it must never author the substance — the work, evidence and verdicts it moves are always written by other seats."
+"Write scope: every path. It is the only seat that commits, and it commits each other seat's work under that seat's name. Duties: plan, route packets, spawn sessions, relay between seats verbatim, escalate to the sponsor. Done means the work landed with its author's journal entry attached. With access to every file, it authors none of the work, evidence or verdicts it moves."
 ],
 "charter-spec": [
 "Specification lead · charter",
-"Write scope: the specification, the numbered requirements, the decision records and the documentation. Duties: turn the sponsor's braindump and reference material into something precise, and settle disputes between the other leads about where their work meets — always in writing, never informally. Done means every requirement is numbered and testable. It builds nothing and tests nothing."
+"Write scope: the specification, the numbered requirements, the decision records and the documentation. Duties: turn the braindump and the reference material into precise text, and settle disputes between the other leads over where their work meets, in writing. Done means every requirement is numbered and carries a stated verification method. It writes no RTL and no tests."
 ],
 "charter-impl": [
 "Implementation lead · charter",
-"Write scope: the product source — everything that ships. Duties: break the specified work into packets, have workers build them, and review every return line by line, bouncing what falls short with a numbered defect list. Done means the work meets the spec and a review says so. Escalates when the spec is silent or contradictory rather than deciding for itself. It may never write the tests that will grade its own output."
+"Write scope: the product source — everything that ships. Duties: break specified work into packets, have workers build them, and review every return, bouncing what falls short with a numbered defect list. Done means the work meets the spec and a review says so. It escalates when the spec is silent or contradictory instead of deciding for itself, and it may not write the tests that grade its output."
 ],
 "charter-verif": [
 "Verification lead · charter",
-"Write scope: the tests, the reference models, the measurements and the sign-offs. Duties: derive every test from the specification — never from the implementation — seal campaign predictions before defects are planted, and issue the pass/fail verdict that every merge requires. Done means a verdict with the exact commands to reproduce it. It builds nothing it also grades."
+"Write scope: the testbenches, the reference models, the measurements and the sign-offs. Duties: derive every test from the specification and not from the RTL, commit its campaign predictions as a file before any defect exists, and issue the pass/fail verdict a module needs to be declared ready. Done means a verdict recorded with the exact commands to reproduce it. It does not build what it grades."
 ],
 "charter-audit": [
 "Auditor · charter",
-"Write scope: its own reports, and nothing else. Duties: audit every seat including the orchestrator that spawns it, re-run the commands other seats recorded as evidence to check the results come out as claimed, and grade findings critical, major, minor or note. Critical findings route to the sponsor unedited. The narrow write scope is the whole design: it cannot fix what it finds, so it has no incentive to find only what it can repair."
+"Write scope: its own reports, and nothing else. Duties: audit every seat including the orchestrator that spawns it, re-run the commands other seats recorded as evidence to check the results come out as claimed, and grade findings critical, major, minor or note. Critical findings route to the sponsor unedited. The narrow write scope is deliberate: it cannot repair what it finds, so it has no incentive to report only repairable defects."
 ],
 "charter-workers": [
 "Workers · charters",
-"Yes — a worker is a seat like any other, with its own charter and its own journal. Its charter narrows it to a single packet: the write scope is whatever that packet names and nothing more, it is given only that packet's context, and it returns exactly what the packet asks. Done means the lead accepted the return. Refusing the task, with reasons recorded, is a legitimate outcome."
+"A worker is a seat like any other, with a charter and a journal. The charter narrows it to a single packet: its write scope is what that packet names, it is given only that packet's context, and it returns exactly what the packet asks. Done means the lead accepted the return. Returning the packet unbuilt, with the blocking issue written into its return log, is a legitimate outcome."
 ],
 "journal": [
 "Journal",
-"An append-only diary, one per seat: what triggered the work, what the agent read, its reasoning, what it did, and the evidence for its claims. Every commit pairs the work with a new entry — the commit script refuses the work without it. Entries only accumulate; mistakes are corrected by later entries, never by editing old ones, because a record that can be tidied isn't evidence."
+"An append-only log, one per seat: what triggered the work, what the agent read, its reasoning, what it did, and the evidence for its claims. Every commit pairs work with a new entry, and the commit script refuses work that arrives without one. Entries only accumulate — an error is corrected by a later entry, never by editing an old one — and CI re-walks the whole history to check that."
 ],
 "specdoc": [
 "The specification",
-"What will be built, written before it is built, derived from the braindump and the reference material. Nothing is built that isn't specified; nothing merges undescribed."
+"What will be built, written before it is built, derived from the braindump and the reference material. Nothing is built that is not specified, and nothing merges without a description here."
 ],
 "reqs": [
 "Numbered requirements",
-"Each requirement carries a number so a test can point at exactly what it verifies — the thread that ties a verdict back to a promise, and back through the spec to the sentence in the braindump that asked for it."
+"Each requirement carries a number and a stated verification method, so a testbench or a sign-off can cite exactly what it verifies. The number is what ties a verdict back through the specification to the requirement it discharges. There are 110 of them."
 ],
 "wo": [
 "Work orders",
-"Task packets with a lifecycle: issued → returned → accepted, or bounced back by the reviewing seat with a numbered defect list. Versioned files with an ID, an author, an addressee and a status — never messages that vanish. The bounce history is preserved, never tidied away."
+"Task packets with a lifecycle recorded in the packet header: draft, issued, returned, then accepted or bounced with a numbered defect list. Each is a versioned file with an ID, an author, an addressee and a status, not a message that disappears when the session ends. A bounced packet respawns as a new revision, and the bounce history stays in the packet."
 ],
 "dr": [
 "Decision records",
-"Created whenever the project faces a non-obvious choice: picking between two design approaches, changing a rule, redefining what a measurement means. Each captures the decision, the alternatives considered, and why each lost — so a rejected idea can't return as fresh six months later. One seat proposes; a different seat accepts."
+"Written whenever the project faces a non-obvious choice: two design approaches, a rule change, a redefinition of what a measurement means. Each records the decision, the alternatives considered and why each was rejected, so a rejected option cannot come back later as a new proposal. One seat proposes; a different seat accepts."
 ],
 "find": [
 "Findings",
-"Defect reports graded critical, major, minor or note. Any seat may file one, even against itself. A finding closes only when repaired, or ruled on with written grounds by whoever owns the thing it's about — never by being ignored."
+"Defect reports graded critical, major, minor or note. Any seat may file one, including against itself. A finding closes when it is repaired, or when the owner of the thing it concerns rules on it with written grounds. Leaving it alone does not close it."
 ],
 "audrep": [
 "Audit reports",
-"The auditor's own artifacts — the only files it is allowed to write. Critical findings here reach the sponsor unedited."
+"The auditor's own reports — the only files in its write scope. Critical findings recorded here go to the sponsor unedited."
 ],
 "so": [
 "Sign-offs",
-"The verification lead's verdict on one finished piece of work, with the exact commands to reproduce it — a claim anyone can re-run rather than a statement anyone must believe. Failing verdicts stay on the record beside their fixes."
+"The verification lead's verdict on one finished module, recorded with the exact commands to reproduce it, so the result can be re-run. A PASS also reports the disposition of every seeded mutation, with each non-kill named. Failing verdicts stay on the record next to the fixes that followed them."
 ],
 "rtl": [
-"The product",
-"What actually ships — for an FPGA project, the hardware description and the code around it. Owned by the implementation line, and graded only by tests that line never wrote."
+"Product source (RTL)",
+"What actually ships: Hardcaml, a hardware DSL embedded in OCaml, elaborated to Verilog, plus the code around it. The implementation line owns it, and it is graded only by testbenches that line never wrote. CI re-runs the elaboration in a second process and checks the emitted Verilog is identical."
 ],
 "ap": [
 "Attack plans",
@@ -1205,23 +1205,23 @@ const DATA = {
 ],
 "tb": [
 "Testbenches",
-"The executable tests that exercise the product, derived from the specification and its numbered requirements — never from the implementation."
+"The executable tests that exercise the product, derived from the specification and its numbered requirements rather than from the implementation. The work orders that produce them deliberately omit the RTL source."
 ],
 "model": [
 "Reference models",
-"Independent models of what correct behaviour looks like, so the product is checked against a second opinion rather than against itself."
+"Independent models of correct behaviour, built from the specification, so the product is checked against a second opinion. A model may not judge RTL until it has been shown to agree with an external anchor — an implementation of the same specification obtained from outside this organization — and that agreement is committed before the model issues its first verdict."
 ],
 "museum": [
 "Failure museum",
-"Expensive mistakes rewritten as general lessons that would hold in any project, not just the one that learned them. Before any gate closes each seat re-reads its own journal and mines it for new lessons — and “found nothing” must be said explicitly, never skipped."
+"Costly mistakes rewritten as lessons that would hold in another project. A candidate is admissible only if it cites the commit that taught it, states its observable in terms portable beyond this project, and says what breaks without it. The harvest is a precondition of each sign-off and gate: every seat holding a persistent journal mines its own span since the last harvest, and a nil result is stated explicitly."
 ],
 "camp": [
 "Campaign seals",
-"To prove the tests actually catch things, the auditor secretly plants known bugs in an isolated copy. Before any of those bugs exist, the verification lead writes down and freezes its predictions — which kinds of planted bug its tests will catch, and which they'll miss. Results are scored against that frozen record, so success can't be redefined afterward. A passing test suite isn't trusted — it's tested."
+"A check on whether the tests catch defects. The auditor writes a manifest of fault classes; before any of them exists the verification lead commits its predictions — which classes the suite will catch and which it will miss — and the run is scored against that frozen file. Scoring is per class: one kill per class at most, however many units redden."
 ],
 "iso": [
 "Isolated copy",
-"Where the auditor plants known defects — a copy of the work, never the real product. It exists to be attacked, and it never merges back."
+"Where seeded defects are exercised. The manifest is applied in an uncommitted working tree or a throwaway branch, the suite runs against it, and the tree is reverted; mutated RTL never enters the mainline history. No worker is spawned while a manifest is applied."
 ]
 };
 

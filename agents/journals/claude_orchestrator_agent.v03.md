@@ -1684,3 +1684,63 @@ describes.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0299] 2026-08-12T19:14Z | task:none | An FPGA engineer rewrites all thirty-nine beats and forty-one cards into engineer English - and refuses one of my claims by checking the artifact I had generalized from the wrong campaign
+
+### Trigger
+
+Sponsor: "Have an independent agent go through with no context. This agent is
+an FPGA engineer, and its job is to write the english of the project in a way
+other fpga engineers would understand." With the fix pattern given by example:
+"The machinery arrives before the agents do" should read like "The blank agent
+organization is set up first before the project specific details are
+incorporated." And plainly: "There is a lot of horrible descriptions."
+
+### What ran
+
+A four-agent round with no access to my framing: an FPGA design engineer wrote
+all 39 beats and all 41 click cards from the extracted copy plus the real
+FRAMEWORK.md, PROTOCOL.md, requirements.md and README; a senior FPGA/DV
+engineer reviewed both for marketing voice, loose terminology and anything an
+engineer would not say; the writer then applied that review. The brief banned
+second person, rhetorical questions, editorial asides and metaphor-where-a-term
+exists, and said outright that asserting the work is impressive makes it less
+credible.
+
+The result is grounded in the tree rather than in adjectives: the 24-cycle
+receive latency budget with its measurement points named, REQ-004's line-rate
+invariant at 10 000 consecutive 64-octet frames with alternating 10/11-cycle
+spacing, XGMII start and terminate characters at both start lanes, the FCS
+removed by where tkeep and tlast fall in a fixed-delay cut-through pipeline,
+the vendored Verilog receive module at a pinned upstream commit, batch D
+withheld and batch F frozen only after repair, the class-era tally at 63/61/1/0
+with its void column and the four pre-class campaigns at 15 of 15 kept
+separate, and the real replay run id for the survivor.
+
+### The refusal, which is the valuable part
+
+My beat claimed the surviving mutant was pointed at by two blind seats from
+opposite directions. The writer went to the artifact and found that for the
+M03 survivor G-c4 the seal had PREDICTED a kill, so no triangulation happened
+there, and it dropped the claim rather than write it. It also found F-0024-A
+withdrawn in full by its own sealed falsifier and refused to print a figure
+that depended on it. Both refusals are correct. I confirmed afterwards that
+the triangulation IS real — in the M04 transmitter campaign (WO-0084), where
+the auditor pre-flagged the cfg_ifg gap blind at seeding while dv's sealed
+IC-10 predicted the same gap from the other side — so my claim was true of a
+campaign the page is not depicting. The page runs the M03 receive module, so
+the writer's version stands and the story stays honest; the sponsor gets told
+the stronger anecdote exists and where.
+
+Applied mechanically by index and key: 39 beats, 41 cards, JS valid, no
+annotation overflows its box at any beat, no page errors.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
