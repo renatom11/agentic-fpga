@@ -649,3 +649,26 @@ ones; the 404 caught it, the habit stands convicted twice now.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0280] 2026-08-12T08:21Z | task:WO-0084 | The transmitter's campaign is commissioned under the law the document made determinate: the seal first, the seeder blind, the operator neither, and the arithmetic that must close - with incident fourteen absorbed on the way at the usual price of one fetch
+
+### Trigger
+
+The M04 mutation campaign became commissionable at RV-0083 ("the abort path
+now has killing units at all; scheduling is yours"). WO-0084 commissions it
+in §3.3's determinate order: dv seals before any diff exists; the auditor
+seeds blind against the seal (one-way, the direction the record teaches);
+I operate the never-merge refs (ADR-0019); dv scores under the four
+constraints with the golden-tally arithmetic closing. The packet bars diff
+rendering until the seal's commit exists, names the auditor's allowlist
+(spec + RTL + row text, never the seal, never the bench), and pre-commits
+the survivor and frozen-kill evidence forms.
+
+Also this wake: INCIDENT FOURTEEN — the container restored from a stale
+snapshot a second time (HEAD at 592a8b2, six landings behind); one fetch
+and a fast-forward recovered everything, the fourteenth zero-loss. The
+incident class is now recurrent: the cure is boring and the record should
+say so rather than dramatize it.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0084_m04-mutation-campaign.md
