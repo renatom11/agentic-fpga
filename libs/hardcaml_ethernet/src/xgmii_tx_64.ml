@@ -263,7 +263,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      first, which is the ordering that makes REQ-304's residue constant and is
      therefore the same decision M03's check depends on. *)
   let fcs_octets =
-    List.init 4 ~f:(fun k -> select fcs_value ((8 * k) + 7) (8 * k))
+    List.init 4 ~f:(fun k -> select fcs_value ((8 * (3 - k)) + 7) (8 * (3 - k)))
   in
   let body_word =
     word_of_lanes
