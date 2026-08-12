@@ -427,3 +427,165 @@ written somewhere, false at the state cited.
 *Committed by the orchestrator under `Agent: auditor`; write scope
 `docs/reports/audit/**` (PROTOCOL §6). The auditor ran no git write command in
 producing it.*
+
+---
+
+## 7. APPENDED DATED NOTES
+
+**Why these are appended and not applied to the cells.** Everything above is a
+**frozen measurement of `docs/PROCESS.md` at `6c02f5b`**. Two of the four notes
+below correct errors in my own rows and two re-measure rows whose referent has
+grown since. None of them edits a cell, a figure or a citation above this line.
+The rule is the document's own — a frozen record is not repaired by rewriting it
+(`docs/PROCESS.md` §5.4) — and the record's own instance is `de85393`, where a
+findings tally was corrected **in place** by its author and §1.7 lists that
+in-place correction among the weaknesses still owed. A posture list that cured
+its own arithmetic by silently rewriting a cell would reproduce, in the file that
+measures this program's honesty, the exact weakness it measures.
+
+Each note carries the date it was written, the SHA every re-measurement was taken
+at, and the command or the citation that decides it.
+
+### Note 1 — 2026-08-12 — `C-126`'s evidence cell carries the wrong two figures
+
+**The row says** *"Executing it returns 12 FALSE and 4 PLANNED (§1)."*
+**The figures are wrong. The true figures are 15 FALSE and 8 PLANNED**, and the
+error is confined to that one cell.
+
+Recounted mechanically, posture cell by posture cell, over all 128 rows:
+**MACHINE-CHECKED 34, REVIEW-ENFORCED 44, PERFORMED-ONCE 26, PLANNED 8, FALSE 15,
+NOT SAMPLED 1 — total 128**, 127 carrying a posture (`C-24` has none, §6 item 2).
+
+- FALSE (15): `C-07, C-08, C-32, C-33, C-40, C-56, C-67, C-70, C-77, C-80, C-82,
+  C-93, C-97, C-114, C-123`.
+- PLANNED (8): `C-23, C-41, C-51, C-53, C-54, C-71, C-109, C-119`.
+
+**Every other statement of these figures in this report and in the document is
+already right**, which is what makes the cell an isolated slip rather than a
+miscount running through the work: §0 at :67 says *"Fifteen rows are marked
+FALSE"*; the summary table, the per-section table, the collected-FALSE table and
+the PLANNED table all close on 15 and 8 with the row-total identity at 128; and
+`docs/PROCESS.md` carries 15/8 at :21–25, :667, :2430, :2437 and :2454 at
+`2f32e45`, and nowhere carries 12/4 outside Annex `B.5`'s own flag of this
+discrepancy.
+
+**Where `12/4` came from is not established.** I could not recover it within the
+frame of the round that found it, it does not bear on the resolution, and I would
+rather leave a hole than construct a provenance. Filed by the seat that wrote the
+cell. (`B.5` resolved for 15/8 at `J-auditor-0025`; this note is the cure that
+entry said was owed and could not stage.)
+
+### Note 2 — 2026-08-12 — `C-117`'s anchor is wrong; the stamp it grades is right
+
+**The row anchors** §4.8's six-cure exhibit at
+`agents/journals/claude_architect_docs_lead_agent.v02.md`:1181. **That anchor is
+wrong.** Line 1181 sits inside `J-architect_docs_lead-0025`
+(2026-08-04T18:40Z, `task:BUG-0002`), and its *"sixth"* is the sixth item of a
+**countersignature's** narrowing — *"and the sixth, the D(m) bullet itself, is
+what this diff replaces"* — not the sixth cure of a cure basket. It is a
+text-similarity match that I did not falsify when I made it.
+
+**The true anchor is `J-architect_docs_lead-0047`** (2026-08-11T19:34Z),
+`agents/journals/claude_architect_docs_lead_agent.v05.md`:684, whose title names
+the shape the exhibit describes (*"the cure basket pays four of six — one stopped
+at the constitution's edge because the word it would fix is now applied text"*)
+and whose disposition table carries **six numbered rows**, rows 1–5 landed /
+sustained / cured and **row 6 `F-0022-2` STOPPED — returned as an Amendment `A1`
+candidate**, with the re-owes cell naming the countersignature the `A1` round owes.
+
+**The consequence runs in the document's favour.** The row's posture
+(**PERFORMED-ONCE**) is unchanged, the episode is real, and the document's
+`[P1 · 2026-08-11 · C-117]` stamp is **correct** — it was my citation that was
+wrong, not the claim it graded. Recorded because a posture list whose anchors are
+not falsifiable is the defect it was written to measure, and because a reader who
+checks the cited line and finds a countersignature must not conclude the exhibit
+is unanchored.
+
+### Note 3 — 2026-08-12 — `C-104`: the referent grew from twelve bullets to fifteen, and the row's own count was off by one
+
+Re-measured against the **committed fourth edition, `docs/PROCESS.md` at
+`9362aef`** (5,044 lines), because the document is under revision again as this
+note is written and *"current text"* would be false within the hour; a SHA-pinned
+statement stays checkable (`git show 9362aef:docs/PROCESS.md`).
+
+**Two corrections, one against the row and one against the world.**
+
+1. **The row says *"the thirteen scoring bullets"*. At the audited SHA there were
+   twelve.** `git show 6c02f5b:docs/PROCESS.md | sed -n '890,936p'` carries
+   exactly **12** top-level bullets, first *"The question is present-tense."*
+   (:890), last *"A floor on the number of seeded classes"* (:934). My count was
+   off by one at the moment of measurement.
+2. **The block now carries fifteen.** At `9362aef` the same block runs :2964–3054
+   with **15** top-level bullets. The growth is one bullet becoming four: the
+   compressed *"known grounds"* bullet at `6c02f5b`:898 is now that bullet plus
+   three flat bullets of its own — **`Ground 1 — never rendered`** (:2975),
+   **`Ground 2 — unscoreable`** (:2979), **`Ground 3 — negative control`**
+   (:2985). The remaining eleven map one-to-one, in order, onto the eleven of
+   `6c02f5b`.
+
+**The posture is unchanged and re-executes true at HEAD.** All fifteen restate
+`agents/PROTOCOL.md` §7 **Mutation record** (b.1)–(b.4) and §10's floor, none
+mints a mechanical claim, and the constitution declares the posture in the clause
+itself (`PROTOCOL.md`:329–330). Re-executed rather than carried forward:
+`grep -rniE 'seeded|sealed|mutat|unreachab|equivalen|kill|tally|denominator|floor'
+scripts/ .github/` returns **3** hits, all unrelated (two `R8` foreign-volume-*seed*
+refusals at `check_journals.sh`:117 and `agent_commit.sh`:113, one workflow step
+name). And `git diff 6c02f5b HEAD -- agents/PROTOCOL.md scripts/ .github/` is
+**empty**: the machinery this row measures has not moved, so **`REVIEW-ENFORCED`
+(block) stands over fifteen bullets exactly as it stood over twelve.**
+
+### Note 4 — 2026-08-12 — `C-94`: §3.8's element list grew by one element, and the sign-off carries it
+
+Re-measured at `9362aef`, same pinning ground as Note 3.
+
+**The row's claim was measured over a six-element list.** At `6c02f5b`:808–811 a
+sign-off is *"pass or fail, with the suite named, the exact commands to reproduce
+it, the requirement-to-test mapping with gaps declared, the stress-test results,
+the seeded-defect dispositions, and open defects"*.
+
+**At `9362aef`:2733–2739 the list carries a seventh element**: *"**the external
+anchor's disposition per stimulus class — with what the anchor does not cover
+named beside what it does, and no artifact-level claim assembled out of passing
+classes (§1.4(e))**"*. The section also now declares the list **a floor, not a
+description of any packet**, and discloses in its own stamp text that the element
+was added **after** the measurement my row recorded.
+
+**Re-measured rather than adopted, because the disclosure is the drafting seat's
+and the row is mine.** `agents/handoffs/SO-xgmii_rx_64.md` carries the seventh
+element: §2.3 (:1047–1089) states the anchor **per class** — five classes, each
+at its own `build` run id and `cosim` job id, with its *"does NOT anchor"* list
+**in the same cell** — and the packet states in terms that the charter §3 anchor
+is **UNDISCHARGED as a module-level anchor**; `SC-6` is scored MET at all four
+read-backs (:281, :352, :512), the last recording that the barred sentence *"the
+co-simulation anchors this module"* occurs four times in the file and **all four
+inside a statement of the prohibition itself**. That is the seventh element's
+positive half and its negative half both present.
+
+**So the row's evidence sentence — *"it carries every named element"* — survives
+the list's growth, now as a measurement over seven elements rather than six.
+Posture unchanged: PERFORMED-ONCE, sample size one.**
+
+### Note 5 — 2026-08-12 — what these four notes do NOT do: the list as a whole still measures a superseded edition
+
+The four notes above cure two errors of mine and re-measure two rows whose
+referent grew. **They do not re-measure the list.** Every one of the 128 rows
+above was measured against `docs/PROCESS.md` at **`6c02f5b`, 1,445 lines**. The
+committed document at `9362aef` is **5,044 lines** — 3.5× — and a fifth edition
+is in flight as this note is written (commissioned this hour against
+`docs/reports/process-council/sponsor-report-card-2026-08-12.md`, landed
+`1b684c7`).
+
+**Three classes of row are therefore stale by construction**, and no reader should
+take this file's silence for a clean bill on any of them: (a) every row's
+line-range citation, which the growth guarantees is wrong; (b) rows whose *claim
+text* grew, of which this round found **two** by accident rather than by
+enumeration (`C-104`, `C-94`) — a row whose claim grew has a posture measured over
+a smaller claim; (c) claims the third, fourth and fifth editions **add**, which
+have no row here at all.
+
+**The full re-measurement is SCHEDULED, not performed, and the grounds are in
+`J-auditor-0026`.** It is named there as its own round with its own scope, to be
+run against a committed edition after the current revision cycle stops moving —
+because a census pinned to an edition that is superseded before it lands would
+reproduce row `C-75`'s own decay class, and because a rushed census is worse than
+an owed one. **This file stays what it is: the measurement of `6c02f5b`.**

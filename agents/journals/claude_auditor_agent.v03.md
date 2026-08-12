@@ -1027,3 +1027,546 @@ does not carry one. Declared so the gap is visible rather than inferred.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-auditor-0026] 2026-08-12T02:54Z | task:none | My CRITICAL is withdrawn by the falsifier it sealed, and the derivation that produced it is defective at one located step — received octets for delivered, one cycle, in a claim whose whole content was one cycle; the coverage finding beside it was half false when I filed it; and the census my list owes is scheduled rather than smuggled into a six-item round
+
+### Trigger
+
+Orchestrator dispatch, one round, this seat: the **reconciliation** owed since
+`F-0024-A`'s falsifier ran, plus the two corrections against my own artefact that
+`J-auditor-0025` filed and could not stage (dispatch-scope, writes restricted to
+that journal), plus two re-measurement notes for rows whose referent has grown,
+plus a scope ruling that is mine to make. No work order — the fifth consecutive
+dispatch-only round for this seat, which is still an instance of my own row
+`C-70`.
+
+**Abort-first precheck, before any file was opened** (`2026-08-12T02:34:21Z`):
+`git rev-parse HEAD` → **`a39c8e7`**, exactly as the dispatch predicted;
+`git status --porcelain` → **empty**; branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`. Proceeded.
+
+**HEAD moved once mid-round and a fourth lane opened, both declared.** At
+`02:41:37Z` HEAD became **`1b684c7`** (*"The sponsor grades the fourth edition
+from outside…"*, landing
+`docs/reports/process-council/sponsor-report-card-2026-08-12.md`), and the
+orchestrator announced in flight that **architect_docs_lead** has begun a **fifth
+edition** of `docs/PROCESS.md` (its write scope: that file and its own journal).
+Re-verified rather than assumed: the only dirty path at re-check is
+`agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md` — declared sibling
+(2), dv_lead's stage-2 packet revision — and `git diff --stat d4be71b HEAD` over
+every read surface this entry depends on
+(`libs/hardcaml_ethernet/src/xgmii_rx_64.ml`, `test/xgmii_rx_64/`,
+`test/xgmii/arrival.ml`) is **empty**. Declared siblings (1) rtl_lead's
+`C-RL-11/12` corrections and (3) the transient `mut/wo-0041-dm3-falsifier` touch
+nothing of mine. **The fourth lane changed one of my answers**, and I say so where
+it did: it is the reason items 4 and 5 are pinned to `9362aef` rather than to
+*current text*.
+
+**Honest stamp**: `date -u` read at authoring — `Wed Aug 12 02:54:17 UTC 2026` —
+carried to the minute in the header above. No spawn short-id: lead-class seat, not
+a worker (PROTOCOL §4.1). **Size arithmetic (ADR-0017 §4.4), checked myself**:
+`v03` stands at **68,411 bytes** against `JOURNAL_SOFT_MAX` = 262,144
+(`scripts/policy.sh`:13) — 193,733 bytes of headroom, so **no rotation**; this
+entry appends to `v03` and `v02` stays frozen.
+
+### Inputs
+
+- `agents/charters/auditor.md` (whole); `agents/PROTOCOL.md` (whole) — mandatory
+  first actions.
+- My own `J-auditor-0024` (whole, :20–702) and `J-auditor-0025` (whole,
+  :704–1029), read from the committed file rather than from memory.
+- `docs/reports/audit/WO-0041-mutations/README.md` §3.3 (:320–402), §7 whole
+  (:716–950), and `D-M3.diff` whole.
+- **The design and its contract, at the falsifier's own base**:
+  `libs/hardcaml_ethernet/src/xgmii_rx_64.ml` — the header at :15–65 (ΔC = 3,
+  *"the FCS is removed by `tkeep` and never by holding octets back"*), :230–380
+  (epochs, coverage), :390–479 (`begins`, the CRC recurrence), :480–534 (the
+  three-age closure record), :940–1006 (`emit_last_a`/`emit_last_b`, `consume`,
+  the strobes).
+- `test/xgmii/arrival.ml` whole (the DIC layout, hand-executed again);
+  `test/xgmii_rx_64/bench.mli`:440–450 and `bench.ml`:455–468 (`error_pulses`);
+  **`test/xgmii_rx_64/test_m03_f.ml`:660–800** — the unit §7 did not open;
+  `test_m03_d.ml`, `_e`, `_g`, `_i`, `_j`, `_k`, `_l`, `_n` at their `frames_at`
+  call sites; `docs/specs/requirements.md` §0.3 (:95–115).
+- `528b045` (the never-merged falsifier commit) and GitHub Actions run
+  **31541276523** with its two jobs, read at the API.
+- `docs/reports/audit/PROCESS-claims-posture.md` (my own artefact, all 128 rows);
+  `docs/PROCESS.md` at **`6c02f5b`** (:806–812, :887–937) and at **`9362aef`**
+  (:2725–2760, :2936–3054); `agents/handoffs/SO-xgmii_rx_64.md` §0.1, §1.1–§1.4's
+  `SC-6` rows, §2.3; `agents/journals/claude_architect_docs_lead_agent.v02.md`:1179–1183
+  and `.v05.md`:684 and :940–955.
+
+**Not read, deliberately**: the in-flight fifth edition of `docs/PROCESS.md` (a
+sibling's uncommitted working text is not a read surface, and pinning to it is the
+very error item 5 rules against); `docs/reports/process-council/sponsor-report-card-2026-08-12.md`
+beyond the fact of its landing (it drives another seat's round, not mine, and
+dispatch item 6 marks the scoring question as separately commissioned); the other
+nine campaign manifests.
+
+### Reasoning
+
+#### 1. The withdrawal is not a formality, and I took the run apart before taking it
+
+`F-0024-A` sealed its own executioner: *withdrawn in full if that run is green*.
+The dispatch reports it green. **A seat that accepts its own refutation on the
+word of the party the finding was relayed through has not been refuted, it has
+been told** — so every fact went back to its source. The run exists at the API
+(31541276523, workflow `build`, `head_sha` `528b045`), and the step-level read is
+what matters rather than the run-level rollup: **Build, Run-tests and Generate-RTL
+all `success`; the single red is *Verify nothing was left unpromoted or
+non-deterministic***, which is red for **any** mutated tree by construction. The
+`cosim` job is green end to end, which is a second datum in the same direction.
+
+Then the four things that decide whether a green run means anything: the applied
+RTL is **byte-identical** to `d4be71b` + the committed `D-M3.diff` (re-applied and
+diffed, not eyeballed); the oracle `error_pulses` is real and is the same one a
+dozen M03 units use to assert strobes that **do** fire; the driven window (35
+schedule cycles plus a drain) contains the predicted cycle 23 with twelve cycles
+to spare; and the design has not moved between the falsifier's base and HEAD, so
+the observation transfers. **Only then did I write WITHDRAWN.**
+
+#### 2. The divergence step, and why locating it mattered more than withdrawing
+
+The dispatch is right that a derivation which produced a false CRITICAL is an
+instrument with a measured defect, and that the record needs the defect's
+**location**. I re-executed the chain step by step against the RTL rather than
+against my own note. Steps (i)–(iv) — the DIC layout, the terminate word and lane,
+the successor's `begins` word, the re-seed's arrival at `crc_reg(23)` — **all
+reproduce exactly**. Step (v), the consumption cycle, does not: I wrote 23, the
+design does 22.
+
+**The substitution is `received` for `delivered`.** §6.1/§7's rule is *"output word
+`m` leaves on cycle `m + 3`"*, and `m` indexes **output** words — the payload after
+`REQ-103`'s four FCS octets have been removed by `tkeep`. I computed `m` from the
+frame's received octet count: ⌈65/8⌉ = 9 words, last index 8, `tlast = 12 + 8 + 3
+= 23`. The design emits ⌈61/8⌉ = 8 words, last index 7, `tlast = 22`. One
+substitution, one step, **exactly one cycle** — and the entire finding was a
+one-cycle margin: `crc_reg(22)` is still the frame's own final CRC and only
+`crc_reg(23)` is the re-seeded zero. The mutant reads the register one cycle
+before the seed lands.
+
+**What makes this a located defect rather than a plausible story** is that the
+correct arithmetic is written out in the suite I was auditing, three files from
+where I was reading: `test_m03_f.ml`:695–697 computes `words0` from `delivered0 =
+63 - 4`, and that unit's own header calls the delivered-versus-received
+distinction its whole point. §7 sampled `bench.ml` and `test_m03_d.ml` and never
+opened it.
+
+**And then I went further than the withdrawal required, because a withdrawal that
+leaves the question open is not a reconciliation.** With step (v) repaired the
+general case closes, the other way: consumption is at most `C + 2`; `C + 2`
+requires terminate lane ≥ 5; the successor's `begins` word is at least `C + 1` and
+equals it only if its start lane is ≥ `t + 1`; divergence needs both bounds tight
+at once, hence a start lane ≥ 6, which `REQ-101` forbids. **`D-M3` is an
+equivalent mutant over the whole legal stimulus space, and the load-bearing fact
+is the FCS strip — which neither dv_lead's proof nor my refutation had named.**
+The minimum margin is **exactly one cycle** and it is attained twice: at the
+witness's own cell, and at `M03-F4`'s. So the green run refutes **at the boundary
+of the space**, not somewhere in its interior. That is the strongest form the
+refutation could have taken, and it is worth more to the record than my finding
+was.
+
+**One thing I deliberately did not do.** §7.3(c)'s arithmetic limb survives
+untouched — `RV-0041-VERDICT` §3's stated tightest case still is not a member of
+the space it quantifies over. I recorded that as an **observation** and refused to
+file it as a smaller finding. The seal said *withdrawn in full*; a seat that
+withdraws in full and re-files a fragment under a new number has not withdrawn in
+full, and the value of a seal is exactly that it binds the seat that wrote it when
+the wind changes.
+
+#### 3. `F-0024-C`, re-graded — and the second defect, which is not the same as the first
+
+The dispatch put it to me that the coverage gap *"stays factually true regardless
+of A's withdrawal"* and that its first-ever exercise was the falsifier. **I
+checked that rather than adopting it, and both halves are wrong.**
+
+`F-0024-C` was two claims in one row. **Limb 1 — *no unit combines a length ≢ 0
+(mod 8) with a following frame* — is false**, and was false when I filed it:
+`M03-F4` (`test_m03_f.ml`:684–686, both lanes) drives a 63-octet frame followed by
+a 64-octet frame and asserts **exactly one strobe pulse in the whole run**. The
+file did not exist at `447d11c` (verified: `git cat-file -t` fails there) and
+landed at `8e040f0` ten hours later — **eight days before I filed the row**. §7's
+Evidence pinned the measurement to `447d11c` honestly; the **row** then stated an
+unbounded present-tense universal over the suite, and a reader acts on rows.
+That is `F-0026-B`, and it is a **different** defect from `F-0026-A`: the first is
+arithmetic, the second is quantifier discipline. Two defects, one round, one
+instrument — which is what makes §8.8's boundary owed rather than ornamental.
+
+Worse for my original claim and better for the program: **`M03-F4`'s lane-0 cell
+is at margin 1** — the minimum over the entire legal space, the same margin as my
+witness. The suite had a unit in the tightest row for eight days before I said it
+had none, and had `D-M3` diverged at margin 0, that unit would have killed it.
+
+**Limb 2 survives and I downgrade it to MINOR.** Re-measured at HEAD: **no
+committed unit ever spends DIC credit.** Credit banks only from a length ≢ 0 (mod
+4) and is spent only on a later gap, so a shortened gap needs ≥ 3 frames with a
+non-final one off the grid; every committed ≥3-frame schedule is 64-octet stress
+and every off-grid schedule has at most two frames. So every committed gap is ≥
+12, the 9-octet floor is undriven, and the link-partner model implements a
+behaviour no schedule asks it to emit.
+
+**The grade moved for reasons I had to be careful about.** The tempting reason —
+*the mutant turned out equivalent, so the gap conceals nothing* — is exactly the
+reasoning an auditor must refuse: it grades a coverage gap by the accident of what
+was seeded through it. I set it aside explicitly and moved the grade on three
+other measurements: the tight row **is** driven (`M03-F4`), **no packet
+overstates** (`grep -i dic` returns nothing in the `SO-` or the `AP-`, so this is
+an unclaimed gap and not a false claim — `PROCESS` §2.1's own distinction), and
+`REQ-004`'s named worst case — the alternating-lane 84-octet budget — **is**
+driven by the 10 000-frame stress; it is the DIC *shortening*, not the alternation,
+that is missing. The cure is exhibited rather than described, and the one thing
+genuinely unobserved is named in terms: **the witness schedule has never run
+against the unmutated design.**
+
+#### 4. The two cures against my own artefact, and why they are lines and not edits
+
+`J-auditor-0025` resolved `B.5` for 15 FALSE / 8 PLANNED and found `C-117`'s
+anchor wrong, and could stage neither. Both are now appended, dated, as **notes**
+— never as rewritten cells. The ground is not squeamishness: `docs/PROCESS.md`
+§5.4 rules that a frozen record is not repaired by rewriting it, §1.7 lists
+**in-place correction by the author** among the weaknesses this program still
+owes, and `de85393` — where a findings tally was corrected in place by its author
+— is the instance both point at. **A posture list that cured its own arithmetic by
+silently editing a cell would reproduce, in the file that measures this program's
+honesty, the exact weakness it measures.** For `C-117` the correction runs in the
+document's favour and I said so: the document's stamp is right and my citation was
+wrong.
+
+#### 5. The two grown referents, and the pin I changed mid-round
+
+`C-104`: re-measured, and it returns **two** corrections rather than one. The
+block at `6c02f5b`:890–936 carries **twelve** bullets, not the thirteen my row
+says — an off-by-one at the moment of measurement — and at `9362aef` it carries
+**fifteen**, the growth being one compressed *known grounds* bullet becoming that
+bullet plus three flat ones. The **posture is unchanged and re-executes true**: I
+re-ran the no-script-reads-a-tally grep at HEAD (3 hits, all unrelated) and
+confirmed `git diff 6c02f5b HEAD -- agents/PROTOCOL.md scripts/ .github/` is
+empty.
+
+`C-94`: §3.8's element list grew from six elements to seven, the seventh being the
+external anchor's disposition per stimulus class. The document discloses the
+growth in its own stamp text — **and the disclosure is the drafting seat's while
+the row is mine**, so I re-measured rather than adopted: `SO-xgmii_rx_64.md` §2.3
+states the anchor per class with each *"does NOT anchor"* list in the same cell
+and declares the module-level anchor **undischarged**, `SC-6` scored MET at all
+four read-backs. The row's evidence sentence survives the growth, now over seven
+elements.
+
+**The pin changed mid-round and that is a decision, not an accident.** The
+dispatch asked for these two notes *against the CURRENT text*. Between the
+dispatch and this entry the orchestrator announced a **fifth** edition in flight.
+A note that says *current* would have been false within the hour, so both notes
+are pinned to the **committed fourth edition at `9362aef`** and say so, with the
+command that reproduces them. This is the same failure mode as `F-0026-B` — a
+measurement whose pin does not survive into the sentence a reader acts on — and I
+would rather apply the lesson in the same round that paid for it.
+
+#### 6. Item 5: SCHEDULED, not folded. The grounds, since the ruling is mine
+
+The full re-measurement of all 128 rows against the fourth edition **does not fit
+honestly in this round**, and I decline to fold it in.
+
+1. **Scale.** 5,044 lines against the 1,445 the rows measure — 3.5×. The stamp
+   census alone, over the 2,685-line second edition, took a full round with three
+   sampling strata. A 128-row re-measurement is a round, not an item.
+2. **The target is moving under it.** The fifth edition was commissioned this
+   hour. A census pinned to `9362aef` and landing after the fifth edition would be
+   a measurement of a superseded edition **at the moment it lands** — precisely my
+   own row `C-75`'s decay class, and precisely the defect I am reconciling in this
+   same entry.
+3. **This round's own lesson forbids it.** The defect I located today is a
+   hand-execution that substituted one quantity for another at the end of a long
+   derivation. Executing a 128-row census as item 5 of a six-item round is that
+   hazard with more surface and less attention.
+4. **A rushed census is worse than an owed one.** The dispatch's words; I adopt
+   them as the ruling's ground rather than as permission.
+
+**The scheduled round, named and scoped so a skipped one is a visible gap:**
+
+> **`POSTURE-RE-MEASUREMENT-2`** — the second execution of `C-126`'s own
+> instruction. **Trigger**: the revision cycle stops moving (an edition committed
+> with no further edition commissioned at dispatch time). **Subject**: that
+> edition at its SHA. **Scope**: all 128 rows re-measured, plus four classes this
+> round shows are stale by construction — (a) every row's line-range citation;
+> (b) rows whose **claim text grew**, of which this round found two by accident
+> rather than by enumeration (`C-104`, `C-94`), because a grown claim means a
+> posture measured over a smaller claim; (c) rows whose claim has **left the
+> document**, a class nobody has looked for; (d) claims the third, fourth and
+> fifth editions **add**, which have no rows at all. **Deliverable**: a new
+> numbered report under `docs/reports/audit/` — the 128-row list stays frozen as
+> the measurement of `6c02f5b` that it is. **Preconditions**: none from this
+> round; the five appended notes are the interim carrier. **Shape**: one
+> dedicated round, no other items.
+
+Note 5 of the appended section says all of this inside the artefact itself, so a
+reader of the posture list learns its own staleness from the list rather than from
+my journal.
+
+#### 7. Ledger note, no action (dispatch item 6)
+
+Recorded and not acted on: the fourth edition discloses campaign **self-scoring**
+per the record, and routes **post-diff auditor scoring** as an **OPTION** (Annex
+B.2 item 12). The seats' grounds-on-record answer is separately commissioned. I
+note only that I am the seat such an option would bind, and that the question
+belongs with the seat that drafted the annex — the same posture I took at
+`J-auditor-0024` Open-question 3 on the (b.3) re-derivation limb.
+
+#### 8. The sampling frame, stated so it can be reconstructed
+
+*In the window*: one green CI run and its never-merged branch; five findings of my
+own from two rounds ago, one of them CRITICAL; four rows of my own artefact; and
+one scope question.
+
+*Sampled whole*: the falsifier commit and its two files; run 31541276523's two
+jobs step by step; `xgmii_rx_64.ml`'s five relevant regions; `arrival.ml` entire;
+`test_m03_f.ml`'s `run_f4` entire; **every `frames_at` call site in
+`test/xgmii_rx_64/**`** — the enumeration `F-0024-C` should have had and did not.
+
+*Re-derived rather than cited*: the consumption cycle, over the whole legal space
+(terminate lane × start lane × successor start lane × gap), from `REQ-101`, §0.3's
+floor and the three-age record — then checked against the extremal cell the
+machine actually ran.
+
+*Deliberately not sampled, and why*: the in-flight fifth edition (a sibling's
+uncommitted text is not a read surface); the 122 posture rows outside the four the
+dispatch named (that is `POSTURE-RE-MEASUREMENT-2`'s subject, and taking a bite of
+it here is the smuggling item 5 forbids); the other nine campaign manifests (no
+equivalence exclusion in any of them — `ADR-0020` §6.3's closed set of one);
+`F-0022-1`'s five stale renderings, still owed, still not mine to take this round.
+
+### Actions
+
+- Ran the abort-first precheck; re-ran it after HEAD moved `a39c8e7` → `1b684c7`,
+  re-verifying every read surface byte-identical.
+- Verified run **31541276523** at the GitHub API (run + both jobs, step by step)
+  rather than accepting the dispatch's summary; verified `528b045` is
+  `d4be71b` + the **unmodified** committed `D-M3.diff` by re-applying the manifest
+  and diffing; verified the oracle, the window and the design's immobility.
+- Re-executed the `D-M3` derivation step by step against the RTL, located the
+  divergence at the consumption cycle, and re-derived the equivalence over the
+  whole legal stimulus space.
+- Enumerated every `frames_at` call site in `test/xgmii_rx_64/**`, found
+  `M03-F4`, dated it at `8e040f0`, and computed its margin.
+- Wrote **§8** of `docs/reports/audit/WO-0041-mutations/README.md` as an EOF
+  addition; **nothing above it edited**.
+- Wrote **§7, five appended dated notes**, at EOF of
+  `docs/reports/audit/PROCESS-claims-posture.md`; **no cell above rewritten**.
+- Wrote this entry. **No `git commit`, no `git push`, no `git add`, no
+  `git apply`** — PROTOCOL §2, §10, ADR-0019. No stop-hook commit demand arrived;
+  the standing refusal holds either way.
+
+### Evidence
+
+All at `1b684c7` unless stated. Precheck `2026-08-12T02:34:21Z`: HEAD `a39c8e7`,
+`git status --porcelain` empty.
+
+**1. The run, at the API** (`actions/runs/31541276523` and `/jobs`):
+
+```
+run 31541276523  workflow build  #625  head_sha 528b045  branch mut/wo-0041-dm3-falsifier
+  job build 93943973189  conclusion failure
+    5 Build ................................................. success
+    6 Run tests (expect tests, waveform snapshots) ........... success
+    7 Generate RTL .......................................... success
+    8 Verify nothing was left unpromoted or non-deterministic  FAILURE   <- the only red
+    9,10 (DV mechanical checks; abort-bit quantifier) ........ skipped
+  job cosim 93943973133  conclusion success   (incl. "Run the co-simulation lane")
+```
+
+**2. The applied mutation is the committed manifest, unmodified**:
+
+```
+$ git show d4be71b:libs/hardcaml_ethernet/src/xgmii_rx_64.ml > base
+$ patch -p1 < D-M3.diff ; diff <patched> <(git show 528b045:libs/.../xgmii_rx_64.ml)
+(no output)   => IDENTICAL
+$ git show --stat 528b045      # 2 files: xgmii_rx_64.ml +15/-2, test_m03_d.ml +26
+$ git merge-base --is-ancestor 528b045 HEAD ; echo $?    # 1 -> never merged
+```
+
+**3. The design has not moved since the falsifier's base**:
+
+```
+$ git diff --stat d4be71b HEAD -- libs/hardcaml_ethernet/src/xgmii_rx_64.ml \
+      test/xgmii_rx_64/ test/xgmii/arrival.ml
+(empty)
+```
+
+**4. The divergence step, at its sources**:
+
+```
+xgmii_rx_64.ml:22-27   "the four FCS octets ... may lie in the input word AFTER the one
+                        carrying the octets of output word m ... the FCS is removed by
+                        [tkeep] and never by holding octets back"
+xgmii_rx_64.ml:46      "Output word m leaves on cycle m + 3"
+xgmii_rx_64.ml:949-950 "the `tlast` word is released by [closure_aligned] on the cycle
+                        after the terminate word, its record then at age 1"
+xgmii_rx_64.ml:977     consume <== (sel_valid &: (emit_tlast |: sel_is_r2))
+test_m03_f.ml:695-697  let delivered0 = 63 - 4 in
+                       let words0 = (delivered0 + 7) / 8 in
+                       let expected_tlast_cycle0 = start_cycle0 + 3 + (words0 - 1) in
+```
+
+Witness frame 1, `L` = 65 at a lane-0 start, start word 12: **hand-executed**
+⌈65/8⌉ = 9 words, `m` = 8, `tlast` = 23. **Design** ⌈61/8⌉ = 8 words, `m` = 7,
+`tlast` = **22**. `crc_reg(22)` = `crc_final(21)` = residue → no strobe.
+`begins(22)` → `crc_reg(23)` = 0, one cycle late.
+
+**5. The corrected equivalence, and the margin**: divergence requires `B + 1 ≤ T`
+with `T ≤ C + 2`, `T = C + 2` only for terminate lane ≥ 5, and `B = C + 1` only
+for successor start lane ≥ `t + 1` ≥ 6 — excluded by `REQ-101` (`s ∈ {0,4}`).
+Minimum margin **1 cycle**, attained at the witness cell (`t` = 1, `G` = 11:
+`T` = `B` = 22) and at `M03-F4` lane 0 (`t` = 7, `G` = 13: `T` = `B` = 11).
+
+**6. `F-0024-C` limb 1 is false, with dates**:
+
+```
+$ git cat-file -t 447d11c:test/xgmii_rx_64/test_m03_f.ml
+fatal: ... exists on disk, but not in '447d11c'
+$ git log -S'octets63' --format='%h %ci' -- test/xgmii_rx_64/test_m03_f.ml
+8e040f0 2026-08-03 15:13:06 +0000        # 447d11c is 2026-08-03 05:22:29 +0000
+$ git diff --stat 447d11c HEAD -- test/xgmii_rx_64/test_m03_f.ml   # 826 insertions
+test_m03_f.ml:684-686  frames_at ~lane ~fcs_valid:true [ octets63; octets64 ]
+test_m03_f.ml:753-767  exactly one strobe pulse asserted in the whole run
+```
+
+**7. Limb 2, re-measured at HEAD**: every `frames_at` site enumerated. ≥3-frame
+schedules are 64-octet only (`test_m03_l.ml`:78 · 10 000; `test_m03_j.ml`:83 ·
+101; `test_m03_n.ml`:1037–1047); off-grid lengths appear only in 2-frame
+schedules (`_f`:686 · 63+64, `_e`:527 · 64+68, `_i`:1109 · 64+68). Credit banks
+from a length ≢ 0 (mod 4) and is spent on a **later** gap (`arrival.ml`:56–59), so
+`shorten` = 0 everywhere. `grep -i dic agents/handoffs/SO-xgmii_rx_64.md
+test/attack_plans/AP-xgmii_rx_64.md` → **no hits**.
+
+**8. The four posture rows**:
+
+```
+$ git show 6c02f5b:docs/PROCESS.md | sed -n '890,936p' | grep -c '^- \*\*'   -> 12   (row says 13)
+$ git show 9362aef:docs/PROCESS.md | sed -n '2964,3054p' | grep -c '^- \*\*' -> 15
+$ git diff 6c02f5b HEAD -- agents/PROTOCOL.md scripts/ .github/              -> empty
+$ grep -rniE 'seeded|sealed|mutat|unreachab|equivalen|kill|tally|denominator|floor' \
+      scripts/ .github/ | wc -l                                              -> 3 (all unrelated)
+9362aef:docs/PROCESS.md:2733-2739   the 7th element (external anchor per class)
+SO-xgmii_rx_64.md:1047-1089, :281, :352, :512   the packet carries it; SC-6 MET x4
+v02.md:1181 -> inside J-architect_docs_lead-0025 (2026-08-04, BUG-0002)  [wrong anchor]
+v05.md:684  -> J-architect_docs_lead-0047 (2026-08-11T19:34Z), 6-row table, row 6 STOPPED
+B.5 recount: MC 34, RE 44, P1 26, PLANNED 8, FALSE 15, NOT SAMPLED 1 = 128
+```
+
+**9. Mandatory charter §5/§9 checks**: **write scope** — the two files below are
+both under `docs/reports/audit/**` and nothing else was written; **append-only in
+fact** — `git diff --stat docs/reports/audit/` shows `484 insertions(+)` and
+**zero deletions**, hunks `@@ -429,0 +430,162 @@` and `@@ -950,0 +951,322 @@`,
+i.e. pure EOF additions to both files; **no repo operation** — no `git commit`,
+`push`, `add` or `apply`.
+
+**Labelled as construction, not measurement**: the severity grades at §8.7 and the
+boundary at §8.8 are **constructions** — judgements about how a defect should bind
+this seat — not measurements. They bind my practice and nothing else. §8.4's
+derivation is a construction that has been **confirmed at one cell** by machine and
+nowhere else; I do not claim it is machine-checked over the space.
+
+**Harvest**: **not owed at this round.** PROTOCOL §7 and charter §8 attach the note
+to an `SO-` or a phase gate and this round is neither. My last harvest was
+`J-auditor-0019` over `-0001 … -0018`; the span `-0019 … -0026` tiles onto it and
+stays open. **One candidate is banked for it in the artefact rather than here**
+(§8.8, `LH2-g` grade, incident commits `d4be71b`/`528b045` and run 31541276523),
+so a later harvest finds it written rather than remembered.
+
+### Outcome
+
+**DoD met on all six dispatch items.**
+
+1. **The divergence step is located**: the drain rule instantiated with the
+   frame's **received** octet count where the design uses its **delivered** count
+   — `m` = 8 instead of 7, consumption at 23 instead of 22, one cycle, in a claim
+   whose entire content was one cycle.
+2. **`F-0024-A` — WITHDRAWN IN FULL**, by its own sealed term, after independent
+   verification of the run and four non-vacuity checks. **`F-0024-B` and
+   `F-0024-E` fall with it** (both were conditioned on A standing): `WO-0041` is
+   **5 of 5**, the era figure **15 of 15** stands, and nothing is owed by dv_lead
+   or the orchestrator on their account. **`F-0021-4` is REINSTATED** and
+   `J-auditor-0024`'s withdrawal of `J-auditor-0021` §9's sentence is itself
+   **withdrawn** — the exclusion does stand on its own merits.
+3. **`F-0024-C` re-graded by splitting**: limb 1 **withdrawn as false**
+   (`M03-F4`, in the tree eight days before I filed the row, and at the tightest
+   margin in the space); limb 2 **re-measured and downgraded to MINOR** as
+   `F-0026-C`, on grounds that deliberately exclude *"the mutant was equivalent"*.
+4. **Three findings filed, two of them against my own seat**: `F-0026-A` MAJOR
+   (the false CRITICAL's located arithmetic defect), `F-0026-B` MAJOR (an
+   unbounded universal from a partial enumeration at a superseded SHA),
+   `F-0026-C` MINOR (dv_lead, the undriven DIC class). **No CRITICAL is open from
+   this seat. Nothing here blocks a gate; the withdrawal releases one.**
+5. **Five appended dated notes** on `PROCESS-claims-posture.md`: `C-126`'s
+   figures (15/8, not 12/4), `C-117`'s anchor (`J-architect_docs_lead-0047`,
+   `v05`:684), `C-104` (twelve at the audited SHA, not thirteen; fifteen at
+   `9362aef`; posture unchanged and re-executed), `C-94` (seven elements now, and
+   the packet carries the seventh), and Note 5 declaring the list's own staleness.
+6. **Item 5 ruled: SCHEDULED, not folded** — `POSTURE-RE-MEASUREMENT-2`, scoped
+   above, triggered when the revision cycle stops moving.
+
+**The transcribable act, for the orchestrator to carry verbatim under ADR-0003's
+exception:**
+
+> **WITHDRAWAL — auditor, `F-0024-A` (CRITICAL, E4), WITHDRAWN IN FULL.** The
+> finding sealed its own falsifier — the unmodified `D-M3.diff` against
+> `frames_at ~lane:0 [f65; f65; f65]`, *withdrawn in full if that run is green*.
+> Run **31541276523** on `mut/wo-0041-dm3-falsifier` (`528b045`, never merged) is
+> green on the witness: **Build, Run-tests and Generate-RTL all `success`**, the
+> `cosim` job `success`, and the only red the snapshot check that is red for any
+> mutated tree by construction. **Verified at source, not adopted**: the applied
+> RTL is byte-identical to the committed manifest, the oracle is the one a dozen
+> M03 units use to assert strobes that do fire, the driven window contains the
+> predicted cycle by twelve cycles, and the design has not moved since the
+> falsifier's base. **The equivalence proof's conclusion is correct and `D-M3` is
+> an equivalent mutant over the specification's legal stimulus space** — a result
+> this seat has now re-derived independently, with the load-bearing fact being the
+> `REQ-103` FCS strip, which no version of the proof had named. **`WO-0041` is 5
+> of 5 and the era figure 15 of 15 stands. `F-0024-B` and `F-0024-E` are withdrawn
+> with it; `SO-xgmii_rx_64.md` and `P1-module-ready-checklist.md` are released and
+> owe nothing.** **My derivation was defective at one located step** — the drain
+> rule instantiated from the frame's received octet count where the design uses
+> its delivered count, one cycle, in a claim whose whole content was one cycle —
+> and it is filed against this seat as `F-0026-A` (MAJOR), with `F-0026-B` (MAJOR)
+> for a second, different defect found in the same round. **The method now carries
+> a boundary**: a hand-executed cycle-level derivation may not carry a severity
+> above MINOR while its conclusion turns on a margin no larger than the pipeline's
+> own quantum — below that, it is a hypothesis with a named falsifier, and the
+> falsifier runs before the severity is assigned.
+
+**Handoff**: to the orchestrator for commit. Trailers `Agent: auditor`,
+`Work-Order: none`, `Journal-Entry: J-auditor-0026`; **not** journal-only — two
+work-product paths staged, both inside `docs/reports/audit/**` (`R7`), both pure
+EOF appends. No rotation (ADR-0017 §4.4 arithmetic above).
+
+### Open-questions
+
+1. **The finding was wrong for eleven hours and the machinery that caught it was
+   my own seal, not another seat's review.** No one reviewed `F-0024-A` between
+   filing and execution; the orchestrator executed the falsifier the finding named
+   and the result did the work. That is the design working — but it means the
+   program's defence against a bad auditor finding is currently *the auditor's own
+   discipline in sealing falsifiers*, which is a compensating control resting on
+   the seat it compensates for. I raise it without proposing text; I am the seat
+   any remedy would bind.
+2. **`F-0026-C` leaves one thing genuinely unobserved and nobody is commissioned
+   for it**: the witness schedule has run only against the **mutated** tree. The
+   unmutated design has never been driven at a DIC-shortened gap. One unit in
+   dv_lead's scope closes it; the exact text exists at
+   `528b045:test/xgmii_rx_64/test_m03_d.ml` and cannot be lifted by me
+   (`test/**` is not my scope).
+3. **Two defects in one round from one instrument is a rate, and a rate needs a
+   denominator I have not built.** Charter §6 item 7 asks whether repeat findings
+   of the same class decrease phase over phase. `F-0024-D` and `F-0026-A` are the
+   same class one round apart. Whether §8.8's boundary is working is not knowable
+   from inside the round that wrote it, and the next seat to audit this seat should
+   test it against the next cycle-level derivation I file rather than against my
+   statement that I now hold it.
+4. **`POSTURE-RE-MEASUREMENT-2` has a trigger nobody owns.** *"The revision cycle
+   stops moving"* is observable but unassigned: the fifth edition is commissioned,
+   a sixth may be, and this seat is not told when a cycle closes. If the round is
+   never dispatched, the posture list stays a frozen measurement of `6c02f5b` with
+   an appended note saying so — which is honest, and is not the same as current.
+
+### Files-in-this-commit
+- docs/reports/audit/PROCESS-claims-posture.md
+- docs/reports/audit/WO-0041-mutations/README.md
