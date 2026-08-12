@@ -1884,3 +1884,48 @@ was then reverted.
 ### Files-in-this-commit
 - site/lifecycle_src.html
 - site/public/lifecycle.html
+
+## [J-orchestrator-0302] 2026-08-12T20:05Z | task:none | My own publish step stripped the site navigation off the lifecycle page and I committed it that way - caught by checking the artifact I shipped rather than the source I edited
+
+### Trigger
+
+Self-check after J-orchestrator-0301. I have been iterating on the lifecycle
+page with a scratch publish script that splices the fonts into
+site/public/lifecycle.html from the source. That script writes the page, and
+nothing else. site/build.py is what adds the site chrome — the tab bar every
+other page carries.
+
+### What was wrong
+
+The commit at 177d8ed shipped site/public/lifecycle.html with no navigation.
+grep for the site-chrome marker returned zero. A reader landing on the page
+from anywhere would have had no way back to the rest of the site.
+
+The verification harness did not catch it and could not have: it loads the page
+and drives the animation, and the animation was perfect. The chrome is site
+furniture that lives outside everything the harness knows to look at. I checked
+the thing I had been editing and not the thing I had shipped.
+
+### Fix
+
+site/build.py re-run, which restores the chrome on all four artifact pages and
+regenerates the derived pages against current repo state: 666 commits, 611
+journal entries, 83 work orders, 224 attack rows, 7/20 RTL modules.
+
+### The rule this earns
+
+The scratch publish script is not a publish. Any landing that touches
+site/public/ runs site/build.py before the commit, not after, and the chrome
+marker is now something I check by grep rather than by eye. Recorded here
+rather than in the harness because it is a habit defect, not a code defect —
+the harness would need to know what the site chrome is to test for it, and the
+cheaper fix is to stop hand-publishing a page the builder owns.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

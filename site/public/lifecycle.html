@@ -272,6 +272,20 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   .agnode, .rbox, .rgroup, .chip, .seatbox, .rgate, .rci, .orbit, .buggy { transition:none; }
 }
 </style>
+<!-- site-chrome-start -->
+<style>
+.tabbar { display:flex; flex-wrap:wrap; gap:.45rem; padding:14px 16px 4px;
+  font-family:'Plex Mono',monospace; }
+.tabbar a { display:inline-block; font-size:.78rem; font-weight:600;
+  letter-spacing:.08em; text-decoration:none; color:var(--ink-2,#5c6663);
+  background:var(--panel,#ffffff); border:1.5px solid var(--line,#d3dad7);
+  border-radius:999px; padding:.45rem 1rem; }
+.tabbar a:hover { border-color:var(--rx,#0f766e); color:var(--rx,#0f766e); }
+.tabbar a.here { background:var(--rx,#0f766e); border-color:var(--rx,#0f766e);
+  color:var(--panel,#ffffff); }
+</style>
+<nav class="tabbar"><a href="index.html">OVERVIEW</a><a href="block-diagram.html">BLOCK DIAGRAM</a><a href="spec-atlas.html">SPEC ATLAS</a><a href="org-chart.html">ORG CHART</a><a href="framework.html">FRAMEWORK</a><a href="lifecycle.html" class="here">LIFECYCLE</a><a href="backlog.html">BACKLOG</a><a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">GITHUB ↗</a></nav>
+<!-- site-chrome-end -->
 </head>
 <body>
 <div class="wrap">
