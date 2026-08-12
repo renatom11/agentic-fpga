@@ -186,7 +186,14 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   padding:.26rem 0; border-bottom:1px dotted var(--line); }
 .jent:last-child { border-bottom:0; }
 .jent .jn { font:700 .68rem 'Plex Mono',monospace; color:var(--rx); flex:0 0 auto; }
-.jent em { color:var(--ink-2); font-style:normal; font-size:.72rem; }
+.jent em { color:var(--ink-2); font-style:normal; font-size:.68rem; display:block; margin-top:.15rem;
+  font-family:'Plex Mono',monospace; letter-spacing:.04em; }
+.wst { font:700 .58rem 'Plex Mono',monospace; letter-spacing:.07em; padding:.02rem .3rem;
+  border-radius:4px; border:1px solid var(--good); color:var(--good); background:var(--goodbg); }
+.wst-BOUNCED { border-color:var(--bad); color:var(--bad);
+  background:color-mix(in srgb, var(--bad) 12%, var(--panel)); }
+.wst-ISSUED, .wst-RETURNED { border-color:var(--tx); color:var(--tx);
+  background:color-mix(in srgb, var(--tx) 12%, var(--panel)); }
 .jempty { font-size:.76rem; color:var(--ink-2); font-style:italic; }
 .detail .hint { font:500 .6rem 'Plex Mono',monospace; letter-spacing:.06em;
   color:var(--ink-2); text-transform:uppercase; }
@@ -379,7 +386,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
             <div class="rgroup" id="g-trail" style="grid-column:1/3">
               <span class="glab">the paper trail &#8212; work travels as files, never as messages</span>
               <div class="rboxes">
-                <button class="rbox" id="rp-wo" data-i="wo">Work orders<span class="st" id="st-wo">ISSUED</span></button>
+                <button class="rbox" id="rp-wo" data-i="wo" data-wo="Work orders">Work orders<span class="st" id="st-wo">ISSUED</span></button>
                 <button class="rbox" id="rp-dr" data-i="dr">Decision records</button>
                 <button class="rbox" id="rp-find" data-i="find">Findings</button>
                 <button class="rbox" id="rp-aud" data-i="audrep">Audit reports</button>
@@ -563,9 +570,9 @@ const BEATS = [
  {ph:'BUILD & VERIFY', t:80, d:5, bt:'One module, two independent work orders',
   ax:'The orchestrator issues the receive module\'s work as a pair: one order to implement it, one to verify it. Each order names its spec sections, its deliverables and its boundaries. The two assignees do not coordinate, and the frozen specification is their only shared reference.',
   acts:[{k:'tok',f:'rp-spec',to:'ag-orch',kind:'read',s:.02,e:.25},
-        {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.3,e:.7,
+        {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.3,e:.7,wo:{id:'WO-001',to:'implementation',st:'ISSUED',note:'Implement the receive module to its frozen contract'},
          ent:'WO-001 issued: build the receiver to its frozen contract'},
-        {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.38,e:.78,
+        {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.38,e:.78,wo:{id:'WO-002',to:'verification',st:'ISSUED',note:'Attack the receive module\u2019s contract, independently'},
          ent:'WO-002 issued: attack the receiver’s contract, independently'},
         {k:'born',w:'rp-wo',s:.65},{k:'flash',w:'rp-wo',s:.7,e:1}]},
  {ph:'BUILD & VERIFY', t:85, d:5, bt:'Implementation and verification hold different paths',
@@ -611,19 +618,19 @@ const BEATS = [
         {k:'sweep',s:.62,e:.98}]},
  {ph:'BUILD & VERIFY', t:120, d:6, bt:'The first bench packet is bounced',
   ax:'The first receive-module bench returns with its eleven rows accepted on substance and three defects listed: an unread record field that will fail the build under warning 69, a second mechanical defect, and one coverage gap. Revision two is accepted, and that acceptance is then withdrawn — the lead re-reads what it had cleared on a hand scan and puts the packet back to BOUNCED.',
-  acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.3,
+  acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.3,wo:{id:'WO-001',st:'RETURNED',note:'Worker return submitted for review'},
          ent:'Return submitted for the checksum unit'},
         {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.32,e:.52},
-        {k:'tok',f:'ag-impl',to:'rp-wo',kind:'write',s:.55,e:.75,
+        {k:'tok',f:'ag-impl',to:'rp-wo',kind:'write',s:.55,e:.75,wo:{id:'WO-001',st:'BOUNCED',note:'Six numbered defects, each citing the clause it violates'},
          ent:'BOUNCED: six defects, each with the line and the spec clause it violates'},
         {k:'tok',f:'rp-wo',to:'ag-wi2',kind:'read',s:.78,e:.95},
         {k:'flash',w:'rp-wo',s:.5,e:.9}]},
  {ph:'BUILD & VERIFY', t:126, d:5, bt:'The sixth round closes the work order',
   ax:'Later rounds find a bench driving every schedule backwards, then four more bench defects with zero convictions of the RTL. Round six adjudicates the outstanding experiment: the prediction is falsified, the defect is confirmed, and BUG-0001 is opened against the module. The packet reaches ACCEPT at round six with every round still readable inside it.',
-  acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.35,
+  acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.35,wo:{id:'WO-001',st:'RETURNED',note:'Second return: all six defect items answered'},
          ent:'Second return: all six defect items answered with evidence'},
         {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.38,e:.6},
-        {k:'tok',f:'ag-impl',to:'rp-wo',kind:'write',s:.62,e:.9,
+        {k:'tok',f:'ag-impl',to:'rp-wo',kind:'write',s:.62,e:.9,wo:{id:'WO-001',st:'ACCEPTED',note:'Accepted; the bounce and its answers stay in the packet'},
          ent:'ACCEPTED; the bounce and its answers preserved in the packet'},
         {k:'flash',w:'rp-wo',s:.85,e:1}]},
  {ph:'BUILD & VERIFY', t:131, d:6, bt:'An interface question is settled by decision record',
@@ -719,7 +726,7 @@ const BEATS = [
         {k:'flash',w:'rp-gates',s:.85,e:1}]},
  {ph:'GATE', t:213, d:5, bt:'That was one module of twenty',
   ax:'The paired work orders, the blind bench, the ten mutation campaigns and the sign-off that failed twice all covered the receive module. Seven of the twenty modules have RTL, and one carries a PASS sign-off. The transmit module\'s campaign is manifested — thirteen classes, one diff each — with no branch cut and no run scored.',
-  acts:[{k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.2,e:.6,
+  acts:[{k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.2,e:.6,wo:{id:'WO-003',to:'implementation',st:'ISSUED',note:'The transmit module \u2014 the loop begins again'},
          ent:'Next pair issued: the transmitter — the loop begins again'},
         {k:'flash',w:'rp-board',s:.55,e:.9},{k:'flash',w:'rp-wo',s:.6,e:.95}]},
  {ph:'GATE', t:218, d:7, bt:'The sessions end; the repository remains',
@@ -738,7 +745,7 @@ const JMAP = { 'ag-orch':'jr-orch','ag-spec':'jr-spec','ag-impl':'jr-impl',
 const WHO = {};
 
 const LABELSKEY = new Set(['st-wo','st-so','st-gate']);
-const births = {}, gones = {}, stamps = [], occ = {}, bugs = {}, jentries = {};
+const births = {}, gones = {}, stamps = [], occ = {}, bugs = {}, jentries = {}, worders = {};
 for (const b of BEATS) for (const a of b.acts) {
   const at = b.t + (a.s ?? .5) * b.d;
   if (a.k === 'born') births[a.w] = at;
@@ -747,12 +754,17 @@ for (const b of BEATS) for (const a of b.acts) {
   if (a.k === 'bug') bugs[a.w] = at;
   if (a.k === 'spawn') (occ[a.w] ??= []).push([at, Infinity]);
   if (a.k === 'off') { const iv = occ[a.w]; if (iv) iv[iv.length-1][1] = at; }
+  if (a.k === 'tok' && a.wo) {
+    const at = b.t + (a.e ?? 1) * b.d;
+    (worders[a.wo.id] ??= []).push({ t: at, st: a.wo.st, note: a.wo.note, to: a.wo.to });
+  }
   if (a.k === 'tok' && a.ent) {
     const j = JMAP[a.f];
     if (j) (jentries[j] ??= []).push({ t: b.t + (a.e ?? 1) * b.d, title: a.ent, by: WHO[a.f] });
   }
 }
 for (const j in jentries) jentries[j].sort((x,y) => x.t - y.t);
+for (const w in worders) worders[w].sort((x,y) => x.t - y.t);
 const SLOT_BORN = births['g-seats'] ?? 0;
 const LABELS = {
   'st-wo':   [[82.5,'ISSUED'], [123.5,'BOUNCED'], [129,'ACCEPTED'], [215.5,'ISSUED']],
@@ -775,7 +787,11 @@ const stage = $('stage'), fx = $('fx');
 function center(id) {
   if (id === '@left') { const s = stage.getBoundingClientRect();
     return { x: -46, y: s.height * 0.42 }; }
-  const el = $(id); if (!el) return null;
+  let el = $(id); if (!el) return null;
+  // a target that has not been created yet has no box: aim at the container it
+  // is about to appear in, never at the origin.
+  while (el && (el.offsetParent === null || !el.getBoundingClientRect().width)) el = el.parentElement;
+  if (!el || el === document.body) return null;
   const r = el.getBoundingClientRect(), s = stage.getBoundingClientRect();
   return { id, x: r.left - s.left + r.width/2, y: r.top - s.top + r.height/2 };
 }
@@ -930,6 +946,17 @@ function render() {
   const shellAt = births['g-shell'] ?? 0;
   $('rempty').style.display = T < shellAt ? 'flex' : 'none';
 
+  {                                   // work orders: how many packets exist so far
+    const el = $('rp-wo');
+    if (el) {
+      const n = Object.values(worders).filter(v => v.some(e => T >= e.t)).length;
+      el.childNodes[0].nodeValue = 'Work orders' + (n ? ' ' : '');
+      let tag = el.querySelector('b');
+      if (n) { if (!tag) { tag = document.createElement('b'); el.insertBefore(tag, el.firstChild.nextSibling); }
+               tag.textContent = '\u00d7' + n; }
+      else if (tag) tag.remove();
+    }
+  }
   /* journals visibly fill up: the count is the number of entries written so far */
   document.querySelectorAll('[data-base]').forEach(el => {
     const list = (jentries[el.id] || []).filter(e => T >= e.t);
@@ -959,6 +986,7 @@ function render() {
       let tk = liveToks.get(key);
       if (!tk) { tk = tokSvg(a.kind); fx.appendChild(tk); liveToks.set(key, tk); }
       const pos = tokPos(a, p);
+      tk.setAttribute('visibility', pos ? 'visible' : 'hidden');
       if (pos) {
         tk.head.setAttribute('transform', `translate(${pos.x},${pos.y})`);
         tk.querySelectorAll('.trail').forEach((el, i) => {
@@ -967,11 +995,12 @@ function render() {
         });
       }
       tk.setAttribute('opacity', p < .08 ? p/.08 : p > .92 ? (1-p)/.08 : 1);
-      if (p > .86 && pos) {               // arrival pulse at the destination
+      const dstC = center(a.to);
+      if (p > .86 && pos && dstC) {        // arrival pulse at the destination
         const r = 5 + (p - .86)/.14 * 13;
         let pl = tk.pl;
-        if (!pl) { pl = tk.pl = pulse(center(a.to) || pos, KINDS[a.kind].c); fx.appendChild(pl); }
-        const dst = center(a.to) || pos;
+        if (!pl) { pl = tk.pl = pulse(dstC, KINDS[a.kind].c); fx.appendChild(pl); }
+        const dst = dstC;
         pl.setAttribute('cx', dst.x); pl.setAttribute('cy', dst.y);
         pl.setAttribute('r', r); pl.setAttribute('opacity', (1 - (p-.86)/.14) * .55);
       } else if (tk.pl) { tk.pl.remove(); tk.pl = null; }
@@ -996,6 +1025,7 @@ function render() {
 
   drawWires();
   if (openCard && openCard.kind === 'journal') paintJournal(openCard.id);
+  if (openCard && openCard.kind === 'wo') paintWO();
   $('scrub').value = T;
 }
 window.seek = t => { T = Math.max(0, Math.min(TOTAL, t)); render(); };
@@ -1224,9 +1254,26 @@ function paintJournal(jid) {
   $('detx').innerHTML = h;
   $('dhint').textContent = 'live — scrub and watch it fill';
 }
+function paintWO() {
+  const live = Object.entries(worders)
+    .map(([id, hist]) => [id, hist.filter(e => T >= e.t)])
+    .filter(([, h]) => h.length);
+  let h = `<div class="dx">${DATA.wo[1]}</div><div class="jbox"><div class="jhead">${
+    live.length ? live.length + (live.length === 1 ? ' packet' : ' packets') + ' so far' : 'none issued yet'}</div>`;
+  if (!live.length) h += `<div class="jempty">No work has been commissioned at this point in the project.</div>`;
+  for (const [id, hist] of live) {
+    const cur = hist[hist.length - 1], first = hist[0];
+    h += `<div class="jent"><span class="jn">${id}</span><span><b class="wst wst-${cur.st}">${cur.st}</b>` +
+         `${first.to ? ` &#183; to ${esc(first.to)}` : ''}<br>${esc(cur.note)}` +
+         (hist.length > 1 ? `<em>${hist.map(e => e.st).join(' &#8594; ')}</em>` : '') + `</span></div>`;
+  }
+  $('dett').textContent = 'Work orders'; $('detx').innerHTML = h + '</div>';
+  $('dhint').textContent = 'live \u2014 scrub and watch the packets move';
+}
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-i]');
   if (!el || el.classList.contains('unborn')) return;
+  if (el.dataset.i === 'wo') { openCard = { kind:'wo' }; paintWO(); return; }
   if (el.dataset.i === 'journal' && el.id) { openCard = { kind:'journal', id: el.id }; paintJournal(el.id); return; }
   const d = DATA[el.dataset.i]; if (!d) return;
   openCard = { kind:'static' };

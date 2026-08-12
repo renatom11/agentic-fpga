@@ -1744,3 +1744,56 @@ annotation overflows its box at any beat, no page errors.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0300] 2026-08-12T19:31Z | task:none | The token that flew off the top of the stage is reproduced before it is fixed - my own unborn-box fix aimed arrivals at the origin - and work orders are now listed packet by packet with their state history
+
+### Trigger
+
+Sponsor, two items: work orders should be listed, and "theres a visual glitch
+wehre sometimes the moving thing flies off to the top right."
+
+### The glitch: reproduced, then diagnosed, then fixed
+
+I did not guess. A probe stepped the whole 225-second timeline and flagged any
+mark leaving the stage bounds; the first pass found NOTHING, because it sampled
+only the token groups. The arrival PULSE is a separate circle element and was
+never in the sample. Widened to include circles, the probe reproduced it
+immediately: five off-stage pulses at (-19, -255), consistently at beats whose
+target artifact does not exist yet.
+
+Root cause is mine, from the previous landing. Fixing the unborn-box defect
+(J-orchestrator-0298 item 10) by giving unborn elements display:none means
+getBoundingClientRect returns all zeros, so center() computed the stage origin
+and every arrival aimed there. Twelve acts fly toward an artifact that is still
+unborn at launch — the requirements, the findings, the work orders, the attack
+plan, the model, the benches — so the arrival flare shot off the top edge.
+
+The fix is not a clamp. center() now walks up to the nearest ancestor that
+actually has a layout box, so a token flying to an artifact that has not
+appeared yet aims at the group it is about to appear in — which is where it
+should have been aimed all along. Tokens with no resolvable target are hidden
+rather than parked. Verified across three viewports at 0.2s resolution: zero
+off-stage tokens AND zero off-stage pulses, where the same probe found five
+before.
+
+### Work orders, listed
+
+The Work orders box now carries a live count and its click card lists every
+packet: id, current state as a coloured pill, addressee, the note, and the
+full state history where there is one. At the bounce the card reads
+WO-001 ISSUED, RETURNED, BOUNCED, RETURNED with the round-six ACCEPT still
+ahead of it, and WO-002 sitting at ISSUED with verification. Same live
+re-render as the journals, so scrubbing moves the packets through their
+lifecycle in front of you. This is the framework's own claim made checkable:
+a packet is a versioned file with an author, an addressee and a status, not a
+message that disappears.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
