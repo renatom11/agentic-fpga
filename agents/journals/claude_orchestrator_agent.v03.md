@@ -850,3 +850,69 @@ mut/wo-0084-class-03-v2 STANDS as the never-merge campaign record (ADR-0019).
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0285] 2026-08-12T11:33Z | task:ADR-0022 | The warranty re-scoping and the core/memoir split go in force: two seats that did not write the changes countersign ACCEPT on the question §3.5 asks — the acceptance is a different seat's, the qualification is carried not smoothed, and the composite it does NOT certify is named
+
+### Trigger
+
+ADR-0022 landed PROPOSED and NOT IN FORCE with three countersignatures owed
+(§7): dv_lead on Decision 1 (the warranty re-scoping), auditor on Decision 2
+(the core/memoir split), and the orchestrator's acceptance act (§3.6: a record
+proposes, a different seat accepts). I dispatched the two signing seats in
+parallel; both returned ACCEPT, and this entry is the acceptance act that flips
+the record.
+
+### The two countersignatures, paid
+
+- **dv_lead `J-dv_lead-0198` — ACCEPT, both limbs, guard exactly the rule.**
+  The re-scoped warranty (docs/PROCESS.md read alone is a description, not a
+  replication kit; the replication claim belongs to the two-part unit) is true
+  of the artifact as read — the two cold-adoption runs measured it (~100%
+  invented run 1; ~850 enforcement lines from nothing run 2 after facsimiles)
+  and the document smuggles in no unit-level warrant. §2.3's unit-level UNTESTED
+  is calibrated exactly: not FIT, not NOT FIT, not upgraded, both gates named.
+  Refusal was available under §3.5 and declined on the merits.
+- **auditor `J-auditor-0029` — ACCEPT, one qualification kept attached.**
+  Verified against the committed fifth edition `d96a5b1`, re-executed not read:
+  falsifier 4 accounted all 1,496 removed lines; first-edition preservation
+  reconciled exactly (fifth = 47 uses, companion = 47; the sixth's 33 + 14
+  restored = 47); sentinel zero in the core; all twelve core stamps resolve
+  (three restorations checked verbatim). The qualification, disclosed not
+  smoothed: the split **as first executed in the sixth edition `592926e`** did
+  lose fourteen margins and its own falsifier could not see it — the seventh
+  edition restored all fourteen verbatim, and the auditor accepts the artifact
+  **as it now stands**, reading the reviewer-against-`d96a5b1` control's firing
+  as evidence *for* the split's verifiability. Report at
+  `docs/reports/audit/ADR-0022-split-verification/`.
+
+### The acceptance act (this entry)
+
+Both ACCEPT → I flip ADR-0022 to **ACCEPTED — IN FORCE**: the status block
+rewritten to cite all three entries and carry the auditor's qualification, with
+the original PROPOSED/NOT-IN-FORCE reading preserved per §8(1) rather than
+rewritten; the §7 table's three rows flipped OWED → the paid entry ids; the
+§7.1 ledger made explicit that no clause of the record moved (the route closed
+on two ACCEPTs, so no signature was re-owed). **What the flip does NOT upgrade,
+stated in the status block:** the unit-level replication claim of §2.3 stays
+UNTESTED — this ratifies two in-scope normative changes onto the route §1.0
+demands; it does not certify the composite, still gated on the doc–shell drift
+check (owed, three editions overdue) and a with-shell alien-domain run.
+
+### Routed
+
+The auditor's one residue — a fifth-edition margin at `d96a5b1:4825` filed in
+the companion's B.1 rather than under its Part I anchor (in the volume, nothing
+lost, only mis-filed) — is added to the architect amendment batch as a
+`docs/PROCESS-MEMOIR.md` filing fix. It blocks nothing.
+
+### Next
+
+The amendment batch (§11 round) is the next engineering act, now on a stable,
+in-force document: C-40, C-93, F-0022-2, ADR21-1 (R10/R11 into PROTOCOL §5 with
+ADR-0021 §8's cured draft), PROCESS B.2 items 7/10-16, the round-5 charter
+re-quotes, and this memoir filing fix. Then dv's WO-0083 stage-2 revision and
+the WO-0085 cfg_ifg bench, then POSTURE-RE-MEASUREMENT-2 against the seventh
+edition.
+
+### Files-in-this-commit
+- docs/adr/ADR-0022-the-warranty-and-the-split.md

@@ -1,14 +1,40 @@
 # ADR-0022: the warranty and the split — two normative changes to what `docs/PROCESS.md` claims to be
 
-- **Status**: **PROPOSED**. **NOT IN FORCE.** Nothing in this file binds
-  anything until the countersignature route of §7 completes. **Both decisions
-  it records are already operating** — decision 1 has been operating since the
-  fourth edition landed, decision 2 lands with the sixth edition in the same
-  commit as this file — and that gap is the point of the record, not an
-  embarrassment to be smoothed: §3.6 of `docs/PROCESS.md` names *proposed, and
-  the rule it records has been in force since this date* as the shape that makes
-  a proposed-but-operating rule measurable instead of quietly true. This is that
-  shape, disclosed.
+- **Status**: **ACCEPTED — IN FORCE** as of `J-orchestrator-0285`, 2026-08-12,
+  the §3.6/§11(2) acceptance entry. Both countersignatures the route of §7 named
+  are paid, both **ACCEPT**:
+  - **dv_lead `J-dv_lead-0198`** on Decision 1 — the re-scoped warranty guards
+    *exactly* the rule the verification line reads (neither wider nor narrower),
+    and the unit-level UNTESTED of §2.3 is calibrated to a composite never
+    assembled: not FIT, not NOT FIT, not upgraded.
+  - **auditor `J-auditor-0029`** on Decision 2 — the split *as it now stands*
+    loses nothing against the committed fifth edition `d96a5b1` (47 = 47
+    preserved claims reconciled, sentinel count zero in the core, every core
+    correction-stamp resolves; the stamp apparatus adapted to the split, not
+    weakened), **with one qualification kept attached per its author's request**:
+    the split *as first executed in the sixth edition `592926e`* did lose
+    fourteen preserved margins and its own falsifier could not see it; the
+    seventh edition restored all fourteen verbatim, and the auditor accepts the
+    artifact **as it now stands**, reading the firing of the
+    reviewer-against-`d96a5b1` control as evidence *for* the split's
+    verifiability, not against it.
+  - **What this flip does NOT upgrade:** the unit-level replication claim of §2.3
+    stays **UNTESTED**. This record puts two in-scope normative changes on the
+    route §1.0 demands and ratifies them; it does not certify the composite,
+    which remains gated on the doc–shell drift check (owed, and now three
+    editions overdue) and on a with-shell, alien-domain adoption run by an
+    uncommissioned party.
+  - **Both decisions were already operating before this route completed** —
+    decision 1 since the fourth edition, decision 2 since the sixth, in the same
+    commit as this file's first edition. That gap was the point of the record,
+    not an embarrassment to be smoothed: `docs/PROCESS.md` §3.6 names *proposed,
+    and the rule it records has been in force since this date* as the shape that
+    makes a proposed-but-operating rule measurable instead of quietly true; the
+    §7 route has now closed the gap it disclosed.
+  - **The first edition of this block read `PROPOSED` / `NOT IN FORCE`** — nothing
+    in it bound anything until the countersignature route of §7 completed —
+    proposed at `J-architect_docs_lead-0056`. Preserved here per §8(1), rather
+    than rewritten.
 - **Proposed at**: `J-architect_docs_lead-0056`, 2026-08-12.
 - **Deciders**:
   - **architect_docs_lead** — this instrument, and both decisions as *authored
@@ -242,9 +268,9 @@ orchestrator's, not this seat's.
 
 | # | Signature owed from | On what, exactly | Status |
 |---|---|---|---|
-| 1 | **dv_lead** | Decision 1: that the re-scoped warranty is one the verification line recognizes as true of the artifact it has read, and that the *unit-level UNTESTED* statement in §2.3 is neither too strong nor too weak | **OWED** |
-| 2 | **auditor** | Decision 2: that the split as executed loses nothing — verified against the fifth edition's committed text — and that the core's remaining stamp apparatus is not weakened by the move of its archaeology | **OWED** |
-| 3 | **orchestrator** | The acceptance act itself (§3.6: a record proposes, a different seat accepts) | **OWED** |
+| 1 | **dv_lead** | Decision 1: that the re-scoped warranty is one the verification line recognizes as true of the artifact it has read, and that the *unit-level UNTESTED* statement in §2.3 is neither too strong nor too weak | **PAID — ACCEPT** at `J-dv_lead-0198` (guard exactly the rule, both limbs) |
+| 2 | **auditor** | Decision 2: that the split as executed loses nothing — verified against the fifth edition's committed text — and that the core's remaining stamp apparatus is not weakened by the move of its archaeology | **PAID — ACCEPT** at `J-auditor-0029`, verified against `d96a5b1` (report `docs/reports/audit/ADR-0022-split-verification/`); one qualification carried in the status block |
+| 3 | **orchestrator** | The acceptance act itself (§3.6: a record proposes, a different seat accepts) | **PAID** at `J-orchestrator-0285` (this acceptance act) |
 
 **The precedent for rows 1 and 2** is every prior confirmation round on this
 document: the seats whose disciplines a passage describes confirm that passage,
@@ -261,7 +287,7 @@ cannot be read as *nothing moved*.
 
 | clause | what moved | whose signature the movement re-owes |
 |---|---|---|
-| — | nothing has moved since proposal | — |
+| — | nothing moved: the §7 route closed at `J-orchestrator-0285` on two ACCEPTs with **no change to any clause of this record**, so no signature was re-owed. (The auditor's one residue — a fifth-edition margin at `d96a5b1:4825` filed in the companion's B.1 rather than under its Part I anchor: *in the volume, nothing lost, only mis-filed* — is a `docs/PROCESS-MEMOIR.md` filing item routed to the architect amendment batch, not a movement in this record.) | — |
 
 ## 8. Owed acts — the file touches this record does not make
 
