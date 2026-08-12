@@ -3006,3 +3006,384 @@ no git command run.
 
 ### Files-in-this-commit
 - docs/PROCESS.md
+
+## [J-architect_docs_lead-0053] 2026-08-12T01:49:02Z | task:none | The fourth edition: the campaign seal rewritten from the record at an independence boundary, the shell pinned to what this repository can attest, and Annex B converted from ledger to schedule
+
+### Trigger
+
+Orchestrator dispatch, dispatch-only (no `WO-`), one seat, one round: the
+round-3 (FINAL) revision of `docs/PROCESS.md`, producing the **fourth edition**.
+It is the last act of the sponsor's standing commission — three council rounds
+with verdict-driven revisions. The source artifact is
+`docs/reports/process-council/round-3/verdict.md`, committed at `1457a51`, whose
+Recommendation names six BLOCKING revisions (each with a defect site **and an
+acceptance test**), a cheap non-blocking batch for the same round, an explicit
+fence of things not to do, a vocabulary-drift item, and two dated conditions.
+The dispatch additionally attributed one prose defect I reported and refused as
+unattributable in the previous round.
+
+Precheck (§4.1), performed before opening any file for editing:
+`git log --oneline -1` → `1457a51 Council round three returns…`; `git status
+--porcelain` → empty; branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`.
+Both match the dispatch's stated expectation. No siblings declared, none
+observed.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md` (whole).
+- `docs/reports/process-council/round-3/verdict.md` — read in full before any
+  edit, as the dispatch requires. `bob.md` (F1's per-blockquote acceptance test,
+  F3's escape-ledger disclosure, F4/F5 counts, F9 vocabulary), `charlie.md`
+  (F2's four literals, F1's acceptance test, F3/F4 navigation) for detail. The
+  verdict controls; the reports were read only where it points at them.
+- **The One Thing's record**:
+  `agents/handoffs/WO-0039_m03-mutation-campaign-SEALED-predictions.md` in full,
+  and `RV-0039-VERDICT` — located inside the companion packet
+  `agents/handoffs/WO-0039_m03-mutation-campaign.md` §233ff, not as a separate
+  file — plus its addendum.
+- `agents/handoffs/HT-01_first-harvest-transit.md` §4–§5 (the shell observation).
+- `agents/handoffs/README.md`; `agents/handoffs/WO-0080_tb-m04-first-bench.md`
+  (the bounce revision scheme, from a real state line);
+  `agents/charters/auditor.md:28` (the escape ledger's naming).
+- `docs/PROCESS.md` (whole, ~4,142 lines) — the object.
+- Re-derivations run against the tree rather than quoted: the nine charter
+  section sets; the campaign seal/verdict census; the escape-ledger history
+  search; the roster / program-state / gate-checklist shapes; the enforcement
+  script names for the name map.
+
+### Reasoning
+
+**The One Thing first, and it decided the shape of the rest.** The verdict's
+top item is not a wording defect: §3's packet table, §3.3's facsimile and §3.9
+gave three incompatible answers to who authors a campaign seal, when it freezes,
+who is blinded, and who scores. I opened the artifacts before writing a word.
+The record says: author = the scored seat (the table row was the true one);
+freeze point = *before any defect diff existed* (the facsimile's de-domaining to
+"before any evidence existed" is weaker in the one direction that matters — it
+admits a seal frozen after the diffs are rendered); blind = **against the
+seeder**, with the reason stated in the artifact itself; and the scorer is the
+same seat that froze it.
+
+That last one is where the round's real decision sat. The dispatch put it
+correctly: either the rule is wrong as written or the practice is a named
+deviation, and the record decides. I re-derived rather than assumed —
+**thirteen sealed campaigns, every seal frozen by the verification lead; ten
+scored, all ten by that same seat; three drafted and unscored** — and, decisively,
+**none marked as a deviation at the time**. A rule kept zero times out of ten,
+never disclosed as an exception, is not a rule with a deviation. It is a
+description of a different organization. So I **withdrew the rule** rather than
+restating it with an apology, and wrote in its place the four constraints that
+actually hold a self-scored campaign honest (immutability that is checkable, the
+second copy in an append-only log, the scorer's inputs being other seats'
+artifacts, and message-text discrimination), plus the residue named where it
+belongs: this is §5.7's own sixth disguise — *the measurement that grades the
+measurer* — which the document lists in its museum and denied in §3.3. Two
+passages of one document disagreeing about whether a separation exists is worse
+than either answer alone.
+
+I considered and rejected the softer option of calling the practice a *named
+deviation* going forward. It would have read better and it would have been
+false: nothing in the record names it, and inventing a disclosure retroactively
+is precisely the class this edition exists to remove. I also refused to enact
+the repair (scoring by the independent seat, whose blind is discharged once
+every diff is committed). That is another seat's duty and would need the
+amendment procedure, so it is routed as an **option, not a recommendation**
+(B.2 item 12) — the same form the document already uses for the gate-scope
+narrowing.
+
+**The pin (blocking 2) is where I had to decide what honesty means.** The
+verdict asked for "facsimiles taken at <tag/SHA>; shell current through <X>".
+The temptation was to write a shell SHA and look pinned. But this repository has
+exactly one attestable observation of the shell — `main` = `2ad82c3`, 2026-08-11,
+the state the federation transit branch was cut from — and **every facsimile in
+this document was written from local artifacts, not from the shell**. So the pin
+says three things and refuses a fourth: where the facsimiles came from (here),
+what was observed of the shell and when, and that the shell's current contents
+are unknown from this seat by construction. **A pin naming a SHA nobody re-read
+is a stronger-looking claim and a weaker one.** Because the drift check stays
+unbuilt (it is my named debt, and I refused to widen a revision round into an
+engineering round to build it), I took the verdict's second limb: the
+**document's opening paragraph is re-scoped explicitly to the export unit**, so
+a reader meets the scope before the content rather than 3,000 lines in.
+
+**Blocking 3 turned into a sweep with a small surprise.** The minting blockquote
+is invented law: no constitutional clause, no decision record, no charter, and
+the record's practice is its exact inverse — every extension form was minted by
+use, which the document itself concedes two paragraphs later. Marked *(no
+posture row — proposal, not this organization's law)*, routed to B.2 item 11,
+and the table's "Six types are defined" replaced with a **fifth column** naming
+which rows are constitutional (four) and which are this document's construction
+(two, and what each actually rests on). The sweep of §§2–4 then found **exactly
+one** unstamped normative blockquote — this one. But applying the same test
+outside the commissioned range caught a second: the **mechanism-placement
+blockquote in the preamble**, a rule with no marker at all. It binds this
+document's author rather than any seat, which is why it is marked as such rather
+than routed. Census in Evidence.
+
+**Blocking 4 was the one that required actually executing something.** I
+paper-executed Steps 0–4 and the old order fails twice on the acceptance test's
+own terms: Step 2 consumes a charter set no step produces, and Step 4 consumes a
+constitution no step authors (B.8 item 34's admitted half). The repair is Step 1
+restructured into four ordered acts — 1a derive the roster (the scope table is
+its scope column made executable), 1b land the machinery carrying **exactly one**
+scope row so that §1.2's four-things rule is never violated, 1c onboard every
+other seat one act per seat **under the gate**, 1d author the constitution from
+the running machinery. The subtle part is 1b: I first drafted it with every
+seat's scope row landing with the machinery, and caught that this is precisely
+the intermediate state §1.2 forbids — *a scope row with no charter grants write
+access to a role nobody has defined*. One row, the committing seat's, is the
+only honest bootstrap, and every other seat then onboards gated.
+
+**Blocking 5's four literals split two and two, and the split is the finding.**
+Two the record could supply and are now stated in the text (the packet `<TYPE>`
+tokens; the bounce revision scheme, taken from a real state line). Two it could
+not: this program **has no placeholder token** — its practice is the next free
+number declared provisional in a journal entry, which is disciplined and not
+greppable, so the claimed greppability property was an intention described as a
+practice; and the E6 threshold exists only as an example in the constitution,
+with the class never fired. Writing numbers into running lines to close a
+finding would have been this document inventing a practice and then describing
+it. Both went to **Annex A.9** in the annex's own idiom, with the property an
+adopter must satisfy.
+
+**Blocking 6 wanted an aggregate nobody had ever written**, and it is the item I
+expect to matter most to an adopter. Each local honesty note in this document is
+true; the sum is a different fact, and the sum is that the review-enforced tier —
+the majority tier — has been substantially dormant since ratification. Eleven
+rows, each re-derived. The cadence question then answered itself structurally:
+every interval lives in the auditor's charter, and the auditor is spawned by the
+orchestrator and nobody else, so **a cadence written into a charter is owned by
+whoever spawns that seat**. I stated that as a finding and routed it as an
+amendment candidate (B.2 item 10) rather than enacting a duty on a seat that
+never agreed to it — the same fence I applied at blocking 3.
+
+**Annex B → schedule.** The council read three editions of faithful debt-recording
+as the defect: the cold-reader row was recorded *owed* twice running and nothing
+made it come due. §5.5's own test is that a routing rule needs a named owner, a
+named triggering event and a visible debt, and this annex carried one of three.
+So B.0 now holds the two conditions with owners, commissioners, commissioning
+date and due event — and B.1's cold-reader row records edition 3 as **NOT RUN**
+rather than *owed*, which is what it actually was.
+
+**Two adjacent findings I did not fix and would not leave silent.** The round-3
+audit filed a wrong count in §1.1 ("six of the eight owed postures") and a
+header count of four over a list of five in §1.5. Both are outside the
+commissioned scope and both sit **directly beside text this edition added** — my
+new summed table lands under the first, my escape-ledger disclosure under the
+second. Applying them would widen scope; leaving them unmarked would let a known-
+false claim borrow my new text's authority. So they are **marked in place with
+their route** and repaired nowhere, and B.9 refusal 3 states the corollary this
+round adds: *a revision that leaves a filed defect unmarked beside its own new
+text has widened nothing and hidden something.*
+
+**The fence held.** Charters not inlined; failure museum and the dual statement
+untouched; §3.9's scoring block not frozen (its instruction that the reporting
+form must move is intact, and my only edit inside it is a parenthetical pointing
+at the name map). The core/memoir separation is **not attempted** and is
+recorded as the endorsed fifth-edition act. The posture list was not opened as
+editable and no line of it changed.
+
+**One decay repair I judged obligatory rather than optional.** The stamp-boundary
+block said the document is "nearly three times" its measured 1,445 lines. At
+5,044 lines that is false, and the block's own paragraph says a boundary claim
+decays faster than any claim inside it. Leaving it would have been the edition
+committing, in the act of citing it, the defect the block was written to name. It
+is re-measured, with the reason stated.
+
+### Actions
+
+Edited `docs/PROCESS.md` only. Twenty-eight edits, grouped:
+
+- **Head**: edition anchor → fourth edition, 2026-08-12, written against
+  `1457a51`, landing at the commit carrying the line; the opening paragraph
+  re-scoped explicitly to the export unit (blocking 2, second limb).
+- **Read this first**: routing block (cheap 1); stamp-boundary block re-measured;
+  mechanism-placement blockquote marked (sweep).
+- **Contents**: Annex C added; **subsection index** added, mechanically derived,
+  with its derivation command and derived-at state printed (cheap 2).
+- **§1.1**: the summed compensating-control table, eleven rows, plus the cadence-
+  owner finding routed to B.2 item 10 (blocking 6); the contested "six of the
+  eight" count marked, not repaired.
+- **§1.2**: spawn token → **spawn short-id** (vocabulary).
+- **§1.3**: the nine charter sections, complete, re-derived (cheap 4).
+- **§1.5**: escape-ledger zero-instance disclosure (blocking 6); the four-over-
+  five header count marked, not repaired.
+- **§1.6**: roster-file and program-state-file facsimiles (cheap 5).
+- **§2.5**: `Two things that matters for` → `Two things follow from that`, with
+  the refusal preserved in a margin note (dispatch-attributed).
+- **§3**: minting blockquote marked and routed; packet table gains the
+  "where the type is defined" column; `<TYPE>` tokens printed in the path
+  facsimile; the placeholder-token claim corrected and re-labelled to A.9(a).
+- **§3.1**: spawn short-id (vocabulary).
+- **§3.2**: bounce revision scheme stated from the record (literal 3).
+- **§3.3**: facsimile **re-transcribed verbatim-minus-nouns** from
+  `WO-0039_…-SEALED-predictions.md`; the four-question paragraph; the withdrawn
+  rule with its quotation; the four constraints; the residue named; the option
+  routed. The "commit at which it was frozen" field corrected — the file cannot
+  carry it.
+- **§3.7**: gate-checklist facsimile (cheap 5).
+- **§3.8**: escape-ledger sample size (blocking 6).
+- **§3.9**: "before any defect **diff** existed", pointing at §3.3 as the single
+  statement of the mechanism; equivalent-defect/equivalent-mutant pointer to
+  Annex C.
+- **§4.6**: E6 threshold stated as what it is and re-labelled to A.9(b).
+- **§6.0**: the pin.
+- **§6.1**: fork-contract row for Annex C.
+- **§6.2**: Step 1 restructured into acts 1a–1d; Step 2's consumption stated;
+  Step 4 and Step 5 re-pointed at the authored constitution; the
+  paper-execution-not-a-run disclosure added under the `[P1]` stamp.
+- **Annex A**: A.9, two adopter-chosen parameters.
+- **Annex B**: intro converted to a schedule; **B.0** with the two dated
+  conditions; B.1 cold-reader row corrected and five new confirmation rows;
+  B.2 items 10–12; B.6 fourth-edition anchor note; the third edition's stale
+  "two claims in this edition" re-scoped; **B.9**, fourteen items with each
+  acceptance test's outcome, plus five refusals.
+- **Annex C**: the name map — seats, artifacts, tokens, and the vocabulary
+  deliberately not aligned.
+
+No other file touched. No git command run beyond read-only inspection.
+
+### Evidence
+
+All commands run from a clean checkout at `1457a51` with the edited tree.
+
+1. **Precheck**: `git log --oneline -1` → `1457a51 Council round three returns…`;
+   `git status --porcelain` → empty output.
+2. **The One Thing, re-derived** (not quoted):
+   - `grep -h "Frozen by" agents/handoffs/*SEALED-predictions.md | sort | uniq -c`
+     → 14 lines across **13 seal files**, every one `dv_lead`.
+   - `ls agents/handoffs/*SEALED-predictions.md | wc -l` → **13**.
+   - Verdict authorship, one file at a time
+     (`grep -n "^## .*VERDICT" agents/handoffs/*campaign*.md`): **ten** landed
+     verdicts — WO-0039, 0041, 0045, 0050, 0055, 0058, 0061, 0063B, 0066, 0073 —
+     **all authored by `dv_lead`**, each citing a `J-dv_lead-NNNN` entry.
+     WO-0074, WO-0076, WO-0077 carry seals and are still `DRAFT`: **three
+     unscored**. This is the arithmetic behind "thirteen sealed, ten scored, all
+     ten by the freezing seat, three drafted".
+   - `RV-0039-VERDICT` is **inside** `WO-0039_m03-mutation-campaign.md` (line
+     233), authored `dv_lead, J-dv_lead-0036` — recorded because the dispatch
+     asked me to locate it and a later reader will look for a separate file.
+3. **Escape ledger, verified absent**: `ls docs/reports/audit/` → no
+   `dv_escapes.md`; `git log --all --oneline -- docs/reports/audit/dv_escapes.md`
+   → no output; `git log --all --diff-filter=A --name-only --pretty=format: |
+   grep -i escape | sort -u` → no output. **The file has never existed at any
+   commit.** `agents/charters/auditor.md:28` names it mandatory.
+4. **The nine charter sections**: `for f in agents/charters/*.md; do grep -n "^## "
+   $f; done` → all **nine** charters carry the identical nine sections, `1.
+   Identity` … `9. Context & references`. The two the previous list omitted are
+   **8** and **9**.
+5. **Blockquote sweep census** (blocking 3's acceptance test):
+   `awk '/^>/ {print NR": "$0}' docs/PROCESS.md` over the pre-edit file →
+   **seven blockquote blocks document-wide**. In §§2–4: **two** — the §3 minting
+   rule, and lines inside §3.3's fenced facsimile (artifact content, not a norm).
+   **Exactly one unstamped normative blockquote in the swept range**, the one
+   filed. Outside the range, same test applied: §1.2's tier invariant carries its
+   posture already; the stamp-boundary block is descriptive; §6.0's shell-naming
+   block is factual; §6.2 Step 5's block is adopter instruction derived from
+   stamped sections; **the preamble's mechanism-placement blockquote was the one
+   further catch** and is now marked.
+6. **Paper-execution of Steps 0–4** (blocking 4's acceptance test), against the
+   **new** order, checking (i) no intermediate state violates §1.2 and (ii) no
+   step consumes an artifact no earlier step produced:
+   - Step 0 — consumes: this document, the shell (named and pinned), the kit's
+     self-test/commit script/policy module/posture list. Produces: the trace
+     table and the residue file. No seats exist; §1.2 inapplicable. **PASS.**
+   - 1a — consumes §1.2's function list and Step 0's residue file; produces the
+     roster with rows marked *planned*. A roster row is not a seat: no charter,
+     scope row, launcher or journal is claimed. **PASS.**
+   - 1b — consumes 1a's roster (the scope table is its scope column) and the
+     kit's five machinery artifacts; produces the machinery plus **one** real
+     seat with all four things in one commit. Founding range = 1a + 1b, declared
+     self-signed. **PASS.**
+   - 1c — consumes 1a's roster, 1b's machinery, the charter/launcher templates;
+     produces one seat per commit, four things together, roster row flipped.
+     **PASS.**
+   - 1d — consumes 1b's machinery (read for what it refuses) and 1a/1c's scope
+     rows; produces the constitution. **PASS.**
+   - Step 2 — consumes 1c's charters and 1d's constitution. **PASS** (this is the
+     step that failed before: it consumed charters no step produced).
+   - Step 3 — consumes 1b's workflow having run green once (A.5's picker
+     constraint). **PASS.**
+   - Step 4 — consumes 1b's machinery, 1d's constitution, the kit's self-test.
+     **PASS** (this is the second step that failed before).
+   - Two consumptions remain external and are named in place: the shell (Step 0)
+     and the platform (Step 3).
+   - **Against the old order the same walk FAILS at Step 2 and Step 4.** The
+     acceptance test discriminates, which is what makes it a test.
+7. **Subsection index derived, not authored**, and verified byte-exact against
+   its own derivation:
+   `awk '/^[`][`][`]/ { fence = !fence; next } !fence && /^##+ / { print }'
+   docs/PROCESS.md` → **62 headings**; piped through the two `sed`/`awk`
+   formatting rules and `diff`ed against the block in the document → **no
+   differences** (`INDEX EXACT MATCH`). Re-run after every later edit; still
+   exact at the final state.
+8. **Shell observation** for the pin: `agents/handoffs/HT-01_first-harvest-transit.md`
+   §5 — "branch `inbox/agentic-fpga-nic-SO-xgmii_rx_64` from shell main
+   `2ad82c3`", delivery executed 2026-08-11; §4 records the shell found **31
+   commits ahead** at fetch. That is the whole of what this repository attests
+   about the shell.
+9. **Bounce revision scheme** taken from a real state line:
+   `agents/handoffs/WO-0080_tb-m04-first-bench.md:3` — ``**State**: `ISSUED` →
+   `RETURNED` → `BOUNCED` → `RE-ISSUED (rev B)` → `RETURNED` → **`ACCEPTED`**``,
+   with `RV-0080-VERDICT` and `RV-0080B-VERDICT` both in the file.
+10. **Structural integrity**: `awk '/^```/{n++} END{print n}'` → **22** fence
+    lines, balanced (11 blocks). Line count **4,142 → 5,044**, delta **+902**;
+    `git diff --stat` reports 994 insertions / 107 deletions.
+11. **Replacement verification**: `grep -n "spawn token"`, `"Six types"`,
+    `"never by the party"`, `"before any defect existed"`, `"that matters for"`
+    → every surviving occurrence is inside a margin note or a B.7/B.8/B.9 table
+    cell quoting superseded text, which is the preservation discipline working.
+
+### Outcome
+
+**Met.** All six blocking items applied; every acceptance test run that this
+seat can run, with its outcome recorded per item in the document's own B.9 table
+and above. Two acceptance tests **cannot** be run from this seat and are recorded
+as such rather than claimed: blocking 1's *two independent cold readers
+reconstruct the same information flow* (owned by B.0.1's reader and B.1's two
+confirming seats) and blocking 2's *C10.2 against the shell half* (the shell is
+not reachable from here — which is the finding, and the pin says so). The cheap
+batch is complete: routing sentence, derived subsection index, name map,
+§1.3's nine fields, three facsimiles. Vocabulary aligned where alignment helps
+and mapped where it would damage prose. §2.5's prose defect repaired with its
+attribution. Annex B converted to a schedule with two dated conditions.
+
+Handoff: `docs/PROCESS.md` and this entry to the orchestrator for commit. The
+two dated conditions at B.0 are **commissioned by the orchestrator on landing** —
+a cold reader for B.0.1, a cold adopter for B.0.2 — and neither is mine to
+perform.
+
+*Harvest note.* This round is neither a module sign-off nor a phase gate, so no
+harvest is due; the span since my last harvest remains open and this entry is a
+member of it. One candidate is banked for the next harvest, LH1/LH2-g provisional:
+*a rule stated in a description and kept zero times in the record it describes is
+not a rule with a deviation — it is a description of a different organization, and
+the honest repair is withdrawal, not qualification.* Incident cited: this round's
+§3.3 repair. What breaks without it: a document accumulates aspirational
+separations that a replicator inherits as controls.
+
+### Open-questions
+
+1. **The doc–shell drift check is now named as owed in two consecutive editions
+   and built in neither.** Converting Annex B to a schedule was supposed to stop
+   exactly this, and my own oldest debt is the first item the conversion does not
+   cover, because I gave it a closing event and no date. It needs a round of its
+   own, and it is the one item where I would accept the charge that a named debt
+   is being used as a substitute for a repair.
+2. **§3.3's withdrawn rule leaves a real hole in the org, not only in the
+   document.** Campaign scoring is self-scoring, disclosed now, compensated by
+   four constraints and no separation. B.2 item 12 routes the repair as an
+   option. If the seats decline it, the decline should be recorded with grounds —
+   silence would leave the document honest and the practice unexamined.
+3. **Two filed findings are marked and unrepaired beside my own new text**
+   (§1.1's "six of the eight", §1.5's four-over-five). They are cheap. They were
+   outside scope. The next round that opens the file should take them, and the
+   marking is there so that round can find them.
+4. **This edition has no countersignature, no packet and no lifecycle**, like
+   every edition before it (B.6). Five confirmation rows are newly owed at B.1,
+   the first of them on §3.3 — the passage that most needs a seat other than its
+   author to read it, since it describes two other seats' practice at an
+   independence boundary.
+
+### Files-in-this-commit
+- docs/PROCESS.md
