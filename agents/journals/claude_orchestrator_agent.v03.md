@@ -1379,3 +1379,72 @@ label clipping its final letter.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0294] 2026-08-12T18:03Z | task:none | The lifecycle page answers the adopter's real starting point: a blank shell and a braindump, not a blank page - and the journals now visibly fill, one numbered entry per commit
+
+### Trigger
+
+Sponsor review of the first lifecycle build, in six messages. The substantive
+correction: the animation opened with an agent writing the constitution from
+nothing, but a real adopter "start[s] with a blank shell... and then give[s] a
+braindump and program artifacts to preface the entire development." That is
+the framework's own adoption story and the page had it wrong. Plus: overlapping
+labels, journals not visibly updating, cut the crash beat, add reporting
+arrows, per-seat charters, live journal contents, fuller annotations, and four
+wording/placement fixes.
+
+### The story, corrected
+
+The timeline now opens ADOPT -> COMMISSION rather than with authorship from
+nothing. Three new beats: the shell arrives whole and runnable (enforcement
+scripts, self-test, constitution template, empty charters and journals, roster,
+board, escalation ladder — none of it authored here, because an adopter who
+rebuilds the machinery rebuilds it differently and the guarantees quietly stop
+being guarantees); the founding session fills only the project-specific slots;
+and then the sponsor's BRAINDUMP plus reference material and target
+constraints land as first-class repository artifacts in their own gold-bordered
+group. The specification is then visibly derived FROM them. Twenty-seven beats,
+all annotations rewritten three-to-five sentences deep.
+
+### Journals as the page's spine
+
+Every write act in the script now carries the journal entry it produces, so the
+chips read journal #1, #2, #3 as the run proceeds and clicking one opens the
+actual entries written SO FAR at the current scrub position — titles and all,
+live, re-rendered as you drag. The refused-commit beat is the teaching case:
+the commit is refused, and no entry appears, because a refused commit never
+became part of the record. An empty journal card says so explicitly rather
+than looking broken.
+
+### Also this round
+
+Left panel rebuilt as an indented org tree — the four-across seat row was
+clipping its own labels and could not be made safe, so leads now stack with
+their workers beside them and drawn wires carry the reporting relations: each
+lead into a shared spine, one arrow up into the orchestrator, the orchestrator
+up to the human, and a worker-to-lead arrow that appears only while that worker
+is live. The crash beat and its evidence box are cut on the sponsor's judgment
+that they were not relevant. Per-seat charter cards replace the single generic
+one. CI moved from a stray top-right pill to sit directly behind the gate on
+the entry edge, which is what it actually is — the second enforcer behind the
+first. Token motion gained comet trails and an arrival pulse; the legend lost
+"the human" and renames the unclear "relay" to review/question/answer. The
+repository label is now just that.
+
+### Answering a question the sponsor asked
+
+Workers DO have charters and journals in practice, not only on this page:
+agents/charters/ carries tb_writer, rtl_module_dev, data_wrangler and
+formal_dv, and agents/journals/workers/ carries their volumes — tb_writer at
+46 entries across three, data_wrangler at 9. The repo box was right.
+
+### Files-in-this-commit
+- site/lifecycle_script.js
+- site/lifecycle_src.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
