@@ -1312,3 +1312,70 @@ push-at-every-landing holding for the seventeenth time.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0293] 2026-08-12T17:38Z | task:none | The lifecycle page: one hypothetical project runs start to finish beside the repository it fills - twenty-seven beats, a scrubber that un-happens history, and everything on the stage clickable
+
+### Trigger
+
+The sponsor's commission, specified in detail this time by the sponsor and
+sharpened by four answered questions: extra beats = as much as possible (all
+four offered - founding/ratification, bounce + refused commit, seeded-defect
+campaign, crash + recovery); repo inventory = full (~30 boxes); the LLM tool
+drawn as a sessions region; the existing org-chart tab kept. (Correction owed
+from the last entry: J-orchestrator-0292's header stamp was typed 26 minutes
+stale - real time 17:23Z, within the WARN band, testimony stands.)
+
+### What landed
+
+site/public/lifecycle.html - a new hand-built artifact page, LIFECYCLE tab,
+wired into build.py's PAGES and ART chrome. Its architecture is the page's
+honesty mechanism: EVERY visual state is a pure function of one master time
+value - artifact existence, seat occupancy, stamps, tokens in flight, CI
+sweeps all derive from T - so the scrubber is exact in both directions:
+scrub backward and history un-happens.
+
+- LEFT, the agents: the sponsor (human-gold, outside the region, always
+  present) above a dashed "agent sessions" region; seats as slots, dashed
+  when no session is live, filled when one is; five worker slots that
+  occupy and vacate as packets come and go.
+- RIGHT, the repository: one teal box, "everything as files" - governance
+  (constitution with a RATIFIED stamp, roster, board, gate checklists), the
+  seats AS FILES (each seat a box holding charter + journal chips - the
+  file-side mirror of the session-side slots), specification + numbered
+  requirements, the paper trail (work orders, decision records, findings,
+  audit reports, sign-offs), RTL source, testbenches + reference models,
+  failure museum + campaign seals. On the border: the GATE every write
+  token visibly passes through, and the CI pill whose sweep washes the
+  whole box. Hanging off the outside: the isolated copy (campaign-only,
+  discarded on schedule) and the crashed session's evidence.
+- 27 beats over ~168s in five phases (founding, specify, build & verify,
+  audit, gate), loading at the sign-off beat per the middle-to-end brief.
+  Tokens carry the mechanics: writes are PAIRED squares (work + journal,
+  and the writer's journal chip glows on every write), reads dashed, relays
+  hollow, refusals red and bounced at the gate, audit violet, the human
+  gold. Sponsor's annotation box top-right narrates each beat in one or two
+  lines; a phase-labelled scrubber, play/pause, and a half/1x/2x speed
+  control drive it; ~35 click descriptions in the one-pager's voice cover
+  every seat, artifact, enforcer and orbit object.
+
+### Verified
+
+Screenshots at nine timeline stops in light plus two in dark: the empty
+repo at t0, the founding write crossing the border, ratification, spec
+helpers, parallel build with glowing journals, the crash, planted bugs with
+the isolated copy live, the loaded sign-off state, and the gate with the
+sponsor's gold signature in flight. Click card verified (campaign seals).
+Three defects found by the pass and fixed: a test-harness seek that
+silently didn't scrub (window.T vs the closure - the page gained a proper
+seek()), orbit chips overlapping the transport bar, and the Implementation
+label clipping its final letter.
+
+### Files-in-this-commit
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

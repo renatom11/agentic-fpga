@@ -183,6 +183,7 @@ PAGES = [
     ('spec-atlas.html', 'SPEC ATLAS'),
     ('org-chart.html', 'ORG CHART'),
     ('framework.html', 'FRAMEWORK'),
+    ('lifecycle.html', 'LIFECYCLE'),
     ('backlog.html', 'BACKLOG'),
 ]
 
@@ -714,6 +715,7 @@ CHROME_END = '<!-- site-chrome-end -->'
 
 ART = [
     ('block-diagram.html', 'agentic-fpga — block diagram'),
+    ('lifecycle.html', 'agentic-fpga — lifecycle'),
     ('spec-atlas.html', 'agentic-fpga — spec atlas'),
     ('org-chart.html', 'agentic-fpga — org chart'),
 ]
