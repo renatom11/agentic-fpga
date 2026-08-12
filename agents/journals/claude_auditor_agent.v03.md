@@ -1570,3 +1570,155 @@ EOF appends. No rotation (ADR-0017 §4.4 arithmetic above).
 ### Files-in-this-commit
 - docs/reports/audit/PROCESS-claims-posture.md
 - docs/reports/audit/WO-0041-mutations/README.md
+
+## [J-auditor-0027] 2026-08-12T09:03Z | task:WO-0084 | Thirteen genuine M04 transmit defects seeded BLIND against the frozen seal — one clean `.diff` per class, all applying at 9dba6d5, none matched to a prediction I never read
+
+### Trigger
+Orchestrator dispatch, WO-0084 act 2 (the seeding). The seal is frozen (dv_lead
+`J-dv_lead-0195`, committed `9dba6d5`); I seed the defects that test the M04 suite's
+kill claims **without** knowing what the seal predicts. Commission:
+`agents/handoffs/WO-0084_m04-mutation-campaign.md`.
+
+### Inputs
+- `agents/charters/auditor.md`, `agents/PROTOCOL.md` — mandatory first reads.
+- `agents/handoffs/WO-0084_m04-mutation-campaign.md` — my packet, in full,
+  including the act-1 Return-log line that tells me the *fact* of the seal and its
+  §0.1 step-6 rule (a property of the base state, not a prediction).
+- `libs/hardcaml_ethernet/src/xgmii_tx_64.ml` at `9dba6d5` — the mutation target,
+  all 434 lines.
+- `docs/specs/modules/xgmii_tx_64.md` (SPEC-M04), in full — the requirements the
+  defects violate.
+- `test/attack_plans/AP-xgmii_tx_64.md` §0–§4 — the **public** Kills-claim TEXT of
+  the discharged ASSERT rows (families A–K read; A–G are the discharged set the
+  seal names). The predictions are not public and were not sought.
+- `docs/reports/audit/WO-0077-mutations/README.md` head — my own prior campaign, for
+  form only.
+- My own journal `agents/journals/claude_auditor_agent.v03.md` — the entry-id chain.
+- **NOT READ, ATTESTED**: `agents/handoffs/WO-0084-SEALED-predictions.md` (the seal)
+  and `agents/journals/claude_dv_lead_agent.v12.md` incl. `J-dv_lead-0195` (its
+  second copy) — never opened, grepped, `git show`n, counted or diff-statted; and
+  **all of `test/xgmii_tx_64/**`** — the bench never read. The blind held.
+
+### Reasoning
+The campaign tests whether the M04 suite kills a *real* defect of each class its
+discharged rows CLAIM to kill. So I derived my class set from two public sources —
+SPEC-M04's requirements and the AP rows' Kills cells — and from nothing else. The
+packet warned me off dv's partition explicitly (*"you do not know dv's exact
+partition and must not try to match it … a mismatch … is itself data act 4 will
+reconcile"*), so I did not reverse-engineer toward thirteen; I picked the cleanest
+**genuine** representative of each distinct defect class the discharged families name
+and thirteen fell out, which I record as a coincidence of independent derivation and
+not an alignment. Families are seeded non-uniformly on purpose: C names three
+distinct wrong designs (pad-target, pad-value, CRC-coverage), E and F and G two each,
+A/B/D fewer, so the manifest mirrors the *defect space* the rows describe, not a
+per-family quota.
+
+Two disciplines governed every choice. First, **genuineness over cleverness**: each
+seed had to be a real REQ violation with a port-observable consequence, so no
+equivalent mutant slips in as a false survivor. I deliberately rejected the pad
+predicate `>=+ → >+` flip (C2's off-by-one site) precisely because both branches
+yield 60 at equality — it is an equivalent mutant at the boundary — and seeded the
+pad-target `60 → 64` (C1) instead, which is genuinely distinguishable. `class-11`
+(gap ignores `cfg_ifg`, hard-wired 12) is genuine but **conditional**, and I said so
+in the manifest and here: it is byte-identical to a conformant M04 at the default
+gap and diverges only when the bench drives `cfg_ifg ∈ {20, 255}` (F3's own
+members) — which makes it a sharp test of whether the suite *varies* the gap
+configuration at all. Second, **type-correctness**, so the compiler is never the
+instrument: every substitution keeps signal width and type (`gnd/vdd`, `zero 8/ones
+8`, `d_pad/d_payload`, same-width `of_int`), so each mutated module compiles and the
+**test suite** is what must catch it.
+
+Classes considered and **not** seeded, with the ground: the two-word-preamble /
+frame-rotation defect (A2) and the "FCS always on a word boundary" defect (D4) are
+structural, not clean single-site genuine mutations at this composition model, so
+they were left for a campaign that can render them faithfully; the CRC-seeded-late
+defect (D3) collapses into "wrong FCS", which `class-07` (byte-reversal) already
+represents as the canonical distinct REQ-202 wire-order class; and families H/I/J/K
+(cadence-12, per-octet latency, config-sampling) sit outside the discharged A–G set
+this round attacks, so I did not seed into them.
+
+The base-SHA subtlety mattered and I checked it rather than assumed it: the seal
+freezes against `6d92bf9` but my dispatch and HEAD are `9dba6d5`. I verified the
+module is byte-identical across `6d92bf9`, `91f005d` and `9dba6d5`
+(`git diff … -- libs/hardcaml_ethernet/src/xgmii_tx_64.ml` empty both ways), so a
+diff that applies at `9dba6d5` applies at the ref act 3 cuts from the seal base.
+
+### Actions
+- Authored `docs/reports/audit/WO-0084-mutations/README.md` — the manifest: blind
+  attestation, base SHA and its byte-identity proof, the thirteen-class table (REQ,
+  public AP row tested, RTL site, injected defect), the genuineness note per class,
+  and the operator apply command. Stated it carries no scores.
+- Authored thirteen unified diffs `class-01 … class-13`, one per class, generated in
+  the scratchpad against a copy of the module (the tracked RTL in the tree was never
+  edited — I render diffs as files), each anchored on a string verified **unique**
+  in the module.
+- Did **not** cut any `mut/` ref, did **not** run any diff, staged nothing, ran no
+  `git commit`/`push` — that is act 3's (the operator's) and I return for commit.
+
+### Evidence
+Reproducible at `9dba6d5` (HEAD; tree clean):
+- Base identity: `git diff 6d92bf9 9dba6d5 -- libs/hardcaml_ethernet/src/xgmii_tx_64.ml`
+  → empty; `git diff 91f005d 9dba6d5 -- …` → empty.
+- Applicability (read-only, tree never modified): for each
+  `docs/reports/audit/WO-0084-mutations/class-*.diff`, `git apply --check <diff>`
+  exits 0 — all thirteen OK, observed in this session.
+- Uniqueness: each diff's `old` anchor occurs exactly once in the module (the
+  generator refused any anchor with count ≠ 1; all thirteen wrote successfully).
+- Type-correctness: verified by inspection per class — every substitution preserves
+  `Signal` width / `int` type (recorded in manifest §4).
+- The thirteen classes and their sites are in the manifest table; not restated here.
+
+### Outcome
+DoD (packet act 2) **met**: a defect manifest under
+`docs/reports/audit/WO-0084-mutations/` — a README plus one clean unified `.diff`
+per class against `libs/hardcaml_ethernet/src/xgmii_tx_64.ml` at base `9dba6d5`,
+every diff verified to apply. Thirteen classes across the discharged families A–G,
+derived from SPEC-M04 and the AP's public claims, blind to the seal. Handoff: to the
+orchestrator for commit (act 3 cuts the refs and runs; act 4 scores against the
+seal). Trailers `Agent: auditor`, `Work-Order: WO-0084`,
+`Journal-Entry: J-auditor-0027`; **not** journal-only — fourteen work-product paths
+staged, all inside `docs/reports/audit/**` (`R7`), all pure EOF appends / new files.
+
+**Harvest note (ADR-0018, PROTOCOL §7).** A lessons harvest is owed at each `SO-`
+and each phase gate; this act-2 seeding round is neither, so no harvest is
+discharged here. Span carried open from `J-auditor-0024` (last harvest boundary) and
+this entry `J-auditor-0027` is inside it — the interval tiles forward to the next
+`SO-`/gate round, where the M04 campaign's own lessons (the equivalent-mutant
+rejection at the C2 site; the conditional `class-11` seed as a config-variation
+probe) are candidates. Nil yield **declared for this round**, not omitted.
+
+### Open-questions
+1. **`class-11` predicts a coverage question, not only a defect.** It survives a
+   suite that never drives `cfg_ifg` off its default — which would be a real gap in
+   REQ-802/REQ-204 coverage, not a defect in the seed. If act 4 scores it a
+   survivor, the disposition is a coverage finding against the suite, and the
+   survivor-evidence form should record that the seed is conformant at `ifg = 12`
+   by construction. I flag it now so a `survive` is read correctly and not as a
+   miss on my side.
+2. **My thirteen and dv's thirteen may not be the same thirteen.** The count
+   coincides; the partition is independent and I did not seek to align it. Act 4
+   reconciles the two two-column records; a class of mine with no dv counterpart
+   (or the reverse) is data about the partition, not a fault in either seat, and I
+   record that I expect the reconciliation rather than a clean one-to-one.
+3. **Discharged-set boundary is dv's to confirm, not mine to observe.** I seeded
+   against families A–G on the packet's word that they are the discharged set; I did
+   not read the bench to confirm which rows are actually mounted. If a seed lands on
+   a row that is claimed-discharged but in fact unbenched, it survives — again a
+   finding about the suite, surfaced by act 4, not a seeding error. The blind is
+   what forbids me the check that would have told me in advance.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0084-mutations/README.md
+- docs/reports/audit/WO-0084-mutations/class-01-preamble-txc.diff
+- docs/reports/audit/WO-0084-mutations/class-02-frame-lane-reversal.diff
+- docs/reports/audit/WO-0084-mutations/class-03-tkeep-ignored.diff
+- docs/reports/audit/WO-0084-mutations/class-04-pad-target-64.diff
+- docs/reports/audit/WO-0084-mutations/class-05-pad-value-nonzero.diff
+- docs/reports/audit/WO-0084-mutations/class-06-crc-omits-pad.diff
+- docs/reports/audit/WO-0084-mutations/class-07-fcs-byte-reversed.diff
+- docs/reports/audit/WO-0084-mutations/class-08-terminate-lane-late.diff
+- docs/reports/audit/WO-0084-mutations/class-09-idle-fill-value.diff
+- docs/reports/audit/WO-0084-mutations/class-10-gap-no-roundup.diff
+- docs/reports/audit/WO-0084-mutations/class-11-gap-ignores-ifg.diff
+- docs/reports/audit/WO-0084-mutations/class-12-underflow-qualifier-dropped.diff
+- docs/reports/audit/WO-0084-mutations/class-13-abort-word-swapped.diff

@@ -1,0 +1,12 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_tx_64.ml b/libs/hardcaml_ethernet/src/xgmii_tx_64.ml
+--- a/libs/hardcaml_ethernet/src/xgmii_tx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_tx_64.ml
+@@ -347,7 +347,7 @@
+     &: ~:starved
+     &: ((can_start &: i.cfg_tx_enable) |: (in_body &: need_payload))
+   in
+-  let underflow = tready &: ~:(i.tx.tvalid) &: frame_active &: ~:last_accepted in
++  let underflow = tready &: ~:(i.tx.tvalid) &: frame_active in
+   accept <== (tready &: i.tx.tvalid);
+   (* [last_accepted] answers one question — has *this* frame's `tlast` word been
+      accepted? — and the answer is not always accumulated from [start_now]

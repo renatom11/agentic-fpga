@@ -1,0 +1,12 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_tx_64.ml b/libs/hardcaml_ethernet/src/xgmii_tx_64.ml
+--- a/libs/hardcaml_ethernet/src/xgmii_tx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_tx_64.ml
+@@ -222,7 +222,7 @@
+     mux2 (d <=+. 0) (zero 4) (mux2 (d >=+. 8) (of_int ~width:4 8) (uresize d 4))
+   in
+   let payload_lanes = clamp_to_lanes d_payload in
+-  let crc_count = clamp_to_lanes d_pad in
++  let crc_count = clamp_to_lanes d_payload in
+   payload_end <== reg spec ~enable:end_now (pos +: held_count);
+   have_end <== reg spec (mux2 start_now gnd (have_end |: end_now));
+   (* ---- the running CRC (REQ-202, ADR-0006, ADR-0007) ----

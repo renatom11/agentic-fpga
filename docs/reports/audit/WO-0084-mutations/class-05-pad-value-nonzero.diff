@@ -1,0 +1,12 @@
+diff --git a/libs/hardcaml_ethernet/src/xgmii_tx_64.ml b/libs/hardcaml_ethernet/src/xgmii_tx_64.ml
+--- a/libs/hardcaml_ethernet/src/xgmii_tx_64.ml
++++ b/libs/hardcaml_ethernet/src/xgmii_tx_64.ml
+@@ -280,7 +280,7 @@
+              (select held_data ((8 * j) + 7) (8 * j))
+              (mux2
+                 is_pad
+-                (zero 8)
++                (ones 8)
+                 (mux2
+                    is_fcs
+                    fcs_octet
