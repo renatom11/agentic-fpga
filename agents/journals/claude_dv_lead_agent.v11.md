@@ -2730,3 +2730,458 @@ these rows is now unblocked and is the orchestrator's to schedule.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md
+
+## [J-dv_lead-0192] 2026-08-12T02:52Z | task:WO-0082 | The corrections land on the packet that carries the defects, the design that was promised is committed before the round that consumes it — and the falsification found a second instrument the verdict had not seen, so stage 2 is precondition-clear and still not commissionable
+
+### Trigger
+
+Orchestrator dispatch, one round, my seat: the **`WO-0082` revision my own
+`RV-0082-VERDICT` made the precondition of commissioning any stage-2 row**, plus
+the **absorption acts** that verdict found outstanding, plus a **commissionability
+ruling** the orchestrator will issue on.
+
+**Abort-first head check, before reading anything.**
+
+    git rev-parse HEAD               # a39c8e7804e5a573bc36eebb40870adfd3b6c194
+    git status --porcelain           # zero lines
+    git rev-parse --abbrev-ref HEAD  # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+Byte-equal to the dispatched expectation `a39c8e7`, tree clean; neither branch of
+the abort procedure was reached.
+
+**HEAD moved mid-round and the movement was announced to me in flight**:
+`a39c8e7` → **`1b684c7`**, the sponsor report-card landing (`docs/reports/` and
+the orchestrator's journal only). I re-measured rather than accepted the
+assurance: `git diff --name-only a39c8e7 1b684c7 -- agents/handoffs/
+test/attack_plans/ agents/journals/claude_dv_lead_agent.v11.md` returns **empty**,
+so **no path of mine moved under me**, and every SHA-quantified figure below is
+measured at `1b684c7`.
+
+**Four declared siblings, and two of them are visible in my tree.** rtl_lead
+files against its journal only and touches nothing of mine. The fourth lane was
+announced in flight: architect_docs_lead on the **fifth edition of
+`docs/PROCESS.md`**, scoped to that file and its own journal. **At my closing
+check two sibling paths are dirty, and both sit inside their seats' declared
+scopes**: `docs/PROCESS.md` (`git diff --numstat` → **301/270**), and
+`docs/reports/audit/WO-0041-mutations/README.md` (**322/0**), the auditor's
+reconciliation round, that directory being its **exclusive** scope under
+PROTOCOL §6 and ADR-0003. **Neither is mine, neither is in my
+`Files-in-this-commit`, and I touched neither** — under `R1` each is its own
+seat's commit. **The auditor's path appeared after my first status check and
+before my last**: I re-measured at the close rather than assume the tree I
+started in was the tree I finished in, and I record both rather than let a later
+reader find unexplained paths in the round's tree.
+
+**Relayed context I record receipt of and did not act on**: the process-document
+commission closed at `9362aef` with its §3.3 campaign-seal passage rewritten from
+the record and the *"never scored by the party whose work the evidence grades"*
+rule **withdrawn as written** — thirteen seals frozen by my seat, ten scored by
+my seat, which is what a rule kept zero times out of ten describes. The
+post-diff auditor-scoring repair is routed as an **OPTION** at that document's
+Annex B.2 item 12 and the seats' answer — adopt or decline **with grounds** — is
+commissioned separately. **It is not this round's subject and nothing below turns
+on it.** `F-0024-A` stands **WITHDRAWN** by its falsifier run; also not this
+round's surface.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3 packets and the
+  work-order lifecycle, §4 entry grammar, §6 write scopes, §7's Mutation record,
+  §10 independence and R-SEAL-1).
+- `agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md` — **read in
+  full, all 2 433 lines, including the tb_writer Return log and my own
+  `RV-0082-VERDICT`**. My standing rule and the thing this round is an act upon.
+- `test/attack_plans/AP-xgmii_tx_64.md` (**AP-M04**) — §0.1's three standing
+  rules, §0.2 item 4, §1's Status vocabulary, §2's seven obligations, §4.F and
+  §4.G's row tables in full, §7's machinery table, §8 items 4–7, §9's three
+  absorption rows read end to end (the form this round's row had to match).
+- `test/attack_plans/AP-xgmii_rx_64.md` — **read for one question only**: whether
+  a discharged row's `Status` cell carries a discharge annotation in the mature
+  plan. It does not. That reading is what corrects my own verdict's wording
+  (Reasoning §5).
+- `docs/specs/modules/xgmii_tx_64.md` (**SPEC-M04**, FROZEN `f78766e`, current
+  content read at this head) — **§6.2's state table** (`Frame` → `Abort` → `Gap`
+  → `Idle`, and the C-16 early-acceptance paragraph), **§7's C-14.1 bullet, the
+  C-16 bullet's four consequences, the handshake bullet and the reset bullet**,
+  **§8**, **§9 entire** (the row, the pinned strobe cycle, the no-FCS paragraph,
+  the co-occurrence bullets), §10's REQ-206 hook, §11.2–§11.5, §13.
+- `test/xgmii_tx_64/bench.mli` — the landed contract, read in full at the surface
+  level and in full text for `run_stream`, `wire_frames` and
+  `assert_instruments_clean_n`; `test/xgmii/tx_decoder.mli`,
+  `test/monitors/strobe_monitor.mli`, `test/monitors/stream_word.mli` — read for
+  the exact names §20's design is expressed against.
+- `docs/adr/ADR-0017` §4.4 and its `S`/`H` table (the rotation arithmetic below).
+- **Not read, confirmed**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+  `test/third_party/**`. In particular `libs/hardcaml_ethernet/src/xgmii_tx_64.ml`
+  exists at this tree and was **not opened**, at this commit or any earlier one.
+  §20's every derivation is from SPEC-M04's own text, cited section by section,
+  which is the whole point of a class designed before the round that drives it.
+
+### Reasoning
+
+**1. Why the four corrections land on THIS packet, when my own verdict routed
+them to stage 2's.** `RV-0082-VERDICT` §6 said stage 2's packet *carries* them.
+The dispatch directs them here, and on reflection the dispatch is right and my
+verdict's routing was the weaker of the two, for a reason worth stating because
+it generalises: **the four are defects in `WO-0082`'s own text**, and a
+correction filed only into an artifact nobody has written yet is a **promise, not
+a repair**. It is the same shape `R-SEAL-1` names for a withheld result — *an
+unredeemed promise is not cured by naming its future carrier* — and the same
+shape `FINDING WO-0080-6` convicted me under when the §17.1 carve-out was
+*promised* rather than *made*. If stage 2's packet is never written, or is
+written by a successor session reading the packet and not the verdict, the
+corrections evaporate. **Applied here they are in the text a stage-2 author will
+actually read**, at a SHA earlier than the round that consumes them.
+
+**2. The revision discipline, and the one thing it must not do.** Revision A is
+the text stage 1 was executed and judged under; **it is closed and this revision
+reverses no bar, verdict or disposition**. The temptation in a corrections
+revision is to let the corrected text reflect back onto the completed work — to
+re-read `M-15` against the plumbing clause, or `BM19` against the new definition
+— and that is **reading a rule backwards onto work that could not have known
+it**. So: every superseded passage is struck in place (`~~…~~`) with its
+replacement beside it and the ground cited, nothing is overwritten, no section is
+deleted, and the revision register at the head says in terms which rev governed
+which act. §2, §6, §10 and §12 — the row set, the derived constants, the ceiling
+and the bars — are untouched by construction, which is the mechanical form of
+"no verdict moved".
+
+**3. The `date -u` carve-out (correction 1), and why paying it at a revision
+rather than at a new packet is the whole content of the ruling.**
+`J-dv_lead-0189` adjudicated this owed **at the next packet revision**; this is
+that revision, and paying it into a hypothetical successor would have been the
+second deferral of a debt whose first deferral I was convicted for. PROTOCOL §4.1
+requires a UTC stamp on every entry; a seat forbidden to read a clock will
+estimate; **two consecutive `tb_writer` entries carry an honestly self-qualified
+stamp for exactly that reason**. The carve-out is bounded — once, at authoring,
+with the reading in Evidence — and I wrote into it that **an estimated stamp
+remains creditable conduct**: the rule removed the need, it does not convict the
+rounds that met it honestly. That sentence matters because the alternative
+reading turns a fix into a retroactive charge.
+
+**4. The plumbing clause (correction 2).** My §4(b) ruling lives in a verdict; a
+worker reads a packet. Written into §17.1 item 3's own text: exit-status
+observation, stream redirection, and repetition over a bar's named file set are
+**inside** the sanctioned invocation; any pipeline that reads, searches, filters
+or transforms repository content is **outside**, *whatever it is attached to*.
+The boundary is purpose-based and I stated the purpose — the named prohibitions
+exist so a bar phrased as a search is executed by reading hits, keeping the
+worker's reads visible — so a later seat can apply it to an instrument I did not
+foresee instead of matching my examples.
+
+**5. The naming rule (correction 3): the defect was placement, not content.** The
+same draft error occurred in two consecutive rounds — a disclaimer naming the row
+it disclaims — and both times the worker's **own** sweep caught it before CI. Two
+instances is structural, and the structure was mine: §1.4, §5.4 and §9.8 all ask
+the round to say what it does *not* claim, and the natural way to write that
+sentence is with the row's id, while the prohibition sat four sections away in
+§11.1. **A rule a worker meets after the demand that produces the sentence is a
+rule discovered on review.** So the rule is now stated at every such demand, in
+one formulation the four sites quote — *in the packet, name the row; in
+`test/**`, describe it* — and §11.1 additionally names the **drafting
+instrument** (sweep your own files for the row-id pattern before finalising),
+because what actually saved both rounds was the instrument, not the prohibition.
+
+**6. Correction 4, both halves, and the class each belongs to.** *(a)*
+"Byte-identical behaviour" now means **the firing conditions and their order, not
+the message text**, with the two messages permitted to move named — because
+§5.3(6) **orders** a parameterisation that moves a count inside a string, and a
+literal reading of `BM19` convicts a worker of obeying the packet. Where this
+packet wants text it says so separately, as §5.3(5) does for `wire_frame`. *(b)*
+§5.3's concatenation step **named a library function its own preceding step
+forecloses**: `List.concat_map` concatenates as it maps, leaving nothing
+per-frame to check first. The shape is now described and the function is not
+named, and I wrote the general rule with it: **name the shape; name a function
+only where the packet has checked that nothing else it demands rules that
+function out.** Both halves are the same underlying error — a packet specifying
+an *implementation token* where it means a *behaviour* — which is why they were
+filed as one correction and are repaired as one class.
+
+**7. §20, the design obligation — the falsification and the second instrument.**
+`SP-2` asserts accepted = offered. Stage 2's stimulus is a stall, and SPEC-M04 §9
+makes the conformant consequence an abort: the frame ends in `/E/` `/T/` with no
+FCS, so **the withheld word is never accepted, because that frame is over**.
+`SP-2` is therefore false by construction, exactly as `P-ACCEPT`'s contiguity was
+at two frames. **Designing the replacement made me re-read the other run-level
+assertions the new runner would inherit, and the second one is false too**:
+`assert_instruments_clean_n` demands `high_cycles "error_underflow" = 0` and
+*none of the decoded frames underflowed*, and a conformant abort delivers exactly
+one strobe cycle (§9's pin) and exactly one frame with `underflowed = true` (the
+decoder's own field). **Two of its four checks.** My verdict named one instrument;
+the design round found the second within one reading of the committed `.mli`, and
+I recorded **that** as the procedural lesson: when a postcondition is found false
+against a new stimulus class, the act owed is not to fix that postcondition, it
+is to re-read **every** run-level assertion the new runner inherits, against the
+new class, before designing any of them.
+
+**8. What decided the class's shape.** The decisive specification fact is §7's
+C-14.1 bullet read with §6.3 item 3: after the abort `tx_tready` is
+**unconstrained on the early cycles of the gap** and **pinned to 1 on the gap's
+last cycle**. That single asymmetry gives both halves of the design. It forbids
+any runner-level claim about *when* a word offered after the abort is accepted —
+such a claim fails a conformant design — and it simultaneously **guarantees
+eventual acceptance**, because the source holds `tvalid` stable until acceptance
+(§7's handshake bullet) and that one cycle is pinned. So the class asserts
+**accountability** (`ST-3`: accepted = offered − the schedule's own declared
+abandoned count) and **not completeness**, and the abandoned set is declared by
+the schedule **before** the run rather than inferred from the design's output —
+which is the same independence rule the FCS oracle lives under, applied to a
+count.
+
+**9. `ST-2` is the row-precondition lesson generalised, and it is the member I
+would keep if I could keep only one.** `M04-G10` taught that a green silence on a
+stimulus that is not the route is not a result (trap T14, class D3c), and it paid
+for that with a whole-list precondition asserted first. **Under a schedule the
+same failure is available to every row**: a driver that quietly fails to withhold
+turns a stall round into a non-stall round, and every strobe and silence
+assertion downstream becomes a true statement about a stimulus that never
+happened. `ST-2` checks the bench's own drive record against its own schedule —
+design-independent, cheap, and void-declaring on failure. **A stimulus that is
+not asserted to have happened is not a stimulus, it is an intention.**
+
+**10. Three regimes, one loop — and why stage 2 adds a runner instead of
+generalising `run_stream`.** The landed `run_stream` and its `SP` set are the
+regression witness for stage 1's six rows and for §5.3's four re-expressions, and
+**evidence you edited is not evidence** — §11.4's ground, applied one round later
+to the machinery rather than to the files. So the shared `drive` gains a
+withholding predicate (default: never), and a third postcondition set sits above
+it. `M-8`'s rule still binds: the loop is shared, never copied. I chose the
+prefix `ST` over `SP-4…6` deliberately: a distinct prefix means a failure message
+can never be read as the other regime's, and a search for one regime's checks
+cannot return the other's.
+
+**11. The `Resume` trap is the finding I would not have had without §6.2.**
+SPEC-M04 §7 says *"`tx_tlast` ends the frame — M04 needs no declared length"*.
+**Therefore the specification gives M04 no way to know that a word presented
+after an abort is the dead frame's tail rather than a new frame's head.** A
+resumed stall run of `n` contents elements decodes **`n + 1`** frames, the extra
+one being a well-formed frame built from the tail — padded, FCS'd, its own
+terminate lane. `AP-M04`'s own family-G stimulus cells say *"and resumes
+afterwards"*, so this is not a hypothetical polarity: it is the plan's default.
+A row asserting *"the next frame transmits correctly"* must say **which** frame
+it means. This is the kind of thing that, undiscovered, produces a red that looks
+like a design defect and is a stimulus defect.
+
+**12. The absorption, and a correction to my own verdict's wording.**
+`RV-0082-VERDICT` §6 owed *"the six rows' Status cells"*. **This plan has no such
+act.** A `Status` cell holds one of §1's six vocabulary values; **discharge is not
+a status value**; both prior absorptions record in terms that *no status cell
+moved*; and the mature plan (`AP-M03`) does not annotate discharged rows'
+statuses either. I checked that rather than assume it, because the alternative
+was inventing a seventh status value in order to keep a sentence I had written.
+The acts actually owed are §9's change-log row (the plan's own discharge
+mechanism), `T-7`'s state cell, §0.2 item 4's satisfaction note, §8 item 7's
+residue, and **one now-false sentence in `M04-G10`'s Stimulus cell** — and that
+last one is a *Stimulus* cell, not a Status cell, which is precisely why a
+verdict written in shorthand is a poor instruction to a later self. **Four cells
+moved and the change-log row enumerates all four**, because *"no cell touched"* —
+the sentence both prior rows could truthfully write — would be false this time.
+
+**13. Commissionability — why the precondition being discharged does not make
+stage 2 commissionable, and why saying so is the answer rather than a hedge.**
+The orchestrator issues on my word, and the two questions are different. *The
+precondition*: `RV-0082-VERDICT` §6 item 6 made a **design** the precondition of
+commissioning any stage-2 row; §20 is that design, committed, at a SHA earlier
+than any packet that consumes it, with the companion falsification §20.2 adds.
+**Discharged.** *The commission*: a `tb_writer` spawn needs an **`ISSUED` work
+order** — rows, stimulus, derived constants per unit, a run-length allowance, a
+cost ceiling, bars with base figures measured at that round's own base, bounce
+conditions, traps. **`WO-0082` is not that packet and cannot be made into it by
+revision**: it commissions six *stage-1* rows at §2, derives *stage-1* constants
+at §6, and measures its bars against a *stage-1* base at §12. Its own §19.2 item
+3 names stage 2's packet as a distinct artifact owed by my seat. **Issuing a
+round with no definition of done is not a scheduling shortcut**, and the
+half-built alternative — spawning against §20 alone — would hand a worker a
+machinery design with no rows, no oracle and no bars, which is the exact
+condition `AP-M04` §7's `T-3` records as *the primitive exists, the oracle does
+not*. So: **precondition-clear, not commissionable**, and the next act on this
+chain is my drafting of stage 2's packet, which now begins from a fixed committed
+design instead of a promise in a verdict.
+
+### Actions
+
+**A. `WO-0082` revised to Revision B** (`agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md`):
+
+1. **Revision register** at the head, with Revision A recorded CLOSED and the
+   discipline stated: superseded text struck and preserved, no term stage 1 was
+   executed under altered, no verdict reversed.
+2. **Correction 1** — §17.1 item **5**, new: `date -u`, once, at authoring, with
+   the reading recorded in Evidence, and the ground stated.
+3. **Correction 2** — §17.1 item **3** carries the plumbing boundary in its own
+   text: (i) exit status, (ii) stream redirection, (iii) repetition over a bar's
+   named file set are inside; any content-reading pipeline is outside.
+4. **Correction 3** — the *describe, never name* rule placed at §1.4, §5.4, §9.8
+   and `BM8`, with §11.1 keeping the home, stating that placement was the defect,
+   and naming the drafting sweep.
+5. **Correction 4** — "byte-identical behaviour" defined at §5.2, §5.3(6) and
+   `BM19`; §5.3(1) step 2's `List.concat_map` struck and the two-step shape
+   described, with the general rule.
+6. **§20 added** — the scheduled-run postcondition class: the falsification
+   (§20.1), the companion instrument found here (§20.2), the six specification
+   facts it is derived from (§20.3), the schedule and its two derived legality
+   rules (§20.4), the `Resume` trap (§20.5), `ST-1`…`ST-4` with grounds and
+   failure-message obligations (§20.6), the generalised instrument assertion
+   (§20.7), the allowance's derivation rule (§20.8), and what stage 2 still owes
+   (§20.9).
+7. **§19.2 item 4** marked paid, with the "Status cells" wording corrected; the
+   Return/verdict log gains a **REVISION B** section carrying the five acts and
+   the **commissionability ruling in committed form** — my charter's rule that a
+   verdict ships as a packet section and not as a chat message applies to this
+   ruling as much as to a PASS.
+
+**B. The absorption acts performed in `test/attack_plans/AP-xgmii_tx_64.md`:**
+
+1. **§9 change-log row** — six rows discharged at `65ba148` (five ASSERT, one
+   NO-ASSERT), each named with its unit, its stimulus and what it actually
+   measured; the carrier and its verdict; CI evidence re-read at the source; the
+   counts; the four moved cells enumerated; the wording correction; the machinery
+   finding for stage 2; and every bar and non-claim restated (`BAR T1` SHUT, no
+   `SO-`, `M04-G4` not discharged, REQ-206 not covered, family F not complete).
+   **Outstanding 57 → 51.**
+2. **§7 item `T-7`** — *DOES NOT EXIST* struck; **PARTIALLY DISCHARGED**, with
+   what exists, what is still missing, why `M04-G10` never needed the missing
+   half, and that `WO-0082` §5.4 named the residue **before** the round ran.
+3. **§0.2 item 4** — permitted form **(i)** recorded **satisfied**, with the four
+   things it does not do, and the distinction *satisfied, not lifted*.
+4. **§8 item 7** — the *"no such producer exists"* clause struck; the item
+   survives as a machinery debt and no longer as a gate condition.
+5. **`M04-G10`'s Stimulus cell** — *"Needs machinery T-7 and is not mountable at
+   this commit"* struck in place, true when written and false at `65ba148`.
+
+**Not done, deliberately**: no test, tool or report touched; no `SO-` opened; no
+row added, converted or re-statused; no mutation campaign scheduled (PROTOCOL
+§10 makes that the orchestrator's); nothing in `docs/`, `libs/` or any sibling's
+scope.
+
+### Evidence
+
+**Stamp**: `date -u '+%Y-%m-%dT%H:%MZ'` → `2026-08-12T02:52Z`. **A real reading,
+which is itself the first discharge of the carve-out this round writes** — the
+instrument my own §17.1 revision now grants a worker, exercised by the seat that
+granted it.
+
+**Head and isolation.**
+
+    git rev-parse HEAD                    # 1b684c7f89aaa748c38577c2a58a897f013492f1
+    git diff --name-only a39c8e7 HEAD -- agents/handoffs/ test/attack_plans/ \
+        agents/journals/claude_dv_lead_agent.v11.md
+                                          # (empty — no path of mine moved)
+    git status --porcelain                # docs/PROCESS.md only (sibling's, not mine)
+
+**The landing this round absorbs.**
+
+    git diff --name-status 65ba148^ 65ba148   # 9 paths: §11.2's 7 + Return log + worker journal
+    git diff --quiet 65ba148 HEAD -- test/    # EMPTY: the green run reads these benches as they stand
+
+**CI, re-read at the source at this absorption and not carried from the verdict**
+(GitHub API job/run records, `renatom11/agentic-fpga`):
+
+- `build` run **31539904673**, job **93939708019**, `head_sha`
+  **`65ba1480488d28f7163099ffb7598a768b62b646`**, `run_attempt` **1**, job
+  conclusion **`success`**; by step name, number and status: **5** *Build*
+  `success`, **6** *Run tests (expect tests, waveform snapshots)* `success`, **8**
+  *Verify nothing was left unpromoted or non-deterministic* `success`; every other
+  step of that job `success` (7 *Generate RTL*, 9 *DV mechanical checks*, 10
+  *Abort-bit availability quantifier*). **A badge was not read.**
+- `journal-check` run **31539904725**, same `head_sha`, `run_attempt` **1**,
+  conclusion **`success`**.
+
+**The plan's own censuses, run before and after my edits, never carried:**
+
+    # §6.1's homing census, the plan's own quoted command
+    python3 … → 82 82 []      (before)      82 82 []      (after)
+
+    # status-cell pass over every row table
+    awk -F'|' … | sort | uniq -c
+      before: 58 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL, 1 GAP
+      after:  58 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL, 1 GAP
+      distinct ids: 82 both times
+
+**Discharge arithmetic, a hand count with its method**: 13 (`af06c62`) + 12
+(`aabae58`) + **6** (`65ba148`) = **31** of 82 discharged, **51 outstanding**.
+Provenance unchanged and re-measured: `grep -c "M04\|xgmii_tx_64\|AP-xgmii_tx"
+tools/dv_checks.sh` → **0**. **No committed instrument counts an M04 row**;
+`DVC-1a` is still owed and still load-bearing for any coverage fraction.
+
+**Unit census supporting the change-log row's per-row claims**: `grep -c
+"let%expect_test"` → `test_m04_f.ml` **2**, `test_m04_a.ml` **2**,
+`test_m04_b.ml` **4**, `test_m04_g.ml` **2**.
+
+**My own diff, read back as a shape check** (`git diff --numstat`):
+`agents/handoffs/WO-0082_…md` **527/6**, `test/attack_plans/AP-xgmii_tx_64.md`
+**33/2**. **Every one of the eight deletions is a line re-emitted with its
+superseded text struck or extended** — checked by reading all eight (`git diff
+-U0 | grep '^-'`): no passage was removed from either file.
+
+**ADR-0017 rotation arithmetic, done rather than assumed**: v11 was **176 624**
+bytes before this entry, `S` = **262 144**, headroom **85 520**. This entry is
+well inside it, so **no rotation**; v11 stays active and volume 12 is not opened.
+
+**What is NOT evidence here**: nothing in this round was executed against a
+design. `dune` was not run (ADR-0005), no bench moved, and §20's class has never
+been run — it is a **design derived from specification text**, and its first
+measurement is stage 2's.
+
+### Outcome
+
+**DoD vs the dispatch: met, with item 5 answered against the dispatch's expected
+polarity and the ground given.**
+
+1. **Four corrections applied to the packet as Revision B** — met, with
+   superseded text preserved struck, lettering per the chain's own scheme
+   (`rev B`, as `WO-0080` used), and grounds cited to `J-dv_lead-0191`.
+2. **The design obligation** — met: §20 authors the third postcondition class and
+   fixes it in the packet, **and reports a second false-by-construction
+   instrument the verdict had not identified**.
+3. **The §17.1 `date -u` carve-out** — met, paid at the revision it was
+   adjudicated owed at, and exercised by this entry's own stamp.
+4. **The absorption acts** — met: §9's row, `T-7`'s cell, §0.2 item 4, §8 item 7
+   and `M04-G10`'s Stimulus cell. **51 may now be cited; before this edit landed
+   it could not.** The "six Status cells" wording of my own verdict is corrected
+   in the paying rather than executed as written.
+5. **Commissionability** — **the precondition is discharged; stage 2 is NOT
+   commissionable**, because no stage-2 work order exists and this packet cannot
+   be revised into one. The next act is my drafting of it (§20.9 enumerates what
+   it owes). **What the stage-2 spawn prompt must quote when that packet issues**
+   is stated in my return and is unchanged in kind from stage 1's: the §17.1
+   allow-list **verbatim at the head of the dispatch**, now five items including
+   the `date -u` carve-out and item 3's plumbing clause — which is `BM17`'s
+   arming condition (a), the orchestrator's act and measured, never assumed.
+
+**Harvest**: **none due**, declared rather than omitted. ADR-0018 and PROTOCOL §7
+attach the harvest to every `SO-` and every phase gate; this round is neither. My
+next `SO-` mines the interval from my last harvest through this entry, and this
+entry is inside that span.
+
+Handoff: both files to the orchestrator for commit under `Agent: dv_lead`. **I
+ran no `git commit`, no `git push`, and staged nothing.**
+
+### Open-questions
+
+1. **Stage 2's packet is the next act and it is mine.** §20.9 lists what it owes;
+   the largest item is `AP-M04` §7 `T-3`'s second half — the hand-derived oracle
+   turning a schedule into an expected strobe cycle, `/E/` cycle and truncated
+   octet count. **That derivation is the round's real cost**, not the row count,
+   and I would rather it were commissioned as its own round than folded into a
+   packet-drafting round that also has to size a stimulus.
+2. **`M04-A4` and `M04-F6` ride stage 2 by capability, not by family**, and
+   `M04-F6`'s hazard is worth repeating before anyone drafts it: the wrong design
+   there is **one octet** from conformant (gap 16 measured from the `/T/` rather
+   than 15 from the `/E/`) and passes every `≥ cfg_ifg` check.
+3. **The mutation campaign for the six rows discharged here is unblocked and
+   unscheduled.** PROTOCOL §10 sequences it after the `RV-` ACCEPT and before any
+   `SO-` PASS; my recommendation remains the per-family cadence. **It is not a
+   precondition of stage 2** — the two are independent.
+4. **`docs/PROCESS.md` is dirty in this working tree and is architect_docs_lead's
+   declared fifth-edition lane.** Excluded from my files list; noted in case that
+   seat's round and this one are committed close together.
+5. **A ruling I would take if offered**: whether a corrections revision of an
+   `ACCEPTED` packet should instead open a new packet number. I chose revision —
+   the corrections are defects in *this* text and a new number would separate the
+   correction from what it corrects — but the lifecycle in PROTOCOL §3 is written
+   for `BOUNCED → re-issued`, not for post-acceptance corrections, and this is the
+   first instance of the latter in the programme.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md
+- test/attack_plans/AP-xgmii_tx_64.md

@@ -3,12 +3,35 @@
 - **State**: `ACCEPTED` (`RV-0082-VERDICT`, dv_lead, `J-dv_lead-0191`, read at
   landing `65ba148` and review head `d502aa1`). Issued by dv_lead at
   `J-dv_lead-0188`, drafted at spawn-head **`6c02f5b`**; returned by tb_writer at
-  `J-tb_writer-0045`, landed `65ba148`. No prior revision, no bounce. **Stage 1
+  `J-tb_writer-0045`, landed `65ba148`. ~~No prior revision, no bounce.~~
+  **CORRECTED at Revision B: no bounce, and one revision — this one, which is a
+  post-acceptance corrections revision and not a re-issue.** ~~**Stage 1
   of the two-frame chain closes here; stage 2 is a separate packet and carries
-  the four corrections named at that verdict's §6.** **The packet number is the
+  the four corrections named at that verdict's §6.**~~ **AMENDED at Revision B
+  (`J-dv_lead-0192`): stage 1 of the two-frame chain closes here, and the four
+  corrections named at that verdict's §6 are applied to THIS packet at this
+  revision — they are defects in this packet's own text, and a correction filed
+  only into an unwritten successor is a promise rather than a repair. Stage 2's
+  packet inherits the corrected text.** **The packet number is the
   orchestrator's to allocate at first commit (PROTOCOL §3); `WO-0082` is the
   next free number measured at this tree (`grep -c 'WO-0082' tasks/BOARD.md`
   → 0) and this draft uses it.**
+- **REVISION REGISTER** — added at **Revision B**, dv_lead, `J-dv_lead-0192`:
+
+  | Rev | What it is | Grounds | State |
+  |---|---|---|---|
+  | **A** | The packet as issued at `6c02f5b`, executed by tb_writer at `J-tb_writer-0045`, landed `65ba148`, adjudicated **ACCEPT** at `RV-0082-VERDICT` / `J-dv_lead-0191`. **Every term stage 1 was executed and judged under is Revision A's** | — | **CLOSED. Nothing at Revision B reopens it** |
+  | **B** | **A post-acceptance corrections revision, staging no test and commissioning no row.** The four corrections `RV-0082-VERDICT` §6 items 1–4 filed against this packet's own text (§17.1's `date -u` carve-out; §17.1 item 3's plumbing clause; the *describe, never name* rule placed at every demand that produces the sentence; *byte-identical behaviour* defined for a parameterised function, and §5.3's concatenation step described rather than named); plus **§20**, the scheduled-run postcondition class that verdict's §6 item 6 made the precondition of commissioning any stage-2 row | `J-dv_lead-0191` §4(a), §4(b), §4(c), §6 items 1–4 and 6; `J-dv_lead-0189` (the `date -u` ruling, owed *at the next packet revision* — **this is that revision**) | **The text stage 2 inherits** |
+
+  **Revision discipline, stated so a later reader can check it rather than trust
+  it.** Every passage Revision B changes is left **visible and struck**
+  (`~~…~~`) with the replacement beside it and its ground cited; nothing is
+  overwritten and no section is deleted. **Revision B alters no term stage 1 was
+  executed under, and reverses no bar, verdict or disposition** — a bar that
+  passed at Revision A passed against Revision A's text, and re-reading it
+  against this one would be reading a rule backwards onto work that could not
+  have known it. The corrections bind the **next** consumer of this text: stage
+  2's packet, and the seat that executes it.
 - **From** / **To**: dv_lead → tb_writer
 - **Attack plan**: `test/attack_plans/AP-xgmii_tx_64.md` (**AP-M04**), **frozen
   for this round at `9a596e7`** — 82 rows in 15 families, **25 discharged**
@@ -98,6 +121,17 @@
 | 17 | Your terms — the allow-list, unified with the dispatch precheck |
 | 18 | Your return |
 | 19 | What this round does NOT carry, and what I owe after it |
+| **20** | **Revision B — the scheduled-run postcondition class, fixed here because stage 2's stimulus falsifies `SP-2` (and, found at this revision, `assert_instruments_clean_n` with it)** |
+
+**Revision B's changes are at**: the State bullet and the revision register
+(head); this map; §1.4, §5.4, §9.8, §11.1, §13 (`BM8`) — the *describe, never
+name* rule placed at every demand that produces the sentence; §5.2 and §5.3(6)
+and §13 (`BM19`) — *byte-identical behaviour* defined for a parameterised
+function; §5.3(1) — the concatenation step described rather than named; §17.1 —
+items 3 and 5; §19.2 item 4 — the absorption acts, now paid; and the new §20.
+**No other section moves, and §2, §6, §10 and §12 — the row set, the derived
+constants, the cost ceiling and the bars stage 1 was judged against — are
+untouched by construction.**
 
 ---
 
@@ -214,6 +248,19 @@ one. Stating which:
 **Family F therefore does NOT complete this round, and this packet does not
 describe it as completing.** F1, F2 and F5 ride; F3, F4 and F6 do not; the
 family closes in stage 3 at the earliest.
+
+> **REVISION B — the naming rule, at the site that produces the sentence**
+> (`J-dv_lead-0191` §4(a), correction 3). **The table above, and the stage plan
+> under it, are exactly the kind of passage that makes a worker write a row id
+> into a file in order to disclaim it — and §11.1 forbids that four sections
+> away, which is why the same draft error occurred in two consecutive rounds.**
+> The rule, restated here rather than cross-referenced: **in the packet, name the
+> row; in `test/**`, describe it.** A comment, title or string in a source file
+> refers to a row this round does not carry **by description only** (*"the
+> neighbouring family-G row that additionally asserts …"*), because the `SO-`
+> coverage map is built by hand from those titles and **a disclaimer that names
+> the row discharges it in the map**. Bar **M-7** measures the landed tree; this
+> note is what stops the defect being drafted in the first place.
 
 ### 1.5 Size — the one number that decided the shape
 
@@ -465,6 +512,20 @@ at this tree** (`AP-M04` §0.1(iii)'s polarity rule).
   observable behaviour exactly.** `P-ACCEPT` still fires for a single-frame run;
   the liveness bound is unchanged; `cycles_for`'s **value** is unchanged at every
   `p`. Bar **M-6b**, `BM19`.
+
+  > **REVISION B — what "observable behaviour unchanged" means for a function
+  > this packet ORDERS to be parameterised** (`J-dv_lead-0191` §4(c), correction
+  > 4). **It means the firing conditions and their order, not the message text.**
+  > A count folded into a failure string necessarily moves when the count becomes
+  > a parameter — `"expected exactly one frame …"` becomes `"expected exactly 1
+  > frame(s) …"` — and a rule read literally over the text convicts the worker of
+  > executing §5.3(6). **Where this packet wants a message byte-identical it says
+  > so explicitly and separately**, as §5.3(5) does for `wire_frame`'s two
+  > failure strings. **The messages permitted to move are named here**:
+  > `assert_instruments_clean`'s frame-count message and its underflowed-frame
+  > message, both at `n = 1`, and nothing else. The test of the rule is: at every
+  > input class of the wrapper (0 frames, 1 clean frame, 1 underflowed frame, >1
+  > frames) the same predicate fires, in the same order, to the same outcome.
 - **The four landed `test_m04_{scaffold,c,d,e}.ml` files are not modified**, and
   **the three you append to lose no byte**. They are this round's **regression
   witness**: §5.3 re-expresses three landed functions, and the 16 landed units
@@ -496,9 +557,24 @@ Its body, in order:
    the run's last word and rejects every earlier frame's. **This is trap T5 and
    it is the single easiest way to get this function wrong.** Failure message
    must name the frame index.
-2. Concatenate: `List.concat_map contents ~f:source_words`. The per-frame
+2. ~~Concatenate: `List.concat_map contents ~f:source_words`. The per-frame
    `tlast`/`tkeep`/poison structure is already right — `source_words` builds it
-   per frame and concatenation preserves it.
+   per frame and concatenation preserves it.~~
+   **CORRECTED at Revision B** (`J-dv_lead-0191` §3 first bullet and §6 item 4,
+   correction 4 second half; the defect is mine and the worker found it):
+   **step 1 above forecloses the function this step named.** `List.concat_map`
+   concatenates *as* it maps, so nothing per-frame survives to be checked first,
+   and the two steps cannot both be executed literally. **The shape, described
+   rather than named**: build the per-frame word lists (one `source_words` call
+   per frame, results kept **separate**), run step 1's contract check over each
+   of them with its frame index, **then** flatten them into one list in order.
+   The flattened result is the same list a fused map-and-concatenate would have
+   produced; the per-frame `tlast`/`tkeep`/poison structure is already right —
+   `source_words` builds it per frame and flattening preserves it. **A packet
+   naming a library function inside a mechanism its own preceding step
+   forecloses is a defect of this packet, and it is a class: name the shape, and
+   name a function only where the packet has checked that nothing else it
+   demands rules that function out.**
 3. Elaborate one `t` via `create ()`.
 4. Drive the concatenated list through **the same presenter loop** for
    `cycles_for_run contents` cycles.
@@ -598,6 +674,12 @@ witness for. The conservation rule then lives in **one** place, which is bar
 `M-8`'s lesson applied to the second function of this round rather than only to
 the first.
 
+> **REVISION B — read "byte-identical behaviour" here as §5.2's third bullet now
+> defines it**: the firing conditions and their order, **not** the message text,
+> with the two messages permitted to move named there. This step **orders** the
+> parameterisation that moves a count inside a string, so a reading over the
+> text would convict the worker of obeying it (`J-dv_lead-0191` §4(c)).
+
 **Summary: `bench.mli` goes from 13 exported values to 16.** Three added
 (`run_stream`, `wire_frames`, `assert_instruments_clean_n`), thirteen unchanged
 byte for byte, and each addition documented in the file's own docstring register
@@ -634,6 +716,18 @@ extent measured and no further, and the sentence that says so is mine to write a
 the `RV-`. **The `SO-` bar at §0.2 item 4 turns on `M04-G10` being measured, not
 on `T-7` being complete** — so this round satisfies the bar's form (i) if its
 verdict holds, and §9.8 states exactly what that does and does not license.
+
+> **REVISION B — the naming rule, at the second site that produces the sentence**
+> (`J-dv_lead-0191` §4(a), correction 3). This section asks the round to state
+> which consumers the unbuilt half has. **In the packet those consumers are named
+> by row id; in `test/**` they are described and never named** — §11.1's title
+> rule and `BM8`, restated at the demand rather than only at the rule.
+>
+> **REVISION B — absorption status.** `T-7`'s state cell **was** moved to the
+> extent measured, at `J-dv_lead-0192`, in the plan's own §7 table, together with
+> §9's change-log row, §0.2 item 4's satisfaction note, §8 item 7's residue and
+> the now-false sentence in `M04-G10`'s Stimulus cell. §19.2 item 4 carries the
+> record.
 
 ---
 
@@ -1057,6 +1151,16 @@ packet and not by your return.**
    Phase-1 sign-off. A bar is a constraint on what a **packet** may claim, never
    on what a bench may assert.
 
+> **REVISION B — the naming rule, at the third site that produces the sentence**
+> (`J-dv_lead-0191` §4(a), correction 3). **The four exclusions above are written
+> with row ids because this is the packet.** The identical content, written into
+> a unit title, a comment or a string in `test/**`, **discharges those rows in
+> the coverage map I build by hand from those titles** — so in a source file the
+> same four exclusions are carried **by description**: *"the family-G row that
+> drives nothing at that cycle"*, never its id. Two consecutive rounds drafted
+> this defect and self-repaired it; the rule now sits where the sentence is
+> produced, not four sections away (§11.1, `BM8`, bar `M-7`).
+
 ---
 
 ## 10. Cost — the size class, measured, and this round's ceiling
@@ -1122,6 +1226,20 @@ titles by hand, and **no script in this tree would catch it** (§9.7). Where a
 comment needs to refer to a neighbouring row, refer to it by description as
 `test_m04_g.ml` already does (*"the neighbouring family-G row that additionally
 asserts …"*). Bar **M-7**.
+
+**REVISION B — the rule's placement, which is the correction** (`J-dv_lead-0191`
+§4(a), correction 3). **This rule is now also stated at §1.4, §5.4, §9.8 and
+`BM8`** — at every demand that asks the round to say what it does *not* claim,
+which is where the sentence that breaks it gets written. **The rule did not
+change; its location did**, and the location was the defect: two consecutive
+rounds drafted a disclaimer naming the row it disclaimed and caught it with their
+own sweep, and a rule a worker meets four sections after the demand that produces
+the sentence is a rule discovered on review. **The formulation, once, so the four
+restatements are quotations of it**: *in the packet, name the row; in `test/**`,
+describe it — a disclaimer that names a row discharges it in a coverage map built
+by hand from titles.* **And the drafting instrument that catches it**: sweep your
+own files for `M04-<letter><digits>` before finalising, which is what both rounds
+did and what turned the defect into a self-repair both times.
 
 The `=` must be alone on its own line, as it is in every landed unit:
 
@@ -1267,7 +1385,11 @@ mine.
   `test/**` (bar M-7) or described as discharged; family D's rows described as
   re-discharged by U20 or U21; the standing decoder's own REQ-202 or REQ-204
   verdict reported as this round's coverage; `T-7` described as fully discharged
-  (§5.4).
+  (§5.4). **REVISION B**: and the rule that makes this condition survivable is
+  *in the packet, name the row; in `test/**`, describe it* — stated at §1.4,
+  §5.4, §9.8 and §11.1, at every demand that produces the sentence, because a
+  disclaimer naming the row it disclaims **is** a claim of coverage in the map
+  built from those titles (`J-dv_lead-0191` §4(a), correction 3).
 - **`BM9` — an `Octet_time.Latency` tagger is instantiated**, or any latency
   figure for M04 appears anywhere in your output.
 - **`BM10` — `tstrb` or `tuser` is varied across runs.** That is family M's
@@ -1311,6 +1433,14 @@ mine.
   `run_lengths`/`run_frames`; the liveness bound altered; `cycles_for`'s value
   moved at any `p`; `wire_frame`'s or `assert_instruments_clean`'s failure
   behaviour changed at `n = 1`. Bar **M-6b**.
+  **REVISION B — "failure behaviour" is the firing conditions and their order,
+  NOT the message text** (`J-dv_lead-0191` §4(c), correction 4). §5.3(6) orders
+  the parameterisation that moves a count inside a failure string, so a literal
+  reading of this condition over the text would convict a worker of executing
+  the packet. The messages permitted to move are named at §5.2's third bullet;
+  `wire_frame`'s two messages are **not** among them, because §5.3(5) demands
+  those byte for byte and says so separately, which is the form this packet uses
+  where it means the text.
 
 ---
 
@@ -1533,10 +1663,42 @@ Your permitted instruments are, in full:
    packet's Return log, plus your own journal at
    `agents/journals/workers/claude_tb_writer_agent*.md`.
 3. **`ocamlc -stop-after parsing`** on the OCaml files you wrote or edited.
+
+   **REVISION B — what is inside this item, written here so no seat has to
+   derive it** (`J-dv_lead-0191` §4(b), correction 2; the ruling was made on a
+   disclosure the worker filed against its own interest). **Inside**: (i)
+   observing the **exit status** of this invocation — `; echo "EXIT:$?"` or any
+   equivalent — because bar `M-15` demands you report *exit 0 for each*, and a
+   permission to run a command while withholding the permission to observe
+   whether it succeeded is not a permission to discharge that bar; (ii)
+   **redirecting this invocation's own streams** (`2>&1`); (iii) **repeating
+   this invocation over the file set a bar names** (a `for` loop over those
+   files). **Still outside, and unaffected**: any pipeline that transforms,
+   searches, filters or reads repository content — `| grep`, `| wc`, `cat`,
+   `find`, `ls`, `sed`, `awk` — *regardless of what command it is attached to*.
+   **The distinction is between plumbing around a sanctioned invocation and an
+   instrument that reads the tree**: (i)–(iii) observe nothing about this
+   repository that `ocamlc` did not itself produce, and the prohibitions this
+   list names exist so that a bar phrased as a search is executed with the
+   file-search tool and by **reading the hits**, leaving your reads visible.
 4. **The two spawn-precheck commands your dispatch mandates, by name:
    `git status --short` and `git rev-parse HEAD`.** Each **once**, at the head of
    your round, **before anything is read**, with their output quoted in your
    journal's Trigger section.
+5. **`date -u`, once, at the moment you author your journal entry's header
+   stamp** — **added at Revision B** (`J-dv_lead-0189`'s ruling, adjudicated
+   owed *at the next packet revision*; `J-dv_lead-0191` §6 item 1). Record the
+   reading in your journal's Evidence section as the command and its output.
+   **Why it is carved rather than left to judgement**: PROTOCOL §4.1 requires
+   every entry to carry a UTC ISO-8601 stamp, and a seat required to produce one
+   while forbidden to read a clock will estimate — **two consecutive entries of
+   this chain carry a self-qualified stamp for exactly that reason**, both
+   honestly labelled, neither avoidable. A rule that forces a violation and then
+   convicts it is worse than the violation (`RV-0080-VERDICT` §6); this is the
+   third instrument that rule has now carved, after the two prechecks and the
+   plumbing clause above. **An estimated stamp remains honest and remains
+   creditable** — the carve-out removes the need for one, it does not convict
+   the rounds that made one.
 
 **Everything else is forbidden**: every **other** `git` subcommand — `diff`,
 `show`, `log`, `add`, `stash`, and `status` a **second** time — `dune` (every
@@ -1544,7 +1706,11 @@ subcommand, ADR-0005), `tools/*.sh` (every script), the network in every form,
 and **any other shell command whatsoever**, including `grep`, `sed`, `awk`,
 `cat`, `find`, `ls` and `wc`. Where §12 gives you a bar phrased as a search,
 execute it with the file-search tool and by **reading the hits**, never with a
-shell pipeline.
+shell pipeline. **REVISION B: the carve-outs are exactly items 3's (i)–(iii), 4
+and 5 above — enumerated, bounded, and each with the obligation it exists to
+make dischargeable. Nothing else is read into this list, and a seat that thinks
+it needs a further instrument stops and says so (§17.1's closing rule) rather
+than deriving a permission from the shape of these.**
 
 **The carve-out is exactly two commands at exactly one point, and §17.3 is
 unchanged by it.** The precheck is an abort-first check on the substrate *before
@@ -1657,6 +1823,22 @@ CI's and the adjudication is mine.**
    change-log row for whatever this round discharges, `T-7`'s state cell moved to
    the extent measured, and the six rows' status — all at the `RV-`, none of them
    here, and none of them assumed by anything above.
+   **PAID at Revision B** (`J-dv_lead-0192`), and one word of the sentence above
+   is corrected in the paying: **`RV-0082-VERDICT` §6 says "the six rows' Status
+   cells", and this plan has no such act.** A `Status` cell holds one of §1's six
+   vocabulary values; **discharge is not a status value**, and both prior
+   absorptions record in terms that *no status cell moved*. The acts actually
+   owed, and performed: **(a)** §9's change-log row — six rows discharged at
+   `65ba148`, five ASSERT and one NO-ASSERT, with the carrier, the CI evidence
+   re-read at the source, and outstanding **57 → 51**; **(b)** §7 item `T-7`'s
+   state cell, moved to the extent measured and no further, with the unbuilt half
+   named; **(c)** §0.2 item 4's permitted form **(i)**, recorded satisfied, which
+   §9.8 says is recorded at absorption and nowhere else; **(d)** §8 item 7's
+   residue; and **(e)** the now-false sentence in `M04-G10`'s **Stimulus** cell
+   (*"Needs machinery T-7 and is not mountable at this commit"*), struck in
+   place. **Until (a) landed the plan read 57 outstanding and 51 could not be
+   cited; it now reads 51, measured by a status-cell pass at this tree and not
+   carried forward.**
 5. **The three `BAR T1` work orders** — vendoring the transmit reference at a pin
    (its own commit, ADR-0015 D2), a transmit harness and canonical form, and
    REQ-901's divergence classes. Orchestrator, as scheduling; (c) gates what (b)
@@ -1676,6 +1858,275 @@ CI's and the adjudication is mine.**
 - **`FINDING K-3`'s base-execution rule.** Every tree-quantified bar in §12
   carries a figure measured at this base, and §3.2 records that five of them
   would have been wrong if carried from the previous packet.
+
+---
+
+## 20. REVISION B — the scheduled-run postcondition class, and the second instrument that stage 2's own stimulus falsifies
+
+**Added at Revision B, dv_lead, `J-dv_lead-0192`. Grounds: `RV-0082-VERDICT` §6
+item 6**, which named this *"the single thing stage 2's packet must design before
+it commissions a row"*, said the design is **mine and fixed in the packet rather
+than delegated**, and thereby made this section a **precondition of commissioning
+any stage-2 row**. It is written here, into the packet that landed the machinery,
+so that the design exists at a committed SHA **before** the packet that consumes
+it — the same ordering §5.3 followed for stage 1, and the reason a worker met a
+fixed design there instead of an invitation to invent one.
+
+**This section commissions nothing.** It stages no test, names no unit, moves no
+row and changes no verdict. §20.9 states what stage 2 still owes.
+
+### 20.1 The falsification, stated exactly
+
+`SP-2` (§5.3(4)) asserts **completeness**: the number of accepted samples equals
+`Σ_k W_k`, the total word count offered. Stage 2's whole subject is a **stall
+schedule** — a word deliberately withheld mid-frame — and SPEC-M04 §9 makes the
+conformant consequence of that an **abort**: the words already accepted are
+transmitted, then one word carrying `/E/` in lane 0 and `/T/` in lane 1, **no FCS
+appended**, and the gap served from that terminate character. **The withheld word
+is never accepted as part of that frame, because that frame is over.** So
+`accepted = offered` is **false against a conformant M04** under stage 2's own
+stimulus — in exactly the way `P-ACCEPT`'s contiguity was found false at two
+frames, one regime earlier, and for the same kind of reason: a postcondition
+written over the only stimulus class that existed when it was written.
+
+**The general form, because it is the third instance and the class is now
+visible**: *a run-level postcondition is a claim about the design, and it must be
+derived from the specification over the stimulus class the runner will actually
+drive — not from the stimulus class that happened to exist when the runner was
+written.* `P-ACCEPT` (one frame → contiguous acceptances), `SP-2` (unscheduled
+stream → complete acceptances), and now the two instruments below. Each was true,
+each was checked, and each became false the moment a new stimulus class landed.
+
+### 20.2 The companion, found at this revision and not at the verdict
+
+**`assert_instruments_clean_n` is false by construction under the same stimulus,
+and `RV-0082-VERDICT` §6 did not name it.** Reading the landed contract back
+(`test/xgmii_tx_64/bench.mli`, the `assert_instruments_clean_n` docstring) it
+makes four checks, and stage 2's conformant run fails **two** of them:
+
+- *"the strobe monitor must be clean **AND** `high_cycles "error_underflow"` must
+  be **0**"* — a conformant abort strobes for **exactly one cycle** (§9's pin), so
+  this is 1, not 0;
+- *"the standing decoder must report exactly `frames` completed frames, **NONE of
+  them underflowed**"* — a conformant abort produces exactly one frame whose
+  `Tx_decoder.frame.underflowed` is **true**, that field being defined as *"ended
+  by §9's `/E/` `/T/` word rather than by `/T/`"*.
+
+**Recording that this was found at the revision rather than at the verdict is the
+point of recording it at all.** The verdict named one instrument; the round that
+sat down to design its replacement found the second within one reading of the
+committed `.mli`. **The lesson is procedural and it is stage 2's to carry: when a
+postcondition is found false against a new stimulus class, the act owed is not to
+fix that postcondition — it is to re-read *every* run-level assertion the new
+runner will inherit, against the new class, before designing any of them.** Two
+of the four checks in one function and one of three in another is not a
+coincidence; it is what happens when a stimulus class is new.
+
+### 20.3 The specification facts the class is derived from
+
+Every fact below is SPEC-M04's, cited to its own section. **No RTL was opened at
+this revision or at any earlier one** (PROTOCOL §10; the module file exists at
+this tree and was not read).
+
+1. **The condition** (§9's row, REQ-206): `tx_tready` = 1 and `tx_tvalid` = 0,
+   **after the start character has been emitted** and **before the frame's
+   `tlast` word has been accepted**.
+2. **The strobe** (§9, *Strobe cycle, pinned*): exactly one cycle, on the cycle
+   the word was required and not presented; the wire consequence follows **two
+   cycles later**.
+3. **The wire shape** (§9, §6.2's `Abort` row): one word, `/E/` lane 0, `/T/`
+   lane 1, `/I/` lanes 2–7, `xgmii_txc` = 0xFF, **no FCS**. **The terminate
+   character is therefore at lane 1**, so the gap that follows is served at
+   `t = 1` — `g = ⌈(12 + 1)/8⌉ = 2` words, an actual gap of **15** octets. (This
+   is `M04-F6`'s content and this section does not discharge it.)
+4. **The states** (§6.2): `Frame` → `Abort` on underflow → `Gap` → `Idle` when
+   the gap is satisfied. **`Idle` is the state that accepts a first source
+   word**; §6.2's C-16 paragraph says *"no cycle other than that one is an early
+   acceptance"*, and the one it means is the post-`tlast` cycle, which an aborted
+   frame never reaches.
+5. **`tx_tready` after the abort is UNPINNED except at one cycle** (§7's C-14.1
+   bullet with §6.3 item 3): it is **1 on the last cycle of the gap**, and *"on
+   the earlier cycles of a longer gap the value is unconstrained"*. **This is the
+   fact that decides the shape of the whole class**: a bench may not assert *when*
+   anything offered after the abort is accepted, but it **may** rely on the
+   acceptance happening **no later than the gap's last cycle**, because the
+   source holds `tvalid` and the word stable until acceptance (§7's handshake
+   bullet) and that cycle is pinned to 1.
+6. **M04 needs no declared length** (§7's handshake bullet): *"`tx_tlast` ends the
+   frame"*. **Therefore the specification gives M04 no way to know that a word
+   presented after an abort is the dead frame's tail rather than a new frame's
+   head** — and §20.5's trap follows from this sentence alone.
+
+### 20.4 The schedule, and the two legality rules the specification fixes
+
+A stage-2 runner is driven by a **schedule**, declared **before the run** and
+never inferred from the design's output. Its content, fixed here:
+
+```
+frame  : int              (* index into the contents list *)
+word   : int              (* index of the word withheld within that frame *)
+hold   : int              (* consecutive cycles it is withheld, >= 1 *)
+after  : Resume | Abandon (* what the source does with that frame's remainder *)
+```
+
+**Two legality rules, both derived and neither stylistic.**
+
+- **`word ≥ 1`.** REQ-206's condition opens *after the start character has been
+  emitted*; withholding word **0** withholds a frame that has not begun, which is
+  a late frame and not an underflow. `word = 1` is the **earliest** withholding
+  that can strobe, and that is `M04-G5`'s row, not a schedule accident.
+- **No withheld cycle at a between-frames handover.** §9.4's distinction is
+  standing: offering the next frame's word 0 on the cycle after the previous
+  frame's last acceptance is a **handover**, and not offering it there is
+  §7's C-16 consequence 1 — *"the one cycle in a frame's life where `tx_tready` =
+  1 with `tx_tvalid` = 0 means nothing at all"*. A schedule that places a
+  withholding there produces no underflow and is a stimulus mislabelled as one.
+
+**`Abandon` versus `Resume` is a stimulus decision with a wire consequence, and
+stage 2's packet fixes it per row rather than globally.** `AP-M04`'s own family-G
+stimulus cells resume (*"and resumes afterwards"*); `Abandon` is the polarity a
+bench needs when it wants the aborted frame's tail off the wire entirely.
+
+### 20.5 The trap `Resume` creates — a frame nobody put in the contents list
+
+**By §20.3 item 6, the dead frame's tail is, to M04, a new frame.** The source
+resumes; the first resumed word is accepted (no later than the gap's last cycle,
+item 5); `Idle` releases it; a start character is emitted; and the tail's own
+`tlast` word closes it. **A conformant run of `n` contents elements with one
+resumed stall therefore decodes `n + 1` frames** — the aborted one, the tail, and
+the rest — **and the tail-frame is well formed**: padded to 60 if short, its own
+FCS over its own octets, its own terminate lane.
+
+**Two consequences a stage-2 packet must carry into every row that resumes:**
+
+- **the expected decoded-frame count is not `List.length contents`**, and a
+  runner or a row that assumes it is will fail a conformant design;
+- **the tail-frame's content is derived, not chosen** — it is the tail of the
+  contents element, padded and FCS'd as its own frame — so a row asserting *"the
+  next frame transmits correctly"* (`M04-G6`'s claim) must be explicit about
+  **which** frame it means: the tail, or the next contents element after it.
+
+### 20.6 The third postcondition class — `ST-1` … `ST-4`
+
+**Prefix `ST` and not `SP-4`, deliberately**: a new regime gets a distinct prefix
+so that a failure message can never be read as the stream regime's, and so that
+`grep`ping for one regime's checks cannot return the other's.
+
+**Three regimes, one loop.** The shared `drive` (§5.3(2)) gains a **withholding
+predicate** over cycles, defaulting to *never withhold*, and the three
+postcondition sets sit above it:
+
+| Regime | Runner | Postconditions |
+|---|---|---|
+| single frame | `present` (landed) | `P-ACCEPT` — **unchanged, untouched** |
+| unscheduled stream | `present_stream` (landed) | `SP-1`, `SP-2`, `SP-3` — **unchanged, untouched** |
+| **scheduled stream** | **new**, stage 2's | **`ST-1` … `ST-4`** |
+
+**Stage 2 adds a third runner; it does not generalise the second.** The landed
+`run_stream` and its `SP` set are the regression witness for stage 1's six rows
+and for §5.3's four re-expressions, and evidence you edited is not evidence
+(§11.4's ground, applied one round later to the machinery instead of to the
+files). `M-8`'s rule still binds: the **loop** is shared, never copied.
+
+**`ST-1` — liveness.** The first acceptance is at or before cycle 16, the same
+bound `SP-1` and `P-ACCEPT` share, failing with the same words: a
+**bench-liveness** bound and **not** a timing assertion about `C` (`M04-A5`).
+
+**`ST-2` — schedule fidelity, and it is a check on the BENCH.** For every cycle
+the schedule declares withheld, the sample's own `offered.tvalid` is **false**;
+for every other cycle up to the source's exhaustion, it is **true**. Asserted
+from the bench's own drive record, **never from the design's output**, and it is
+design-independent by construction. **This is the generalisation of `M04-G10`'s
+route precondition (trap T14, class D3c) from one row to every scheduled run**:
+without it, a driver that quietly failed to withhold turns a stall round into a
+non-stall round, and every silence and every strobe assertion downstream becomes
+a green statement about a stimulus that never happened. **Its failure message
+says, in those words, that everything downstream of it is void.**
+
+**`ST-3` — accountability, which is what `SP-2` was reaching for.** The number of
+accepted samples equals `Σ_k W_k − abandoned`, where **`abandoned` is the
+schedule's own declared count** — `W_j − word` under `Abandon`, **0** under
+`Resume` — fixed before the run and **never inferred from the design's output**.
+**Why this is true against a conformant M04 where `SP-2` is false**: the only
+words a conformant design can never accept are precisely the ones the schedule
+declares abandoned; every other offered word is accepted, because §20.3 item 5
+pins `tx_tready` = 1 on the gap's last cycle and §7's handshake bullet holds the
+source's word stable until acceptance. **What it catches** is what `SP-2` caught:
+a run one cycle too short, and a design that stalls where the specification says
+it must not. **Its failure message states counted, expected, the schedule's own
+abandoned count, and the void language.**
+
+**`ST-4` — nothing else, and the exclusions are derived rather than cautious.**
+
+- **No contiguity** — `tx_tready` is 0 on the FCS and terminate words (C-14.1),
+  as at `SP-3`.
+- **No acceptance-cycle claim for any word offered at or after the withheld
+  cycle.** §20.3 item 5: those cycles are *unconstrained* by §7 and governed by
+  §6.3 item 3. A runner-level assertion over them fails a conformant design; the
+  **bound** (at or before the gap's last cycle) is available to a **row** that
+  derives it, and `ST-3` uses it only as a ground, never as an assertion.
+- **No claim about the strobe, the `/E/` word, or the truncated octet count.**
+  Those are the row's, from the hand-derived oracle — `AP-M04` §7 item **T-3**'s
+  second half, which does not exist and which stage 2 must build (§20.9).
+- **No claim about the decoded frame count.** §20.5 makes it a function of the
+  schedule's `after` field, so it belongs to the instrument assertion of §20.7
+  and to the row, not to the runner.
+
+### 20.7 The instrument assertion, generalised — the second half of the design
+
+`assert_instruments_clean_n` cannot be called from a scheduled run at all
+(§20.2). Its replacement takes the **expected** sets as parameters, because under
+this stimulus a strobe and an underflowed frame are the **conformant** outcome:
+
+- **expected strobe events** — a list of cycles, supplied by the row from its own
+  derivation (`Strobe_monitor.expect` is the landed mechanism), and the exact
+  event set asserted **in both halves** as obligation 4 requires: the expected
+  events happened **and** no others did;
+- **expected underflowed frames** — how many of the decoded frames carry
+  `underflowed = true`, and **which**, by position in transmission order;
+- **the frame count** — §20.5's, derived from the schedule and not from
+  `List.length contents`;
+- **the decoder clean** — obligation 1, unchanged, and it must stay unchanged:
+  `Tx_decoder` judges §9's underflow word shape itself (obligation 1's REQ-206
+  clause), so an aborted frame that is malformed **is** a violation and must
+  still fail the run.
+
+**The landed `assert_instruments_clean_n` keeps its meaning byte for byte** and
+becomes the zero-strobe, zero-underflow special case at the top of that
+generalisation — the same discipline §5.3(6) used, and for the same reason: the
+sixteen-plus landed units that call it are the witness that nothing moved.
+
+### 20.8 The run-length allowance does not carry over, and the shape of its derivation
+
+`cycles_for_run`'s per-frame allowance is `⌊F_k/8⌋ + 4`, with the `4` derived as
+`1 + g_max` at `cfg_ifg = 12` (§5.3(3)). **An aborted frame does not have that
+shape**: it ends at the `/E/` `/T/` word two cycles after the withheld cycle
+(§20.3 item 2), its terminate lane is **1** rather than `F mod 8` (item 3), its
+gap is 15 octets, and under `Resume` a **tail-frame** follows that the contents
+list never named (§20.5). **Stage 2 derives its own allowance and states the
+derivation**, per the same rule §5.3(3) states for stage 3's configuration axis:
+*a round that changes the terms the allowance was derived under must re-derive
+it.* **It is not a number this section fixes**, because the numbers depend on the
+row set stage 2 chooses, and a derived constant invented before its stimulus is
+the class §6 exists to prevent.
+
+### 20.9 What this section does NOT do, and what stage 2 still owes before a row can be commissioned
+
+**Done here, and done because a design fixed after a worker meets it is not a
+fixed design**: the falsification and its companion; the specification facts;
+the schedule and its two legality rules; the `Resume` trap; the three-regime
+split; `ST-1` … `ST-4` with their grounds and their failure-message obligations;
+the instrument generalisation; and the allowance's derivation rule.
+
+**Still owed by stage 2's packet, and none of it is here** — the row set
+(`M04-G1`, `G2`, `G3`, `G5`, `G6`, `G8`, with `M04-A4` and `M04-F6`, per §1.4);
+**`T-3`'s second half**, the hand-derived oracle that turns a schedule into an
+expected strobe cycle, `/E/` cycle and truncated octet count, which `AP-M04` §7
+records as not existing; the derived-constant tables per unit; the run-length
+allowance of §20.8; the cost ceiling; the bars with their base figures measured
+at that round's own base (`FINDING K-3`); the bounce conditions; and the traps.
+**This section is the precondition that verdict named, not the packet that
+verdict owes.**
 
 ---
 
@@ -2431,3 +2882,73 @@ reason to relax it.
    was found false at two frames in this packet's §5.3(4). A third postcondition
    class is owed, it is mine, and it is fixed in the packet rather than delegated
    — the same rule §5.3 followed here.
+   **DISCHARGED at Revision B: §20 is that class.** And it carries one thing this
+   verdict did not see: **`assert_instruments_clean_n` is false by construction
+   under the same stimulus too** (§20.2), on two of its four checks. The verdict
+   named one instrument; the design round found the second.
+
+---
+
+### REVISION B — dv_lead, `J-dv_lead-0192`
+
+**What this revision is.** A post-acceptance corrections revision of an
+`ACCEPTED` packet. **It stages no test, commissions no row, moves no bar and
+reverses no verdict.** `RV-0082-VERDICT` stands exactly as written, against
+Revision A's text, which is preserved struck wherever Revision B replaces it.
+
+**The five acts, each against its own ground:**
+
+1. **`RV-0082-VERDICT` §6 item 1 — the `date -u` carve-out.** §17.1 item **5**,
+   new: `date -u`, once, at the authoring of the journal entry's header stamp,
+   with the reading recorded in Evidence. `J-dv_lead-0189` adjudicated this owed
+   *at the next packet revision*; **this is that revision**, and it is paid at
+   the first one rather than deferred to the first new packet, which is the whole
+   difference between a ruling and an intention. Two consecutive entries of this
+   chain carry an honestly self-qualified stamp for want of it; **neither is
+   convicted by the carve-out**, and both are creditable conduct under a rule
+   that forced the choice.
+2. **§6 item 2 — the plumbing clause.** §17.1 item **3** now carries the ruling's
+   own boundary in its own text: exit-status observation, stream redirection and
+   repetition over a bar's named file set are **inside** the sanctioned
+   invocation; any pipeline that reads, searches, filters or transforms
+   repository content is **outside**, whatever it is attached to. **No seat has
+   to derive this from a verdict it may never read.**
+3. **§6 item 3 — *describe, never name*, placed at every demand that produces the
+   sentence.** §1.4, §5.4, §9.8 and `BM8` now carry it; §11.1 keeps it and states
+   that the *placement* was the defect, not the rule. **The class had recurred in
+   two consecutive rounds and both times a worker's own sweep caught it** — the
+   sweep is now named in §11.1 as the drafting instrument, so the next round
+   inherits the catch and not only the prohibition.
+4. **§6 item 4 — two halves.** *Byte-identical behaviour* is defined for a
+   function this packet **orders** to be parameterised (§5.2, §5.3(6), `BM19`):
+   the firing conditions and their order, not the message text, with the two
+   messages permitted to move named. And §5.3(1) step 2 no longer names a library
+   function whose use its own preceding step forecloses — **the shape is
+   described**, and the general rule is stated with it.
+5. **§6 item 6 — the design obligation.** **§20**, new: the scheduled-run
+   postcondition class `ST-1` … `ST-4`, its schedule and legality rules, the
+   `Resume` trap, the instrument generalisation, and the allowance's derivation
+   rule — **plus the companion falsification the verdict did not name** (§20.2).
+
+**The absorption acts are performed in the same round, in the plan** —
+`test/attack_plans/AP-xgmii_tx_64.md` §9's change-log row (six rows discharged at
+`65ba148`, **outstanding 57 → 51**), §7 item `T-7`'s state cell moved to the
+extent measured, §0.2 item 4's permitted form (i) recorded satisfied, §8 item 7's
+residue, and the now-false sentence in `M04-G10`'s Stimulus cell struck. **51 may
+now be cited; before that edit landed it could not** (§19.2 item 4).
+
+**COMMISSIONABILITY — the ruling this revision exists to make possible, recorded
+here rather than in a message.** **The precondition is discharged and stage 2 is
+NOT thereby commissionable, because the two are different questions and only the
+first was mine to close this round.** `RV-0082-VERDICT` §6 item 6 made a
+**design** the precondition of commissioning any stage-2 row; §20 is that design,
+committed, at a SHA earlier than any packet that consumes it. **What does not
+exist is the packet.** This one commissions six **stage-1** rows at §2, derives
+**stage-1** constants at §6, measures its bars against a **stage-1** base at §12,
+and its §19.2 item 3 names stage 2's packet as a distinct artifact owed by my
+seat. **A tb_writer spawn requires an `ISSUED` work order with rows, stimulus,
+derived constants, bars and bounce conditions**, and issuing one that does not
+exist is not a scheduling shortcut, it is a round with no definition of done.
+**The next act on this chain is my drafting of stage 2's packet** (§20.9
+enumerates exactly what it still owes), and it now begins from a design that is
+fixed, committed and reviewable rather than from a promise in a verdict.
