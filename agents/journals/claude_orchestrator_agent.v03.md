@@ -1041,3 +1041,65 @@ instruction — this is direct sponsor-commissioned site work, not NIC work.
 - site/public/org-chart.html
 - site/public/process.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0289] 2026-08-12T15:34Z | task:none | All eight framework figures are torn out on the sponsor's verdict: they labelled where they should have encoded, and a figure that only re-draws its paragraph has no claim on the page
+
+### Trigger
+
+Sponsor verdict on the eight figures landed at 67829ec, verbatim: "most of the
+graphics are pretty terrible and unreadable or don't actually impress me with
+what information they convey." Direction: remove all the graphics, inventory
+what in the one-pager is genuinely worth visualizing, rebuild, then review.
+
+### The diagnosis, accepted
+
+Two independent failures, and the first is the real one:
+
+1. **Nothing was encoded; everything was labelled.** Every figure was boxes
+   containing sentences, joined by arrows. Position, size, area and colour
+   carried no meaning, so a reader gained nothing the adjacent paragraph had
+   not already given them. The governing test — a diagram earns its place when
+   it lets a cold reader see a mechanism they would otherwise have to assemble
+   from prose — was never applied, and at least three figures (the work-order
+   lifecycle above all) simply re-drew their own sentence.
+2. **Craft below this site's own bar.** 10px grey monospace, three lines of
+   text per box. The hand-built artefact pages on the same site route wires at
+   runtime from measured DOM rects, run a collision-avoiding label placer that
+   refuses to place a label rather than overlap it, and encode byte counts as
+   proportional grid columns. Against that, the new figures read as a
+   regression — which is the honest word for it.
+
+### The tear-out
+
+site/framework_figs.py DELETED (31 KB, eight figures F1-F8). Its import,
+its {FRAMEWORK_CSS} in the style concatenation, and the per-section FIGS
+injection removed from site/build.py; the section-splitting loop reverts to a
+single md_to_html call. framework.html now renders the one-pager as clean
+text — the sponsor's words, untouched, which were never the problem.
+docs/FRAMEWORK.md is byte-unchanged. Zero residual .fx-*/.fig references
+anywhere in site/public/.
+
+### What replaces it
+
+Two research passes (site design-system census; independent figure design)
+plus my own paragraph-by-paragraph inventory produced a sixteen-candidate list
+scored on one question: what must a reader assemble in their head that the
+figure would hand them instantly? Twelve candidates failed and are recorded as
+cut with grounds — including the founding-circularity figure, refused because
+the one-pager's own sentence ("the one legitimizing act the organization can't
+perform on itself") beats any drawing of a ring with a gap in it. Five survive,
+each carrying a DIFFERENT encoding channel so the set cannot repeat itself:
+permission as cell-absence, knowledge as time-ordering, coverage as horizontal
+extent, protection as ink area, work-at-risk as shaded interval. Abstract and
+project-agnostic by the sponsor's explicit choice — the program's own measured
+figures stay off this page.
+
+### Files-in-this-commit
+- site/build.py
+- site/framework_figs.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
