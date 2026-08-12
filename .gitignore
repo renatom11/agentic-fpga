@@ -12,3 +12,4 @@ tools/data/
 # Editor / OS noise
 *.swp
 .DS_Store
+__pycache__/

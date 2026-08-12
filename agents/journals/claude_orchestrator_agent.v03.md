@@ -979,3 +979,65 @@ staleness to chase.
 - site/public/org-chart.html
 - site/public/process.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0288] 2026-08-12T14:48Z | task:none | The website's document tabs give way to the sponsor's one-pager: FRAMEWORK replaces PROCESS and MEMOIR, the text imported byte-true, and eight hand-drawn figures put a mechanism under every paragraph
+
+### Trigger
+
+Three sponsor messages, one commission: remove the process and memoir tabs
+from the website; add the one-pager (uploaded this session) under a tab
+called FRAMEWORK carrying all of its text; and add "really cool connection
+charts and graphics" as visual aids for every paragraph, "accurately
+reflect[ing] what is on the one page doc and also the framework for the
+project." NIC engineering remains PAUSED by the sponsor's standing
+instruction — this is direct sponsor-commissioned site work, not NIC work.
+
+### What landed
+
+- **docs/FRAMEWORK.md** — the sponsor's one-pager imported byte-true
+  (sha256 15c8093a…73b equal on both sides; 48 lines). I verified its claims
+  against the record before rendering: the four finding grades (critical/
+  major/minor/note, PROCESS.md:1411), the four posture grades (machine-
+  checked / review-enforced / performed-once / PLANNED, §the stamps), the
+  seal-before-seed campaign order, the auditor's cannot-fix design, the
+  two-half export unit. No claim contradicts the record.
+- **site/framework_figs.py** — NEW: eight hand-authored SVG figures, one per
+  block of the one-pager, each drawing the mechanism its paragraph states:
+  F1 memory-lives-in-the-repository (no session-to-session arrow; the only
+  channel is the record), F2 the two enforcers with the honest bypass
+  (script skipped → CI still gates the merge), F3 the seat connection chart
+  (orchestrator hub that writes no substance; tests derive from the promise
+  never the build; the auditor audits its own spawner), F4 the work-order
+  lifecycle with the preserved bounce loop, F5 the seeded-defect campaign
+  (seal → one-way blind → isolated never-merging copy → scored against t0),
+  F6 the crash law (push-at-every-stop; the replacement resumes from the
+  last pushed commit, never the half-finished edit), F7 the honesty-grade
+  load-bearing columns with the residue gap, F8 the export unit and the
+  measured adoption loop. All strokes/fills ride the site's CSS variables —
+  both themes verified by screenshot (16 renders, three iteration rounds of
+  collision fixes, all label/edge overlaps cleared).
+- **site/build.py** — PAGES: process+memoir tabs replaced by FRAMEWORK;
+  the two render blocks replaced by the framework page (verbatim text,
+  figures interleaved; the seat chart placed after the Who-does-what intro,
+  ahead of the seat list); footer credits the text to the sponsor, the
+  figures to this seat.
+- **site/public/** — framework.html NEW; process.html and memoir.html
+  REMOVED (the tabs were the access points; the pages go with them). The
+  governing documents docs/PROCESS.md and docs/PROCESS-MEMOIR.md are
+  UNTOUCHED — this changes the website's presentation only, not the record;
+  check_process_doc.sh green.
+- .gitignore: __pycache__/ (build byproduct of the new module).
+
+### Files-in-this-commit
+- .gitignore
+- docs/FRAMEWORK.md
+- site/build.py
+- site/framework_figs.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/memoir.html
+- site/public/org-chart.html
+- site/public/process.html
+- site/public/spec-atlas.html

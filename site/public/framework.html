@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>agentic-fpga — a trading network card built by an AI org</title>
+<title>agentic-fpga — the framework</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="A 10-gigabit Ethernet network card that in simulation parses a stock exchange&#x27;s data feed and tracks the order book in hardware, written in Hardcaml by a hierarchy of AI agents under a human sponsor. Everything tracked in GitHub, with each commit carrying its author&#x27;s work history and full reasoning.">
-<meta property="og:title" content="agentic-fpga">
+<meta property="og:title" content="agentic-fpga — how the multi-agent framework works, on one page">
 <meta property="og:description" content="A 10-gigabit Ethernet network card that in simulation parses a stock exchange&#x27;s data feed and tracks the order book in hardware, written in Hardcaml by a hierarchy of AI agents under a human sponsor. Everything tracked in GitHub, with each commit carrying its author&#x27;s work history and full reasoning.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/og.png">
@@ -127,140 +127,382 @@ ul.next { padding-left:1.2rem; } ul.next li { margin:.35rem 0; font-size:.92rem;
 .tabbar a:hover { border-color:var(--rx,#0f766e); color:var(--rx,#0f766e); }
 .tabbar a.here { background:var(--rx,#0f766e); border-color:var(--rx,#0f766e);
   color:var(--panel,#ffffff); }
+
+.doc h1 { margin-top:1.2rem; }
+.doc h2 { font-size:1.35rem; margin:2.8rem 0 .7rem; border-top:1px solid var(--line); padding-top:1.6rem; }
+.doc h3 { font-size:1.08rem; margin:2rem 0 .5rem; }
+.doc h4 { font-size:.95rem; margin:1.5rem 0 .4rem; color:var(--ink-2);
+  font-family:'Plex Mono',monospace; letter-spacing:.04em; }
+.doc p, .doc li { max-width:76ch; }
+.doc li { margin:.3rem 0; }
+.doc hr { border:0; border-top:1px solid var(--line); margin:2rem 0; }
+.doc pre.fence { font-family:'Plex Mono',monospace; font-size:.82em; background:var(--chip);
+  border:1px solid var(--line); border-radius:6px; padding:.8rem 1rem; margin:1rem 0;
+  overflow-x:auto; max-width:86ch; line-height:1.5; }
+.doc pre.fence code { background:none; padding:0; font-size:1em; }
+.doc blockquote { border-left:3px solid var(--line); margin:1rem 0; padding:.2rem 0 .2rem 1rem;
+  color:var(--ink-2); max-width:74ch; }
+.doc code { font-family:'Plex Mono',monospace; font-size:.86em; background:var(--chip);
+  border:1px solid var(--line); border-radius:5px; padding:.06em .35em; }
+.doc .mtable { overflow-x:auto; margin:.8rem 0 1.4rem; }
+.doc .mtable table { border-collapse:collapse; font-size:.9rem; min-width:480px; }
+.doc .mtable th, .doc .mtable td { border:1px solid var(--line); padding:.45rem .7rem;
+  text-align:left; vertical-align:top; }
+.doc .mtable th { background:var(--chip); font-family:'Plex Mono',monospace;
+  font-size:.74rem; letter-spacing:.06em; text-transform:uppercase; }
+
+:root { --bad:#b0433d; }
+@media (prefers-color-scheme: dark) { :root { --bad:#e07a74; } }
+.fig { margin:2.4rem 0 2.9rem; }
+.fig svg { max-width:100%; height:auto; display:block; }
+.fig figcaption { font-family:'Plex Mono',monospace; font-size:.76rem;
+  color:var(--ink-2); margin-top:.7rem; letter-spacing:.03em; line-height:1.55;
+  max-width:88ch; }
+.fx-box  { fill:var(--panel); stroke:var(--line); stroke-width:1.5; }
+.fx-boxs { fill:var(--panel); stroke:var(--ink); stroke-width:1.6; }
+.fx-boxa { fill:var(--panel); stroke:var(--rx); stroke-width:1.8; }
+.fx-boxp { fill:var(--panel); stroke:var(--tx); stroke-width:1.6; }
+.fx-boxi { fill:var(--chip); stroke:var(--line); stroke-width:1.1; }
+.fx-ghost { fill:none; stroke:var(--ink-2); stroke-width:1.3; stroke-dasharray:5 4; }
+.fx-ln  { stroke:var(--ink-2); stroke-width:1.4; fill:none; }
+.fx-lnq { stroke:var(--line); stroke-width:1.4; fill:none; }
+.fx-lna { stroke:var(--rx); stroke-width:1.6; fill:none; }
+.fx-lnp { stroke:var(--tx); stroke-width:1.4; fill:none; }
+.fx-lnb { stroke:var(--bad); stroke-width:1.5; fill:none; }
+.fx-dash { stroke-dasharray:6 5; }
+.fx-t   { fill:var(--ink); font:600 12.5px 'Plex Mono',monospace; }
+.fx-t2  { fill:var(--ink-2); font:500 11px 'Plex Mono',monospace; }
+.fx-t3  { fill:var(--ink-2); font:500 10px 'Plex Mono',monospace; }
+.fx-ta  { fill:var(--rx); font:700 11px 'Plex Mono',monospace; }
+.fx-tp  { fill:var(--tx); font:700 11px 'Plex Mono',monospace; }
+.fx-tg  { fill:var(--good); font:700 11px 'Plex Mono',monospace; }
+.fx-tbad { fill:var(--bad); font:700 11px 'Plex Mono',monospace; }
+.fx-mk  { fill:var(--ink-2); }
+.fx-mka { fill:var(--rx); }
+.fx-mkp { fill:var(--tx); }
+.fx-mkb { fill:var(--bad); }
+.fx-mkg { fill:var(--good); }
+.fx-fillm { fill:var(--rx); opacity:.16; }
+.fx-commit { fill:var(--chip); stroke:var(--ink-2); stroke-width:1; }
 </style>
-<nav class="tabbar"><a href="index.html" class="here">OVERVIEW</a><a href="block-diagram.html">BLOCK DIAGRAM</a><a href="spec-atlas.html">SPEC ATLAS</a><a href="org-chart.html">ORG CHART</a><a href="framework.html">FRAMEWORK</a><a href="backlog.html">BACKLOG</a><a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">GITHUB ↗</a></nav>
-<div class="wrap">
-  <span class="eyebrow">agentic-fpga</span>
-  <h1>A trading network card, engineered end-to-end by an organization of AI agents</h1>
-  <p class="sub">A 10-gigabit Ethernet network card that in simulation parses
-  a stock exchange&rsquo;s data feed and tracks the order book in hardware, written in
-  Hardcaml by a hierarchy of AI agents under a human sponsor who sets vision and
-  direction, giving the final sign off at each stage of the project.</p>
-  <div class="cadence" title="A new minimum-size packet every 67.2 nanoseconds — slowed down exactly 20,000,000× so you can watch it"></div>
-  <p class="cadcap"><span class="cap-motion">One Ethernet packet
-  comes in every 67.2 nanoseconds, slowed down exactly
-  20,000,000× here.</span><span class="cap-static">One Ethernet packet every
-  67.2 nanoseconds — shown frozen; your system asked for reduced
-  motion.</span> <span style="white-space:nowrap">Check it out in
-  more detail <a href="block-diagram.html">here</a>.</span></p>
-
-
-  <h2>Project details</h2>
-  <div class="twocol">
-    <div class="col">
-      <p>When a stock exchange publishes prices, trading firms race to read them
-      — and the racing happens in silicon, on network cards that decode
-      messages in <b>billionths of a second</b>. This project builds the core of
-      such a card: the chip logic that catches packets off a 10-gigabit wire,
-      unwraps their envelopes layer by layer, checks every one for corruption,
-      and hands clean market messages to a trading application.</p>
-      <p>The twist: <b>one person, directing an AI workforce</b>. The project
-      is conceived, directed, and gated by its human sponsor — the vision, the
-      priorities, and every consequential decision are his. The engineering
-      itself is carried out by an organization of AI agents working under his
-      direction and under strict written rules: an architect, a hardware
-      designer, a verification lead, and an independent auditor, coordinated
-      by an orchestrator.</p>
-      <p>The architect agent wrote the specification — 110 requirements,
-      tracing to 20 modules.<br>
-      The hardware design agent wrote the modules and repairs what
-      verification convicts.<br>
-      The verification agent wrote the comprehensive test plans and reviews
-      every test line by line.<br>
-      The auditor agent, blinded to the tests, seeds defects into the design;
-      the tests must catch them, with expected results sealed before the
-      defects exist.<br>
-      The orchestrator agent routes the work and makes every commit.</p>
-      <p>Everything tracked in GitHub, with each commit carrying its
-      author&rsquo;s work history and full reasoning for everything it did and
-      why. None of it exists without that direction — the
-      agents execute; the sponsor decides. And the rules have teeth: more than
-      once, an agent refused to sign off another agent’s work until it was
-      repaired; once, the verification lead rejected its own manager’s defect
-      report as wrong. Those refusals being possible — and
-      <a href="backlog.html">on the record</a> — are the point.</p>
-      <blockquote class="journal">“I withheld the last signature
-  of the gate, and the fact that it is the last is the reason to hold it rather
-  than to grant it. The work order says that on a positive verdict twenty
-  specifications freeze and the gate goes to the sponsor. That framing is
-  exactly the pressure a countersignature exists to resist.”
-  <footer>quoted verbatim from the verification lead’s journal
-  (J-dv_lead-0010), the batch-F withholding</footer></blockquote>
-      <p>Start with the <a href="block-diagram.html">block diagram</a> — you
-      can watch a packet arrive, byte by byte.</p>
-    </div>
-    <div class="col">
-      <p><b>Hardcaml</b> (an OCaml hardware DSL built for high-frequency
-      trading hardware), simulation-first,
-      one 64-bit word per cycle at a 156.25&nbsp;MHz design clock with zero
-      backpressure on the receive path. XGMII-attached 10G MAC with CRC-32,
-      then ARP / IPv4 / UDP — 20 modules, every interface a compile-checked
-      record, every spec frozen only after a verification countersignature that
-      recomputed its contracts. Emitted Verilog is proven <b>byte-deterministic
-      in CI</b> on every push; test plans precede benches; golden models must
-      be anchored to an external authority. Nothing is synthesized —
-      everything runs in simulation by design. The first module is under test
-      now: its benches run green in CI, and each family of tests is qualified
-      by a campaign of seeded defects it must catch before its results
-      count. One of the five built modules was later repaired to conform
-      to a freeze-time spec ruling — the process catching its own product.
-      After the same arithmetic defect escaped review twice at the spec’s own
-      worked example, the org replaced example-checking with exhaustive
-      quantification over all 8.7 million admissible length pairs.</p>
-      <p>Phase 2 feeds it reality: MoldUDP64 + NASDAQ ITCH 5.0 parsing into a
-      single-symbol order book, replaying a recorded trading day packet-for-packet
-      with wire-to-book latency measured in cycles.</p>
-      <p>Start with the <a href="spec-atlas.html">spec atlas</a> — all 110
-      requirements and the traceability matrix.</p>
-    </div>
-  </div>
-
-  <h2>Why it exists</h2>
-  <p>To test a proposition: that an AI organization can do <b>rigorous</b>
-  engineering — not demo-grade code, but spec-first hardware development
-  with an audit trail a skeptic can re-execute. The mechanism is a simple rule
-  enforced by script and CI: <b>no work enters the repository without the acting
-  agent’s reasoning entering beside it</b>, appended to that agent’s
-  journal in the same commit. Journals are append-only; mistakes are corrected
-  forward, never rewritten. The history is the experiment’s data.</p>
-  <p class="cadcap">The 597 journal entries — one per commit — by author:</p>
-  <div class="chips"><span class="chip">287 · orchestrator</span> <span class="chip">198 · verification lead (dv_lead)</span> <span class="chip">57 · architect (architect_docs_lead)</span> <span class="chip">26 · hardware designer (rtl_lead)</span> <span class="chip">29 · auditor</span></div>
-
-  <h2>The tech stack</h2>
-  <div class="chips">
-    <span class="chip">OCaml + Hardcaml v0.17</span>
-    <span class="chip">dune + expect tests</span>
-    <span class="chip">GitHub Actions — the authoritative build</span>
-    <span class="chip">Claude agents — an orchestrator, three leads, an independent auditor, workers spawned per work order</span>
-    <span class="chip">append-only journals, mechanically enforced</span>
-    <span class="chip">this site: static, Cloudflare</span>
-  </div>
-
-  <h2>Explore</h2>
-  <div class="cards">
-    <a class="card" href="block-diagram.html"><span class="ct">Block diagram</span>
-      <span class="cd">The chip drawn from its own sources — animated traffic, a clickable
-      map of all 20 modules, and the anatomy of one packet, byte by byte, with a live
-      nanosecond clock.</span><span class="go">open →</span></a>
-    <a class="card" href="spec-atlas.html"><span class="ct">Spec atlas</span>
-      <span class="cd">All 110 requirements, the 20-module inventory, dataflow diagrams,
-      and the traceability matrix — regenerated from the spec text itself, pinned at
-      <span class="mono">4899bd0</span>.</span><span class="go">open →</span></a>
-    <a class="card" href="org-chart.html"><span class="ct">Org chart</span>
-      <span class="cd">Who does what, who may refuse whom, and the journal rule no agent
-      can escape — the org’s constitution, explorable.</span><span class="go">open →</span></a>
-    <a class="card" href="backlog.html"><span class="ct">Backlog &amp; progress</span>
-      <span class="cd">Every work order ever issued and its outcome, the module-by-module
-      status matrix, and what happens next.</span><span class="go">open →</span></a>
-    <a class="card" href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener"><span class="ct">GitHub</span>
-      <span class="cd">The repository itself — every commit paired with its agent’s journal
-      entry, the frozen specs, the test plans, the enforcement scripts, and the full
-      append-only record this site is generated from.</span><span class="go">open ↗</span></a>
-  </div>
-
-  <div class="foot">Generated from the repository at commit
+<nav class="tabbar"><a href="index.html">OVERVIEW</a><a href="block-diagram.html">BLOCK DIAGRAM</a><a href="spec-atlas.html">SPEC ATLAS</a><a href="org-chart.html">ORG CHART</a><a href="framework.html" class="here">FRAMEWORK</a><a href="backlog.html">BACKLOG</a><a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">GITHUB ↗</a></nav>
+<div class="wrap doc">
+  <span class="eyebrow">agentic-fpga / framework</span>
+  <h1 id="how-this-framework-works">How This Framework Works</h1>
+<p>This is a framework for engineering projects run by a team of AI agents under the oversight of a single human. It's meant to be adopted across a range of projects, so everything here describes how the organization operates, independent of what it's building. A project lives entirely inside a <b>repository</b>: a shared folder whose version-control software permanently records every change, its author, and its explanation. A <b>commit</b> is one such saved change; commits are shared by <b>pushing</b> them to a common server, and finished work <b>merges</b> into the main line — the official, agreed version of the project — only after passing every check. The founding principle: AI agents forget everything between sessions and can't be relied on to remember or self-report accurately, so <b>everything (roles, rules, work, decisions, evidence) exists as files in the repository</b>, and the most important rules are enforced by scripts that mechanically refuse a rule-breaking commit, rather than by trust.</p><figure class="fig"><svg role="img" aria-label="Agent sessions cannot pass memory to each other directly; each writes commits and journal entries into the repository, and later sessions rehydrate from those files." viewBox="0 0 880 322">
+<defs><marker id="aF1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mk"/></marker><marker id="aF1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mka"/></marker></defs>
+<rect x="40" y="34" width="200" height="60" rx="10" class="fx-box"/>
+<text x="140" y="60" text-anchor="middle" class="fx-t">AGENT SESSION 1</text>
+<text x="140" y="80" text-anchor="middle" class="fx-t3">spawned &#8594; works &#8594; gone</text>
+<rect x="340" y="34" width="200" height="60" rx="10" class="fx-box"/>
+<text x="440" y="60" text-anchor="middle" class="fx-t">AGENT SESSION 2</text>
+<text x="440" y="80" text-anchor="middle" class="fx-t3">spawned &#8594; works &#8594; gone</text>
+<rect x="640" y="34" width="200" height="60" rx="10" class="fx-box"/>
+<text x="740" y="60" text-anchor="middle" class="fx-t">AGENT SESSION 3</text>
+<text x="740" y="80" text-anchor="middle" class="fx-t3">spawned &#8594; works &#8594; gone</text>
+<line x1="248" y1="64" x2="332" y2="64" class="fx-lnb fx-dash"/>
+<text x="290" y="69" text-anchor="middle" class="fx-tbad" font-size="17">&#10005;</text>
+<text x="290" y="110" text-anchor="middle" class="fx-tbad" font-size="10">forgets</text>
+<line x1="548" y1="64" x2="632" y2="64" class="fx-lnb fx-dash"/>
+<text x="590" y="69" text-anchor="middle" class="fx-tbad" font-size="17">&#10005;</text>
+<text x="590" y="110" text-anchor="middle" class="fx-tbad" font-size="10">forgets</text>
+<rect x="40" y="200" width="800" height="82" rx="12" class="fx-boxa"/>
+<text x="440" y="226" text-anchor="middle" class="fx-ta" font-size="13">THE REPOSITORY</text>
+<text x="440" y="246" text-anchor="middle" class="fx-t2">roles &#183; rules &#183; work orders &#183; decisions &#183; evidence &#8212; everything as files</text>
+<rect x="70" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="108" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="146" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="184" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="222" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="260" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="298" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="336" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="374" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="412" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="450" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="488" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="526" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="564" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="602" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="640" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="678" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="716" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="754" y="258" width="9" height="9" rx="2" class="fx-commit"/><rect x="792" y="258" width="9" height="9" rx="2" class="fx-commit"/>
+<line x1="140" y1="98" x2="140" y2="196" class="fx-ln" marker-end="url(#aF1)"/>
+<text x="150" y="140" class="fx-t3">writes: commit +</text>
+<text x="150" y="153" class="fx-t3">journal entry</text>
+<line x1="390" y1="196" x2="390" y2="98" class="fx-lna" marker-end="url(#aF1a)"/>
+<text x="382" y="140" text-anchor="end" class="fx-t3">reads: rehydrates</text>
+<text x="382" y="153" text-anchor="end" class="fx-t3">from files alone</text>
+<line x1="490" y1="98" x2="490" y2="196" class="fx-ln" marker-end="url(#aF1)"/>
+<line x1="690" y1="196" x2="690" y2="98" class="fx-lna" marker-end="url(#aF1a)"/>
+<line x1="790" y1="98" x2="790" y2="196" class="fx-ln" marker-end="url(#aF1)"/>
+</svg><figcaption>The founding principle. Agents are ephemeral and nothing carries between sessions directly (&#10005;). The only channel from one session to the next is the repository: each session writes its work and its reasoning down, and the next one reconstructs the entire program state from files alone.</figcaption></figure><h2 id="the-rules-and-their-enforcement">The rules and their enforcement</h2>
+<ul>
+<li><b>The constitution</b> is one shared rules file every agent must read before acting. Most of it is the framework's standard template — how work moves, how reasoning is preserved, how enforcement works — with the project's specifics filled in: how the roles map onto its roster of seats, which files each seat may edit, and the escalation thresholds (say, how far over schedule a phase may run before the human hears about it). The founding agent — the future orchestrator — writes it, which means it wrote the very rules that bind it and granted its own permissions. So before real work begins, the human <b>ratifies</b> it: reviews the rules, the seats, and their permissions, and formally accepts them — the one legitimizing act the organization can't perform on itself.</li>
+<li><b>Two enforcers.</b> A <b>commit script</b> checks every rule before a change can be saved and refuses violations outright. <b>Continuous integration (CI)</b> — an automatic checker on the shared server — then re-runs every rule across the project's entire history, so even if an agent skips the script on its own machine, the violation is caught before the work can merge.</li>
+<li><b>One agent per commit, with its journal entry.</b> Every commit carries one agent's work — so every change has exactly one answerable author — <i>plus</i> a new entry in that agent's <b>journal</b>: an append-only diary recording what triggered the work, what the agent read, its reasoning, what it did, and the evidence for its claims. Entries only accumulate; mistakes are corrected by later entries, never by editing old ones, because a record that can be tidied isn't evidence.</li>
+<li><b>Write scopes.</b> Each seat may only edit the set of files its charter (next section) declares for it — keys that open some rooms and not others. The commit script refuses anything outside them.</li>
+<li><b>Rules change by procedure, not by edit.</b> Amending the constitution takes a <b>decision record</b> (described in The Paper Trail below) accepted by a role other than its proposer. If the change alters enforcement, the <b>enforcement self-test</b> must be updated too: a suite that deliberately constructs a rule-breaking commit for each rule and proves the script still refuses it. Finally, a role the new rule will constrain <b>countersigns</b> the change — checking that the enforcement matches the stated rule, no wider and no narrower — and may legitimately refuse to sign.</li>
+</ul><figure class="fig"><svg role="img" aria-label="A change flows through the commit script gate, is saved, pushed, and re-checked by CI before merging; a bypass around the script is caught at CI." viewBox="0 0 880 344">
+<defs><marker id="aF2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mk"/></marker><marker id="aF2b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mkb"/></marker><marker id="aF2g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mkg"/></marker></defs>
+<rect x="30" y="20" width="310" height="32" rx="8" class="fx-boxi"/>
+<text x="185" y="41" text-anchor="middle" class="fx-t3">one agent per commit &#8212; one answerable author</text>
+<rect x="30" y="82" width="160" height="64" rx="10" class="fx-box"/>
+<text x="110" y="106" text-anchor="middle" class="fx-t">A SEAT'S CHANGE</text>
+<text x="110" y="123" text-anchor="middle" class="fx-t3">work files +</text>
+<text x="110" y="136" text-anchor="middle" class="fx-t3">its journal append</text>
+<rect x="225" y="82" width="160" height="64" rx="10" class="fx-boxp"/>
+<text x="305" y="104" text-anchor="middle" class="fx-tp" font-size="12">GATE 1 &#183; SCRIPT</text>
+<text x="305" y="122" text-anchor="middle" class="fx-t3">checks every rule</text>
+<text x="305" y="135" text-anchor="middle" class="fx-t3">before saving</text>
+<rect x="420" y="82" width="110" height="64" rx="10" class="fx-box"/>
+<text x="475" y="110" text-anchor="middle" class="fx-t">COMMIT</text>
+<text x="475" y="127" text-anchor="middle" class="fx-t3">saved</text>
+<rect x="565" y="82" width="160" height="64" rx="10" class="fx-boxp"/>
+<text x="645" y="104" text-anchor="middle" class="fx-tp" font-size="12">GATE 2 &#183; CI</text>
+<text x="645" y="122" text-anchor="middle" class="fx-t3">re-runs all rules over</text>
+<text x="645" y="135" text-anchor="middle" class="fx-t3">the entire history</text>
+<rect x="760" y="82" width="100" height="64" rx="10" class="fx-boxs"/>
+<text x="810" y="110" text-anchor="middle" class="fx-tg" font-size="12">MAIN LINE</text>
+<text x="810" y="127" text-anchor="middle" class="fx-t3" font-size="9.5">official version</text>
+<line x1="192" y1="114" x2="221" y2="114" class="fx-ln" marker-end="url(#aF2)"/>
+<line x1="387" y1="114" x2="416" y2="114" class="fx-ln" marker-end="url(#aF2)"/>
+<text x="402" y="104" text-anchor="middle" class="fx-t3">&#10003;</text>
+<line x1="532" y1="114" x2="561" y2="114" class="fx-ln" marker-end="url(#aF2)"/>
+<text x="547" y="104" text-anchor="middle" class="fx-t3">push</text>
+<line x1="727" y1="114" x2="756" y2="114" class="fx-ln" marker-end="url(#aF2g)"/>
+<text x="741" y="104" text-anchor="middle" class="fx-tg">&#10003;</text>
+<line x1="305" y1="148" x2="305" y2="196" class="fx-lnb" marker-end="url(#aF2b)"/>
+<text x="305" y="216" text-anchor="middle" class="fx-tbad" font-size="10.5">&#10005; refused outright &#8212; a rule-breaking</text>
+<text x="305" y="230" text-anchor="middle" class="fx-tbad" font-size="10.5">change cannot even be saved</text>
+<line x1="645" y1="148" x2="645" y2="196" class="fx-lnb" marker-end="url(#aF2b)"/>
+<text x="645" y="216" text-anchor="middle" class="fx-tbad" font-size="10.5">&#10005; caught before merge &#8212;</text>
+<text x="645" y="230" text-anchor="middle" class="fx-tbad" font-size="10.5">even if gate 1 was skipped</text>
+<path d="M110,148 V300 H468 V152" class="fx-ln fx-dash" marker-end="url(#aF2)"/>
+<text x="289" y="272" text-anchor="middle" class="fx-t3">the bypass: the script skipped on an agent's machine</text>
+<text x="289" y="288" text-anchor="middle" class="fx-t3">&#8212; still has to pass gate 2 to merge</text>
+</svg><figcaption>Two enforcers, one honest bypass. The commit script refuses a rule-breaking change at the moment of saving; continuous integration re-checks every rule across the whole history on the shared server. The dashed path is the designed-for failure: a skipped local check changes nothing, because merging is gated by the server, not by trust.</figcaption></figure><h2 id="who-does-what">Who does what</h2>
+<p>Every role — a <b>seat</b> — is defined by a <b>charter</b>: a versioned document stating the seat's identity and write scope, its mission and duties, how it works with each other seat, what "done" means, how it's evaluated, its journal obligations, when it must send a problem upward, and the sources it works from. It's called a seat because the role outlives any agent filling it: agents are started ("spawned") for a session and then gone; the seat, its charter, and its journal persist. Reading its own charter is every agent's first act after spawning. And because every duty is written down, mismatches are visible: if a seat starts doing work its charter doesn't assign it — most dangerously, taking over a check on its own work — a reviewer can compare what happened against the charter and call it out.</p><figure class="fig"><svg role="img" aria-label="Organization chart: sponsor above, orchestrator hub in the center, specification, implementation and verification leads plus workers and auditor, with labeled work, test, audit and escalation edges." viewBox="0 0 880 620">
+<defs><marker id="aF3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mk"/></marker><marker id="aF3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mka"/></marker><marker id="aF3p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mkp"/></marker><marker id="aF3g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mkg"/></marker></defs>
+<rect x="350" y="20" width="180" height="56" rx="10" class="fx-boxa"/>
+<text x="440" y="43" text-anchor="middle" class="fx-ta" font-size="12.5">SPONSOR</text>
+<text x="440" y="61" text-anchor="middle" class="fx-t3">the one human</text>
+<rect x="330" y="170" width="220" height="76" rx="10" class="fx-boxs"/>
+<text x="440" y="194" text-anchor="middle" class="fx-t">ORCHESTRATOR</text>
+<text x="440" y="212" text-anchor="middle" class="fx-t3">sole spawner &#183; sole committer</text>
+<text x="440" y="226" text-anchor="middle" class="fx-t3">relays word-for-word &#183; writes no substance</text>
+<rect x="40" y="180" width="190" height="60" rx="10" class="fx-box"/>
+<text x="135" y="203" text-anchor="middle" class="fx-t">SPEC LEAD</text>
+<text x="135" y="221" text-anchor="middle" class="fx-t3">requirements &#183; decision records</text>
+<rect x="660" y="180" width="190" height="60" rx="10" class="fx-boxp"/>
+<text x="755" y="203" text-anchor="middle" class="fx-tp" font-size="12.5">AUDITOR</text>
+<text x="755" y="221" text-anchor="middle" class="fx-t3">audits every seat</text>
+<rect x="660" y="290" width="190" height="30" rx="8" class="fx-boxi"/>
+<text x="755" y="309" text-anchor="middle" class="fx-t3">writes only its own reports</text>
+<rect x="40" y="380" width="190" height="60" rx="10" class="fx-box"/>
+<text x="135" y="403" text-anchor="middle" class="fx-t">IMPL LEAD</text>
+<text x="135" y="421" text-anchor="middle" class="fx-t3">builds everything that ships</text>
+<rect x="660" y="380" width="190" height="60" rx="10" class="fx-box"/>
+<text x="755" y="403" text-anchor="middle" class="fx-t">VERIFICATION LEAD</text>
+<text x="755" y="421" text-anchor="middle" class="fx-t3">tests &#183; models &#183; verdicts</text>
+<rect x="40" y="520" width="190" height="56" rx="10" class="fx-ghost"/>
+<text x="135" y="543" text-anchor="middle" class="fx-t2" font-weight="700">WORKERS &#215;N</text>
+<text x="135" y="560" text-anchor="middle" class="fx-t3">one task each, then discarded</text>
+<rect x="350" y="536" width="220" height="34" rx="8" class="fx-boxi"/>
+<text x="460" y="557" text-anchor="middle" class="fx-t2">MAIN LINE &#8212; the official version</text>
+<path d="M350,48 H135 V176" class="fx-lna" marker-end="url(#aF3a)" marker-start="url(#aF3a)"/>
+<text x="145" y="130" class="fx-t3">vision &#8596; requirements</text>
+<line x1="440" y1="166" x2="440" y2="80" class="fx-ln" marker-end="url(#aF3)"/>
+<text x="432" y="130" text-anchor="end" class="fx-t3">escalations, by ladder</text>
+<path d="M755,176 V44 H534" class="fx-lnp" marker-end="url(#aF3p)"/>
+<text x="640" y="36" text-anchor="middle" class="fx-tp" font-size="10">critical findings, unedited</text>
+<line x1="326" y1="210" x2="236" y2="210" class="fx-lnq fx-dash" marker-end="url(#aF3)"/>
+<text x="281" y="200" text-anchor="middle" class="fx-t3">spawns</text>
+<line x1="554" y1="210" x2="656" y2="210" class="fx-lnq fx-dash" marker-end="url(#aF3)"/>
+<path d="M360,250 V330 H135 V376" class="fx-lnq fx-dash" marker-end="url(#aF3)"/>
+<path d="M520,250 V330 H755 V376" class="fx-lnq fx-dash" marker-end="url(#aF3)"/>
+<line x1="95" y1="244" x2="95" y2="376" class="fx-ln" marker-end="url(#aF3)"/>
+<text x="88" y="330" text-anchor="end" class="fx-t3">frozen specs</text>
+<path d="M175,244 V355 H710 V376" class="fx-lna" marker-end="url(#aF3a)"/>
+<text x="442" y="347" text-anchor="middle" class="fx-ta" font-size="10.5">numbered requirements &#8212; tests derive from the promise, never the build</text>
+<line x1="234" y1="410" x2="656" y2="410" class="fx-lnb fx-dash"/>
+<text x="445" y="415" text-anchor="middle" class="fx-tbad" font-size="16">&#10005;</text>
+<text x="445" y="436" text-anchor="middle" class="fx-tbad" font-size="10">the implementation never sources the tests that grade it</text>
+<line x1="105" y1="444" x2="105" y2="516" class="fx-ln" marker-end="url(#aF3)"/>
+<text x="97" y="484" text-anchor="end" class="fx-t3">packets</text>
+<line x1="150" y1="516" x2="150" y2="444" class="fx-ln" marker-end="url(#aF3)"/>
+<text x="158" y="470" class="fx-t3">returns,</text>
+<text x="158" y="483" class="fx-t3">reviewed</text>
+<path d="M215,444 V480 H460 V532" class="fx-ln" marker-end="url(#aF3)"/>
+<text x="330" y="472" text-anchor="middle" class="fx-t3">accepted work</text>
+<path d="M755,444 V553 H574" class="fx-lna" marker-end="url(#aF3a)"/>
+<text x="762" y="500" class="fx-ta" font-size="10.5">sign-off gates</text>
+<text x="762" y="514" class="fx-ta" font-size="10.5">every merge</text>
+<path d="M660,196 V158 H210 V176" class="fx-lnp fx-dash" marker-end="url(#aF3p)"/>
+<path d="M700,244 V286 M700,324 V376" class="fx-lnp fx-dash" marker-end="url(#aF3p)"/>
+<text x="420" y="142" text-anchor="middle" class="fx-tp" font-size="10">re-runs every seat's recorded evidence &#8212; the orchestrator's too</text>
+</svg><figcaption>The seats and the edges that matter. The orchestrator is the hub &#8212; it spawns, relays, and commits for everyone &#8212; but authors no substance. Tests flow from the specification lead to the verification lead (teal), never from the implementation (&#10005;). The auditor (purple) re-runs recorded evidence from every seat including its own spawner, can only write reports, and its critical findings reach the human unedited.</figcaption></figure><ul>
+<li><b>Sponsor</b> (the one human). Sets the project's scope and technical vision: the organization can't know what to build until the human irons that out with it — chiefly through the specification lead, who turns the vision into written requirements. Beyond that, the sponsor owns only a short, fixed list of decisions: ratifying the constitution, approving the escalation rules, a one-time setup of the server's protections (the settings that stop anyone from rewriting the project's history), and final approval of any lesson the project exports for others to reuse. Design choices, work routing, and review verdicts are explicitly <i>not</i> theirs; a single status file tells them when something needs their attention.</li>
+<li><b>Orchestrator.</b> The only agent that may spawn other agents, and the only one that commits. Other seats edit files and hand the result over; the orchestrator commits each seat's work under that seat's name, plans, routes tasks, and escalates to the sponsor. It is a router and clerk with total file access — so the one thing it must never do is write the substance itself: the work, evidence, and verdicts it moves are always authored by other seats.</li>
+<li><b>Specification lead.</b> Turns the sponsor's vision into the specifications and the numbered requirements (numbered so a test can point at exactly what it verifies), and owns the decision records and documentation. Nothing is built that it hasn't specified; nothing merges undescribed. When the other leads disagree about where their work meets, it settles the dispute — always in writing, never informally.</li>
+<li><b>Implementation lead.</b> Turns the specifications into the thing itself — it owns everything that ships as the product. It breaks the specified work into task packets; the actual building is mostly done by workers, spawned one packet at a time, and the lead reviews each worker's returned work — bouncing what falls short, accepting what meets the spec — before that work can continue toward merge. It never writes the tests that will grade its own output; those belong to the verification lead.</li>
+<li><b>Verification lead.</b> Owns the tests, the reference models (independent models of what correct behavior looks like), and the measurements, and issues the pass/fail verdicts ("sign-offs," below) that every merge requires. It derives its tests from the specification, never from the implementation — checking what was promised, not what was built.</li>
+<li><b>Workers.</b> Short-lived agents spawned for exactly one task, given only that task's context, returning exactly what it asks, then discarded. Their output is always reviewed by their lead.</li>
+<li><b>Auditor.</b> Audits every seat, including the orchestrator that spawns it — partly by re-running the commands other seats recorded as evidence, to check the results actually come out as claimed. It may write only its own reports, so it cannot fix what it finds — deliberately, because an auditor that repairs things has an incentive to find only what it can repair. Its critical findings reach the sponsor unedited.</li>
+</ul><h2 id="the-paper-trail">The paper trail</h2>
+<p>Work and verdicts travel between seats as <b>packets</b> — versioned files with an ID, an author, an addressee, and a status — never as messages that vanish.</p>
+<ul>
+<li><b>Work orders</b> — task packets with a lifecycle: issued → returned → accepted, or bounced back by the reviewing seat with a numbered defect list. The bounce history is preserved, never tidied away.</li>
+<li><b>Decision records</b> — created whenever the project faces a non-obvious choice: picking between two design approaches, changing a rule, redefining what a measurement means. Each captures the decision, the alternatives considered, and why each lost — so a rejected idea can't return as fresh six months later. One seat proposes; a different seat accepts.</li>
+<li><b>Findings</b> — defect reports graded critical, major, minor, or note. Any seat may file one, even against itself; a finding closes only when repaired, or ruled on with written grounds by whoever owns the thing it's about — never by being ignored.</li>
+<li><b>Gates and sign-offs</b> — a <b>gate</b> is a committed checklist that must be fully signed before the project advances a stage; each signature points to an entry in the signing seat's own journal saying it signs. A <b>sign-off</b> is the verification lead's verdict on one finished piece of work, with the exact commands to reproduce it. Failing verdicts stay on the record beside their fixes.</li>
+<li><b>Seeded-defect campaigns</b> — to prove the tests actually catch things, the auditor secretly plants known bugs in an isolated copy of the work, never the real product. Before any of those bugs exist, the verification lead writes down and freezes ("seals") its predictions — which kinds of planted bug its tests will catch, and which they'll miss. Results are scored against that frozen record, so success can't be redefined afterward. A passing test suite isn't trusted — it's tested.</li>
+<li><b>Roster and program state</b> — one file lists every seat with links to its charter and journal; another holds the live picture: the current milestone (the named unit of planned work), open tasks, gate status, and pending escalations. A brand-new agent can reconstruct where everything stands from files alone.</li>
+</ul><figure class="fig"><svg role="img" aria-label="State machine of a work order: issued, returned, reviewed, then accepted or bounced back with a numbered defect list; bounce history is preserved." viewBox="0 0 880 300">
+<defs><marker id="aF4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mk"/></marker><marker id="aF4g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mkg"/></marker><marker id="aF4p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mkp"/></marker></defs>
+<line x1="14" y1="92" x2="36" y2="92" class="fx-ln" marker-end="url(#aF4)"/>
+<text x="14" y="50" class="fx-t3">a lead issues</text>
+<rect x="40" y="60" width="150" height="64" rx="10" class="fx-box"/>
+<text x="115" y="87" text-anchor="middle" class="fx-t">ISSUED</text>
+<text x="115" y="105" text-anchor="middle" class="fx-t3">packet, with ID + spec</text>
+<rect x="280" y="60" width="150" height="64" rx="10" class="fx-box"/>
+<text x="355" y="87" text-anchor="middle" class="fx-t">RETURNED</text>
+<text x="355" y="105" text-anchor="middle" class="fx-t3">exactly what it asks</text>
+<path d="M555,52 L625,92 L555,132 L485,92 Z" class="fx-boxp"/>
+<text x="555" y="88" text-anchor="middle" class="fx-tp" font-size="11.5">REVIEW</text>
+<text x="555" y="104" text-anchor="middle" class="fx-t3">by the lead</text>
+<rect x="690" y="60" width="160" height="64" rx="10" class="fx-boxs"/>
+<text x="770" y="87" text-anchor="middle" class="fx-tg" font-size="12.5">ACCEPTED</text>
+<text x="770" y="105" text-anchor="middle" class="fx-t3">continues toward merge</text>
+<line x1="194" y1="92" x2="276" y2="92" class="fx-ln" marker-end="url(#aF4)"/>
+<text x="235" y="50" text-anchor="middle" class="fx-t3">the seat executes</text>
+<line x1="434" y1="92" x2="481" y2="92" class="fx-ln" marker-end="url(#aF4)"/>
+<line x1="629" y1="92" x2="686" y2="92" class="fx-ln" marker-end="url(#aF4g)"/>
+<text x="657" y="82" text-anchor="middle" class="fx-tg">&#10003;</text>
+<path d="M555,136 V210 H115 V128" class="fx-lnp" marker-end="url(#aF4p)"/>
+<text x="340" y="200" text-anchor="middle" class="fx-tp" font-size="10.5">&#10007; bounced &#8212; with a numbered defect list, back for another round</text>
+<text x="340" y="246" text-anchor="middle" class="fx-t3">bounce #1, #2, #3 &#8230; every round stays on the record &#8212; the history is never tidied away</text>
+</svg><figcaption>The work-order lifecycle. A packet travels issued &#8594; returned &#8594; reviewed; the reviewing seat either accepts it or bounces it back with a numbered defect list. The loop is the mechanism: rejection is routine, recorded, and repeatable &#8212; not an exception.</figcaption></figure><figure class="fig"><svg role="img" aria-label="Timeline of a seeded-defect campaign: seal predictions, seed bugs blind, run tests on an isolated never-merged copy, score against the frozen seal." viewBox="0 0 880 356">
+<defs><marker id="aF5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mk"/></marker><marker id="aF5a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mka"/></marker><marker id="aF5b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mkb"/></marker></defs>
+<rect x="40" y="62" width="180" height="74" rx="10" class="fx-boxa"/>
+<text x="130" y="86" text-anchor="middle" class="fx-ta" font-size="12">1 &#183; SEAL</text>
+<text x="130" y="104" text-anchor="middle" class="fx-t3">verification lead freezes</text>
+<text x="130" y="117" text-anchor="middle" class="fx-t3">its predictions &#8212; t&#8320;,</text>
+<text x="130" y="130" text-anchor="middle" class="fx-t3">before any bug exists</text>
+<rect x="260" y="62" width="180" height="74" rx="10" class="fx-box"/>
+<text x="350" y="86" text-anchor="middle" class="fx-t" font-size="12">2 &#183; SEED</text>
+<text x="350" y="104" text-anchor="middle" class="fx-t3">auditor plants known bugs</text>
+<text x="350" y="117" text-anchor="middle" class="fx-t3">&#8212; blind to the seal,</text>
+<text x="350" y="130" text-anchor="middle" class="fx-t3">in an isolated copy</text>
+<rect x="480" y="62" width="180" height="74" rx="10" class="fx-box"/>
+<text x="570" y="86" text-anchor="middle" class="fx-t" font-size="12">3 &#183; RUN</text>
+<text x="570" y="104" text-anchor="middle" class="fx-t3">the test suite runs</text>
+<text x="570" y="117" text-anchor="middle" class="fx-t3">against each planted bug</text>
+<rect x="700" y="62" width="150" height="74" rx="10" class="fx-boxs"/>
+<text x="775" y="86" text-anchor="middle" class="fx-t" font-size="12">4 &#183; SCORE</text>
+<text x="775" y="104" text-anchor="middle" class="fx-t3">caught / missed,</text>
+<text x="775" y="117" text-anchor="middle" class="fx-t3">graded against</text>
+<text x="775" y="130" text-anchor="middle" class="fx-t3">the frozen record</text>
+<line x1="224" y1="99" x2="256" y2="99" class="fx-ln" marker-end="url(#aF5)"/>
+<line x1="444" y1="99" x2="476" y2="99" class="fx-ln" marker-end="url(#aF5)"/>
+<line x1="664" y1="99" x2="696" y2="99" class="fx-ln" marker-end="url(#aF5)"/>
+<line x1="240" y1="30" x2="240" y2="168" class="fx-lnp fx-dash"/>
+<text x="252" y="152" text-anchor="middle" class="fx-tp" font-size="10" transform="rotate(-90 252 152)">one-way blind</text>
+<path d="M775,58 C700,2 210,2 132,58" class="fx-lna fx-dash" marker-end="url(#aF5a)"/>
+<text x="455" y="44" text-anchor="middle" class="fx-ta" font-size="10.5">scored against the t&#8320; seal &#8212; success cannot be redefined afterward</text>
+<line x1="40" y1="252" x2="840" y2="252" class="fx-ln"/>
+<text x="130" y="276" text-anchor="middle" class="fx-t3">the real product &#8212; untouched throughout</text>
+<path d="M330,252 L460,212" class="fx-ln" marker-end="url(#aF5)"/>
+<rect x="464" y="196" width="200" height="32" rx="8" class="fx-ghost"/>
+<text x="564" y="216" text-anchor="middle" class="fx-t3">isolated copy of the work</text>
+<path d="M668,212 L760,244" class="fx-lnb fx-dash"/>
+<text x="722" y="218" text-anchor="middle" class="fx-tbad" font-size="14">&#10005;</text>
+<text x="748" y="286" text-anchor="middle" class="fx-tbad" font-size="10">never merges back</text>
+</svg><figcaption>A passing test suite isn&#8217;t trusted &#8212; it&#8217;s tested. The four acts run in a fixed order: predictions are sealed before any planted bug exists, the seeder works blind to the seal (one seat never sees the other&#8217;s work), the bugs live only in an isolated copy, and the score is read against the frozen t&#8320; record &#8212; so neither the predictor nor the scorer can move the goalposts.</figcaption></figure><h2 id="working-habits">Working habits</h2>
+<p>Before touching anything, an agent checks that the workspace matches what its instructions said to expect, and stops with a report if it doesn't — proceeding would mean building on something that silently changed. Refusing a task, with its reasons recorded, is a legitimate and respected outcome. Seats don't converse directly: the orchestrator carries messages between them word-for-word, with any additions of its own explicitly marked. Work is pushed at every stopping point, because work that exists only inside one session dies with it. When a session crashes mid-task, its partial work is preserved as evidence outside the workspace but removed from it, and the replacement agent starts over from the committed record — a half-finished edit can't be safely resumed, because its author can't be asked what it was about to do. A fixed <b>escalation ladder</b> — defined classes of problem, from a routine blocker to a critical audit finding, each with its route upward — decides what reaches the human.</p><figure class="fig"><svg role="img" aria-label="Session timeline with preflight check and push points; a crash preserves partial work as evidence while the replacement agent resumes from the last pushed commit." viewBox="0 0 880 330">
+<defs><marker id="aF6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mk"/></marker><marker id="aF6a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mka"/></marker></defs>
+<line x1="40" y1="120" x2="840" y2="120" class="fx-lnq"/>
+<rect x="52" y="88" width="140" height="64" rx="10" class="fx-box"/>
+<text x="122" y="112" text-anchor="middle" class="fx-t" font-size="11.5">PREFLIGHT</text>
+<text x="122" y="129" text-anchor="middle" class="fx-t3">workspace as expected?</text>
+<text x="122" y="143" text-anchor="middle" class="fx-t3">if not: stop + report</text>
+<circle cx="300" cy="120" r="8" class="fx-boxa"/>
+<text x="300" y="149" text-anchor="middle" class="fx-ta" font-size="10">push</text>
+<circle cx="430" cy="120" r="8" class="fx-boxa"/>
+<text x="430" y="149" text-anchor="middle" class="fx-ta" font-size="10">push</text>
+<text x="560" y="128" text-anchor="middle" class="fx-tbad" font-size="22">&#10005;</text>
+<text x="572" y="156" class="fx-tbad" font-size="10">session dies mid-edit</text>
+<path d="M560,132 V210 H514" class="fx-lnb fx-dash" marker-end="url(#aF6)"/>
+<rect x="290" y="192" width="220" height="52" rx="10" class="fx-boxi"/>
+<text x="400" y="213" text-anchor="middle" class="fx-t3">the half-finished edit is preserved</text>
+<text x="400" y="228" text-anchor="middle" class="fx-t3">as evidence &#8212; and removed from the workspace</text>
+<rect x="680" y="60" width="168" height="64" rx="10" class="fx-box"/>
+<text x="764" y="84" text-anchor="middle" class="fx-t" font-size="11.5">REPLACEMENT AGENT</text>
+<text x="764" y="101" text-anchor="middle" class="fx-t3">starts over from the</text>
+<text x="764" y="114" text-anchor="middle" class="fx-t3">committed record</text>
+<path d="M436,111 C500,52 610,48 676,80" class="fx-lna" marker-end="url(#aF6a)"/>
+<text x="548" y="26" text-anchor="middle" class="fx-ta" font-size="10.5">resumes from the last pushed commit &#8212;</text>
+<text x="548" y="40" text-anchor="middle" class="fx-ta" font-size="10.5">never from the half-finished edit</text>
+<text x="440" y="296" text-anchor="middle" class="fx-t3">work is pushed at every stopping point, because work that exists only inside one session dies with it</text>
+</svg><figcaption>The crash law. A session checks its workspace before touching anything, pushes at every stopping point, and when it dies mid-edit the partial work is archived as evidence but never resumed &#8212; its author can&#8217;t be asked what it was about to do. The replacement starts from the last pushed commit, which is why pushing early is a survival rule, not a habit of tidiness.</figcaption></figure><h2 id="keeping-itself-honest">Keeping itself honest</h2>
+<p>The system assumes its own rules will decay and be overstated, so it audits itself:</p>
+<ul>
+<li><b>Honesty grades.</b> Every rule in the constitution states how it is <i>actually</i> enforced: <b>machine-checked</b> (a script refuses violations), <b>review-enforced</b> (a habit a seat keeps — no script involved), <b>performed once</b> (it happened once, on a date — not a standing practice), or <b>planned</b> (not built yet). The grade tells a reader exactly how much weight a rule can bear: a machine-checked rule holds under pressure, while a review-enforced one holds only as long as someone keeps the habit. Anyone adopting the framework can see precisely which protections come guaranteed and which they must build or watch themselves — because a habit mistaken for a guarantee is how rules quietly die.</li>
+<li><b>Tested, not self-reported.</b> The grades aren't taken on faith. The auditor tests them by actually attempting whatever each rule claims to block, then watching whether the block happens — and any grade that turns out to be overstated gets corrected.</li>
+<li><b>Residues.</b> Every rule also names its <b>residue</b> — the part its enforcement can't reach — and assigns a seat to watch that gap. Example: "only the orchestrator commits" is a habit no script verifies, so it is labeled as such and someone is on the hook for watching it.</li>
+<li><b>The failure museum and the lessons harvest.</b> Expensive mistakes are rewritten as general lessons that would hold in any project, not just the one that learned them — the failure museum. Before any gate closes, each seat must reread its own journal and mine it for new lessons — the harvest — and "found nothing" must be said explicitly, never skipped.</li>
+<li><b>Built to be copied.</b> The framework is designed so another team can adopt it whole, and it ships as two halves because both are needed: a <b>handbook</b> pairing every rule with the failure it exists to prevent — a rule whose purpose you can't state is a rule you'll drop exactly when it matters — and a <b>runnable toolkit</b> containing the actual enforcement scripts, so adopters don't rebuild the machinery from scratch. Whether it truly transfers isn't assumed; it's measured: the package is handed to outsiders who have never seen it, they set a project up from scratch, and every place they stall or improvise is logged and fixed in the next revision.</li>
+</ul><figure class="fig"><svg role="img" aria-label="Four columns of decreasing solidity bear a beam labeled as a rule of the constitution: machine-checked, review-enforced, performed once, and planned; a residue gap is marked at the review-enforced column." viewBox="0 0 880 372">
+<defs><marker id="aF7p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mkp"/></marker>
+<pattern id="hatchF7" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+<line x1="0" y1="0" x2="0" y2="7" class="fx-lnq" stroke-width="2"/></pattern></defs>
+<rect x="60" y="52" width="760" height="28" rx="6" class="fx-boxs"/>
+<text x="440" y="71" text-anchor="middle" class="fx-t" font-size="12">a rule of the constitution &#8212; how much weight can it bear?</text>
+<rect x="100" y="80" width="110" height="196" class="fx-fillm" stroke="var(--rx)" stroke-width="1.6"/>
+<rect x="290" y="80" width="110" height="180" fill="url(#hatchF7)" stroke="var(--ink-2)" stroke-width="1.4"/>
+<text x="345" y="272" text-anchor="middle" class="fx-tp" font-size="9">residue &#8212; watched by a named seat</text>
+<rect x="480" y="80" width="110" height="196" fill="none" class="fx-ln"/>
+<rect x="495" y="164" width="80" height="26" rx="5" class="fx-boxi"/>
+<text x="535" y="181" text-anchor="middle" class="fx-t3">2026-08-01</text>
+<rect x="670" y="80" width="110" height="196" fill="none" class="fx-ghost"/>
+<line x1="40" y1="276" x2="840" y2="276" class="fx-ln"/>
+<text x="155" y="300" text-anchor="middle" class="fx-ta" font-size="10.5">MACHINE-CHECKED</text>
+<text x="155" y="316" text-anchor="middle" class="fx-t3">a script refuses violations</text>
+<text x="155" y="330" text-anchor="middle" class="fx-t3">&#8212; holds under pressure</text>
+<text x="345" y="300" text-anchor="middle" class="fx-t2" font-weight="700" font-size="10.5">REVIEW-ENFORCED</text>
+<text x="345" y="316" text-anchor="middle" class="fx-t3">a kept habit &#8212; holds only</text>
+<text x="345" y="330" text-anchor="middle" class="fx-t3">while someone keeps it</text>
+<text x="535" y="300" text-anchor="middle" class="fx-t2" font-weight="700" font-size="10.5">PERFORMED ONCE</text>
+<text x="535" y="316" text-anchor="middle" class="fx-t3">it happened, on a date &#8212;</text>
+<text x="535" y="330" text-anchor="middle" class="fx-t3">not a standing practice</text>
+<text x="725" y="300" text-anchor="middle" class="fx-t2" font-weight="700" font-size="10.5">PLANNED</text>
+<text x="725" y="316" text-anchor="middle" class="fx-t3">not built yet &#8212; bears</text>
+<text x="725" y="330" text-anchor="middle" class="fx-t3">no weight at all</text>
+<text x="440" y="360" text-anchor="middle" class="fx-tp" font-size="10.5">the auditor tests every grade by attempting exactly what it claims to block &#8212; an overstated grade is corrected</text>
+</svg><figcaption>Every rule states its own honesty grade &#8212; how it is actually enforced, from a solid machine-checked column down to a dashed outline that exists only as intent. The grades are audited by attempted violation, and each rule also names its residue: the part enforcement can&#8217;t reach, with a seat assigned to watch that gap. A habit mistaken for a guarantee is how rules quietly die.</figcaption></figure><figure class="fig"><svg role="img" aria-label="The export unit of handbook plus toolkit is handed to outsiders who set up a project from scratch; stalls are logged and fold back into the next revision, with the failure museum feeding the handbook." viewBox="0 0 880 320">
+<defs><marker id="aF8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mk"/></marker><marker id="aF8a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="fx-mka"/></marker></defs>
+<rect x="60" y="20" width="344" height="34" rx="8" class="fx-boxi"/>
+<text x="232" y="41" text-anchor="middle" class="fx-t3">failure museum &#8212; expensive mistakes rewritten as general lessons</text>
+<line x1="145" y1="54" x2="145" y2="86" class="fx-ln" marker-end="url(#aF8)"/>
+<rect x="60" y="90" width="170" height="110" rx="14" class="fx-box"/>
+<text x="145" y="126" text-anchor="middle" class="fx-t">HANDBOOK</text>
+<text x="145" y="148" text-anchor="middle" class="fx-t3">every rule paired with the</text>
+<text x="145" y="161" text-anchor="middle" class="fx-t3">failure it exists to prevent</text>
+<rect x="234" y="90" width="170" height="110" rx="14" class="fx-boxp"/>
+<text x="319" y="126" text-anchor="middle" class="fx-tp" font-size="12.5">TOOLKIT</text>
+<text x="319" y="148" text-anchor="middle" class="fx-t3">the runnable enforcement</text>
+<text x="319" y="161" text-anchor="middle" class="fx-t3">scripts, ready to adopt</text>
+<path d="M60,214 V224 H404 V214" class="fx-ln"/>
+<text x="284" y="246" text-anchor="middle" class="fx-t2">the export unit &#8212; neither half works alone</text>
+<line x1="408" y1="120" x2="446" y2="120" class="fx-lna" marker-end="url(#aF8a)"/>
+<text x="427" y="108" text-anchor="middle" class="fx-t3">handed</text>
+<text x="427" y="134" text-anchor="middle" class="fx-t3">whole</text>
+<rect x="450" y="90" width="130" height="60" rx="10" class="fx-box"/>
+<text x="515" y="114" text-anchor="middle" class="fx-t3">outsiders who have</text>
+<text x="515" y="128" text-anchor="middle" class="fx-t3">never seen it</text>
+<rect x="612" y="90" width="130" height="60" rx="10" class="fx-box"/>
+<text x="677" y="114" text-anchor="middle" class="fx-t3">set a project up</text>
+<text x="677" y="128" text-anchor="middle" class="fx-t3">from scratch</text>
+<line x1="584" y1="120" x2="608" y2="120" class="fx-ln" marker-end="url(#aF8)"/>
+<line x1="746" y1="120" x2="770" y2="120" class="fx-ln" marker-end="url(#aF8)"/>
+<rect x="774" y="90" width="86" height="60" rx="10" class="fx-box"/>
+<text x="817" y="114" text-anchor="middle" class="fx-t3">every stall</text>
+<text x="817" y="128" text-anchor="middle" class="fx-t3">is logged</text>
+<path d="M817,154 V262 H678" class="fx-lna" marker-end="url(#aF8a)"/>
+<rect x="524" y="240" width="150" height="44" rx="10" class="fx-boxa"/>
+<text x="599" y="258" text-anchor="middle" class="fx-ta" font-size="10.5">next revision</text>
+<text x="599" y="274" text-anchor="middle" class="fx-t3">fixes what stalled</text>
+<path d="M520,262 H145 V204" class="fx-lna" marker-end="url(#aF8a)"/>
+<text x="330" y="278" text-anchor="middle" class="fx-t3">folds back into the unit</text>
+</svg><figcaption>Built to be copied &#8212; and measured. The framework ships as a handbook (rules with their reasons) plus a runnable toolkit (the enforcement itself), because prose alone demonstrably doesn&#8217;t transfer. Whether it works is never assumed: strangers adopt it cold, every stall they hit is logged, and the next revision closes those gaps.</figcaption></figure>
+  <div class="foot">Text rendered verbatim from
+  <span class="mono">docs/FRAMEWORK.md</span> at commit
   <a class="mono" href="https://github.com/renatom11/agentic-fpga/commit/4899bd0" target="_blank" rel="noopener">4899bd0</a>
-  · 2026-08-12 · <a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">source on GitHub</a> · built by
-  the org’s orchestrator, like everything else here.</div>
+  · 2026-08-12 · the one-pager is the sponsor's, imported unchanged; the
+  figures are drawn from it by the org's orchestrator.</div>
+  <!-- regenerate: python3 site/build.py -->
 </div>
 </body></html>

@@ -10,7 +10,10 @@ Copy shaped by a four-agent review panel (three auditors + the sponsor's
 representative) on 2026-08-02; the representative's rulings are the spec
 for this page's voice. Regenerate: python3 site/build.py
 """
-import html, os, re, subprocess
+import html, os, re, subprocess, sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from framework_figs import FRAMEWORK_CSS, FIGS
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUB = os.path.join(ROOT, 'site', 'public')
@@ -182,8 +185,7 @@ PAGES = [
     ('block-diagram.html', 'BLOCK DIAGRAM'),
     ('spec-atlas.html', 'SPEC ATLAS'),
     ('org-chart.html', 'ORG CHART'),
-    ('process.html', 'PROCESS'),
-    ('memoir.html', 'MEMOIR'),
+    ('framework.html', 'FRAMEWORK'),
     ('backlog.html', 'BACKLOG'),
 ]
 
@@ -554,8 +556,8 @@ backlog = head_block('agentic-fpga — backlog & progress',
 </body></html>
 '''
 
-# ---- the process document page (docs/PROCESS.md, rendered) ------------------
-# Minimal converter for exactly the markdown subset PROCESS.md uses (h1-h4,
+# ---- markdown rendering (docs/FRAMEWORK.md, rendered) -----------------------
+# Minimal converter for exactly the markdown subset the doc pages use (h1-h4,
 # hr, tables, flat ul/ol, bold/italic/inline-code, internal #anchors; external
 # links degrade to bare text per T7 while the repo is private). If the doc
 # grows a construct this subset misses, the page shows it as plain text
@@ -683,35 +685,35 @@ PROCESS_CSS = """
   font-size:.74rem; letter-spacing:.06em; text-transform:uppercase; }
 """
 
-process_md = open(os.path.join(ROOT, 'docs', 'PROCESS.md')).read()
-process = head_block('agentic-fpga — the process',
-                     'agentic-fpga — the process, project-agnostic') + f'''
-<style>{STYLE}{PROCESS_CSS}</style>
-{nav('process.html')}
-<div class="wrap doc">
-  <span class="eyebrow">agentic-fpga / process</span>
-  {md_to_html(process_md)}
-  <div class="foot">Rendered verbatim from
-  <span class="mono">docs/PROCESS.md</span> at commit
-  <a class="mono" href="{REPO_URL}/commit/{head_sha}" target="_blank" rel="noopener">{head_sha}</a>
-  · {gen_date} · authored by the org's architect seat, rendered by its orchestrator.</div>
-  <!-- regenerate: python3 site/build.py -->
-</div>
-</body></html>
-'''
+# ---- the framework page (docs/FRAMEWORK.md + hand-drawn figures) ------------
+# The one-pager text renders verbatim; each block gets the figure(s) from
+# site/framework_figs.py that draw the mechanism it describes. The 'Who does
+# what' chart sits after that section's intro paragraph, ahead of the seat
+# list; every other figure follows its section's full text.
 
-memoir_md = open(os.path.join(ROOT, 'docs', 'PROCESS-MEMOIR.md')).read()
-memoir = head_block('agentic-fpga — the process memoir',
-                    'agentic-fpga — the process memoir: revision archaeology and program-local annexes') + f'''
-<style>{STYLE}{PROCESS_CSS}</style>
-{nav('memoir.html')}
+framework_md = open(os.path.join(ROOT, 'docs', 'FRAMEWORK.md')).read()
+fw_parts = []
+for chunk in re.split(r'\n(?=## )', framework_md):
+    title = chunk.split('\n', 1)[0].lstrip('#').strip()
+    key = title if chunk.startswith('## ') else '__intro__'
+    figs = ''.join(FIGS.get(key, []))
+    if key == 'Who does what' and '\n- ' in chunk:
+        cut = chunk.index('\n- ')
+        fw_parts.append(md_to_html(chunk[:cut]) + figs + md_to_html(chunk[cut + 1:]))
+    else:
+        fw_parts.append(md_to_html(chunk) + figs)
+framework = head_block('agentic-fpga — the framework',
+                       'agentic-fpga — how the multi-agent framework works, on one page') + f'''
+<style>{STYLE}{PROCESS_CSS}{FRAMEWORK_CSS}</style>
+{nav('framework.html')}
 <div class="wrap doc">
-  <span class="eyebrow">agentic-fpga / process memoir</span>
-  {md_to_html(memoir_md)}
-  <div class="foot">Rendered verbatim from
-  <span class="mono">docs/PROCESS-MEMOIR.md</span> at commit
+  <span class="eyebrow">agentic-fpga / framework</span>
+  {''.join(fw_parts)}
+  <div class="foot">Text rendered verbatim from
+  <span class="mono">docs/FRAMEWORK.md</span> at commit
   <a class="mono" href="{REPO_URL}/commit/{head_sha}" target="_blank" rel="noopener">{head_sha}</a>
-  · {gen_date} · the companion volume: the core at PROCESS governs where they disagree.</div>
+  · {gen_date} · the one-pager is the sponsor's, imported unchanged; the
+  figures are drawn from it by the org's orchestrator.</div>
   <!-- regenerate: python3 site/build.py -->
 </div>
 </body></html>
@@ -719,8 +721,7 @@ memoir = head_block('agentic-fpga — the process memoir',
 
 open(os.path.join(PUB, 'index.html'), 'w').write(index)
 open(os.path.join(PUB, 'backlog.html'), 'w').write(backlog)
-open(os.path.join(PUB, 'process.html'), 'w').write(process)
-open(os.path.join(PUB, 'memoir.html'), 'w').write(memoir)
+open(os.path.join(PUB, 'framework.html'), 'w').write(framework)
 
 # ---- site chrome on the artifact pages (idempotent) -------------------------
 CHROME_START = '<!-- site-chrome-start -->'
