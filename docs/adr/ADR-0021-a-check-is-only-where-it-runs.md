@@ -597,7 +597,12 @@ Placed between the current lines 55 and 57 of `.github/workflows/build.yml`:
           trap 'rm -rf "$SCRATCH"' EXIT
           EXE="$PWD/_build/default/bin/generate.exe"
           test -x "$EXE" || { echo "REQ-902: $EXE is not built"; exit 1; }
-          ( cd "$SCRATCH" && opam exec -- "$EXE" )
+          # Corrected after the first execution (run 31571485201, exit 50):
+          # the switch is project-local, so from a scratch cwd a bare
+          # `opam exec` finds no switch at all. Resolved in the checkout and
+          # passed explicitly — the first edition of this block lacked it.
+          SWITCH=$(opam switch show)
+          ( cd "$SCRATCH" && opam exec --switch "$SWITCH" -- "$EXE" )
           if ! diff -r "$SCRATCH/rtl_snapshots" rtl_snapshots > "$SCRATCH/req902.diff" 2>&1; then
             echo '=== REQ-902 DEFECT: two generations of the same source disagree ==='
             echo 'NOT a promotion source: neither run is authoritative.'

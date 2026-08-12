@@ -598,3 +598,33 @@ cured draft text. The M04 mutation campaign WO is my next engineering act.
 - scripts/check_process_doc.sh
 - scripts/policy.sh
 - scripts/test_protocol.sh
+
+## [J-orchestrator-0278] 2026-08-12T07:18Z | task:none | The instrument's first execution found the instrument: run two could not resolve the project-local switch from its scratch directory, classified a step defect and not a determinism finding - fixed forward with the switch passed explicitly, in the workflow and in the ADR block that specified it
+
+### Trigger
+
+CI at 9fa4159, read per the acceptance entry's owed verification.
+journal-check run 31571485111: GREEN — the 68-scenario suite, the governance
+job's first CI execution, and the two new counters all passed on the real
+history. build run 31571485201: FAILED at the new REQ-902 step's very first
+execution — [ERROR] No switch is currently set, exit 50, zero seconds in.
+The cosim job failed separately at Install dependencies (the transient
+opam-install class already classified at fb58ba3; re-runs with this push).
+
+### Classification and the fix
+
+By ADR-0021 §4.4's own table this is the fourth class's SHAPE (run 2 exits
+nonzero where run 1 succeeded) but not its substance: opam never launched the
+emitter, because the switch is PROJECT-LOCAL and a bare `opam exec` from a
+cwd outside the checkout resolves no switch at all. A step defect, mine —
+the ADR's §4.2 block specified the failing text, so the cure lands in BOTH
+files: the switch resolved in the checkout and passed explicitly
+(`opam exec --switch`), keeping run 2's undeclared differences at cwd and
+process identity, which is the declaration C-RL-11 bounded. NOT routed to
+rtl_lead: no determinism claim was tested, so none failed. Subject 3's
+in-force condition (first GREEN run, REQ-906) now rides this push — run id
+owed at my next entry.
+
+### Files-in-this-commit
+- .github/workflows/build.yml
+- docs/adr/ADR-0021-a-check-is-only-where-it-runs.md

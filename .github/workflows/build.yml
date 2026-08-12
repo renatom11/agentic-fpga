@@ -87,7 +87,12 @@ jobs:
           trap 'rm -rf "$SCRATCH"' EXIT
           EXE="$PWD/_build/default/bin/generate.exe"
           test -x "$EXE" || { echo "REQ-902: $EXE is not built"; exit 1; }
-          ( cd "$SCRATCH" && opam exec -- "$EXE" )
+          # The switch is project-local; from a cwd outside the checkout,
+          # bare `opam exec` finds no switch at all (first run failed exactly
+          # there, exit 50). Resolve it HERE and pass it explicitly, so run
+          # 2's only undeclared differences stay cwd and process identity.
+          SWITCH=$(opam switch show)
+          ( cd "$SCRATCH" && opam exec --switch "$SWITCH" -- "$EXE" )
           if ! diff -r "$SCRATCH/rtl_snapshots" rtl_snapshots > "$SCRATCH/req902.diff" 2>&1; then
             echo '=== REQ-902 DEFECT: two generations of the same source disagree ==='
             echo 'NOT a promotion source: neither run is authoritative.'
