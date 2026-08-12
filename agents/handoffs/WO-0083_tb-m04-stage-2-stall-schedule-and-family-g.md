@@ -1,4 +1,4 @@
-# WO-00XX: the stall schedule and the abort law — family G's pulse rows, the gap after an abort, and the preamble word that must not remember how the last frame ended
+# WO-0083: the stall schedule and the abort law — family G's pulse rows, the gap after an abort, and the preamble word that must not remember how the last frame ended
 
 - **State**: **DRAFT.** Not issued. Drafted by dv_lead at `J-dv_lead-0193`,
   at head **`22c60fb`**. **Issuing is the orchestrator's act — commit plus
@@ -8,12 +8,15 @@
 - **PACKET NUMBER — placeholder, deliberately.** PROTOCOL §3: *"the
   orchestrator — as sole committer — allocates the next `NNNN` per prefix
   when a packet is first committed; drafts circulating before commit use a
-  placeholder id."* This draft's filename carries **`WO-00XX`**. Measured at
-  this tree, the next free number is **`WO-00XX`**: `WO-0082` is the highest
-  committed id under `agents/handoffs/`, no `WO-00XX` file exists, and
-  `grep -c 'WO-00XX' tasks/BOARD.md` → **0**. **The allocation is the
+  placeholder id."* This draft's filename carried **`WO-00XX`** (committed so
+  at 7f55848, exactly as the drafting entry declared it). Measured at
+  this tree, the next free number is **`WO-0083`**: `WO-0082` is the highest
+  committed id under `agents/handoffs/`, no `WO-0083` file exists, and
+  `grep -c 'WO-0083' tasks/BOARD.md` → **0**. **The allocation is the
   orchestrator's; this is a measurement handed to it, not a claim on the
-  number.** Every internal self-reference below reads *"this packet"* rather
+  number.** *(Allocated `WO-0083` by the orchestrator in the commit after
+  7f55848 — rename plus id substitution, this parenthetical the only added
+  text; the drafting seat's measurement above proved out.)* Every internal self-reference below reads *"this packet"* rather
   than an id, so the rename is one act on the filename and the head block and
   touches no cross-reference.
 - **The text this packet inherits, and from where.** `WO-0082` **Revision B**
@@ -2183,7 +2186,7 @@ of this chain paid for its absence:**
    the carve-out exists to end**, and the worker is then right to disclose and
    wrong to comply.
 2. **The spawn short-id** — work-order id plus spawn UTC timestamp, e.g.
-   `WO-00XX/2026-08-12T14:00Z` — which PROTOCOL §4.1 requires the worker to copy
+   `WO-0083/2026-08-12T14:00Z` — which PROTOCOL §4.1 requires the worker to copy
    **verbatim** into its journal Trigger. It is the attribution mechanism inside
    a shared template journal and only the orchestrator can mint it.
 3. **The head SHA the round is dispatched at**, so the worker's precheck is a

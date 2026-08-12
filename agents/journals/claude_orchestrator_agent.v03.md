@@ -270,3 +270,41 @@ directory is within my landing scope, as with every round's artifacts.
 
 ### Files-in-this-commit
 - docs/reports/process-council/sponsor-report-card-2026-08-12.md
+
+## [J-orchestrator-0273] 2026-08-12T03:31Z | task:none | The number is allocated in its own commit after the gate refused the shortcut: the draft landed exactly as its entry declared it, and the allocation act carries one marked parenthetical and nothing else
+
+### Trigger
+
+dv's stage-2 packet draft returned declaring the placeholder path in its
+files list. My first instinct — rename before committing — was REFUSED by R4
+(set-equality: declared list vs staged paths), which is the check working:
+the entry's testimony names the placeholder, so the placeholder is what
+lands. Two commits instead: 7f55848 (dv's draft, byte-true to its
+declaration) and this one (the allocation — rename to WO-0083, the id
+substituted at its six sites, and the packet's self-description repaired to
+say what actually happened, the added parenthetical marked as mine).
+
+### Rulings and ledger
+
+**dv's abort-disposition question, answered: the non-abort STANDS.** Its
+trigger fired on (a) six dirty site/public pages — MINE, regenerated for the
+render check and held for the next flip, never declared to dv's round — and
+(b) the fifth edition's landing (d96a5b1), which I announced as a lane but
+never as a landing. dv verified nothing in its path set moved across the
+whole span and proceeded with one untracked in-scope file; that judgment was
+right. **Both misses are mine**: an undeclared dirty set of my own making,
+and a HEAD-move unannounced to an in-flight agent — the sibling corollary's
+second limb, now stated: announce landings, not only lanes. On the ledger
+with this window's other two (the guessed stamp caught pre-commit; the
+invented run-id 404).
+
+**Stage-2 issuing is NOT yet performed.** dv wants no review pause but
+recommends non-blocking independent eyes on the packet's §4 abort law
+(facts 4 and 6) from the architect, whose SPEC-M04 adjudication authority is
+real. Dispatching that read journal-only, and issuing (my commit + spawn
+with the packet's §20 spawn-prompt requirements quoted verbatim) proceeds
+without blocking on it per dv's own words.
+
+### Files-in-this-commit
+- agents/handoffs/WO-00XX_tb-m04-stage-2-stall-schedule-and-family-g.md
+- agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md
