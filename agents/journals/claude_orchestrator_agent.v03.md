@@ -672,3 +672,58 @@ say so rather than dramatize it.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0084_m04-mutation-campaign.md
+
+## [J-orchestrator-0281] 2026-08-12T09:38Z | task:WO-0084 | The operator runs thirteen defects the seal never saw and the seed never predicted: eleven killed, one survivor exactly where the seeder flagged the gap before it knew a gap existed, one that would not compile - and the step the sealed rule names is the one that decides each
+
+### Trigger
+
+WO-0084 act 3, the operator's. Per ADR-0019 the seat that runs the diffs is
+the one that neither sealed nor seeded — mine. Thirteen never-merge refs cut
+from the seal base 9dba6d5, each the base plus one unmodified auditor diff,
+pushed for CI, read at source per the sealed rule (score step 6 "Run tests",
+never the job — every mut inherits the base's forward-citation red on step
+10). This entry is the run evidence dv scores from at act 4.
+
+### The operator table (read at source, build job step 6)
+
+| class | mutant | build run | build job | step 6 | disposition |
+|---|---|---|---|---|---|
+| 01 preamble-txc | 3d7414f | 31581456739 | 94065243664 | FAILURE | KILL |
+| 02 frame-lane-reversal | 9a2871b | 31581459389 | 94065251475 | FAILURE | KILL |
+| 03 tkeep-ignored | 95b6471 | 31581460998 | 94065256206 | skipped (step 5 Build FAILURE) | COMPILE-FAIL |
+| 04 pad-target-64 | 455c538 | 31581463359 | 94065264198 | FAILURE | KILL |
+| 05 pad-value-nonzero | 78f70a9 | 31581465753 | 94065271389 | FAILURE | KILL |
+| 06 crc-omits-pad | 2b506ad | 31581468199 | 94065277678 | FAILURE | KILL |
+| 07 fcs-byte-reversed | ee7c34a | 31581470359 | 94065283718 | FAILURE | KILL |
+| 08 terminate-lane-late | d276ec8 | 31581472709 (att.2) | 94069850216 | FAILURE | KILL |
+| 09 idle-fill-value | 44feac9 | 31581474564 | 94065296811 | FAILURE | KILL |
+| 10 gap-no-roundup | 1f7278e | 31581476591 | 94065302818 | FAILURE | KILL |
+| 11 gap-ignores-ifg | 6850609 | 31581478422 | 94065308971 | SUCCESS | SURVIVOR |
+| 12 underflow-qualifier-dropped | cf48989 | 31581480586 | 94065315855 | FAILURE | KILL |
+| 13 abort-word-swapped | 5011ef3 | 31581482531 | 94065322087 | FAILURE | KILL |
+
+**11 KILL, 1 SURVIVOR, 1 COMPILE-FAIL.** Three dispositions beyond a clean
+kill, each recorded not repaired (ADR-0019: the operator edits no diff):
+
+- **class-11 SURVIVOR** — the suite's step 6 passed the defect; only step 9
+  (snapshot-verify) reddened, because the emitted RTL changed, which is not a
+  behavioral test. It is the config-coverage gap the auditor pre-flagged at
+  seeding, blind of the seal: gap-ignores-ifg is conformant at the default
+  cfg_ifg and the bench never varies it. A defect that did not know it was
+  looked for, found by a seeder that did not know what would be predicted.
+- **class-03 COMPILE-FAIL** — the mutant does not build; the suite never ran.
+  Unscoreable by the standard rule, or a manifest defect (the auditor
+  intended a type-correct substitution and this one was not). dv's call at
+  act 4.
+- **class-08** — attempt 1 was a step-4 opam-install transient (the fb58ba3
+  class); rerun_failed_jobs, attempt 2 built through and step 6 failed = KILL.
+  The re-run is the honest cure for a flake, recorded so the kill is not read
+  as first-try.
+
+The dispatched prediction was 12 kills / 1 survivor over dv's 13 classes;
+the operated result over the auditor's independent 13 is 11 kills / 1
+survivor / 1 non-compiling. The partitions differ by design and act 4
+reconciles them; the operator states the runs and stops.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0084_m04-mutation-campaign.md
