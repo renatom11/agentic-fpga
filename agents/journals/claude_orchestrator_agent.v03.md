@@ -628,3 +628,24 @@ owed at my next entry.
 ### Files-in-this-commit
 - .github/workflows/build.yml
 - docs/adr/ADR-0021-a-check-is-only-where-it-runs.md
+
+## [J-orchestrator-0279] 2026-08-12T07:43Z | task:none | Subject three enters force on its first green run: two generations byte-identical and the negative control fired, at the run id this entry exists to record
+
+### Trigger
+
+CI at 0d7cd47, all three workflows green. **Build run 31573431283** is the
+REQ-902 two-run determinism step's first green execution — the in-force
+condition ADR-0021 §9 set for subject 3 and REQ-906's citation duty, paid
+here: two generations byte-identical, negative control fired, at the
+corrected step (the switch passed explicitly per J-orchestrator-0278).
+journal-check run 31573431204 green (the 68-scenario suite, the governance
+job, both counters); site-deploy 31573431239 green. All four ADR-0021
+subjects are now IN FORCE. One observation for the record: this wake began
+with incident thirteen — the container restored from an hours-stale
+snapshot, HEAD three landings behind — and one fetch recovered everything,
+the thirteenth zero-loss recovery bought by push-at-every-landing. And one
+ledger addition: I probed a run id I had invented before listing the real
+ones; the 404 caught it, the habit stands convicted twice now.
+
+### Files-in-this-commit
+- (none)
