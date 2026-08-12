@@ -1123,3 +1123,238 @@ unit.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0084_m04-mutation-campaign.md
+
+## [J-dv_lead-0197] 2026-08-12T10:44Z | task:WO-0084 | The two WO-0084 campaign findings my own act-4 scoring routed to my seat are closed: M04-F6's unreachable "16" struck in place with its grounds, and the cfg_ifg coverage debt closed by adding the abort-gap row that re-homes IC-10 and naming the carrier — the plan carries both rows and a tb WO commissions the axis, no RTL opened
+
+### Trigger
+
+Orchestrator dispatch, WO-0084 campaign follow-ups, dv's half — one round, my
+seat. It closes the two findings my own act-4 scoring (`J-dv_lead-0196`) routed
+to my seat: `WO-0084-S1` (M04-F6's unreachable Kills-cell figure) and
+`WO-0084-S2` (the cfg_ifg config-coverage debt that let class-11 survive the
+campaign). WO-0084-S3 is the auditor's, in flight this round as the declared
+sibling, disjoint from my scope. The WO-0083 stage-2 revision is explicitly held
+back to its own queued round (dispatch item 3).
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` — both in full, first, per
+  my launcher; §3 (packets/relay), §4 (journal grammar), §6 (write scopes), §7
+  (Mutation record), §10 (independence, R-SEAL-1).
+- `agents/handoffs/WO-0084_m04-mutation-campaign.md` — the campaign packet, act-4
+  Return row (my `J-dv_lead-0196` verdict), where S1 and S2 are filed.
+- `agents/handoffs/WO-0084-SEALED-predictions.md` — §2 (the cfg_ifg = 12 census),
+  §4.10/§4 traceability, §6 (IC-10 worked in full — the abort-gap arithmetic and
+  the `≡ 7 (mod 8)` proof), §10.6, §11.6/§11.7 (S1 pre-committed). Read for the
+  frozen grounds; not edited.
+- `agents/handoffs/README.md` — the WO- packet template.
+- `test/attack_plans/AP-xgmii_tx_64.md` — in full: §0.1(i)(iii) (census/polarity
+  rules), §1 (row grammar), §2 (standing obligations), §4 (the identity and
+  families A–J), §4.F (M04-F1…F6), §5 (rejected attacks), §6/§6.1 (coverage map
+  and homing census), §7 (machinery T-1…T-7), §9 (change log).
+- `test/xgmii_tx_64/bench.ml`, `bench.mli` — READ (they are test files, not RTL,
+  and read is unrestricted) to answer §0.1(iii)'s polarity question: can a
+  committed producer drive `cfg_ifg ≠ 12`? `create ()` drives
+  `i.cfg_ifg := bits_of_int ~width:8 12` as a constant (lines 68, 129), the
+  decoder is built `~ifg:12` (line 72), and the run-length note (line 366) warns
+  a round changing cfg_ifg must re-derive g_max. Answer: no producer can today.
+- `test/xgmii_tx_64/test_m04_f.ml` — the family-F units; grepped (not opened for
+  RTL) to locate the M04-F6 comment/failure-message that quotes "16" (the
+  finding's second site, seal §6).
+- **NOT read**: `libs/**` RTL — in particular `xgmii_tx_64.ml` was not opened at
+  this or any earlier commit for this work. My tests and rows derive from
+  SPEC-M04 §6.1's identity, never from the design; the "16"-unreachable proof is
+  the decoder's `≡ 7 (mod 8)` arithmetic, not a read of the gap logic.
+
+### Reasoning
+
+**S1 — the correction, and why the "16" was a phantom.** `M04-F6`'s Kills cell
+named a `/E/`-vs-`/T/` design's output as *"(t = 0, gap 16) … one octet from
+conformant"*. The figure is unreachable and was so when written: `Tx_decoder.gaps`
+measures from the terminate character **on the wire**, which §9 fixes as the
+`/T/` in lane 1, and REQ-201 fixes every start character in lane 0, so every gap
+this decoder can record after an abort is `8k − 1` — `≡ 7 (mod 8)`: {7, 15, 23,
+…}, and 16 is not in the set. The author reached "16" by applying the §4 identity's
+`8g − t` with the **design's internal** reference lane (`t = 0`) instead of the
+**wire's** (`t = 1`); the decoder always subtracts the wire's 1, so the defect
+records `8g − 1`, not `8g`. At this row's `cfg_ifg = 12` the phantom is even
+starker: `⌈(12+0)/8⌉ = ⌈(12+1)/8⌉ = 2`, so the `/E/`- and `/T/`-based readings
+place the next start character in the **same word** and the decoder records **15
+either way** — the design is not one octet from conformant, it is byte-identical.
+I struck the sentence in place with its date and grounds (never a silent
+overwrite, per the plan's own discipline and the dispatch), and rewrote the cell
+to state the row's **real** kill: the word count (7 or 23) via the exact `= 15`
+assertion. The struck kill's coverage intent is not dropped — it is **re-homed to
+M04-F7**, which is what makes S1 and S2 one piece of work rather than two.
+
+**S2 — M04-F3 already carried the class-11 killer; I did not duplicate it.** The
+dispatch's "add the attack-plan row(s) that would kill class-11" reads against a
+fact the seal already recorded: `M04-F3` (ASSERT, `cfg_ifg ∈ {12,13,16,20,255}`)
+is exactly the row whose Kills cell names *"a design ignoring cfg_ifg and
+hard-wiring 16 … 20 is the smallest member that can [distinguish it]"* — the
+gap-ignores-ifg killer, on the **normal** path. The plan already **carries** that
+row; class-11 survived not because the plan lacked the row but because the row is
+**outstanding** (no bench, because no producer drives cfg_ifg ≠ 12). Duplicating
+it would be noise. So the class-11 half of S2 closes by (a) confirming M04-F3 is
+the carrier's target, not adding a twin, and (b) naming a carrier.
+
+**What genuinely was missing — the abort direction, and why M04-F7 is the new
+row.** The sealed IC-10 (ABORT-GAP-FROM-`/E/`) is class-11's abort sibling, and
+**nothing** in the plan kills it: M04-F6 drives an abort but pins cfg_ifg = 12,
+where the class is invisible; M04-F3 drives the axis but only on normal frames,
+which never exercise §9's abort gap. IC-10 becomes killable only on an **abort
+frame at a cfg_ifg where the `/E/`(t=0) and `/T/`(t=1) readings separate** — i.e.
+`cfg_ifg ≡ 0 (mod 8)`, where `⌈(c+1)/8⌉ ≠ ⌈c/8⌉` and the two place the start
+character a **whole word** apart (at 16: conformant 23 vs defect 15; at 24: 31 vs
+23). That is `M04-F7`: an abort then a normal frame, swept over `cfg_ifg ∈
+{12,16,24}`, 12 the control that proves invisibility and 16/24 the discriminators.
+This is the "opposite direction" the dispatch named, and it is the disciplined
+home for the coverage S1 struck from M04-F6 — the correction discipline forbids
+losing a kill silently, so the strike and the new row are the same act.
+
+**The capability read (§0.1(iii), the polarity rule).** Before authorising
+M04-F7's stimulus I read the producer's construction surface rather than inferring
+from the spec that a cfg_ifg drive is constructible because it is specifiable.
+`bench.ml`'s `create ()` hard-drives cfg_ifg = 12 and the decoder ~ifg:12, so no
+committed producer can present another value. I recorded this as a new machinery
+item `§7 T-8` — where §7 records capability, naming the file that was read — with
+tb_writer the executor via the carrier. This also retroactively homes M04-F3's own
+long-standing (undeclared) cfg_ifg-drive dependency.
+
+**The carrier decision — a new standalone WO, not a fold into WO-0083.** The
+dispatch gave the choice (new WO vs stage-2 fold) with grounds. I chose a new
+standalone WO (`WO-0085`, placeholder) for three grounds: (i) dispatch item 3
+holds the WO-0083 stage-2 revision to its own queued round, and folding the
+cfg_ifg carrier into WO-0083 **is** touching that packet — the tension resolves
+against the fold; (ii) the cfg_ifg axis is a self-contained deliverable (one knob,
+two units, one comment fix), cleanly a bench of its own; (iii) a standalone WO
+keeps the S2 carrier countable and independent of WO-0083's eleven owed items.
+The placeholder-id convention is the established one (`J-orchestrator-0273`): I
+name the file at the next free id, list it in Files-in-this-commit, and the
+orchestrator commits it byte-true then allocates the real number in its own
+commit.
+
+**The bench-side second site of S1 stays out of this round.** `test_m04_f.ml`'s
+M04-F6 comment/message quotes the same "16 is one octet from conformant". It is in
+`test/**` (my scope generally) but the dispatch restricted THIS round's write
+scope to the AP, `agents/handoffs/`, and my journal — not the bench. So I did not
+touch it; I folded it into the carrier WO's Deliverable 4 (the worker corrects it
+when it next opens that bench), which keeps it named and countable rather than
+lost. The assertion itself (`= 15`) is right and unchanged; only the failure-path
+text is wrong.
+
+**What I rejected.** Duplicating M04-F3 (noise; the plan already carries it).
+Striking M04-F6's "16" without re-homing IC-10 (a silent coverage loss — the very
+discipline the correction exists to honour). Folding the carrier into WO-0083
+(would touch a packet the dispatch defers). Touching the bench this round (out of
+the dispatch's write scope). Widening M04-F6 to carry the axis (its exact `= 15`
+against the word-count defect is load-bearing at cfg_ifg = 12 — §5 item 12(c)).
+Adding 255 to M04-F7 (255 ≡ 7 mod 8 does not separate /E/ from /T/ — §5 item
+12(b)). Editing the seal, WO-0084, or `docs/reports/audit/**` (the auditor's,
+and the campaign is closed).
+
+### Actions
+
+1. Read charter + PROTOCOL in full; precheck HEAD = `712002f`, tree clean, branch
+   as dispatched — no recovery cure needed (not behind).
+2. `AP-xgmii_tx_64.md` edits, all in `test/attack_plans/`:
+   - **S1**: struck M04-F6's "(t = 0, gap 16) … one octet from conformant"
+     Kills-cell claim in place with date + grounds; rewrote the cell to state the
+     word-count kill and re-home IC-10 to M04-F7; named the bench-side second
+     site.
+   - **S2**: added **M04-F7** (family F 6 → 7, ASSERT) — abort gap tracks cfg_ifg,
+     kills IC-10; §5 item 12 (M04-F7's three rejections); §6 coverage-map
+     REQ-204 (range F6 → F7), REQ-206, REQ-802 lines (F7 homed); §7 **T-8** (the
+     cfg_ifg-drive capability, measured absent at bench.ml); §6.1 census output
+     re-run and updated 82 → 83 with a 2026-08-12 re-measurement note; §9
+     change-log row.
+3. Authored the carrier: `agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md`
+   (placeholder id) — dv_lead → tb_writer, commissioning the cfg_ifg knob, the
+   M04-F3 and M04-F7 units, and the M04-F6 comment correction; RTL deliberately
+   omitted and said so.
+4. Re-ran the §6.1 homing census and the status-cell pass against the saved file;
+   verified table contiguity and working-tree scope; appended this entry.
+
+**Not done, deliberately**: no `git` of any kind (orchestrator is sole committer,
+PROTOCOL §2 — I refuse any stop-hook commit demand); no touch to the bench
+(`test/xgmii_tx_64/**`), the seal, `WO-0084`, `WO-0083`, `docs/reports/audit/**`,
+or RTL; M04-F3 not duplicated; no `SO-xgmii_tx_64.md` opened.
+
+### Evidence
+
+All commands from a checkout at HEAD `712002f`; stamp honest from `date -u`.
+
+    date -u                                   # Wed Aug 12 10:44:10 UTC 2026
+    git rev-parse --abbrev-ref HEAD           # claude/fpga-hardcaml-agent-orchestration-37ceyf
+    git log --oneline -1                      # 712002f (precheck: matched, not behind)
+
+§6.1 homing census, the plan's own quoted command, re-run against the saved file:
+
+    census: 83 83 []      # 83 declared rows, all 83 homed in §6, none unhomed
+
+Status-cell pass over every row table (grep of the six status values):
+
+    59 ASSERT · 12 NO-ASSERT · 6 NO-STIMULUS · 5 STRUCTURAL · 1 GAP · 0 RULING = 83
+
+Row inventory and structure:
+
+    grep -cE '^\| \*\*M04-[A-Z]+[0-9]+\*\* \|'  test/attack_plans/AP-xgmii_tx_64.md   # 83
+    grep -cE '^\| \*\*M04-F7\*\* \|'            test/attack_plans/AP-xgmii_tx_64.md   # 1
+    # family F rows contiguous F1..F7 (lines 428-434), "### 4.G" header at 436
+
+The only remaining "gap 16" text in the AP is the STRUCK sentence in M04-F6 and
+the change-log row describing the finding — no row claims 16 as a reachable
+conformant abort output. Working tree at hand-off:
+
+    git status --short
+     M test/attack_plans/AP-xgmii_tx_64.md
+    ?? agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md
+
+The abort-gap arithmetic asserted by M04-F7, derived from SPEC-M04 §6.1's identity
+(t = 1 on §9's /T/; conformant `8·⌈(c+1)/8⌉ − 1`, IC-10 defect `8·⌈c/8⌉ − 1`):
+
+    cfg_ifg   conformant   IC-10 defect   separation
+       12         15            15         none (control — why M04-F6 can't see it)
+       16         23            15         one whole word (8 octets)
+       24         31            23         one whole word (8 octets)
+
+### Outcome
+
+**Both findings closed; DoD met.** `WO-0084-S1`: M04-F6's "16" struck in place
+with grounds cited to `J-dv_lead-0196` / `WO-0084-S1` / seal §6, corrected to the
+word-count kill, IC-10 re-homed. `WO-0084-S2`: the plan carries the class-11
+killer (M04-F3, confirmed, not duplicated) and the IC-10 killer (M04-F7, added),
+and a carrier is named (`WO-0085`, placeholder) commissioning the cfg_ifg knob
+(§7 T-8), both units, and the S1 bench-side second site. The debt closes on the
+dispatch's own terms — the plan carries the rows and a carrier is named. Handoff:
+to the orchestrator, to allocate `WO-0085`'s number, commit both files, and (a
+later round) spawn tb_writer against the carrier. `Files-in-this-commit` lists the
+two non-journal files; this journal volume is my own and is excluded per §4.2.
+Trailers `Agent: dv_lead`, `Work-Order: WO-0084`, `Journal-Entry: J-dv_lead-0197`.
+Not `Journal-Only` — this commit carries work.
+
+**No lessons harvest is owed this round** — it is neither an `SO-` sign-off nor a
+phase gate (PROTOCOL §7 / charter §8 attach the harvest to those). The harvest
+span from my last note continues to accrue and is discharged at the next `SO-` or
+gate; recording the nil-owed here so a skipped harvest is never read into this
+gap.
+
+### Open-questions
+
+1. **M04-F3's cfg_ifg-drive dependency was undeclared until now.** M04-F3 has been
+   an ASSERT row since the plan's creation, needing a capability (cfg_ifg ≠ 12
+   drive) that no producer had — but §7 carried no machinery item for it until
+   this round's T-8. Not a defect I can convict retroactively; recorded so the
+   next author knows T-8 covers a pre-existing row, not only the new M04-F7.
+2. **The bench-side "16" (S1 second site) is deferred to the carrier round.** It
+   is out of this round's write scope; folded into WO-0085 Deliverable 4. If the
+   orchestrator prefers it closed sooner in a bench-scoped round, the routing is
+   a one-line move — the assertion is already correct, only the text is wrong.
+3. **The placeholder number is not mine to allocate** (PROTOCOL §3). `WO-0085` is
+   the next free id at this tree; if the orchestrator allocates differently, the
+   filename and its self-references (WO title/State, AP §7 T-8, this entry's
+   change-log row) move together.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_tx_64.md
+- agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md
