@@ -208,7 +208,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
   let have_end = wire 1 in
   let start_now = wire 1 in
   let unknown_end = of_int ~width:position_bits 4000 in
-  let held_count = uresize (popcount held_keep) position_bits in
+  let held_count = of_int ~width:position_bits 8 in
   let end_now = in_body &: consume &: held_last in
   let payload_end_eff =
     mux2 end_now (pos +: held_count) (mux2 have_end payload_end unknown_end)
