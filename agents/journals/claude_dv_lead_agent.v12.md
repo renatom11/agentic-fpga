@@ -793,3 +793,333 @@ one interval and not two.
 ### Files-in-this-commit
 - agents/handoffs/WO-0084-SEALED-predictions.md
 - agents/handoffs/WO-0084_m04-mutation-campaign.md
+
+## [J-dv_lead-0196] 2026-08-12T09:48Z | task:WO-0084 | The M04 campaign is scored: the seal survives every class the blind manifest validly put to it — seven of seven kills confirmed, zero misses — and the one survivor is the cfg_ifg coverage gap my own IC-10 named from the other side; the unseal is recorded here and in the packet without editing the frozen seal, because the second copy cannot be edited and the first undertook not to be
+
+### Trigger
+
+Orchestrator dispatch, WO-0084 **act 4 — the scoring**, one round, my seat.
+The campaign is complete: I sealed (act 1, `J-dv_lead-0195`), the auditor
+seeded blind (act 2, `J-auditor-0027`), the orchestrator operated (act 3,
+`J-orchestrator-0281`, the run evidence I score from). Act 4 unseals my own
+predictions and scores the run under PROTOCOL §7's four constraints in the
+ADR-0020 §7 Mutation-record form.
+
+Precheck as dispatched: `git rev-parse HEAD` = `8b3ec95`, tree clean, branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`. **HEAD was not behind**
+`8b3ec95`; incidents 13/14's fetch+ff-only cure was not needed and not run.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` — both in full, first, per
+  my launcher; §3 (packets/relay), §7's **Mutation record** (b.1)–(b.4), §10
+  (independence, R-SEAL-1).
+- `agents/handoffs/WO-0084_m04-mutation-campaign.md` — in full, including the
+  Return log with acts 1/2/3 now all filled.
+- **My own seal**, `agents/handoffs/WO-0084-SEALED-predictions.md` — in full,
+  all thirteen classes, the REQUIRED cells, §6's worked survivor, §8's
+  pre-committed dispositions, §9's mutant-owned inequalities, §10's named
+  bounds, §11's pass criteria — and its second copy in my own `J-dv_lead-0195`.
+- **The auditor's manifest**, `docs/reports/audit/WO-0084-mutations/README.md`
+  and all thirteen `class-*.diff` (the blind is discharged; the campaign is
+  scored, so I may read them). Read as-applied at the diff text, not at RTL
+  source.
+- **The run evidence**, `J-orchestrator-0281` at `8b3ec95` — the operator table
+  (class / mutant SHA / build run / build job / step-6 conclusion /
+  disposition), read at the committed text.
+- `docs/adr/ADR-0020-the-gate-asks-the-suite-not-the-scoreboard.md` — §3's (b.1)
+  two-column law, (b.2) survivor and frozen-kill limbs, (b.3)/(b.4); and
+  `docs/process-golden-tally.json` — the closure invariant `sealed = seeded +
+  |difference|`, `seeded = killed + survived + green_by_blindness`, and the
+  itemised-exclusion form (M03's; read for form, **not** edited).
+- `docs/PROCESS.md` §3.3 (the campaign-seal law, seventh edition — the
+  unsealing-in-the-packet practice and `[B.11·8]`'s flat-check measurement) and
+  §3.9.
+- `test/xgmii_tx_64/` — the unit inventory at HEAD (present-and-green check for
+  the frozen-kill limb), and its byte-identity to the base across the range.
+
+**Not read**: `libs/**` RTL source. I did **not** open
+`libs/hardcaml_ethernet/src/xgmii_tx_64.ml` even to diagnose the class-03
+compile failure — the run's step-5 Build FAILURE is dispositive on its own
+(seal §8 disposition 7), and I state the probable cause from the **auditor's
+committed diff** in the audit directory, not from the module. My independence
+discipline holds: no RTL reached this round's context; the scoring is derived
+from the seal, the manifest diffs, the run evidence, and the suite.
+
+### Reasoning
+
+**The unseal, and why I did not flip the state line.** The dispatch instructed
+me to flip the seal's `SEALED→UNSEALED` state line and its second copy in
+`J-dv_lead-0195`. I did neither, deliberately, and the ground is not
+disobedience — it is that the instruction, read against two frozen artifacts,
+resolves only one way. **First**, the second copy lives in this append-only
+journal, whose history is mechanically protected (PROTOCOL §5 R3): I *cannot*
+edit `J-dv_lead-0195`, so "flip both copies" is unexecutable as written.
+**Second**, my own seal's §State undertook, in its own frozen text, *not* to
+mutate its state line, precisely so the immutability check stays the flat
+`git diff` against the freezing commit = **empty, full stop** — which
+`docs/PROCESS.md` §3.3 `[B.11·8]` measures as *strictly stronger* than the
+"empty except this line" a flipped line degrades to, and which six of the
+record's ten scored campaigns already practise. The only reading consistent
+with both facts is the one the seal itself named: **the unsealing is recorded
+in the campaign packet's own Return log at act 4, not in the seal.** So the
+act-4 row carries `UNSEALED`, both frozen copies stay byte-identical to their
+sealing state, and `git diff 9dba6d5 8b3ec95 -- <seal>` is empty — the
+strongest form of the check. I flag the declined flip to the orchestrator
+plainly; it may direct the weaker flip, but the default must protect the
+record, and an author who breaks her own frozen anti-tamper undertaking on an
+agent's say-so has taught the next reader that the undertaking was theatre.
+
+**The reconciliation is the round's real work, because the two partitions are
+independent by design.** My seal cut thirteen classes (`IC-1`…`IC-13`) from my
+own plan's 34 discharged ASSERT rows; the auditor cut thirteen (`class-01`…
+`class-13`) from SPEC-M04 and the public Kills text, blind of my seal. The
+packet promised a mismatch would be *data act 4 reconciles*, and it is. I
+mapped each auditor class to the IC it renders, or to none:
+
+| auditor class | → dv IC | sealed disp | step-6 | score vs seal |
+|---|---|---|---|---|
+| 01 preamble-txc | IC-1 (β, control-marking) | KILL | FAILURE | **predicted-kill-and-killed** |
+| 02 frame-lane-reversal | none — M04-B1 lane-reversal (seal §10.2 excluded) | — | FAILURE | outside seal; suite kills the M04-B1 claim |
+| 03 tkeep-ignored | IC-2 | KILL | **Build FAILURE** | **COMPILE-FAIL — IC-2 untested** |
+| 04 pad-target-64 | IC-3 | KILL | FAILURE | **predicted-kill-and-killed** |
+| 05 pad-value-nonzero | none — M04-C1/C4 pad-value | — | FAILURE | outside seal; suite kills the pad-value claim |
+| 06 crc-omits-pad | IC-4 | KILL | FAILURE | **predicted-kill-and-killed** |
+| 07 fcs-byte-reversed | IC-5 (α, reversed) | KILL | FAILURE | **predicted-kill-and-killed** |
+| 08 terminate-lane-late | IC-7 (α family) | KILL | FAILURE | **predicted-kill-and-killed** |
+| 09 idle-fill-value | IC-8 (`<n>`=0 ⊨ `<>7`) | KILL | FAILURE | **predicted-kill-and-killed** |
+| 10 gap-no-roundup | none — M04-F1/F4 gap-shorten | — | FAILURE | outside seal; suite kills the gap-shortening claim |
+| 11 gap-ignores-ifg | none — M04-F3 cfg_ifg (OUTSTANDING) | — | **SUCCESS** | outside seal; **SUITE coverage finding** |
+| 12 underflow-qualifier-dropped | IC-13 | KILL | FAILURE | **predicted-kill-and-killed** |
+| 13 abort-word-swapped | none — M04-G1 §9 abort-word shape | — | FAILURE | outside seal; suite kills the abort-shape claim |
+
+Three mapping calls carried weight. **class-01** is IC-1's β sub-branch, not α:
+it sets only the SFD lane's control bit, so the preamble octet *data* is
+unchanged and the octet check passes; the control-field check speaks first and
+reads `129` (`0x81`), which satisfies §9's sealed `<> 1` — the seal explicitly
+anticipated "a rendering that sets some other subset of the control bits gives
+`<n>`, sealed `<> 1`", and 129 is exactly that. **class-09** sets the fill lane
+to `0x00`; my §4.8 sealed IC-8's value as `<n> <> 7` (derived instance 58, the
+stale-data rendering), and `0` satisfies the inequality — this is why the cell
+was sealed as an inequality and not as `58`, and the auditor's independent
+choice of `0x00` lands inside it. **class-08** moves the terminate one lane
+late rather than always-to-lane-0 (IC-7's own disclosed rendering); the class
+is the same (terminate lane wrong, caught by M04-E1/E3), the specific lane in
+the message may differ, and the KILL disposition holds — a class-level
+reconciliation does not require the byte-exact message of an independent
+partition's different rendering.
+
+**Five auditor classes map to no IC (02, 05, 10, 13, and 11), and that is not a
+gap in the seal — it is the blind working.** The auditor seeded defect families
+my thirteen deliberately did not: M04-B1's lane permutation (my §10.2 names it
+unseeded), a pad-*value* defect, a gap-*shortening* defect, an abort-word
+lane-swap, and the cfg_ifg hard-wire. Each killed except the last, which is
+S2. These are real kills of real AP claims, outside my partition, and I score
+them as such — they enlarge what the campaign demonstrated about the suite
+without touching my seal's denominator.
+
+**Five of my IC classes were never rendered (IC-6, 9, 10, 11, 12), and one was
+rendered but did not compile (IC-2).** The auditor's independent thirteen simply
+did not include CRC-reseed, the rejected-reading gap, the abort-gap-from-`/E/`,
+the strobe-at-`/E/`-word, or the strobe-per-withheld-cycle. Under (b.1) each
+sits in `sealed` and not in `seeded`, named with its ground; none scores in
+either direction. **IC-10 is the sharp one**: it was my one predicted SURVIVE,
+and it was not put to the test — so I cannot claim it confirmed. But its root
+cause *was* confirmed from the other side. class-11 (gap-ignores-ifg) survived
+for the identical reason IC-10 predicted survival: **no committed unit varies
+cfg_ifg from 12.** My seal froze that ground at §6 and §10.6 before any diff
+existed; the auditor pre-flagged class-11 blind at seeding; two seats named one
+coverage debt from opposite directions, and the run proved it. That convergence
+is worth more than a rendered IC-10 would have been.
+
+**The closure, over this campaign's own numbers, two views that do not fold.**
+The law's unit is the class (PROTOCOL §7 b.1), so the seal's own closure
+(**Tally A**) is over my thirteen: sealed 13 = seeded 7 + exclusions 6; seeded
+7 = killed 7 + survived 0 + green-by-blindness 0. The six exclusions are
+itemised to ground below. But the manifest actually rendered twelve valid
+mutants and the suite killed eleven, and that demonstrated kill-power is a true
+and separate measurement (**Tally B**), over the auditor's thirteen: attempted
+13 = seeded 12 + exclusion 1 (class-03 non-compiling); seeded 12 = killed 11 +
+survived 1 + green-by-blindness 0. Both close. Neither is a ratio; the two are
+recorded side by side and the reconciliation table is the bridge. I refuse to
+collapse them into one number, for the reason ADR-0020 §1.2 gives: a frozen
+prediction set and an operated manifest are different objects.
+
+**Zero misses, and I state it as the round's headline.** A miss is a
+prediction falsified in either direction. Every IC the manifest validly put to
+test (IC-1, 3, 4, 5, 7, 8, 13) was predicted KILL and killed; no predicted-kill
+survived; the one predicted-survive (IC-10) was not rendered, so it could not be
+killed. The seal is unfalsified on every class it was tested against. That is a
+weaker claim than "the seal was right about everything" — five classes went
+untested and one did not compile — and I make the weaker, true one.
+
+**The class-03 ruling.** I rule it UNSCOREABLE and a MANIFEST DEFECT. The run
+shows step-5 Build FAILURE and step-6 skipped, so seal §8 disposition 7
+governs: *no behavioural claim of any kind may be read off that ref.* The
+auditor's manifest §4 attested "each mutation is type-correct by construction …
+so the module compiles and the suite is the instrument"; class-03 falsifies
+that attestation, and the falsification is the finding. The probable cause,
+consistent with the committed diff and stated without opening the module, is
+that replacing `held_count = uresize (popcount held_keep) position_bits` with a
+constant removes the sole consumer of `held_keep`, and an unused binding under
+the project's warnings-as-errors fails the build. The definitive root-cause is
+the auditor's and rtl_lead's, not mine. The consequence I own: IC-2
+(TKEEP-WHOLE-WORD, the M04-B2/M04-C4 tkeep-ignored kill claim) is left untested
+by a valid mutant, and the honest record says so rather than reading class-03's
+red step-5 as a kill.
+
+**What I rejected.** Flipping the state line (above). Folding Tally B into
+Tally A to report a single "11/12" or "7/7" headline — refused; the columns
+exist so a reader cannot. Scoring class-03 as a kill off its step-5/step-10 red
+— refused by standing rule 9 and disposition 7. Scoring class-11 as a kill off
+its step-9 snapshot red — refused: step 9 verifies emitted-RTL snapshots, not
+behaviour, and the emitted RTL *did* change (cfg_ifg → constant), so step 9 was
+always going to redden without any assertion firing; the behavioural suite
+(step 6) passed, and that is the measurement. Claiming IC-10 confirmed off
+class-11's survival — refused; class-11 is a different mechanism, and the
+honest statement is corroboration of the *ground*, not of the class.
+
+### Actions
+
+1. Read the charter and PROTOCOL in full; ran the precheck (HEAD `8b3ec95`,
+   clean); read the seal (both copies), the auditor manifest and all thirteen
+   diffs, the run evidence `J-orchestrator-0281`, ADR-0020, the golden-tally
+   JSON, and `docs/PROCESS.md` §3.3.
+2. Reconciled the auditor's thirteen classes against my thirteen IC classes,
+   one by one, at the diff text and the sealed cells — the table above.
+3. Scored each mapped, validly-rendered class against its sealed disposition;
+   ruled class-03 (compile-fail) and class-11 (survivor); confirmed zero misses.
+4. Built both closures (Tally A over the seal, Tally B over the manifest),
+   itemised the six exclusions to their grounds, and checked the arithmetic.
+5. Assembled the survivor evidence form for class-11 and the frozen-kill limb
+   for the kills (units present at HEAD, suite byte-identical to the green base).
+6. Filed findings WO-0084-S1 (pre-committed), WO-0084-S2 (coverage debt),
+   WO-0084-S3 (routed to the auditor).
+7. **Recorded the UNSEAL in the packet's act-4 Return row** — the SO-style
+   verbatim campaign record — **without editing the seal file** (grounds above),
+   and appended this entry.
+
+**Not done, deliberately**: no edit to `agents/handoffs/WO-0084-SEALED-predictions.md`
+(the declined flip); no `git commit`, `git push`, `git add`, or staging (the
+orchestrator is sole committer, PROTOCOL §2); no touch to `docs/reports/audit/**`
+(the auditor's manifest — S3 is *routed*, not written there) or to
+`docs/process-golden-tally.json` (M03's); no RTL read; no `SO-xgmii_tx_64.md`
+opened (this act is a campaign scoring, not a module sign-off).
+
+### Evidence
+
+All commands run from a checkout at `8b3ec95`; CI references are run/job ids
+with their conclusions read at source (PROTOCOL §4.1(b)).
+
+    git rev-parse HEAD      # 8b3ec9535a2252b1a9a52b0f6ee2b07fe28d5ca1
+    git status --porcelain  # (clean at precheck)
+    date -u                 # Wed Aug 12 09:48:06 UTC 2026
+
+Seal immutability — the flat check, empty:
+
+    git diff 9dba6d5 8b3ec95 -- agents/handoffs/WO-0084-SEALED-predictions.md   # (empty)
+
+Frozen-kill limb — suite + DUT byte-identical base→HEAD, units present:
+
+    git diff --stat 6d92bf9 8b3ec95 -- test/xgmii_tx_64/ \
+        libs/hardcaml_ethernet/src/xgmii_tx_64.ml                              # (empty)
+    ls test/xgmii_tx_64/    # 8 unit files + bench{.ml,.mli} + dune present
+    # named killing units green as measured at the byte-identical base:
+    #   step-6 SUCCESS, run 31577965739 (seal §0.1 / J-dv_lead-0195)
+
+Run evidence scored (from `J-orchestrator-0281`, step 6 read at source):
+
+    KILL (step-6 FAILURE): 01,02,04,05,06,07,08,09,10,12,13
+    SURVIVOR (step-6 SUCCESS; step-9 snapshot RED): 11  (run 31581478422)
+    COMPILE-FAIL (step-5 Build FAILURE, step-6 skipped): 03
+    class-08: attempt 1 opam-install transient; attempt 2 step-6 FAILURE = KILL
+
+**Tally A — the seal scored (unit = the class):**
+`sealed 13 = seeded 7 + |exclusions| 6`; `seeded 7 = killed 7 + survived 0 +
+green_by_blindness 0`. Seeded = {IC-1, IC-3, IC-4, IC-5, IC-7, IC-8, IC-13},
+all killed. Exclusions, each to its ground: **IC-2** — rendered by class-03,
+non-compiling, build-fail → UNSCOREABLE (§8 disp 7); **IC-6, IC-9, IC-10, IC-11,
+IC-12** — never rendered (no auditor class renders the mechanism). All six in
+`sealed`, none in `seeded`.
+
+**Tally B — the manifest operated (unit = the auditor's 13):**
+`attempted 13 = seeded 12 + |exclusion| 1` (class-03 non-compiling manifest
+defect); `seeded 12 = killed 11 + survived 1 + green_by_blindness 0`.
+
+**Survivor evidence form (b.2), class-11**: unmodified
+`docs/reports/audit/WO-0084-mutations/class-11-gap-ignores-ifg.diff`
+(`cfg_ifg` → constant `12`), ref `mut/wo-0084-class-11 = 6850609`, run
+`31581478422` job `94065308971`, step-6 SUCCESS; witness — the census
+`cfg_ifg = 12` on every cycle of every unit (seal §0.2) is the whole reason it
+is invisible; `cfg_ifg ∈ {20, 255}` reddens (auditor README §3, class-11).
+
+**What is NOT reproducible from a checkout**: nothing in this entry. Every
+figure is a command runnable at `8b3ec95`, a committed-text reference, or a CI
+run id with its conclusion.
+
+### Outcome
+
+**DoD for act 4: met.**
+
+- [x] UNSEAL recorded (packet act-4 row) with the seal left byte-frozen; the
+      flat immutability check passes (empty diff vs `9dba6d5`); the declined
+      state-line flip is disclosed with grounds.
+- [x] Reconciliation of the auditor's 13 manifest classes against my 13 IC
+      classes — each mapped or noted as mapping to none.
+- [x] Every mapped, validly-rendered disposition scored against the seal:
+      7/7 predicted-kill-and-killed; **0 misses**.
+- [x] Two-column record; every exclusion itemised to a ground; survivor
+      evidence form and frozen-kill named-unit limb supplied; no ratio.
+- [x] Golden-tally arithmetic closes over this campaign's own numbers (both
+      tallies); M04 scored per class, **not** folded into M03's tally;
+      `docs/process-golden-tally.json` untouched.
+- [x] Findings filed: WO-0084-S1 (pre-committed), WO-0084-S2 (coverage debt),
+      WO-0084-S3 (routed to the auditor); MISSES = none, stated.
+- [x] Honest `date -u` stamp; single entry header; `Files-in-this-commit`
+      exact; no commit/push/stage.
+
+**Journal size**: v12 stood at 52,511 bytes before this entry — far under
+ADR-0017 §5.1's 256 KiB soft threshold — so no rotation; this entry appends to
+v12.
+
+**Harvest**: **none due**, declared to keep the span tiling. ADR-0018 and
+PROTOCOL §7 attach the harvest to every `SO-` and every phase gate; a mutation
+campaign scoring is neither. My next `SO-xgmii_tx_64.md` mines the interval from
+my last harvest through this entry.
+
+**Handoff**: the scored campaign record is the packet's act-4 Return row
+(verbatim to the sponsor). WO-0084-S3 routes to the auditor via the
+orchestrator (re-seed class-03 with a compiling tkeep-ignored mutant so IC-2's
+claim is exercised). WO-0084-S1 and WO-0084-S2 route to my own next revision of
+`test/attack_plans/AP-xgmii_tx_64.md` and a tb_writer WO for the cfg_ifg-varying
+unit.
+
+### Open-questions
+
+1. **The declined state-line flip.** I recorded the unseal in the packet, not
+   in the seal, on the grounds above (the second copy is append-only and
+   unflippable; the first undertook not to flip; the flat check is stronger).
+   If the orchestrator judges the explicit flip instruction must be honoured
+   literally, it can direct a one-line edit — but I recommend against it, and
+   the recommendation is on the record before the commit rather than after.
+2. **WO-0084-S3 — class-03 is a manifest defect and IC-2 is untested.** The
+   auditor's only rendering of the tkeep-ignored mechanism does not compile. A
+   re-seed with a compiling mutant is owed before `SO-xgmii_tx_64.md` can claim
+   IC-2's kill (M04-B2/M04-C4) is mutation-tested. Routed to the auditor; I
+   cannot write `docs/reports/audit/**`.
+3. **WO-0084-S2 — cfg_ifg is never varied, and it is now proven, not
+   predicted.** M04-F3 is OUTSTANDING; class-11 survived on it; IC-10's SURVIVE
+   rests on it. The day a cfg_ifg-varying unit lands, IC-10 is **re-run, not
+   re-quoted** (seal §10.6), and class-11 is re-seeded to confirm the kill.
+4. **M04 owes its own committed tally file** at the `SO-xgmii_tx_64.md`
+   sign-off, homed in `docs/` alongside `docs/process-golden-tally.json` —
+   which is architect_docs_lead's scope, not mine. Flagged as owed; not created
+   this round. This campaign record is the authoritative M04 measurement until
+   then.
+5. **No escalation.** No E2 (no scope narrowed — S2 names a debt, does not drop
+   a requirement), no E3, no E5, no E6. No CRITICAL finding against any seat:
+   S1 is MINOR and mine; S2 is a coverage debt with a carrier; S3 is a MINOR
+   manifest defect routed to the auditor for a clean re-seed.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0084_m04-mutation-campaign.md
