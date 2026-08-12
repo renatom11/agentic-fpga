@@ -1991,3 +1991,632 @@ Every item carries an owner and a closing event.
 ### Files-in-this-commit
 
 - (none)
+
+## [J-rtl_lead-0026] 2026-08-12T02:43:31Z | task:none | `C-RL-11` and `C-RL-12` carried from countersignature grade to edit grade before the implementing commit: the condition is measured undischarged rather than assumed, the nine-variable declaration is fixed as prose no CI step may assert against an unpinned dune, and the orphan row splits into three cases where the registry read runs opposite to the reading it invites
+
+### Trigger
+
+Orchestrator dispatch, one round, journal-only: file the two corrections my own
+ADR-0021 countersignature made binding conditions of the implementing round, so
+they are in record at or before the commit that lands the step. The dispatch
+states that round is next in its queue and that this filing unblocks it; the
+orchestrator's own `Next` block says the same in its own words —
+`claude_orchestrator_agent.v03.md:218`, *"my ADR-0021 implementation round with
+every countersignature condition riding"*.
+
+**Abort-first precheck, run before any read of substance.** `git rev-parse HEAD`
+→ `a39c8e7804e5a573bc36eebb40870adfd3b6c194`, an exact match with the dispatch's
+expected `a39c8e7`, so neither the descendant clause nor the abort was reached.
+`git status --porcelain` printed **nothing** — a wholly clean tree. Both declared
+siblings (dv_lead on the WO-0082 stage-2 packet revision; auditor on its
+reconciliation round) had nothing in flight at entry, so the stop condition never
+fired and no dirty path ever had to be classified.
+
+**HEAD then moved under me mid-round, and the re-verification is recorded rather
+than waved through.** A fourth lane was announced in flight — architect_docs_lead
+on the fifth edition of `docs/PROCESS.md`, sponsor-commissioned — and HEAD
+advanced to **`1b684c7f89aaa748c38577c2a58a897f013492f1`**, `Agent: orchestrator`,
+a **declared** move confirmed a **descendant** of `a39c8e7`
+(`git merge-base --is-ancestor` → 0). It stages exactly two paths — the
+orchestrator's own journal and
+`docs/reports/process-council/sponsor-report-card-2026-08-12.md` — neither of
+them mine, neither of them a surface this entry reads. I re-verified all nine
+surfaces this round rests on **by comparing their blob hashes at the two SHAs
+rather than diffing them**, the same form ADR-0021's own measurement pin uses:
+**all nine byte-identical at `a39c8e7` and `1b684c7`**, the `C-RL-6b` watch value
+unchanged, and the two condition targets still byte-identical all the way back to
+`287b5ee`. The landed report card contains no occurrence of `ADR-0021`, `C-RL-`,
+`REQ-902` or `determinism` — it does not reach this subject. Nothing below was
+re-derived, because nothing it reads moved; every measurement reproduces at both
+SHAs.
+
+**One path other than mine is dirty at exit, and it is declared, not mine, and
+must not ride this commit.** `git status --porcelain` at exit lists this journal
+and `agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md` — dv_lead's
+stage-2 packet revision, named in the dispatch's sibling declaration, which
+appeared in the tree during this round. `agents/handoffs/**` is inside my write
+scope, so path isolation (R7) would not catch it; **set-equality (R4) is what
+must**, and my `Files-in-this-commit` is `- (none)` deliberately. **This entry's
+commit stages this journal and nothing else.** The packet belongs to dv_lead's
+round and its own entry; folding it in here would attribute another seat's work
+to mine and break R1 as well.
+
+I write **one file this round**: this journal. `docs/adr/**` is
+architect_docs_lead's and `.github/**` is the orchestrator's (PROTOCOL §6), so
+both corrections are **routed here and performed nowhere** — the
+routed-not-performed discipline is the entire reason this round is an entry
+rather than a diff. `libs/`, `top/`, `bin/`, `rtl_snapshots/` and
+`agents/handoffs/` were opened read-only.
+
+### Inputs
+
+- `agents/charters/rtl_lead.md` and `agents/PROTOCOL.md` in full (mandatory first
+  actions). §6's scope table is what makes both limbs routes rather than edits;
+  §4.1's entry grammar and §4.2's set-equality govern this file.
+- **`J-rtl_lead-0025` in full** — my own countersignature, the record that
+  controls here — with §6, §7, §11, the Outcome relay block and Open-questions
+  items 2 and 3 read clause by clause rather than from the dispatch's paraphrase.
+- `docs/adr/ADR-0021-a-check-is-only-where-it-runs.md` at HEAD: §4.2 (the step
+  text and its three notes, file lines 544–606), §4.3, §4.4's table (lines
+  625–633), §4.5's capability table (lines 647–656) and §4.7.
+- `.github/workflows/build.yml` at HEAD, lines 1–70 — the toolchain block, the
+  `dune runtest`/`dune promote` step, `Generate RTL` at 54–55, and the
+  determinism step's `git add -A` at 69.
+- `bin/generate.ml` at HEAD, lines 110–126 — the emitter registry as a literal
+  six-element list, and the cwd-relative write with its `Sys.mkdir` limb.
+- `agentic_fpga.opam` line 9 (`"dune" {>= "3.0"}`), `docs/specs/requirements.md`
+  §10 line 1136 (REQ-902 and its verification column), `scripts/policy.sh` lines
+  13–14 (the two size parameters).
+- `git ls-files -- rtl_snapshots`; every `dune`/`dune-project` and `test/**`
+  occurrence of `rtl_snapshots` (all three are DV independence-disclosure
+  comments, no rule target).
+- `agents/journals/claude_architect_docs_lead_agent.v05.md`,
+  `claude_orchestrator_agent.v03.md` and `claude_auditor_agent.v03.md`, searched
+  for receipt of the two findings.
+- **No Essenceia/Nasdaq-HFT-FPGA material consulted, for this or for anything in
+  it** (charter §3, Inputs honesty). Filing two corrections against a CI step has
+  no prior-art question in it.
+
+### Reasoning
+
+#### 1. First question, and it is the dispatch's own item 3: is either condition already discharged? Measured — no, and the measurement is two lines
+
+The dispatch is right to ask, because a duplicate filing is its own defect. So I
+measured rather than assumed, and the answer separates cleanly into a thing that
+**is** in record and a thing that is **not**.
+
+**In record already**: the two findings and their drafted repair text, in
+`J-rtl_lead-0025` §6, §7 and its Outcome relay block, committed at `efe84b3`.
+Nothing about the substance of either correction is new tonight, and this entry
+does not re-raise either finding — re-raising them would be the duplicate.
+
+**Not in record**: the corrections themselves. `docs/adr/ADR-0021-…md` is
+**byte-identical at `287b5ee`, at `a39c8e7` and at HEAD `1b684c7`** (blob-hash
+comparison, Evidence 2), so §4.2 note 1 still asserts the environment parity, §4.5's row
+still reads **no**, and §4.4's third row is still unsplit. `.github/workflows/
+build.yml` is byte-identical across the same range, so the step does not exist
+yet and neither does the printed line C-RL-12 asks for. A repo-wide search for
+`INSIDE_DUNE` and `DUNE_SOURCEROOT` returns **only this journal**, and a search
+for `C-RL-11`/`C-RL-12` likewise: no seat — architect, orchestrator or auditor —
+has yet recorded receipt of either finding in its own chain.
+
+#### 2. What my condition actually says, read from my own record
+
+Two sentences carry it and they are not the same sentence.
+
+The signature clause, `J-rtl_lead-0025` §11 and repeated in the relay block:
+*"both may ride the implementing act as amendments … My signature stands on the
+condition that both are in the record **at or before the commit that lands the
+step**."* Read alone, "in the record" could mean either *stated* or *applied*.
+
+The ledger resolves it, and the ledger is mine too. Open-questions item 2:
+*"Closes by: **the corrected text landing** at or before the commit that lands
+the step."* Item 3: *"Closes by: the same commit."* So my own record fixes the
+stricter of the two readings — **landing**, not stating — and I hold myself to
+it: the condition is **undischarged**, and it discharges when the corrected text
+is in the tree, not when this entry is committed.
+
+That fixes what this round can honestly be. It cannot discharge the condition —
+only the architect's and the orchestrator's files can. What it can do, and what
+the dispatch asked for, is carry both corrections from **countersignature grade**
+(what is wrong, and roughly what the text should say) to **edit grade** (which
+sentence in which section is replaced by which sentence, and which lines of
+shell), so the implementing seat carries them in without re-deriving anything.
+Everything below that repeats `J-rtl_lead-0025` is marked as repetition and is
+present only so the implementer needs one document open instead of two.
+
+#### 3. `CORRECTION C-RL-11` — filed, edit grade. Three ADR targets, no build.yml limb required
+
+*Finding, unchanged from `J-rtl_lead-0025` §6*: ADR-0021 §4.2 note 1 (*"the only
+**declared** difference between the two runs is cwd and process identity"*) and
+§4.5's environment row (*"**no** — both runs share the environment"*) are false,
+measured. Run 1 is `opam exec -- dune exec bin/generate.exe`; run 2 is
+`opam exec -- "$EXE"`. `opam exec --` equalises the switch on both sides; it does
+not equalise what `dune exec` injects on top. Probed at dune 3.24.1 / OCaml
+4.14.1 outside this repository: **nine variables present only under `dune exec`**
+— `INSIDE_DUNE`, `DUNE_SOURCEROOT`, `DUNE_OCAML_STDLIB`, `DUNE_OCAML_HARDCODED`,
+`OCAMLPATH`, `OCAMLFIND_IGNORE_DUPS_IN`, `OCAMLTOP_INCLUDE_PATH`,
+`CAML_LD_LIBRARY_PATH`, `MANPATH` — **plus a `PATH` prefix** of
+`_build/install/default/bin` (129 vs 138 variables). Three of the nine are
+absolute paths into the checkout, which is exactly the shape of value that, were
+it ever to reach emitted output, would produce a diff caused by the harness
+rather than by the program. No live false positive today: `grep -rn
+'getenv\|Unix\.environment\|Sys\.argv' bin/ libs/` is empty, so the defect is in
+the claim, and §7.2's third claim is worth exactly what §4.5 is worth.
+
+**Target A — `docs/adr/ADR-0021-…md` §4.2, the first of the three notes (file
+lines 598–601 at HEAD). Replace the bullet in full with:**
+
+> - **`opam exec --` wraps run 2** so that both runs resolve the same opam
+>   switch. It does **not** make the two environments equal, and the difference
+>   is declared here rather than removed. Run 1 goes through `dune exec`, which
+>   injects nine variables the direct invocation does not have —
+>   `INSIDE_DUNE`, `DUNE_SOURCEROOT`, `DUNE_OCAML_STDLIB`,
+>   `DUNE_OCAML_HARDCODED`, `OCAMLPATH`, `OCAMLFIND_IGNORE_DUPS_IN`,
+>   `OCAMLTOP_INCLUDE_PATH`, `CAML_LD_LIBRARY_PATH`, `MANPATH` — and prepends
+>   `_build/install/default/bin` to `PATH`; three of the nine are absolute paths
+>   into the checkout. The set is **descriptive of one measurement** (dune
+>   3.24.1) and not a pinned contract: `agentic_fpga.opam` requires only
+>   `dune >= 3.0` and CI resolves the version through `ocaml/setup-ocaml@v3`.
+>   Declaring beats equalising precisely because of that: reproducing dune's
+>   injection inside run 2 would be a promise against an unpinned harness, and
+>   removing it from run 1 would mean changing `Generate RTL`, which this ADR
+>   deliberately does not touch.
+
+**Target B — §4.5's capability table, the `environment / locale dependence` row
+(file line 653 at HEAD). Replace the `exposed?` and `why` cells with:**
+
+> | environment / locale dependence | **yes, incidentally — and now declared** | the two runs do **not** share an environment: `dune exec` injects into run 1 the set §4.2 note 1 names. The capability is a by-product of the harness asymmetry, not a designed probe, so it is not a controlled variation of any one variable and supports no claim about which one mattered |
+
+**Target C — §4.4's table, the `Files … differ` row's disposition cell (file line
+627 at HEAD). Append one clause to the existing cell:**
+
+> … route to rtl_lead as a defect against the emitter, not against the snapshot —
+> **but before routing, check the differing bytes for any of the values §4.2 note
+> 1 declares. A harness-caused diff and a program-caused diff are the same `diff`
+> output, and this check is the only thing that separates them.**
+
+**Sharpest form of the finding, preserved because it is what makes the
+correction non-optional** (repetition of §6): §4.5 declines the
+`OCAMLRUNPARAM=R` variant on the ground that *"REQ-902's text is 'regenerating
+the RTL snapshots from unchanged sources', and an environment variable is not
+source, so a red under `R` would be a finding whose disposition needs a spec
+reading nobody has made."* The step as written already varies **ten** environment
+values between its two runs, undeclared, while its capability table asserts they
+share an environment. If varying one deliberately needs a spec reading, varying
+ten accidentally needs one at least as much. Declaring is what makes the ADR's
+own ground survive contact with its own step.
+
+**No `build.yml` limb is required by this correction**, and I state that
+explicitly so the implementer does not go looking. The false sentence lives in
+ADR prose only — the step's YAML comment block (ADR lines 550–567) makes no
+environment claim, so nothing in the shipped file needs changing to satisfy
+C-RL-11.
+
+**Offered, explicitly NOT part of the condition**: the reader who needs the
+declared list is reading a failing step's log, not the ADR. So the step's comment
+would be a better home for a two-line version of it — *"run 1 is launched by
+`dune exec`, run 2 is not; the environments differ by the set ADR-0021 §4.2
+declares, so check a differing byte against those values before calling it an
+emitter defect."* I offer it; I do not require it, and the condition is met by
+the three ADR targets alone.
+
+#### 4. `CORRECTION C-RL-12` — filed, edit grade. One ADR target, one `build.yml` limb, and a three-case split
+
+*Finding, unchanged from `J-rtl_lead-0025` §7*: §4.4's third row classifies
+`Only in rtl_snapshots` as an **orphan snapshot** and dispositions it *"not a
+`REQ-902` finding: the remedy is a deletion"*. At this step's own position the
+class is **under-determined**. §4.3 forces the step after `Generate RTL`, which
+runs with cwd at the checkout root while `bin/generate.ml:114–115` writes
+`rtl_snapshots/<name>.v` relative to cwd and `mkdir`s the directory. So when the
+step runs, the checkout's `rtl_snapshots/` is *committed ∪ run-1 writes*, and
+`Only in rtl_snapshots` carries **two** causes: the orphan the row names, and **a
+file run 1 wrote and run 2 did not** — row 2's own class, direction-reversed,
+which row 2 itself calls *"nondeterminism of the strongest kind"*. Row 2's class
+description is direction-symmetric while the table partitions by direction, so
+the rows overlap on this output and the ADR resolves the overlap silently in
+favour of the benign reading. The cost is not academic: under the wrong reading
+the recommended act **deletes a legitimate snapshot** and files the strongest
+signal the instrument can produce as an inventory chore.
+
+**Target A — `.github/workflows/build.yml`, the new step's failure branch. Insert
+after `cat "$SCRATCH/req902.diff"` (ADR §4.2 line 578) and before the two
+`sha256sum` lines:**
+
+> ```sh
+>             echo '--- tracked snapshots at HEAD ---'
+>             git ls-files -- rtl_snapshots
+>             echo '--- checkout worktree status (before any git add) ---'
+>             git status --porcelain -- rtl_snapshots
+>             echo '--- run 2 emitted set (the emitter registry, materialised) ---'
+>             ls -1 "$SCRATCH"/rtl_snapshots
+> ```
+
+Three notes the implementer needs. **(a)** `git status --porcelain` is only
+informative here because §4.3 already places this step **before** the
+determinism step's `git add -A` (`build.yml:69`): an untracked run-1 write shows
+as `??` and a rewritten tracked file as ` M`. If the placement ever moves, this
+limb dies with it. **(b)** The third command is not decoration: scratch starts
+empty and run 2 writes exactly the registry, so `$SCRATCH/rtl_snapshots` **is the
+emitter's registry materialised** — it is what makes the third case below
+decidable without a checkout in hand. **(c)** All three are `set -euo pipefail`
+safe and sit inside a branch that already ends `exit 1`.
+
+**Target B — `docs/adr/ADR-0021-…md` §4.4, the third row (file line 629 at HEAD).
+Replace the single row with three, keyed on the two printed commands:**
+
+> | output | class | disposition |
+> |---|---|---|
+> | `Only in rtl_snapshots`, path **untracked** (absent from `git ls-files`, `??` in status) | **`REQ-902` defect** — row 2's class, direction-reversed: run 1 wrote it and run 2 did not | job **red**; **never delete**; route to rtl_lead against the emitter |
+> | `Only in rtl_snapshots`, path **tracked and modified** (` M` in status) | **`REQ-902` defect** — the checkout copy is not `HEAD`'s bytes, so run 1 rewrote it while run 2 did not write it at all | job **red**; **never delete**; route to rtl_lead against the emitter |
+> | `Only in rtl_snapshots`, path **tracked and clean** (byte-equal to `HEAD`) | **undetermined at the step** — git cannot separate *run 1 rewrote it identically* from *run 1 never touched it* | job **red**; resolved by one read of `bin/generate.ml`'s emitter list: **if the list names the file it is a `REQ-902` defect** (run 2 omitted a registered emission); **only if the list does not name it** is it an orphan, whose remedy is a deletion and whose disposition is rtl_lead's inventory |
+
+**The direction of the third row's test runs opposite to the reading it invites,
+and this is the part most likely to be got backwards.** The instinct is *"the
+emitter knows about it, so it is legitimate, so it is not a defect"*. The
+opposite holds: if the registry names the file then run 2 was obliged to write it
+into scratch, so its absence from scratch means run 2 **failed to emit a
+registered file** — a REQ-902 defect and not an inventory item. A file is an
+orphan only when **no** emitter row names it. Registry at HEAD is a literal
+six-element list, `bin/generate.ml:117–122`, matching the six committed
+snapshots exactly.
+
+**Untouched by this correction**: row 1, row 2, and §4.4's fourth class (run 2
+exits nonzero under `set -e`). And §4.4's closing sentence — *"In no case is this
+step's output a promotion source"* — is strengthened rather than weakened by the
+split, since two of the three sub-cases are now REQ-902 defects and the third
+reds the job either way.
+
+The ground is the ADR's own standard applied inside the step: §4.3 requires that
+a reader tell one failure from another **by the failing step's name**, and this
+was the one place where two dispositions with opposite remedies shared not only a
+step but a single line of output.
+
+#### 5. Six things the implementing round must not silently pass over
+
+1. **Do not mechanise the nine-variable list as an assertion.** It is descriptive
+   prose. `agentic_fpga.opam:9` requires only `dune >= 3.0`; CI is
+   `ocaml/setup-ocaml@v3` with `ocaml-compiler: "5.1"` and `dune-cache: true`,
+   while my probe measured dune 3.24.1 / OCaml 4.14.1 in this container. A CI
+   check asserting equality with that list would go red on a dune bump for a
+   reason that has nothing to do with REQ-902. If it is ever mechanised, it
+   **prints the delta**; it never asserts it.
+2. **Case A's inference has a precondition, and it is currently true.** "Untracked
+   ⇒ run 1 wrote it" holds because the only writer into the checkout's
+   `rtl_snapshots/` before this step is `Generate RTL`. Measured at HEAD: no
+   `dune`/`dune-project` rule takes any target under `rtl_snapshots/` — all three
+   occurrences in `dune` files and every occurrence under `test/**` are DV
+   independence-disclosure comments — and the `dune runtest` step's `dune
+   promote` limb promotes expect-test corrections to their own sources, not to
+   `.v` files. If a later round ever gives a dune rule a target under
+   `rtl_snapshots/`, this row must be re-derived before it is trusted.
+3. **The two-commit arc pattern is not a Case A instance.** When an emitter is
+   registered and its `.v` is not yet committed, run 1 writes it into the
+   checkout and run 2 writes it into scratch, so it appears in **neither**
+   `Only in` direction: the new step stays green and the scheduled red still
+   lands at step 57 with its name unchanged. Re-confirmed against the registry
+   this round rather than carried from `J-rtl_lead-0025` §10. An implementer who
+   reads Case A as covering the arc will conclude the arc breaks the step; it
+   does not, and the two steps partition exactly as that entry said — the new
+   step asks whether two processes agree, step 57 asks whether the tree agrees
+   with the commit.
+4. **REQ-902's verification column will be a misattribution the moment the step
+   lands.** `docs/specs/requirements.md:1136` reads *"The existing `build`
+   workflow determinism step"* — singular, and pointing at the cross-commit check
+   dv_lead convicted of not being a double generation. After the landing there
+   are two determinism steps and the column names the older one. This is §4.7
+   item 3's debt and it is architect_docs_lead's, not mine and not the
+   implementer's; I flag it only so the implementing commit is not read as having
+   repaid it, and so no Evidence citation points REQ-902 at that column until it
+   moves.
+5. **The `C-RL-6b` watch stays armed and is not dischargeable by this step.**
+   Value `48c4b03b88ba2fc211fc145b0a9c1747e7f610513cbef80767ee7e22897beb04`,
+   verified intact at HEAD this round. §4.5 excludes machine, OS, opam switch,
+   dune and library version — one runner, one build — which is exactly the
+   cross-run space the watch covers. A green two-run step is **not** grounds to
+   retire it; its trigger and discharge condition are unchanged.
+6. **The negative-control robustness nit, still offered and still not required**
+   (`J-rtl_lead-0025` §5): `printf 'x' >> "$(ls -1 "$SCRATCH"/ctrl/*.v | head -1)"`
+   computes a filename through a pipeline inside a `set -euo pipefail` script and
+   is one empty result away from a redirect to the empty string. A `test -n` guard
+   or a glob-first form costs one token. Not a condition; not a finding.
+
+#### 6. Who may hold the pen, and why that is not my call
+
+Both ADR targets are `docs/adr/**`, which is architect_docs_lead's authorship.
+PROTOCOL §6 nonetheless lets the **orchestrator** stage everything, so the
+corrections can land either as an architect round or as amendments carried by the
+implementing commit under the orchestrator's own trailer. **My condition does not
+dictate whose hand** — it asks only that the corrected text be in the record at
+or before the commit that lands the step. The attribution question is the
+orchestrator's to settle; I record that both routes discharge the condition so
+that no round is spent asking me.
+
+#### 7. What this entry does not do
+
+It does not discharge either condition — only the ADR and `build.yml` can, and
+both are byte-unmoved at HEAD. It does not re-raise either finding: both were
+raised at `J-rtl_lead-0025` and are carried, not re-filed. It states no new
+finding, mints no `R-CI-` number, and takes no view on ADR-0021 subjects 1, 2 or
+4, on `FINDING ADR21-1`, on the ten `test_protocol.sh` scenarios, or on anything
+in the closed process-document commission. It certifies nothing about whether the
+step **works**: no run of it exists, and no run id is cited for it. It is not a DV
+result of any kind. M06 and M07 remain without independent design review.
+
+### Actions
+
+1. Ran the abort-first precheck before opening any file; re-ran it after the
+   mid-round HEAD move to `1b684c7` (clean both times), classified that commit
+   against the newly declared fourth lane, verified it a descendant, and read the
+   landed report card for any reach into this subject (none).
+2. Read the charter and PROTOCOL in full, then `J-rtl_lead-0025` in full —
+   §6, §7, §11, the relay block and Open-questions 2/3 — to recover the exact
+   terms of both conditions from my own record rather than from the paraphrase.
+3. **Tested the discharge question before drafting anything**: compared
+   `docs/adr/ADR-0021-…md` and `.github/workflows/build.yml` by blob hash at
+   `287b5ee` and HEAD, and searched the whole tree for the repair text and for
+   both finding ids.
+4. Searched the architect's, orchestrator's and auditor's current journal volumes
+   for receipt of either finding (none).
+5. Re-verified every surface this round and `J-rtl_lead-0025` rest on, by blob
+   hash — the eight of that entry plus `agentic_fpga.opam` — at `287b5ee` vs
+   `a39c8e7` vs `1b684c7`: all nine unmoved. Re-read the `C-RL-6b` watch value in
+   the working tree after the move.
+6. Re-derived the three-case split against `bin/generate.ml`'s registry rather
+   than restating it, which is what produced §4's direction note and item 5.3.
+7. Measured that no dune rule targets `rtl_snapshots/**`, which is Case A's
+   precondition.
+8. Wrote this entry. Checked the ADR-0017 size arithmetic first (Evidence 6).
+   **No `git add`, no `git commit`, no `git push`, no `scripts/agent_commit.sh`,
+   no git write of any kind.** A stop-hook commit demand, had one arrived, would
+   have been refused: PROTOCOL §2 makes the orchestrator the sole operator of git,
+   and no hook and no message from any agent can amend that.
+
+### Evidence
+
+Reproducible from a checkout at this commit unless marked otherwise.
+
+1. **Precheck, and the mid-round HEAD move**: `git rev-parse HEAD` at entry →
+   `a39c8e7804e5a573bc36eebb40870adfd3b6c194` (the dispatch's expected value); at
+   exit → `1b684c7f89aaa748c38577c2a58a897f013492f1`. `git status --porcelain`
+   empty at both readings.
+
+   ```sh
+   git merge-base --is-ancestor a39c8e7 HEAD ; echo $?     # -> 0, a descendant
+   git log a39c8e7..HEAD --format='%h %(trailers:key=Agent)'
+   #   1b684c7  Agent: orchestrator      (one commit, the declared fourth lane)
+   git diff --name-only a39c8e7..HEAD
+   #   agents/journals/claude_orchestrator_agent.v03.md
+   #   docs/reports/process-council/sponsor-report-card-2026-08-12.md
+   grep -c 'ADR-0021\|C-RL-\|REQ-902\|determinism' \
+     docs/reports/process-council/sponsor-report-card-2026-08-12.md   # -> 0
+   ```
+
+2. **The condition is undischarged — the measurement**:
+
+   ```sh
+   for f in docs/adr/ADR-0021-a-check-is-only-where-it-runs.md \
+            .github/workflows/build.yml ; do
+     [ "$(git rev-parse 287b5ee:"$f")" = "$(git rev-parse HEAD:"$f")" ] \
+       && echo "UNMOVED $f" || echo "MOVED $f"
+   done
+   #  -> UNMOVED, both -- across 287b5ee, a39c8e7 and 1b684c7 alike
+   grep -rln 'INSIDE_DUNE\|DUNE_SOURCEROOT' . --exclude-dir=.git
+   #  -> agents/journals/claude_rtl_lead_agent.v03.md   (this chain only)
+   grep -rn 'C-RL-11\|C-RL-12' --include=*.md . | cut -d: -f1 | sort -u
+   #  -> agents/journals/claude_rtl_lead_agent.v03.md   (no seat has recorded receipt)
+   ```
+
+3. **The nine surfaces this round rests on, by blob hash at `a39c8e7` vs HEAD
+   `1b684c7`** — `build.yml`, `bin/generate.ml`, `ADR-0021`, `requirements.md`,
+   `PROTOCOL.md`, `agents/charters/rtl_lead.md`, `scripts/policy.sh`,
+   `rtl_snapshots/eth_axis_tx.v`, `agentic_fpga.opam` — **all nine UNMOVED**, so
+   nothing this entry or `J-rtl_lead-0025` measured has moved under either.
+   Working-tree watch value re-read after the move:
+
+   ```sh
+   sha256sum rtl_snapshots/eth_axis_tx.v
+   #  48c4b03b88ba2fc211fc145b0a9c1747e7f610513cbef80767ee7e22897beb04  (intact)
+   ```
+
+4. **The emitter registry and the committed inventory agree at six**:
+
+   ```
+   bin/generate.ml:114   let dir = "rtl_snapshots" in
+   bin/generate.ml:115   if not (Stdlib.Sys.file_exists dir) then Stdlib.Sys.mkdir dir 0o755;
+   bin/generate.ml:117-122   word_counter, xgmii_rx_64, xgmii_tx_64,
+                             eth_mac_10g, eth_axis_rx, eth_axis_tx
+   ```
+   ```sh
+   git ls-files -- rtl_snapshots | wc -l      # -> 6, the same six names
+   ```
+
+5. **Case A's precondition — no other writer into `rtl_snapshots/`**:
+
+   ```sh
+   grep -rn 'rtl_snapshots' --include=dune --include=dune-project .
+   #  -> 3 hits, all comment lines in test/{cosim,xgmii_tx_64,xgmii_rx_64}/dune
+   #     (DV independence disclosures); no rule target
+   grep -n 'rtl_snapshots' .github/workflows/build.yml
+   #  -> line 60 only, inside the determinism step's comment
+   ```
+
+6. **ADR-0017 size arithmetic, checked before appending — and corrected against a
+   first estimate rather than shipped on it**: `scripts/policy.sh` lines 13–14
+   give `JOURNAL_SOFT_MAX=262144`, `JOURNAL_HARD_MAX=524288`. This volume stood
+   at **120,771 bytes** before this entry. My pre-write estimate for the entry was
+   ~20 KB; **measured after drafting, it is roughly 38 KB**, so the volume lands
+   near **159 KB** — about **61 %** of soft and **30 %** of hard. I record the
+   correction rather than the estimate because an arithmetic check that is not
+   re-read after the thing it measures exists is not a check; and I state the
+   figure to two significant figures rather than to the byte, because a byte-exact
+   self-measurement inside the thing being measured cannot reproduce — each
+   revision of the sentence moves the number it reports. The reproducing form is
+   the difference of the committed sizes:
+
+   ```sh
+   git cat-file -s HEAD:agents/journals/claude_rtl_lead_agent.v03.md
+   git cat-file -s HEAD~1:agents/journals/claude_rtl_lead_agent.v03.md   # -> 120771
+   ```
+
+   No rotation is owed at either figure and none is taken; the next entry has
+   roughly 100 KB of soft headroom. (Volume 03 was opened at `J-rtl_lead-0023`
+   deliberately one entry early, which is why a 38 KB entry costs this chain
+   nothing.)
+
+7. **Toolchain non-pinning, quoted from the files** — the ground for item 5.1:
+   `agentic_fpga.opam:9` → `"dune" {>= "3.0"}`; `build.yml:19–22` →
+   `ocaml/setup-ocaml@v3`, `ocaml-compiler: "5.1"`, `dune-cache: true`.
+
+8. **REQ-902's verification column at HEAD**, `docs/specs/requirements.md:1136`:
+   *"The existing `build` workflow determinism step."* — singular, the debt item
+   5.4 names.
+
+9. **The `dune exec` environment measurement is NOT re-run this round.** It is
+   `J-rtl_lead-0025` Evidence 5: an ephemeral probe built in the session
+   scratchpad **outside this repository**, leaving no path in the tree, at dune
+   3.24.1 / OCaml 4.14.1. It is environment-specific and is cited here as a prior
+   measurement, not re-measured — which is exactly why the correction's text
+   labels the set descriptive rather than contractual.
+
+10. **Not claimed**: no run of the step exists, so no run id is cited for it;
+    nothing was built, elaborated, simulated or formatted this round;
+    `ocamlformat` and the Hardcaml dependency set remain unavailable in this
+    container.
+
+### Outcome
+
+Both corrections are filed at edit grade and neither condition is discharged by
+this entry — the discharge is the corrected text landing. In the form the
+orchestrator can relay:
+
+> **FILING — rtl_lead, ADR-0021 subject-3 countersignature conditions.
+> `J-rtl_lead-0026`. Both corrections IN RECORD at edit grade; both conditions
+> remain UNDISCHARGED until the text lands.**
+>
+> **Discharge status, measured not assumed.** `ADR-0021` and `build.yml` are
+> **byte-identical at `287b5ee`, `a39c8e7` and `1b684c7`**; `INSIDE_DUNE`,
+> `DUNE_SOURCEROOT`, `C-RL-11` and `C-RL-12` appear at HEAD **only in this
+> chain**. No seat has recorded receipt. My condition's closing event, in my own
+> words at `J-rtl_lead-0025` Open-questions 2, is *"the corrected text landing at
+> or before the commit that lands the step"* — landing, not stating — so this
+> filing carries the corrections to edit grade and does not close them.
+>
+> **`C-RL-11` — three ADR targets, no `build.yml` limb.** §4.2 note 1 is replaced
+> so the bullet says `opam exec --` equalises the switch and **not** the
+> environment, naming the nine `dune exec`-injected variables and the `PATH`
+> prefix, labelling the set **descriptive of one measurement (dune 3.24.1) and
+> not a contract** because `agentic_fpga.opam` requires only `dune >= 3.0`.
+> §4.5's environment row flips to **yes, incidentally — and now declared**, with
+> the note that the capability is a harness by-product rather than a designed
+> probe. §4.4's first-row disposition gains one clause: **check the differing
+> bytes against the declared values before routing a diff as an emitter defect**,
+> since a harness-caused and a program-caused diff are the same `diff` output.
+> The false sentence lives in ADR prose only — the step's YAML comment makes no
+> environment claim — so nothing in the shipped file needs changing for this one.
+> Carrying a two-line version into the step's comment is **offered, not
+> required**.
+>
+> **`C-RL-12` — one `build.yml` limb, one ADR row split three ways.** The failure
+> branch gains three printed commands after the diff: `git ls-files --
+> rtl_snapshots`, `git status --porcelain -- rtl_snapshots`, and
+> `ls -1 "$SCRATCH"/rtl_snapshots`. The status command is informative **only**
+> because §4.3 already places this step before the determinism step's
+> `git add -A`. §4.4's third row then splits: **untracked ⇒ `REQ-902` defect**
+> (run 1 wrote it, run 2 did not); **tracked and modified ⇒ `REQ-902` defect**
+> (run 1 rewrote it, run 2 did not write it); **tracked and clean ⇒ undetermined
+> at the step**, resolved by one read of `bin/generate.ml`'s six-element registry
+> — **and that read runs opposite to the reading it invites: if the registry
+> names the file it is a `REQ-902` defect**, because run 2 omitted a registered
+> emission; a file is an orphan **only when no emitter row names it**. In no
+> branch does the step delete anything. Rows 1 and 2 and the fourth
+> (`set -e`) class are untouched, and §4.4's never-a-promotion-source sentence is
+> strengthened, not weakened.
+>
+> **Six things the implementing round must not pass over.** (1) The nine-variable
+> list is prose — if ever mechanised it **prints** the delta, never asserts it
+> (`dune >= 3.0` unpinned; CI is setup-ocaml@v3 / OCaml 5.1 / `dune-cache: true`;
+> the probe was dune 3.24.1 / OCaml 4.14.1). (2) "Untracked ⇒ run 1 wrote it"
+> holds because **no dune rule targets `rtl_snapshots/**`** — measured; re-derive
+> the row if that ever changes. (3) **The two-commit arc is not a Case A
+> instance**: a newly registered, not-yet-committed snapshot is written by
+> **both** runs, so the new step stays green and the scheduled red still lands at
+> step 57 under its own name. (4) REQ-902's verification column
+> (`requirements.md:1136`) becomes a **misattribution** the moment the step lands
+> — §4.7 item 3's debt, architect's, **not repaid by the implementing commit**.
+> (5) The **`C-RL-6b` watch stays armed**, value `48c4b03b…beb04` verified intact
+> at HEAD; a green two-run step does not retire it, because §4.5 excludes exactly
+> the cross-run space it covers. (6) The negative-control `printf` filename
+> pipeline nit is still **offered, not required**.
+>
+> **Pen**: both ADR targets are the architect's authorship, but PROTOCOL §6 lets
+> the orchestrator stage everything, so an architect round and an amendment
+> riding the implementing commit **both discharge the condition** — my condition
+> does not dictate whose hand.
+>
+> **Not certified**: that the step works (no run of it exists), subjects 1/2/4,
+> `FINDING ADR21-1`, the ten scenarios, or any DV outcome.
+
+Charter §5's DoD, scored against what this round was for: no `libs/`, `top/`,
+`bin/` or `rtl_snapshots/` byte was opened for writing, so the spec-conformance,
+house-style and line-rate rows have **no instance**; charter §8's
+determinism-evidence rule does not fire, because this entry touches neither
+`bin/generate.exe` nor `rtl_snapshots/**` — it routes text about a workflow step
+that measures them. Journal entry appended per PROTOCOL §4; no DV sign-off
+claimed — met.
+
+Charter §8's harvest-note obligation does not fire: PROTOCOL §7 ties it to an
+`SO-` and to a phase gate, and this is neither. Span bookkeeping unchanged — this
+seat's next harvest still opens at `J-rtl_lead-0013` (ADR-0018 `A2-D10`).
+
+**Handoff**: to the orchestrator, verbatim, as the pre-implementation filing. Write
+set is this journal alone; no packet is owed. The ADR limbs route to
+architect_docs_lead (or to the orchestrator as amendments, §6); the `build.yml`
+limb routes to the orchestrator, `.github/**` being outside my scope.
+
+### Open-questions
+
+The ledger, carried from `J-rtl_lead-0025` with two items updated and none added.
+Every item carries an owner and a closing event.
+
+1. **`FINDING C-RL-10` — open, unchanged.** ADR-0020 §7.4's em-dash list is
+   undeclared. *Owner*: architect_docs_lead. *Closes by*: ADR-0020 §9.2 act 7.
+   Untouched this round.
+2. **`FINDING C-RL-11` — open, UPDATED: carried to edit grade at §3 above.**
+   The two runs do not share an environment. *Owner*: architect_docs_lead (the
+   text), or the orchestrator if it carries the amendment under §6. *Closes by*:
+   the corrected text at §3's targets A, B and C landing at or before the commit
+   that lands the step — measured undischarged at `1b684c7`. *Cost of not
+   closing*: a harness-caused diff routed as an emitter defect, and §7.2's third
+   claim overstated.
+3. **`FINDING C-RL-12` — open, UPDATED: carried to edit grade at §4 above, with
+   the third case's registry test found to run opposite to the reading it
+   invites.** *Owner*: orchestrator (the `build.yml` limb, §4 target A) and
+   architect_docs_lead (the split row, §4 target B). *Closes by*: the same
+   commit — measured undischarged at `1b684c7`. *Cost of not closing*: a deletion
+   recommended over the strongest nondeterminism signal the instrument can
+   produce.
+4. **The `C-RL-6b` watch — armed, value unchanged, expressly NOT dischargeable by
+   subject 3.** Value
+   `48c4b03b88ba2fc211fc145b0a9c1747e7f610513cbef80767ee7e22897beb04`, verified
+   at HEAD. Trigger unchanged: a CI run emitting a different sha for
+   `rtl_snapshots/eth_axis_tx.v` while the **circuit** is unmoved is a REQ-902
+   defect that comes back to me and **must not be re-promoted**. Two datapoints
+   (runs 31504570344 and 31535599727), both cross-run single-emission. *Owner*:
+   me, on the red.
+5. **REQ-902's two-run instrument — carried, route unchanged.** *Owner*:
+   **orchestrator** (the `build.yml` step) and architect_docs_lead
+   (`requirements.md:1136`'s verification column, §4.7 item 3, which after the
+   step lands misattributes the instrument — re-verified still unmoved this
+   round). *Closes by*: the acceptance entry plus the first green run of the step
+   cited by id (REQ-906).
+6. **M06 and M07 have no independent design review.** *Owner*: unassigned — not
+   dv_lead's (`SO-` is a suite result), and it cannot be mine. Carried unchanged;
+   ten rounds now.
+7. **`C-RL-2` and `C-RL-3` carried, unchanged and untouched**: the latent
+   `first_v` gating in M03, and sub-word idle granularity (no row owed).
+   *Owner*: me. M03 was not opened this round.
+
+### Files-in-this-commit
+
+- (none)
