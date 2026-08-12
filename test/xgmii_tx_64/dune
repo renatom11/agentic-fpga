@@ -25,6 +25,16 @@
 ;            unmodified (regression witness, §5.2), and
 ;            test_m04_a.ml/b.ml/g.ml each APPEND-ONLY, one new unit each
 ;            (§11.4): A3, B3, G10
+;   WO-0083  G1, G2, G3, G5, G6, G8, A4, F6 ASSERT (eight ASSERT rows,
+;            family G's pulse rows and the abort law) — no new file;
+;            bench.mli/bench.ml extended by one module (Stall) and three
+;            functions (run_scheduled, underflow_event,
+;            assert_instruments_scheduled), with assert_instruments_clean_n
+;            re-expressed over the third (§5.3) — the five landed
+;            test_m04_{scaffold,b,c,d,e}.ml files unmodified (regression
+;            witness, §5.2), and test_m04_a.ml/f.ml/g.ml each APPEND-ONLY,
+;            new units per file (§11.4): A4 (a.ml); F6 (f.ml); G1, G2, G3,
+;            G5, G6, G8 (g.ml, four %expect_test units — U22 through U25)
 ; When a packet adds rows, add its line — WO-0038's own dune header found
 ; the staleness this rule guards against (see test/xgmii_rx_64/dune's own
 ; history) and this header follows that precedent from its first commit.

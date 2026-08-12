@@ -33,6 +33,21 @@
     and none of those rows is named here even to disclaim them, per bar
     M-7. *)
 
+(** {2 WO-0083 addendum — M04-F6, the gap after an abort}
+
+    The abort gap named above as needing a capability this round does not
+    build now has one: WO-0083 §5.3 builds {!Bench.Stall} and
+    {!Bench.run_scheduled}, and §4.2 fact 5 derives the gap after an abort —
+    [t = 1] (the terminate character is the [/T/] at lane 1, never the
+    [/E/] at lane 0), [g = 2], the actual gap **15** octets. The wrong
+    design is one octet from conformant (measuring from the [/E/] rather
+    than the [/T/]) and passes every [>= cfg_ifg] check, so the observable
+    is the EXACT placement and never the minimum — the same discipline the
+    two units above already carry, applied to this round's own new
+    terminate-character source. Family F does NOT complete this round: the
+    [cfg_ifg] parameterisation and the 10 000-frame DIC sweep named above
+    still need capabilities this round does not build. *)
+
 open! Base
 open Bench
 
@@ -361,5 +376,126 @@ let%expect_test
    12 octets at t = 4 and 16 at t = 0"
   =
   run_f2 ();
+  [%expect {||}]
+;;
+
+(* ---- U26: M04-F6 (WO-0083 §4, §6.6) ----------------------------------------- *)
+(* The gap after an abort: 15 octets from the /T/ in lane 1 — the one
+   octet that separates conformant from not. One elaboration, run length
+   47 cycles (WO-0083 §10). A second run at nearly the same stimulus as
+   the neighbouring family-G unit that also drives an abort ahead of a
+   second frame, deliberately: the two units assert disjoint things on
+   different frames, filed in different families' files, and this row's
+   claim must not ride on that unit's passing. *)
+
+let run_f6 () =
+  let row = "M04-F6" in
+  let stall : Stall.t = { frame = 0; word = 4; hold = 1; after = Abandon } in
+  let _, t, samples = run_scheduled [ content_octets ~p:60; content_octets ~p:60 ] stall in
+  let c = first_accepted_cycle samples in
+  let r = c + 4 in
+  let a = r + 2 in
+  (* Assertion 1. *)
+  assert_instruments_scheduled
+    t
+    ~row
+    ~frames:2
+    ~underflowed:[ 0 ]
+    ~strobe_events:
+      [ underflow_event
+          ~frame:0
+          ~cycle:r
+          ~why:
+            "SPEC-M04 §9, 'Strobe cycle, pinned': R = S_0 + w - 1 = (C+1) + 4 - 1 = C+4 \
+             (§4.2 fact 1)"
+      ];
+  (* Assertion 2: Tx_decoder.gaps has exactly one entry, as its own
+     statement. *)
+  let gaps = Dv_xgmii.Tx_decoder.gaps (decoder t) in
+  if List.length gaps <> 1
+  then
+    fail
+      row
+      (String.concat
+         [ "Tx_decoder.gaps has "; Int.to_string (List.length gaps); " entries, expected 1" ]);
+  (* Assertion 3: the exactness IS the row — 15 is asserted, not >= 12. A
+     design measuring the gap from the /E/ in lane 0 rather than from the
+     /T/ in lane 1 produces 16, is ONE OCTET from conformant, and passes
+     every >= cfg_ifg check (§4.2 fact 5, trap T13). *)
+  (match gaps with
+   | [ g ] ->
+     if g <> 15
+     then
+       fail
+         row
+         (String.concat
+            [ "the one gap = "
+            ; Int.to_string g
+            ; ", expected EXACTLY 15 (§4.2 fact 5: t = 1, g = 2 words, 8g - t = 15 \
+               octets — 16 is one octet from conformant and is what a design measuring \
+               from the /E/ in lane 0 rather than the /T/ in lane 1 gives, trap T13)"
+            ])
+   | _ -> fail row "unreachable: gaps length already checked to be 1");
+  (* Assertion 4: the terminate character is at lane 1 of the abort word,
+     read directly from samples' own raw wire at C+6 AS WELL AS through
+     the decoder's terminate_lane — two readings of the same fact,
+     deliberately: this round is the first to measure a gap whose
+     terminate character comes from an aborted frame (class D2, §15). *)
+  (match List.find samples ~f:(fun (s : sample) -> s.cycle = a) with
+   | None -> fail row "no sample at the abort word cycle C+6"
+   | Some s ->
+     (match Dv_xgmii.Xgmii_word.lane s.wire 1 with
+      | Dv_xgmii.Xgmii_word.Control v when v = Dv_xgmii.Xgmii_word.terminate_char -> ()
+      | Dv_xgmii.Xgmii_word.Control v ->
+        fail
+          row
+          (String.concat
+             [ "raw wire lane 1 at C+6 = control "; Int.to_string v; ", expected /T/ (0xFD)" ])
+      | Dv_xgmii.Xgmii_word.Data v ->
+        fail
+          row
+          (String.concat
+             [ "raw wire lane 1 at C+6 = data "; Int.to_string v; ", expected control /T/" ])));
+  let f0 =
+    match wire_frames samples with
+    | [ f0; _ ] -> f0
+    | fs ->
+      fail
+        row
+        (String.concat
+           [ "wire_frames decoded "; Int.to_string (List.length fs); " frames, expected 2" ])
+  in
+  if f0.Dv_xgmii.Tx_decoder.terminate_lane <> 1
+  then
+    fail
+      row
+      (String.concat
+         [ "decoder's terminate_lane = "
+         ; Int.to_string f0.Dv_xgmii.Tx_decoder.terminate_lane
+         ; ", expected 1"
+         ]);
+  (* Assertion 5: the next start character is in lane 0, at C+8, via
+     Xgmii_word.start_lane on the raw sample. *)
+  match List.find samples ~f:(fun (s : sample) -> s.cycle = c + 8) with
+  | None -> fail row "no sample at cycle C+8"
+  | Some s ->
+    (match Dv_xgmii.Xgmii_word.start_lane s.wire with
+     | Some 0 -> ()
+     | Some lane ->
+       fail row (String.concat [ "start character at lane "; Int.to_string lane; ", expected 0" ])
+     | None -> fail row "no start character at C+8")
+(* What this unit does NOT assert (WO-0083 §6.6): no average gap, no gap
+   of 12 at any lane, and no import of §0.3's RECEIVE-side spacing — the
+   round-wide prohibition of the family's own NO-ASSERT row (the one
+   about §0.6's window on error_underflow, already dispositioned and not
+   named further here per bar M-7), restated here because this file is
+   where it lives. *)
+;;
+
+let%expect_test
+  "M04-F6: the gap after an abort — 15 octets from the /T/ in lane 1, the \
+   next start character in lane 0"
+  =
+  run_f6 ();
   [%expect {||}]
 ;;

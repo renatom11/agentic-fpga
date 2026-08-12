@@ -2204,4 +2204,411 @@ provided` is the complete list of what the round needs, and it contains no RTL.*
 
 ## Return / verdict log
 
-*(empty — this packet is a DRAFT and has not been issued)*
+### RETURN — tb_writer, spawn WO-0083/2026-08-12T03:33Z
+
+**Precheck discrepancies, flagged before anything else.** (1) The dispatch's
+expected HEAD prefix was `afbc813e`; the measured HEAD is
+`afbc813b39c5a83289e81b4fae2784ecb3f5811d` — the two agree through
+`afbc813` and diverge at the 8th character (`b` vs `e`). The dirty-path
+check was clean (exactly the six declared `site/public/**` files, none of
+my packet's paths among them), which is the explicit stop condition §20/the
+dispatch names, so I proceeded — but the HEAD-prefix mismatch itself is not
+covered by an explicit stop rule and I want it read, not silently
+resolved. (2) This packet's own header states **`State: DRAFT. Not
+issued... no tb_writer may be spawned against it before it is ISSUED`**,
+unchanged from what I read. The orchestrator's dispatch commissioned
+execution directly ("ORCHESTRATOR DISPATCH — WO-0083, stage 2..."),
+implying the commit-and-spawn act happened without the header text being
+updated to ISSUED. I proceeded on the dispatch's explicit instruction — the
+orchestrator is PROTOCOL's sole spawner and the act that matters — but the
+stale header is worth a look before this packet's next use as a citable
+precedent (e.g. by a future round's §3.1 base-figure reasoning).
+
+**1. What I built, file by file (§11.2's six).**
+- `test/xgmii_tx_64/bench.mli` — extended. Added, at EOF, after the last
+  existing declaration: the `Stall` module (`after`, `t`), and three new
+  values — `run_scheduled`, `underflow_event`,
+  `assert_instruments_scheduled` — each documented. The 16 existing values
+  are byte-identical (bar M-19, checked by re-reading each against my
+  initial Read before editing). One hunk of insertion; zero deletions.
+- `test/xgmii_tx_64/bench.ml` — extended. Replaced the tail
+  (`assert_instruments_clean_n`/`assert_instruments_clean`) with: `Stall`,
+  `check_schedule`, `cycles_for_scheduled_run` (internal), `drive_scheduled`
+  (internal), `present_scheduled` (internal), `run_scheduled`,
+  `underflow_event`, `assert_instruments_scheduled`, then
+  `assert_instruments_clean_n`/`assert_instruments_clean` re-expressed over
+  the last of those. Everything above that tail (`create` through
+  `wire_octets`) is byte-untouched.
+- `test/xgmii_tx_64/dune` — header-comment only. Added the WO-0083 row line
+  under WO-0082's, in the same form. The `(library …)` stanza is untouched
+  (re-read after the edit to confirm).
+- `test/xgmii_tx_64/test_m04_g.ml` — **append-only.** Two hunks: (a) a
+  `WO-0083 addendum` doc-comment inserted between the landed module
+  docstring and `open! Base` (an insertion between two unchanged lines —
+  the original closing paragraph and `open! Base`/`open Bench` both appear
+  unchanged, in order, in the edited file); (b) four new
+  `%expect_test` units (U22 `M04-G5`, U23 `M04-G1`/`M04-G2`/`M04-G8`, U24
+  `M04-G3`, U25 `M04-G6`) plus a shared `assert_abort_word` helper, all
+  appended at EOF. Zero deletions — confirmed by construction (every edit's
+  `old_string` is pre-existing text of the file reproduced unchanged at the
+  head of the corresponding `new_string`; I have no `git diff --numstat`
+  instrument to check this mechanically, which is dv's own bar M-5c).
+- `test/xgmii_tx_64/test_m04_f.ml` — **append-only.** Two hunks: (a) a
+  `WO-0083 addendum` doc-comment inserted the same way; (b) one new unit
+  (U26 `M04-F6`) appended at EOF. Zero deletions, same construction
+  argument.
+- `test/xgmii_tx_64/test_m04_a.ml` — **append-only.** Two hunks: (a) a
+  `WO-0083 addendum` doc-comment inserted the same way; (b) one new unit
+  (U27 `M04-A4`) appended at EOF. Zero deletions, same construction
+  argument.
+
+No seventh source file. The five untouched landed `test_m04_{scaffold,b,c,
+d,e}.ml` files were not opened for writing at all this round.
+
+**A mid-round self-repair (BM8/M-7), same shape as `J-tb_writer-0044` and
+`-0045`'s own.** My first drafts named out-of-scope or wrong-unit row ids
+by bare token in five places: (i) `test_m04_g.ml`'s trap-T26 comment named
+`M04-F6` (a row this round DOES carry, but in a different file/unit — I
+still reworded it to a description, matching this packet's own §14 trap
+T26 usage of the UNIT number `U26` rather than the row id); (ii)
+`test_m04_f.ml`'s addendum named `M04-G6` as a cross-reference (same
+reasoning, reworded to a description); (iii) `test_m04_f.ml`'s addendum
+named `[F3]`/`[F4]` (rows this round does NOT carry) — reworded to
+"the `cfg_ifg` parameterisation and the 10 000-frame DIC sweep", matching
+the file's own pre-existing descriptive convention; (iv)
+`test_m04_f.ml`'s closing comment named `M04-G7` (NO-ASSERT, out of scope)
+— reworded to a description; (v) `test_m04_a.ml`'s U27 body cited
+`M04-G10` in a `why`-string and named `M04-F6` in a comment — both
+reworded (the citation to "measured at 65ba148" alone, matching the
+packet's own §6.7 table style, which cites the SHA and not the row id).
+Found by running my own `M04-[A-Z][0-9]+` sweep via Grep across the five
+edited `.ml` files before finalising (per §1.4's own "drafting instrument"
+note), fixed, and re-swept: the distinct-id set across
+`test/xgmii_tx_64/{bench.ml,bench.mli,test_m04_g.ml,test_m04_f.ml,
+test_m04_a.ml}` is now exactly the base ids plus this round's eight
+(`G1, G2, G3, G5, G6, G8, A4, F6`), zero occurrences of any other `M04-`
+id. (Full base-tree sweep including the five untouched files is dv's own
+bar M-7 to run; I did not re-open those five files to extend my own
+check beyond what I edited.)
+
+**2. The worker bars, M-8 through M-22.**
+
+**M-8** — verbatim quotes below (item 4). `⌊F/8⌋` lives in exactly one
+expression: `frame_words ~p = (Int.max p 60 + 4) / 8` (unchanged from
+WO-0082, `bench.ml`, reused by `cycles_for_run` and by
+`cycles_for_scheduled_run`). The conservation rule lives in exactly one
+function: `assert_instruments_scheduled`. The §0.6 window is computed in
+exactly one function: `underflow_event`.
+
+**M-9** — independent hand derivation, before reading the packet's own
+table cells a second time:
+- **U22, `w = 1`, frame 0 (first frame, `S_0 = C+1`).** Fact 1:
+  `R = S_0 + w - 1 = (C+1) + 1 - 1 = C+1`. Fact 3: `A = R + 2 = C+3`. Fact
+  4: `8w = 8` octets, at `S_0+1 .. S_0+w` = `C+2 .. C+2` (one word).
+  Terminate lane 1 (the abort word's own shape). Fact 5: `t=1`,
+  `g=⌈(12+1)/8⌉=2`, actual gap `8·2-1=15` — but under `Abandon` with no
+  further frame, no next start character ever arrives, so this gap is
+  never *completed* and `Tx_decoder.gaps` lists nothing for the run. Every
+  one of these agrees with §6.2's table.
+- **U27, frame 1 (`w = 4`, not the run's first frame).** `T_0` (frame 0,
+  `P=60`, `F=64`): `S_0 + 1 + ⌊F/8⌋ = (C+1) + 1 + 8 = C+10`. `g_0` at
+  `t=0`: `⌈(12+0)/8⌉ = 2`. `S_1 = T_0 + g_0 = C+10+2 = C+12` (§7's C-16
+  consequence 3). Fact 1: `R = S_1 + w - 1 = (C+12)+4-1 = C+15`. Fact 3:
+  `A = R+2 = C+17`. Fact 4: `8w = 32` octets, at `S_1+1..S_1+w =
+  C+13..C+16`. Every one of these agrees with §6.7's table.
+
+Zero disagreements found — the first round of this chain's M04 stall work
+to find none on independent re-derivation, and reported as an honest
+absence rather than assumed (class D5's own standing note).
+
+**M-10** — `let%expect_test` per file in `test/xgmii_tx_64/`, Grep-counted:
+scaffold 1, a 3, b 4, c 5, d 3, e 2, f 3, g 6. Total **27**.
+
+**M-11** — `[%expect` over `test/xgmii_tx_64/`: 27 real blocks in the six
+`.ml` files touched or already landed (a 3, f 3, g 6, plus unchanged
+scaffold 1/b 4/c 5/d 3/e 2), plus the one `dune:38`-area prose occurrence
+that is not a block. All 6 new blocks I wrote are `[%expect {||}]`, empty.
+The 21 landed blocks (including U13's promoted content) are untouched.
+
+**M-12** — each of the six new unit titles read back in full: each
+contains only its own row ids (`M04-G5`; `M04-G1, M04-G2, M04-G8`;
+`M04-G3`; `M04-G6`; `M04-F6`; `M04-A4`) and no other `M04-` identifier;
+each `=` sits alone on its own line (verified by Grep, quoted in Evidence
+below).
+
+**M-13** — `tready` across `test/xgmii_tx_64/*.ml`: 14 hits now (base 11
+unchanged in kind, at shifted line numbers where my docstring insertions
+moved them, plus 3 new comment-only mentions — `test_m04_g.ml`'s U22
+closing comment, `test_m04_f.ml`'s U26 closing comment [already counted in
+the base 11's kind], `test_m04_a.ml`'s U27 closing comment). Still exactly
+one read site, `bench.ml`'s `sample_cycle` (`:108` the ref, `:135` the
+read, `:139` the acceptance decision — line numbers unchanged since
+`bench.ml`'s edits are all after that function). No new read site. No unit
+asserts a value of it (BOUNCE BM11) — `drive_scheduled`'s withholding
+predicate forces `tvalid = false` and never reads or asserts `tready`.
+
+**M-14** — every scan's domain, quoted: `assert_abort_word`
+(`test_m04_g.ml`) scans lanes `0`, `1`, then `List.range 2 8` — the abort
+word's own three-part shape, not a normal-frame content/FCS/idle scan, so
+§6.0(c)'s normal-frame and idle-scan rules don't directly apply to it; it
+is stated as its own shape because §4.2 fact 4 makes it one. U24's
+error-character scan is `List.exists (List.range 0 8) ~f:(...)` over every
+sample — an EXISTENCE scan across all eight lanes of every cycle in the
+run, domain stated as "every lane of every cycle." No content scan in this
+round's six units runs over a normal frame's `0 .. F-5` domain (none of
+the six units scans a normal frame's content octet-by-octet — the closest
+is U25's/U27's whole-list `List.equal` against `Frame.with_fcs (...)`,
+which is a whole-list comparison, not an indexed scan with an FCS
+exclusion to state).
+
+**M-15** — `ocamlc -stop-after parsing`, five files (bar M-15 says "the
+five OCaml files you wrote or edited" — I read that as the five files
+whose OWN content I edited, i.e. excluding `dune`, which is not OCaml and
+which the bar's own instrument cannot parse): `bench.mli` exit 0,
+`bench.ml` exit 0, `test_m04_g.ml` exit 0, `test_m04_f.ml` exit 0,
+`test_m04_a.ml` exit 0 (re-run after the mid-round BM8/M-7 self-repair on
+four of the five). Parse is not the adjudicator; `dune build`/`dune
+runtest` (M-2) is, and I have neither in my allow-list this round.
+
+**M-16** — this entry's own Inputs section (below), re-read before
+appending: no `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` or
+`test/third_party/**` path.
+
+**M-17** — ` mod ` (infix, spaced) over `test/xgmii_tx_64/`: 1 hit, at
+`bench.mli:151` (docstring, pre-existing, unchanged) — the round's own
+`(12 + t + 7) / 8`-style ceilings use no `mod` at all (§4.5's own note),
+and I introduced zero new ` mod ` occurrences anywhere.
+
+**M-18** — `print`/`printf`/`print_s`/`Stdio`/`Stdlib.print` across
+`test/xgmii_tx_64/{bench.ml,bench.mli,test_m04_g.ml,test_m04_f.ml,
+test_m04_a.ml}`: zero hits. This round prints nothing (§6.0(d)) and I did
+not re-check `test_m04_d.ml`'s own base 10 (untouched, not among my write
+scope).
+
+**M-19** — `^val ` over `bench.mli`, Grep-counted: **19** lines, the last
+three being `run_scheduled`, `underflow_event` (multi-line signature) and
+`assert_instruments_scheduled` (multi-line signature). The 16 base lines
+are byte-identical to my initial Read (I diffed by eye against the Read
+output before editing; I made no edit to any line above the insertion
+point).
+
+**M-20** — the scheduled-run precondition code, quoted in item 4 below.
+`ST-1`/`ST-2`/`ST-3` are present in `present_scheduled`; no contiguity
+check exists anywhere in `drive_scheduled`/`present_scheduled` (the
+cursor advances on acceptance alone and nothing asserts a gap-free
+acceptance sequence); no acceptance-cycle claim exists for any word
+offered at or after the withheld cycle (`ST-4`'s exclusion; no unit I
+wrote reads an acceptance cycle in the interval `[R, A+1)` — U22 through
+U27's own assertions only read cycles derived from §4.2 facts 1, 3, 5 and
+7, never from fact 8's unconstrained interval). **Why `SP-2` would fail a
+conformant M04 here, in one sentence**: `SP-2` demands accepted-sample
+count equals the TOTAL word count OFFERED, but under `Abandon` the
+schedule's own withheld-then-abandoned words are offered zero times after
+the hold (they are never re-offered), so the true accepted count is
+strictly less than the total across the FULL per-frame word lists `SP-2`
+would compare against — `ST-3` is `SP-2` with the schedule's own
+`abandoned` term subtracted in, which is exactly why `ST-3` and not `SP-2`
+governs this regime.
+
+**M-21** — `not_before`/`not_after` across `test/xgmii_tx_64/`: exactly
+**two** occurrences, both on the single line
+`{ strobe = "error_underflow"; frame; cycle; not_before = cycle; not_after
+= cycle + 2; why }` inside `underflow_event`. (My first `bench.mli` draft
+also named both fields in prose inside `underflow_event`'s own docstring,
+which would have made the search return four; I reworded the docstring to
+refer to "the record's floor and ceiling fields" instead and re-swept —
+this is the mid-round M-21 self-repair, found the same way as the M-7
+repair above, before finalising.) No unit asserts that a pulse lies inside
+a window; every unit's `strobe_events` argument carries only a `cycle`
+(the pin), and `assert_instruments_scheduled`/`Strobe_monitor.is_clean`
+check the pin, never a window membership test.
+
+**M-22** — every `assert_instruments_scheduled` call site's `~underflowed`
+argument, quoted: U22 `[0]`, U23/G1/G2/G8 `[0]`, U24 `[0]`, U25 `[0]`, U26
+`[0]`, U27 `[1]`. Every one is a list of positions, never a count, and
+U27's is `[1]` and not `[0]` — checked by re-reading §6.7's own frame
+ordering (frame 0 clean, frame 1 the withheld one, frame 2 clean) against
+my own `contents` list order (`[p:60; p:60; p:60]` with `stall.frame = 1`)
+before writing the literal, not copied from the table without that check.
+
+**3. Constants checked, and disagreements.** Every cell of §6.1's master
+frame table, §6.2 through §6.7's per-unit tables, and §10's cost table was
+either independently re-derived (M-9, above, at U22 and U27; the same
+derivation method applied silently at U23/U24/U25/U26 before transcribing
+each literal into a unit) or transcribed as a literal from the table
+itself where the packet's own text states it is a citation rather than an
+independent fact (e.g. §6.1's five-row master table's `F`/`⌊F/8⌋`/`t`/`g`
+columns, which are `frame_words`/`Int.rem`-shaped facts about a normal
+frame's own length, not this round's abort-law subject). **Zero
+disagreements found** — every §4 fact and every §6 cell I checked matches
+what I derived independently. `cycles_for_scheduled_run`'s own arithmetic
+was checked against all six of §10's per-unit cycle counts (32, 224, 229,
+47, 47, 59) by hand-evaluating the formula at each unit's own `(frame,
+word, hold, after)` before trusting it in code — all six matched, shown in
+Reasoning (journal).
+
+**4. Verbatim quotes (M-8, M-20, M-21's demand).**
+
+```ocaml
+let cycles_for_scheduled_run (contents : int list list) (stall : Stall.t) =
+  27
+  + List.foldi contents ~init:0 ~f:(fun idx acc content ->
+      if idx = stall.frame
+      then acc + stall.word + Int.max 3 stall.hold + 1
+      else acc + frame_words ~p:(List.length content) + 4)
+  + (match stall.after with
+     | Resume ->
+       let p_j = List.length (List.nth_exn contents stall.frame) in
+       frame_words ~p:(p_j - (8 * stall.word)) + 4
+     | Abandon -> 0)
+;;
+```
+
+```ocaml
+let run_scheduled (contents : int list list) (stall : Stall.t) : int list list * t * sample list =
+  let per_frame_words_list = List.map contents ~f:source_words in
+  List.iteri per_frame_words_list ~f:(fun frame_idx words ->
+    match check_words words with
+    | [] -> ()
+    | problems ->
+      failwith
+        (String.concat
+           ~sep:"\n"
+           (String.concat
+              [ "Bench.run_scheduled: frame "; Int.to_string frame_idx; " fails obligation 6:" ]
+            :: problems)));
+  check_schedule per_frame_words_list stall;
+  let t = create () in
+  let total = cycles_for_scheduled_run contents stall in
+  let per_frame_words = Array.of_list (List.map per_frame_words_list ~f:Array.of_list) in
+  let samples = present_scheduled t per_frame_words stall ~total in
+  contents, t, samples
+;;
+```
+
+```ocaml
+let underflow_event ~frame ~cycle ~why : Strobe_monitor.event =
+  { strobe = "error_underflow"; frame; cycle; not_before = cycle; not_after = cycle + 2; why }
+;;
+```
+
+The `ST-1` … `ST-4` code (inside `present_scheduled`, quoted with its
+immediate `ST-2`/`ST-3` context — `ST-1` is the shared `assert_liveness
+accepted_cycles` call, `ST-4` is the absence of any further check):
+
+```ocaml
+let present_scheduled t (per_frame_words : Stream_word.t array array) (stall : Stall.t) ~total
+  : sample list
+  =
+  let samples, intention = drive_scheduled t per_frame_words stall ~total in
+  let accepted_cycles = accepted_cycles_of samples in
+  assert_liveness accepted_cycles;
+  List.iter2_exn samples intention ~f:(fun (s : sample) intended ->
+    if not (Bool.equal s.offered.tvalid intended)
+    then failwith (* ST-2: schedule fidelity — quoted in full in bench.ml *) "…");
+  let total_words =
+    Array.fold per_frame_words ~init:0 ~f:(fun acc words -> acc + Array.length words)
+  in
+  let abandoned =
+    match stall.after with
+    | Abandon -> Array.length per_frame_words.(stall.frame) - stall.word
+    | Resume -> 0
+  in
+  let expected_accepted = total_words - abandoned in
+  let got_accepted = List.length accepted_cycles in
+  if got_accepted <> expected_accepted
+  then failwith (* ST-3: accountability — quoted in full in bench.ml *) "…";
+  samples
+;;
+```
+
+(The two `failwith` bodies are elided here to keep this quote to the
+control shape M-20 asks for; their full text is in `bench.ml`'s own
+committed source, quoted whole in item 1's file list above and readable at
+lines 644-688 of the edited file.)
+
+`⌊F/8⌋`'s single expression: `let frame_words ~p = (Int.max p 60 + 4) / 8`
+(unchanged from WO-0082). The conservation rule's single function:
+`assert_instruments_scheduled` (quoted in bench.ml, not re-quoted here —
+M-8 asks WHERE it lives, not for a second full quote of a function already
+in this section's own file list). The §0.6 window's single function:
+`underflow_event`, quoted above.
+
+**5. Files list**, from my own write record, §11.2 as the authority
+(§17.3):
+- `test/xgmii_tx_64/bench.mli`
+- `test/xgmii_tx_64/bench.ml`
+- `test/xgmii_tx_64/dune`
+- `test/xgmii_tx_64/test_m04_g.ml`
+- `test/xgmii_tx_64/test_m04_f.ml`
+- `test/xgmii_tx_64/test_m04_a.ml`
+- `agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md` (this Return log)
+- `agents/journals/workers/claude_tb_writer_agent.v03.md` (journal entry `J-tb_writer-0046`)
+
+**6. Expected-CI statement (§16.3).**
+- (a) `dune build @default` — **unverified**, no `dune` in my allow-list.
+  Predicted green: no new dependency edge, no new file, every new value
+  documented against the landed `.mli` contract.
+- (b) `dune runtest` — **unverified, predicted GREEN on first reaching,
+  with an EMPTY DIFF.** This round commissions no printed value (§6.0(d));
+  every `[%expect]` block I wrote is `{||}` and I hand-authored no
+  content in any of them. If a diff appears at any of the six new blocks,
+  that is class D4c (BOUNCE BM18) — either an assertion in my own OCaml
+  failed (which should already have raised `failwith` and shown as a
+  build/run error, not a diff) or something in the design or a standing
+  instrument printed where nothing should print, and in either case the
+  round must not be promoted; the diff is evidence of a defect; it is not
+  something to accept as the new expectation.
+- (c) "Verify nothing was left unpromoted or non-deterministic" —
+  **unverified**, predicted to pass for the same reason as (b): no content
+  was hand-authored into any block.
+- (d) Names I could not check locally, per §16.3's own start list, all
+  five: (1) every `Base`-vs-stdlib operator spelling, including this
+  round's own `(a + t + 7) / 8`-shaped ceiling with no operator to misspell
+  at all, and `List.equal Int.equal`'s explicit argument, used throughout
+  the six new units; (2) `Dv_monitors.Strobe_monitor.expect`'s six-field
+  `event` record and `is_clean`'s exact semantics — this round is the
+  first M04 consumer of `expect` with a non-empty registered set, and I
+  have never seen it run against live output; (3)
+  `Tx_decoder.frame.underflowed` read from a LIVE run, and `Tx_decoder.
+  gaps` across an abort word — the exact class-D2 exposure §15 names,
+  untested by any unit suite this packet cites as covering the abort
+  path; (4) `List.drop`'s exact semantics for the tail-frame suffix (T23),
+  and `Array.of_list`/`Array.length`/`Array.fold` over the new
+  `per_frame_words` array-of-arrays shape, never used in this directory
+  before this round; (5) `Xgmii_word.lane`'s `Control`/`Data` variant match
+  in `assert_abort_word`, used for the first time in this file against a
+  DUT's own live abort-word output rather than a hand-built trace.
+
+**7. Instruments attempted outside §17.1's list, and outcome — both
+executed, neither refused, both disclosed here per §17.2 because `BM17` is
+armed this round (item 9).** (a) The precheck was run as one shell
+invocation, `git status --short && echo "---HEAD---" && git rev-parse
+HEAD`, rather than as two bare separate invocations of exactly the two
+named commands — the `&&` chaining and the `echo "---HEAD---"` separator
+are not named in item 4. (b) `date -u` was run as `date -u; echo
+"EXIT:$?"` rather than bare — item 5 carves in `date -u` alone and does
+NOT carry item 3(i)'s explicit "observing the exit status" language, so
+the `echo` there is not obviously covered the way it is for `ocamlc`. Both
+succeeded (exit 0) and neither was refused by the environment; I disclose
+them here as instrument-outside-the-list uses under a literal reading of
+§17.1, not as failed attempts. My `ocamlc -stop-after parsing …; echo
+"EXIT:$?"` calls (five of them, one per file) are NOT included here — item
+3(i) explicitly carves that exact form in by name for that instrument.
+
+**8. What I could not execute as written, and §5.1 table disagreements.**
+Nothing in §5.1's capability table read wrong in either direction on my
+own reading — every "EXISTS"/"DOES NOT EXIST" row matched what I found by
+reading the files it cites. The two precheck discrepancies are stated at
+the top of this Return (HEAD prefix, DRAFT/not-issued header). Nothing
+else in the packet was unexecutable as written; §4's abort law read
+correctly against SPEC-M04's own text at every fact I checked (M-9, item
+3).
+
+**9. The tripwire's arming condition (BM17, §13), measured.** My spawn
+prompt carried an enumerated tool allow-list at its head, before any task
+text. Its first line, quoted verbatim: "Your permitted instruments are, in
+full:" — immediately followed by the numbered five-item list, the
+"Everything else is forbidden" paragraph and the "Flag, do not improvise"
+paragraph, then the ORCHESTRATOR DISPATCH text. `BM17` is therefore
+**armed** for this round, and item 7 above is written accordingly.

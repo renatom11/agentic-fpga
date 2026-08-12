@@ -323,3 +323,106 @@ val wire_frames : sample list -> Dv_xgmii.Tx_decoder.frame list
     ~frames:1] — byte-identical behaviour at [n = 1], witnessed by every
     unit landed before this round. *)
 val assert_instruments_clean_n : t -> row:string -> frames:int -> unit
+
+(** {2 WO-0083: the stall schedule and the abort law}
+
+    Everything below lands with this round (WO-0083 §5.3) and every existing
+    signature above — sixteen values — is unchanged byte for byte. This
+    round lifts WO-0080's/WO-0082's own prohibition on withholding a word
+    mid-frame, in exactly one direction and by commission (WO-0083 §9.4): a
+    schedule below withholds ONE word of ONE frame, and the design's response
+    to that withholding — SPEC-M04 §9's underflow — is what this round
+    measures for the first time. The REQ-016 idle-injection prohibition
+    survives unchanged (WO-0083 §9.4): nothing below builds a wrapper that
+    injects idle cycles and expects the frame to survive them. *)
+
+module Stall : sig
+  type after =
+    | Resume (** the source presents the withheld word again *)
+    | Abandon (** the frame's remaining words are dropped *)
+
+  type t =
+    { frame : int (** index into the [contents] list {!run_scheduled} is given *)
+    ; word : int (** index of the withheld word within that frame's own word list *)
+    ; hold : int (** consecutive cycles it is withheld, >= 1 *)
+    ; after : after
+    }
+end
+
+(** [run_scheduled contents stall] — the third runner (WO-0083 §5.3(2)):
+    checks every frame's own word list against obligation 6's contract
+    (BEFORE anything is concatenated, over the FULL word list of every
+    element including the words [stall] will later drop — WO-0083 trap T20),
+    checks [stall] against §4.4's three legality rules ([failwith]ing and
+    naming the rule on each: [0 <= stall.frame < List.length contents];
+    [1 <= stall.word <= W_frame - 1]; [stall.word >= 2] when
+    [stall.frame > 0]; [stall.hold >= 1] — all BEFORE a single cycle is
+    driven), elaborates ONE FRESH {!t}, and drives the SAME loop
+    {!run_stream} shares, for the internal [cycles_for_scheduled_run]'s own
+    allowance (WO-0083 §5.3(3)) cycles: a withholding predicate over the
+    presenter's own CURSOR (never over a cycle, WO-0083 §5.3(2')) offers idle
+    for [stall.hold] cycles once the cursor reaches [(stall.frame,
+    stall.word)], then either re-offers that same word ([Resume]) or advances
+    the cursor past the rest of that frame ([Abandon]).
+
+    Enforces [ST-1] .. [ST-4] (WO-0083 §5.3(5)): [ST-1] liveness (the same
+    bound {!run_stream}'s [SP-1] shares); [ST-2] schedule fidelity — every
+    cycle's [offered.tvalid] equals the bench's own intention record, so a
+    driver that silently failed to withhold cannot pass; [ST-3]
+    accountability — the accepted-sample count equals the total word count
+    offered minus the schedule's own declared abandoned count ([W_frame -
+    stall.word] under [Abandon], [0] under [Resume]); [ST-4] nothing else —
+    in particular no contiguity claim and no claim about the acceptance cycle
+    of any word offered at or after the withheld cycle (§4.2 fact 8, WO-0083
+    trap T22). *)
+val run_scheduled : int list list -> Stall.t -> int list list * t * sample list
+
+(** [underflow_event ~frame ~cycle ~why] — the §0.6 window rule in exactly
+    one expression (WO-0083 §5.3(4), bar M-21): the record
+    {!Dv_monitors.Strobe_monitor.expect} takes, with [strobe =
+    "error_underflow"] and its floor and ceiling fields set to [cycle] and
+    [cycle + 2] respectively (§4.2 fact 6's [\[R, R + 2\]] — floor at the
+    reference word REQ-206's strobe pins, ceiling at requirements.md §0.5's
+    word delay ΔC = 2, never REQ-210's event delay). [why] is the spec
+    clause, quoted or cited, that produced [cycle] — the monitor's own
+    docstring says a bench that cannot fill it in has not derived the cycle
+    from the specification. No unit in this round asserts that a pulse lies
+    inside the window this builds;
+    every unit asserts SPEC-M04 §9's PIN, which this function's [cycle]
+    argument carries (bar M-21, BOUNCE BM20). *)
+val underflow_event
+  :  frame:int
+  -> cycle:int
+  -> why:string
+  -> Dv_monitors.Strobe_monitor.event
+
+(** [assert_instruments_scheduled t ~row ~frames ~underflowed ~strobe_events]
+    — the conservation rule generalised over an underflow-bearing run
+    (WO-0083 §5.3(6)): the standing decoder is clean (obligation 1,
+    unchanged — an aborted frame that is malformed IS a violation and must
+    still fail the run); every event in [strobe_events] is registered via
+    {!Dv_monitors.Strobe_monitor.expect} and the monitor is then asserted
+    clean (obligation 4's both halves at once — every expected event pulsed
+    exactly once at its pin, and no high cycle is unclaimed), and
+    [high_cycles "error_underflow" = List.length strobe_events] is
+    additionally asserted as its own statement; the standing decoder reports
+    exactly [frames] completed frames; and the set of positions whose frames
+    carry [underflowed = true] equals [underflowed], compared as a LIST and
+    never as a count (a count would pass a run in which the wrong frame
+    aborted).
+
+    [assert_instruments_clean_n t ~row ~frames = assert_instruments_scheduled
+    t ~row ~frames ~underflowed:[] ~strobe_events:[]] — byte-identical
+    behaviour at [underflowed = []] and [strobe_events = []] in the sense
+    WO-0083 §5.2's third bullet defines (the firing conditions and their
+    order, not necessarily the message text), witnessed by the 21 units
+    landed before this round. The conservation rule lives in this one
+    function; {!assert_instruments_clean_n} and {!assert_instruments_clean}
+    are thin re-expressions over it (bar M-8). *)
+val assert_instruments_scheduled
+  :  t
+  -> row:string
+  -> frames:int
+  -> underflowed:int list
+  -> strobe_events:Dv_monitors.Strobe_monitor.event list
+  -> unit

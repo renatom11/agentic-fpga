@@ -473,29 +473,278 @@ let wire_frame (samples : sample list) : Tx_decoder.frame =
 
 let wire_octets samples = (wire_frame samples).octets
 
-(* WO-0082 §5.3(6): the conservation rule at [frames] frames — the same
-   four checks the landed {!assert_instruments_clean} makes, with the frame
-   count parameterised. The conservation rule lives in exactly this one
-   place (bar M-8, applied to the second re-expression of this round). *)
-let assert_instruments_clean_n t ~row ~frames =
+(* WO-0083 §5.3(1): the stall schedule — one stall per run (§5.3(1)), the
+   design fixed at WO-0082 §20.4 and implemented here without re-opening
+   it. *)
+module Stall = struct
+  type after =
+    | Resume
+    | Abandon
+
+  type t =
+    { frame : int
+    ; word : int
+    ; hold : int
+    ; after : after
+    }
+end
+
+(* WO-0083 §5.3(2) step 2: the schedule's three legality rules, checked
+   against the PER-FRAME word lists BEFORE a single cycle is driven — an
+   illegal schedule is a defect in the stimulus, not the design. *)
+let check_schedule (per_frame_words : Stream_word.t list list) (stall : Stall.t) =
+  let n = List.length per_frame_words in
+  if not (0 <= stall.frame && stall.frame < n)
+  then
+    failwith
+      (String.concat
+         [ "Bench.run_scheduled: schedule.frame = "
+         ; Int.to_string stall.frame
+         ; " violates §4.4's legality rule 0 <= frame < "
+         ; Int.to_string n
+         ; " (List.length contents)"
+         ]);
+  let w_frame = List.length (List.nth_exn per_frame_words stall.frame) in
+  if not (1 <= stall.word && stall.word <= w_frame - 1)
+  then
+    failwith
+      (String.concat
+         [ "Bench.run_scheduled: schedule.word = "
+         ; Int.to_string stall.word
+         ; " violates §4.4's legality rule 1 <= word <= W_frame - 1 (W_frame = "
+         ; Int.to_string w_frame
+         ; " at frame "
+         ; Int.to_string stall.frame
+         ; ")"
+         ]);
+  if stall.frame > 0 && stall.word < 2
+  then
+    failwith
+      (String.concat
+         [ "Bench.run_scheduled: schedule.word = "
+         ; Int.to_string stall.word
+         ; " violates §4.4's derived legality rule word >= 2 for a frame that is not the \
+            run's first (frame = "
+         ; Int.to_string stall.frame
+         ; ", words 0 and 1 of a back-to-back frame are accepted before its own start \
+            character and are never REQ-206-required, §7's C-16 consequences 2 and 4)"
+         ]);
+  if stall.hold < 1
+  then
+    failwith
+      (String.concat [ "Bench.run_scheduled: schedule.hold = "; Int.to_string stall.hold; " must be >= 1" ])
+;;
+
+(* WO-0083 §5.3(3): the allowance, derived from §4.2 fact 7 rather than
+   chosen. [frame_words] (WO-0082's own, unchanged — ⌊F/8⌋'s one site, bar
+   M-8) is reused for every UNwithheld frame and for the Resume tail; the
+   withheld frame's own contribution is the abort-law arithmetic:
+   [w + max(3, hold) + 1] (the true cadence from S_j to the next start
+   character is [w + 3] under branch (a), [hold <= 3], and [w + hold] under
+   branch (b), [hold >= 4]; [w + max(3, hold)] covers both, +1 for the same
+   one-cycle head room the normal allowance carries). *)
+let cycles_for_scheduled_run (contents : int list list) (stall : Stall.t) =
+  27
+  + List.foldi contents ~init:0 ~f:(fun idx acc content ->
+      if idx = stall.frame
+      then acc + stall.word + Int.max 3 stall.hold + 1
+      else acc + frame_words ~p:(List.length content) + 4)
+  + (match stall.after with
+     | Resume ->
+       let p_j = List.length (List.nth_exn contents stall.frame) in
+       frame_words ~p:(p_j - (8 * stall.word)) + 4
+     | Abandon -> 0)
+;;
+
+(* WO-0083 §5.3(2'): the withholding predicate, over the presenter's own
+   CURSOR (frame, word into that frame's own word list) and never over a
+   cycle — a cursor schedule targets the same WORD whatever the design
+   does, which is the design decision that makes the schedule
+   design-independent (§5.3(2')'s own ground). [served] is mutable and is
+   set the moment the cursor first reaches the schedule's target, so a
+   [Resume] cursor (which returns to the SAME (frame, word) after its hold)
+   never re-enters the withhold branch a second time. Returns the sample
+   list alongside the bench's own INTENTION RECORD — for every cycle,
+   whether the schedule intended a word to be offered — which [ST-2] checks
+   against [offered.tvalid] rather than re-reading the schedule. *)
+let drive_scheduled t (per_frame_words : Stream_word.t array array) (stall : Stall.t) ~total
+  : sample list * bool list
+  =
+  let n_frames = Array.length per_frame_words in
+  let served = ref false in
+  let rec go cycle frame word holding acc intention =
+    if cycle >= total
+    then List.rev acc, List.rev intention
+    else (
+      match holding with
+      | Some remaining ->
+        (* One of [stall.hold]'s idle cycles — the schedule declares this
+           cycle withheld regardless of what the design's tready does. *)
+        let s = sample_cycle t ~cycle (Stream_word.idle ()) in
+        if remaining > 1
+        then go (cycle + 1) frame word (Some (remaining - 1)) (s :: acc) (false :: intention)
+        else (
+          (* The hold is served: the LAST withheld cycle has just been
+             driven. Resume re-targets the same (frame, word); Abandon
+             skips to the next frame's word 0. *)
+          let frame', word' =
+            match stall.after with
+            | Resume -> frame, word
+            | Abandon -> frame + 1, 0
+          in
+          go (cycle + 1) frame' word' None (s :: acc) (false :: intention))
+      | None ->
+        if (not !served) && frame = stall.frame && word = stall.word
+        then (
+          served := true;
+          let s = sample_cycle t ~cycle (Stream_word.idle ()) in
+          if stall.hold > 1
+          then go (cycle + 1) frame word (Some (stall.hold - 1)) (s :: acc) (false :: intention)
+          else (
+            let frame', word' =
+              match stall.after with
+              | Resume -> frame, word
+              | Abandon -> frame + 1, 0
+            in
+            go (cycle + 1) frame' word' None (s :: acc) (false :: intention)))
+        else (
+          let in_range = frame < n_frames && word < Array.length per_frame_words.(frame) in
+          let offered =
+            if in_range then per_frame_words.(frame).(word) else Stream_word.idle ()
+          in
+          let s = sample_cycle t ~cycle offered in
+          let frame', word' =
+            if s.accepted
+            then (
+              let w = word + 1 in
+              if w >= Array.length per_frame_words.(frame) then frame + 1, 0 else frame, w)
+            else frame, word
+          in
+          go (cycle + 1) frame' word' None (s :: acc) (in_range :: intention)))
+  in
+  go 0 0 0 None [] []
+;;
+
+(* WO-0083 §5.3(2), (5): the loop plus ST-1 .. ST-4 — {!present_scheduled}
+   is {!drive_scheduled} plus the scheduled-regime postconditions, sharing
+   {!assert_liveness} with {!present} and {!present_stream} (ST-1 = SP-1 =
+   P-ACCEPT's own liveness bound, unchanged). *)
+let present_scheduled t (per_frame_words : Stream_word.t array array) (stall : Stall.t) ~total
+  : sample list
+  =
+  let samples, intention = drive_scheduled t per_frame_words stall ~total in
+  let accepted_cycles = accepted_cycles_of samples in
+  assert_liveness accepted_cycles;
+  (* ST-2: schedule fidelity, a check on the BENCH — asserted from the
+     bench's own intention record (drive_scheduled's own [intention]),
+     never from the design's output, and design-independent by
+     construction. Its failure message says everything downstream is
+     void: a driver that quietly failed to withhold turns a stall round
+     into a non-stall round. *)
+  List.iter2_exn samples intention ~f:(fun (s : sample) intended ->
+    if not (Bool.equal s.offered.tvalid intended)
+    then
+      failwith
+        (String.concat
+           [ "Bench.run_scheduled: ST-2 (schedule fidelity) failed at cycle "
+           ; Int.to_string s.cycle
+           ; " — offered.tvalid = "
+           ; Bool.to_string s.offered.tvalid
+           ; ", the bench's own intention record says "
+           ; Bool.to_string intended
+           ; " — this run is NOT the stimulus its schedule claims, and everything \
+              downstream of this cycle is VOID"
+           ]));
+  (* ST-3: accountability — the schedule's own declared [abandoned] count,
+     fixed before the run and never inferred from the design's output:
+     [W_frame - stall.word] under Abandon, 0 under Resume. *)
+  let total_words =
+    Array.fold per_frame_words ~init:0 ~f:(fun acc words -> acc + Array.length words)
+  in
+  let abandoned =
+    match stall.after with
+    | Abandon -> Array.length per_frame_words.(stall.frame) - stall.word
+    | Resume -> 0
+  in
+  let expected_accepted = total_words - abandoned in
+  let got_accepted = List.length accepted_cycles in
+  if got_accepted <> expected_accepted
+  then
+    failwith
+      (String.concat
+         [ "Bench.run_scheduled: ST-3 (accountability) failed — "
+         ; Int.to_string got_accepted
+         ; " word(s) accepted, expected "
+         ; Int.to_string expected_accepted
+         ; " ("
+         ; Int.to_string total_words
+         ; " offered minus the schedule's own declared abandoned count "
+         ; Int.to_string abandoned
+         ; ") — everything downstream of this precondition is VOID"
+         ]);
+  (* ST-4: nothing else is checked here — no contiguity claim, and no
+     acceptance-cycle claim for any word offered at or after the withheld
+     cycle (§4.2 fact 8: that acceptance is unconstrained by §6.3 item 3). *)
+  samples
+;;
+
+(* WO-0083 §5.3(2): the third runner. *)
+let run_scheduled (contents : int list list) (stall : Stall.t) : int list list * t * sample list =
+  let per_frame_words_list = List.map contents ~f:source_words in
+  List.iteri per_frame_words_list ~f:(fun frame_idx words ->
+    match check_words words with
+    | [] -> ()
+    | problems ->
+      failwith
+        (String.concat
+           ~sep:"\n"
+           (String.concat
+              [ "Bench.run_scheduled: frame "; Int.to_string frame_idx; " fails obligation 6:" ]
+            :: problems)));
+  check_schedule per_frame_words_list stall;
+  let t = create () in
+  let total = cycles_for_scheduled_run contents stall in
+  let per_frame_words = Array.of_list (List.map per_frame_words_list ~f:Array.of_list) in
+  let samples = present_scheduled t per_frame_words stall ~total in
+  contents, t, samples
+;;
+
+(* WO-0083 §5.3(4): the §0.6 window rule in exactly one expression (bar
+   M-21). *)
+let underflow_event ~frame ~cycle ~why : Strobe_monitor.event =
+  { strobe = "error_underflow"; frame; cycle; not_before = cycle; not_after = cycle + 2; why }
+;;
+
+(* WO-0083 §5.3(6): the conservation rule, generalised over an
+   underflow-bearing run — the ONE place it lives (bar M-8). *)
+let assert_instruments_scheduled t ~row ~frames ~underflowed ~strobe_events =
   if not (Tx_decoder.is_clean t.decoder)
   then failwith (String.concat [ row; ": wire decoder unclean:\n"; Tx_decoder.report t.decoder ]);
+  (* Obligation 4, registration half: every expected event is registered
+     BEFORE the monitor is asked whether it is clean. *)
+  List.iter strobe_events ~f:(Strobe_monitor.expect t.strobes);
   if not (Strobe_monitor.is_clean t.strobes)
   then
     failwith
       (String.concat [ row; ": strobe monitor unclean:\n"; Strobe_monitor.report t.strobes ]);
   let high = Strobe_monitor.high_cycles t.strobes "error_underflow" in
-  if high <> 0
+  let expected_high = List.length strobe_events in
+  if high <> expected_high
   then
     failwith
       (String.concat
-         [ row; ": error_underflow high for "; Int.to_string high; " cycles, expected 0" ]);
+         [ row
+         ; ": error_underflow high for "
+         ; Int.to_string high
+         ; " cycles, expected "
+         ; Int.to_string expected_high
+         ]);
   (* Obligation 3 — transmit-side frame conservation, carried by the bench
      (T-2: no monitor exists for this port). Keyed on the first accepted
-     word of each frame, not on [tlast] (unchanged keying): the standing
-     decoder must report exactly [frames] completed frames, and none of
-     them may be underflowed (this round drives no underflow stimulus at
-     [run_stream] — family G's own stall schedule is excluded, §1.4). *)
+     word of each frame, not on [tlast] (unchanged keying — a rule keyed on
+     [tlast] would attribute an aborted frame's own [tlast] acceptance to
+     the RESUMED tail, §4.3, trap T24): the standing decoder must report
+     exactly [frames] completed frames. *)
   let decoded = Tx_decoder.frames t.decoder in
   let got = List.length decoded in
   if got <> frames
@@ -508,19 +757,30 @@ let assert_instruments_clean_n t ~row ~frames =
          ; " frame(s) begun and completed on the standing decoder, found "
          ; Int.to_string got
          ]);
-  List.iteri decoded ~f:(fun idx (f : Tx_decoder.frame) ->
-    if f.underflowed
-    then
-      failwith
-        (String.concat
-           [ row
-           ; ": conservation: frame "
-           ; Int.to_string idx
-           ; " is reported underflowed — this round drives no underflow stimulus \
-              (family G, WO-0080 §1.2)"
-           ]))
+  (* The set of underflowed positions, compared WHOLE against [underflowed]
+     — never a count, which would pass a run in which the wrong frame
+     aborted. *)
+  let got_underflowed =
+    List.filter_mapi decoded ~f:(fun idx (f : Tx_decoder.frame) ->
+      if f.underflowed then Some idx else None)
+  in
+  if not (List.equal Int.equal got_underflowed underflowed)
+  then
+    failwith
+      (String.concat
+         [ row
+         ; ": conservation: frames reported underflowed = ["
+         ; String.concat ~sep:"; " (List.map got_underflowed ~f:Int.to_string)
+         ; "], expected ["
+         ; String.concat ~sep:"; " (List.map underflowed ~f:Int.to_string)
+         ; "]"
+         ])
 ;;
 
-(* Byte-identical behaviour at n = 1 (bar M-6b) — the 16 landed units are
-   the witness. *)
+(* Byte-identical behaviour at underflowed = [] and strobe_events = [] (bar
+   M-6b, M-8) — the 21 units landed before this round are the witness. *)
+let assert_instruments_clean_n t ~row ~frames =
+  assert_instruments_scheduled t ~row ~frames ~underflowed:[] ~strobe_events:[]
+;;
+
 let assert_instruments_clean t ~row = assert_instruments_clean_n t ~row ~frames:1

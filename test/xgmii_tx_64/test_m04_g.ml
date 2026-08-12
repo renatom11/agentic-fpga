@@ -43,6 +43,28 @@
     assert what a PULSE does, over a stall schedule that still does not
     exist. *)
 
+(** {2 WO-0083 addendum — six of family G's pulse rows ride, over the stall
+    schedule and abort law WO-0083 derives}
+
+    The paragraph above, unchanged since WO-0081, said [G1] .. [G8] "assert
+    what a PULSE does and need a stall schedule and its own derived oracle,
+    neither of which is landed or commissioned this round" — true then, and
+    no longer true of the capability that sentence meant: WO-0083 §5.3 builds
+    {!Bench.Stall} and {!Bench.run_scheduled}, and WO-0083 §4 derives the
+    expected strobe cycle, the [/E/] word's cycle and the truncated octet
+    count by hand from SPEC-M04 §9 and §6.1 — [T-3]'s second half, executed.
+    Six of the family's eight remaining rows ride on it: [G5] (the earliest
+    cycle the condition can hold), [G1]/[G2]/[G8] (a mid-frame underflow of a
+    maximum-length frame, driven whole — the pin, the two-cycle separation,
+    the resumed tail counted as its own frame), [G3] (four consecutive
+    withheld cycles, exactly one pulse), and [G6] (the next frame transmits
+    correctly, only the REQ-305 oracle comparison speaking). One further row
+    of the family — the faithful implementation read to its own first full
+    stop — is held back for one round only, needing nothing built (not named
+    further here, per bar M-7); one more is NO-ASSERT and stands, discharged
+    already. Family G does NOT complete this round — two rows remain
+    outstanding. *)
+
 open! Base
 open Bench
 
@@ -341,5 +363,681 @@ let%expect_test
    error_underflow silent on every cycle, both frames intact"
   =
   run_g10 ();
+  [%expect {||}]
+;;
+
+(* ---- WO-0083: the abort word's eight lanes, shared by U22/U23/U24 --------- *)
+(* SPEC-M04 §9's shape: /E/ (0xFE) lane 0, /T/ (0xFD) lane 1, /I/ (0x07)
+   lanes 2-7, xgmii_txc = 0xFF. Asserted lane by lane (not just the two)
+   because xgmii_txc = 0xFF is part of the shape, and the control-field
+   check first makes a wrong-lane failure and a wrong-value failure two
+   different, readable messages. *)
+
+let assert_abort_word row (wire : Dv_xgmii.Xgmii_word.t) =
+  if wire.Dv_xgmii.Xgmii_word.control <> 0xFF
+  then
+    fail
+      row
+      (String.concat
+         [ "abort word control = "
+         ; Int.to_string wire.Dv_xgmii.Xgmii_word.control
+         ; ", expected 0xFF (all eight lanes are control characters, SPEC-M04 §9)"
+         ]);
+  let check lane expected_char name =
+    match Dv_xgmii.Xgmii_word.lane wire lane with
+    | Dv_xgmii.Xgmii_word.Control v when v = expected_char -> ()
+    | Dv_xgmii.Xgmii_word.Control v ->
+      fail
+        row
+        (String.concat
+           [ "abort word lane "; Int.to_string lane; " = control "; Int.to_string v
+           ; ", expected "; name
+           ])
+    | Dv_xgmii.Xgmii_word.Data v ->
+      fail
+        row
+        (String.concat
+           [ "abort word lane "; Int.to_string lane; " = data "; Int.to_string v
+           ; ", expected control "; name
+           ])
+  in
+  check 0 Dv_xgmii.Xgmii_word.error_char "/E/ (0xFE)";
+  check 1 Dv_xgmii.Xgmii_word.terminate_char "/T/ (0xFD)";
+  List.iter (List.range 2 8) ~f:(fun lane -> check lane Dv_xgmii.Xgmii_word.idle_char "/I/ (0x07)")
+;;
+
+(* ---- U22: M04-G5 (WO-0083 §4, §6.2) ---------------------------------------- *)
+(* The earliest cycle REQ-206's condition can hold: word >= 1 is §4.4's
+   floor, so w = 1 is the earliest legal withholding, and M04-G5's own row
+   is stated at exactly that word. One elaboration, run length 32 cycles
+   (WO-0083 §10). *)
+
+let run_g5 () =
+  let row = "M04-G5" in
+  let stall : Stall.t = { frame = 0; word = 1; hold = 1; after = Abandon } in
+  let _, t, samples = run_scheduled [ content_octets ~p:60 ] stall in
+  let c = first_accepted_cycle samples in
+  let r = c + 1 in
+  (* §4.2 fact 1: R = S_0 + w - 1 = (C+1) + 1 - 1 = C+1. *)
+  let a = r + 2 in
+  (* §4.2 fact 3: A = R + 2. *)
+  (* Assertion 1: the strobe's exact pin, the frame count, and which frame
+     underflowed — one call, obligation 4's both halves and obligation 3
+     together. *)
+  assert_instruments_scheduled
+    t
+    ~row
+    ~frames:1
+    ~underflowed:[ 0 ]
+    ~strobe_events:
+      [ underflow_event
+          ~frame:0
+          ~cycle:r
+          ~why:
+            "SPEC-M04 §9, 'Strobe cycle, pinned': error_underflow pulses on the cycle \
+             the word was required and not presented; §4.2 fact 1 derives R = S_0 + w \
+             - 1 = C+1 at w=1"
+      ];
+  (* Assertion 2: the abort word's eight lanes at A = C+3 — all eight, not
+     just the two (xgmii_txc = 0xFF is part of §9's shape). *)
+  (match List.find samples ~f:(fun (s : sample) -> s.cycle = a) with
+   | None -> fail row "no sample at the abort word cycle C+3"
+   | Some s -> assert_abort_word row s.wire);
+  (* Assertions 3-4: the decoded (aborted) frame — 8 octets on the wire
+     (§4.2 fact 4: 8w = 8, NOT 60 and NOT 64 — trap T21), terminate lane 1,
+     terminate cycle C+3. *)
+  let frame = wire_frame samples in
+  let octets = frame.Dv_xgmii.Tx_decoder.octets in
+  if List.length octets <> 8
+  then
+    fail
+      row
+      (String.concat
+         [ "aborted frame wire octet count = "
+         ; Int.to_string (List.length octets)
+         ; ", expected 8 (§4.2 fact 4: 8w octets, not 60 and not 64 — trap T21)"
+         ]);
+  let expected = List.take (content_octets ~p:60) 8 in
+  if not (List.equal Int.equal octets expected)
+  then fail row "aborted frame's wire octets are not the first 8 octets of content_octets ~p:60";
+  if not frame.Dv_xgmii.Tx_decoder.underflowed
+  then fail row "decoded frame's underflowed field is false, expected true";
+  if frame.Dv_xgmii.Tx_decoder.terminate_lane <> 1
+  then
+    fail
+      row
+      (String.concat
+         [ "terminate lane = "
+         ; Int.to_string frame.Dv_xgmii.Tx_decoder.terminate_lane
+         ; ", expected 1"
+         ]);
+  if frame.Dv_xgmii.Tx_decoder.terminate_cycle <> a
+  then
+    fail
+      row
+      (String.concat
+         [ "terminate cycle = "
+         ; Int.to_string frame.Dv_xgmii.Tx_decoder.terminate_cycle
+         ; ", expected C+3"
+         ]);
+  (* Assertion 5: gaps is the empty list, as its own statement — no next
+     start character follows an ABANDONED abort, so the decoder's own "one
+     entry per completed gap" rule lists none. This is the one place this
+     round asserts an absence of gaps, read against U26's [15]. *)
+  let gaps = Dv_xgmii.Tx_decoder.gaps (decoder t) in
+  if not (List.is_empty gaps)
+  then
+    fail
+      row
+      (String.concat
+         [ "gaps = ["
+         ; String.concat ~sep:"; " (List.map gaps ~f:Int.to_string)
+         ; "], expected [] (no next start character — the run ends in Gap, not Idle)"
+         ])
+(* What this unit does NOT assert (WO-0083 §6.2): no value of tx_tready on
+   any cycle (BOUNCE BM11); nothing about the cycles after C+3 beyond the
+   strobe-set emptiness assertion 1's exact-event-set check already
+   carries; and it does not describe REQ-206 as covered — six rows of the
+   family remain outstanding after this round (§9.8). *)
+;;
+
+let%expect_test
+  "M04-G5: withhold at C + 1, the earliest cycle REQ-206's condition can \
+   hold — the strobe there, the /E/ /T/ word at C + 3, and source word \
+   0's eight octets on the wire and nothing else"
+  =
+  run_g5 ();
+  [%expect {||}]
+;;
+
+(* ---- U23: M04-G1, M04-G2, M04-G8 (WO-0083 §4, §6.3) ------------------------ *)
+(* Mid-frame, maximum length, resumed — §9's row driven whole. One
+   elaboration, run length 224 cycles (WO-0083 §10). *)
+
+let run_g1_g2_g8 () =
+  let row = "M04-G1, M04-G2, M04-G8" in
+  let p = 1514 in
+  let stall : Stall.t = { frame = 0; word = 95; hold = 1; after = Resume } in
+  let _, t, samples = run_scheduled [ content_octets ~p ] stall in
+  let c = first_accepted_cycle samples in
+  let r = c + 95 in
+  let a = r + 2 in
+  (* Assertion 1: the strobe's exact pin, two frames, position 0
+     underflowed. *)
+  assert_instruments_scheduled
+    t
+    ~row
+    ~frames:2
+    ~underflowed:[ 0 ]
+    ~strobe_events:
+      [ underflow_event
+          ~frame:0
+          ~cycle:r
+          ~why:
+            "SPEC-M04 §9, 'Strobe cycle, pinned': R = S_0 + w - 1 = (C+1) + 95 - 1 = \
+             C+95 (§4.2 fact 1)"
+      ];
+  let content = content_octets ~p in
+  let f0, f1 =
+    match wire_frames samples with
+    | [ f0; f1 ] -> f0, f1
+    | fs ->
+      fail
+        row
+        (String.concat
+           [ "wire_frames decoded "; Int.to_string (List.length fs); " frames, expected 2" ])
+  in
+  (* Assertion 2, M04-G1: the aborted frame's content — length asserted
+     first (760, NOT 764 and not any padded figure — §4.2 fact 4: no FCS,
+     no pad), then equality against the element's own first 760 octets. *)
+  let aborted_octets = f0.Dv_xgmii.Tx_decoder.octets in
+  if List.length aborted_octets <> 760
+  then
+    fail
+      row
+      (String.concat
+         [ "aborted frame wire octet count = "
+         ; Int.to_string (List.length aborted_octets)
+         ; ", expected 760 (8w, NOT padded, NOT FCS'd — §4.2 fact 4)"
+         ]);
+  if not (List.equal Int.equal aborted_octets (List.take content 760))
+  then
+    fail
+      row
+      "aborted frame's wire octets are not the first 760 octets of the element's own \
+       content";
+  if not f0.Dv_xgmii.Tx_decoder.underflowed
+  then fail row "the aborted frame's underflowed field is false, expected true";
+  (* Assertion 3, M04-G2: the separation — read independently from
+     [samples] (the strobe cycle from error_underflow high cycles, the
+     abort word's cycle from a lane-0 /E/ scan), asserted as two named
+     cycles and then as their difference. A design pulsing the strobe at
+     the wire consequence (this row's own Kills cell) is one pulse, one
+     /E/ word, and INSIDE §0.6's window (§4.2 fact 6) — a bench asserting
+     only that both happened passes it; this assertion is why that design
+     still fails here. *)
+  let observed_strobe_cycles =
+    List.filter_map samples ~f:(fun (s : sample) -> if s.underflow then Some s.cycle else None)
+  in
+  (match observed_strobe_cycles with
+   | [ cyc ] ->
+     if cyc <> r
+     then
+       fail
+         row
+         (String.concat
+            [ "error_underflow high at cycle "; Int.to_string cyc; ", expected C+95 = "
+            ; Int.to_string r
+            ])
+   | other ->
+     fail
+       row
+       (String.concat
+          [ "expected exactly one cycle with error_underflow high, found "
+          ; Int.to_string (List.length other)
+          ]));
+  let observed_abort_cycle =
+    match
+      List.find samples ~f:(fun (s : sample) ->
+        match Dv_xgmii.Xgmii_word.lane s.wire 0 with
+        | Dv_xgmii.Xgmii_word.Control v -> v = Dv_xgmii.Xgmii_word.error_char
+        | Dv_xgmii.Xgmii_word.Data _ -> false)
+    with
+    | Some s -> s.cycle
+    | None -> fail row "no cycle in the run carries /E/ in lane 0"
+  in
+  if observed_abort_cycle <> a
+  then
+    fail
+      row
+      (String.concat
+         [ "the /E/ word is at cycle "; Int.to_string observed_abort_cycle; ", expected C+97 \
+            = "
+         ; Int.to_string a
+         ]);
+  let separation = observed_abort_cycle - r in
+  if separation <> 2
+  then
+    fail
+      row
+      (String.concat
+         [ "the strobe-to-/E/ separation is "
+         ; Int.to_string separation
+         ; " cycles, expected 2 (§4.2 fact 3 — a design pulsing at the wire consequence \
+            is late by this measure, and M04-G2 exists to catch it)"
+         ]);
+  (* Assertion 4: the abort word's eight lanes at A = C+97. *)
+  (match List.find samples ~f:(fun (s : sample) -> s.cycle = a) with
+   | None -> fail row "no sample at the abort word cycle C+97"
+   | Some s -> assert_abort_word row s.wire);
+  (* Assertion 5: the gap — exactly one entry, and it is 15 (§4.2 fact 5:
+     t = 1, g = 2, gap = 15). *)
+  let gaps = Dv_xgmii.Tx_decoder.gaps (decoder t) in
+  if List.length gaps <> 1
+  then
+    fail
+      row
+      (String.concat
+         [ "Tx_decoder.gaps has "; Int.to_string (List.length gaps); " entries, expected 1" ]);
+  (match gaps with
+   | [ g ] ->
+     if g <> 15
+     then fail row (String.concat [ "the one gap = "; Int.to_string g; ", expected 15" ])
+   | _ -> fail row "unreachable: gaps length already checked to be 1");
+  (* Assertion 6: the tail-frame — S' at C+99, terminate at C+194 lane 6,
+     decoded octets equal Frame.with_fcs of the SUFFIX of the element's own
+     content beginning at octet 760 (trap T23 — NOT content_octets
+     ~p:754), underflowed = false. *)
+  if f1.Dv_xgmii.Tx_decoder.start_cycle <> c + 99
+  then
+    fail
+      row
+      (String.concat
+         [ "tail start cycle = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.start_cycle
+         ; ", expected C+99"
+         ]);
+  if f1.Dv_xgmii.Tx_decoder.terminate_cycle <> c + 194
+  then
+    fail
+      row
+      (String.concat
+         [ "tail terminate cycle = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.terminate_cycle
+         ; ", expected C+194"
+         ]);
+  if f1.Dv_xgmii.Tx_decoder.terminate_lane <> 6
+  then
+    fail
+      row
+      (String.concat
+         [ "tail terminate lane = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.terminate_lane
+         ; ", expected 6"
+         ]);
+  if f1.Dv_xgmii.Tx_decoder.underflowed
+  then fail row "the tail frame's underflowed field is true, expected false";
+  let tail_suffix = List.drop content 760 in
+  let expected_tail = Dv_xgmii.Frame.with_fcs tail_suffix in
+  if not (List.equal Int.equal f1.Dv_xgmii.Tx_decoder.octets expected_tail)
+  then
+    fail
+      row
+      "tail frame's decoded octets do not equal Frame.with_fcs (the suffix of the \
+       element's own content beginning at octet 760 — trap T23)";
+  (* Assertion 7, M04-G8: (a) two frames, exactly one underflowed at
+     position 0 — carried by assertion 1 above. (b) the run's tlast
+     acceptances are exactly one, and its cycle is greater than the
+     aborted frame's own terminate cycle C+97 — a conservation rule keyed
+     on tlast would attribute this ONE acceptance to the tail and count
+     one frame where two reached the wire (§4.3, trap T24). *)
+  let tlast_acceptances =
+    List.filter samples ~f:(fun (s : sample) -> s.accepted && s.offered.tlast)
+  in
+  match tlast_acceptances with
+  | [ s ] ->
+    if s.cycle <= a
+    then
+      fail
+        row
+        (String.concat
+           [ "the run's one tlast acceptance is at cycle "
+           ; Int.to_string s.cycle
+           ; ", expected > C+97 = "
+           ; Int.to_string a
+           ; " (the aborted frame's own terminate cycle — this acceptance belongs to the \
+              TAIL, §4.3, trap T24)"
+           ])
+  | other ->
+    fail
+      row
+      (String.concat
+         [ "expected exactly one tlast acceptance in the run, found "
+         ; Int.to_string (List.length other)
+         ])
+;;
+
+let%expect_test
+  "M04-G1, M04-G2, M04-G8: a mid-frame underflow of a maximum-length \
+   frame — one pulse at the pin, the /E/ /T/ word two cycles later, and \
+   the resumed tail counted as its own frame"
+  =
+  run_g1_g2_g8 ();
+  [%expect {||}]
+;;
+
+(* ---- U24: M04-G3 (WO-0083 §4, §6.4) ----------------------------------------- *)
+(* Four consecutive withheld cycles: exactly one pulse. One elaboration,
+   run length 229 cycles (WO-0083 §10). *)
+
+let run_g3 () =
+  let row = "M04-G3" in
+  let p = 1514 in
+  let stall : Stall.t = { frame = 0; word = 185; hold = 4; after = Resume } in
+  let _, t, samples = run_scheduled [ content_octets ~p ] stall in
+  let c = first_accepted_cycle samples in
+  let r = c + 185 in
+  let a = r + 2 in
+  (* Assertion 1: the strobe's exact pin — and THIS SINGLE CALL is the
+     whole of the row's "exactly one pulse" claim, because the monitor's
+     exact-event-set check (obligation 4) is what makes "no other pulse"
+     an assertion rather than an absence. *)
+  assert_instruments_scheduled
+    t
+    ~row
+    ~frames:2
+    ~underflowed:[ 0 ]
+    ~strobe_events:
+      [ underflow_event
+          ~frame:0
+          ~cycle:r
+          ~why:
+            "SPEC-M04 §9, 'Strobe cycle, pinned': R = S_0 + w - 1 = (C+1) + 185 - 1 = \
+             C+185 (§4.2 fact 1); §9 also states 'two underflows on one frame: \
+             impossible — the first ends the frame', which is why the three later \
+             withheld cycles (C+186..C+188) carry no further event"
+      ];
+  (* Assertion 2: the named silences — underflow is false at each of the
+     three LATER withheld cycles, at each named cycle, with a message
+     saying why: no open frame remains to underflow. Assertion 1 already
+     covers them (the exact-event-set check); this names them so a
+     failure is diagnosable by cycle. *)
+  List.iter [ c + 186; c + 187; c + 188 ] ~f:(fun cyc ->
+    match List.find samples ~f:(fun (s : sample) -> s.cycle = cyc) with
+    | None -> fail row (String.concat [ "no sample at cycle "; Int.to_string cyc ])
+    | Some s ->
+      if s.underflow
+      then
+        fail
+          row
+          (String.concat
+             [ "error_underflow is high at cycle "
+             ; Int.to_string cyc
+             ; " — one of the three later withheld cycles, at which there is no open \
+                frame to underflow (SPEC-M04 §9: 'two underflows on one frame: \
+                impossible')"
+             ]));
+  (* Assertion 3: exactly one abort word in the run — the word at A =
+     C+187 carries §9's shape, and no other cycle carries an error
+     character in any lane. *)
+  let error_cycles =
+    List.filter_map samples ~f:(fun (s : sample) ->
+      let has_error =
+        List.exists (List.range 0 8) ~f:(fun lane ->
+          match Dv_xgmii.Xgmii_word.lane s.wire lane with
+          | Dv_xgmii.Xgmii_word.Control v -> v = Dv_xgmii.Xgmii_word.error_char
+          | Dv_xgmii.Xgmii_word.Data _ -> false)
+      in
+      if has_error then Some s.cycle else None)
+  in
+  (match error_cycles with
+   | [ cyc ] ->
+     if cyc <> a
+     then
+       fail
+         row
+         (String.concat
+            [ "the one cycle carrying an error character is "
+            ; Int.to_string cyc
+            ; ", expected C+187 = "
+            ; Int.to_string a
+            ])
+   | other ->
+     fail
+       row
+       (String.concat
+          [ "expected exactly one cycle carrying an error character in any lane, found "
+          ; Int.to_string (List.length other)
+          ]));
+  (match List.find samples ~f:(fun (s : sample) -> s.cycle = a) with
+   | None -> fail row "no sample at the abort word cycle C+187"
+   | Some s -> assert_abort_word row s.wire);
+  (* Assertion 4: the gap — 23 octets, exactly one completed gap. NOT 15:
+     hold = 4 puts the resume past the gap's own last cycle (A+1 = C+188),
+     so §4.2 fact 7 branch (b) applies rather than branch (a) — importing
+     the neighbouring family-F unit's 15-octet abort gap here would be
+     importing another row's figure into a run whose schedule forbids it
+     (trap T26). *)
+  let gaps = Dv_xgmii.Tx_decoder.gaps (decoder t) in
+  if List.length gaps <> 1
+  then
+    fail
+      row
+      (String.concat
+         [ "Tx_decoder.gaps has "; Int.to_string (List.length gaps); " entries, expected 1" ]);
+  (match gaps with
+   | [ g ] ->
+     if g <> 23
+     then
+       fail
+         row
+         (String.concat
+            [ "the one gap = "
+            ; Int.to_string g
+            ; ", expected 23 (§4.2 fact 7 branch (b) — NOT 15, trap T26)"
+            ])
+   | _ -> fail row "unreachable: gaps length already checked to be 1");
+  (* Assertion 5: the tail-frame — S' at C+190, terminate at C+199 lane 0,
+     26 pad octets, decoded octets equal Frame.with_fcs (Frame.pad_to_60
+     (the suffix beginning at octet 1480)). *)
+  let f0, f1 =
+    match wire_frames samples with
+    | [ f0; f1 ] -> f0, f1
+    | fs ->
+      fail
+        row
+        (String.concat
+           [ "wire_frames decoded "; Int.to_string (List.length fs); " frames, expected 2" ])
+  in
+  if not f0.Dv_xgmii.Tx_decoder.underflowed
+  then fail row "the aborted frame's underflowed field is false, expected true";
+  if f1.Dv_xgmii.Tx_decoder.start_cycle <> c + 190
+  then
+    fail
+      row
+      (String.concat
+         [ "tail start cycle = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.start_cycle
+         ; ", expected C+190"
+         ]);
+  if f1.Dv_xgmii.Tx_decoder.terminate_cycle <> c + 199
+  then
+    fail
+      row
+      (String.concat
+         [ "tail terminate cycle = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.terminate_cycle
+         ; ", expected C+199"
+         ]);
+  if f1.Dv_xgmii.Tx_decoder.terminate_lane <> 0
+  then
+    fail
+      row
+      (String.concat
+         [ "tail terminate lane = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.terminate_lane
+         ; ", expected 0"
+         ]);
+  if f1.Dv_xgmii.Tx_decoder.underflowed
+  then fail row "the tail frame's underflowed field is true, expected false";
+  let content = content_octets ~p in
+  let tail_suffix = List.drop content 1480 in
+  if List.length tail_suffix <> 34
+  then
+    fail
+      row
+      (String.concat
+         [ "tail suffix length = "; Int.to_string (List.length tail_suffix); ", expected 34" ]);
+  let expected_tail = Dv_xgmii.Frame.with_fcs (Dv_xgmii.Frame.pad_to_60 tail_suffix) in
+  if List.length expected_tail <> 64
+  then fail row "unreachable: with_fcs (pad_to_60 (34-octet suffix)) is not 64 octets";
+  if not (List.equal Int.equal f1.Dv_xgmii.Tx_decoder.octets expected_tail)
+  then
+    fail
+      row
+      "tail frame's decoded octets do not equal Frame.with_fcs (Frame.pad_to_60 (the \
+       suffix beginning at octet 1480))"
+;;
+
+let%expect_test
+  "M04-G3: four consecutive withheld cycles produce exactly one pulse, at \
+   the first of them, and nothing at the other three"
+  =
+  run_g3 ();
+  [%expect {||}]
+;;
+
+(* ---- U25: M04-G6 (WO-0083 §4, §6.5) ----------------------------------------- *)
+(* An underflowed frame followed by a P = 20 frame: REQ-206's "and that the
+   next frame transmits correctly". One elaboration, run length 47 cycles
+   (WO-0083 §10). *)
+
+let run_g6 () =
+  let row = "M04-G6" in
+  let stall : Stall.t = { frame = 0; word = 4; hold = 1; after = Abandon } in
+  let _, t, samples = run_scheduled [ content_octets ~p:60; content_octets ~p:20 ] stall in
+  let c = first_accepted_cycle samples in
+  let r = c + 4 in
+  (* Assertion 1: the strobe's exact pin, two frames, position 0
+     underflowed. *)
+  assert_instruments_scheduled
+    t
+    ~row
+    ~frames:2
+    ~underflowed:[ 0 ]
+    ~strobe_events:
+      [ underflow_event
+          ~frame:0
+          ~cycle:r
+          ~why:
+            "SPEC-M04 §9, 'Strobe cycle, pinned': R = S_0 + w - 1 = (C+1) + 4 - 1 = C+4 \
+             (§4.2 fact 1)"
+      ];
+  let f0, f1 =
+    match wire_frames samples with
+    | [ f0; f1 ] -> f0, f1
+    | fs ->
+      fail
+        row
+        (String.concat
+           [ "wire_frames decoded "; Int.to_string (List.length fs); " frames, expected 2" ])
+  in
+  (* Assertion 2: frame 1's preamble word at C+8 — raw wire control =
+     0x01, data = the eight preamble octets lane 0 first; start_lane
+     returns Some 0. The row's own words: "the second frame carries the
+     full preamble word". *)
+  (match List.find samples ~f:(fun (s : sample) -> s.cycle = c + 8) with
+   | None -> fail row "no sample at cycle C+8"
+   | Some s ->
+     if s.wire.Dv_xgmii.Xgmii_word.control <> 0x01
+     then
+       fail
+         row
+         (String.concat
+            [ "preamble word control = "
+            ; Int.to_string s.wire.Dv_xgmii.Xgmii_word.control
+            ; ", expected 1 (bit 0 set, bits 1-7 clear)"
+            ]);
+     let expected_data = [ 0xFB; 0x55; 0x55; 0x55; 0x55; 0x55; 0x55; 0xD5 ] in
+     let got_data = Array.to_list s.wire.Dv_xgmii.Xgmii_word.data in
+     if not (List.equal Int.equal got_data expected_data)
+     then fail row "preamble word data does not match [0xFB; 0x55 x6; 0xD5], lane 0 first";
+     match Dv_xgmii.Xgmii_word.start_lane s.wire with
+     | Some 0 -> ()
+     | Some lane ->
+       fail
+         row
+         (String.concat [ "start character at lane "; Int.to_string lane; ", expected 0" ])
+     | None -> fail row "no start character at C+8");
+  (* Assertion 3: frame 1's content, the row's central claim — 64 octets,
+     20 of content, 40 of pad, four of FCS, the pad INSIDE the FCS
+     computation (trap T9). A design whose CRC register is not re-seeded
+     after an abort produces a frame with the right length, the right pad
+     count and the right terminate lane, and ONLY this comparison
+     speaks. *)
+  let expected_frame1 =
+    Dv_xgmii.Frame.with_fcs (Dv_xgmii.Frame.pad_to_60 (content_octets ~p:20))
+  in
+  if List.length f1.Dv_xgmii.Tx_decoder.octets <> 64
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 1 wire octet count = "
+         ; Int.to_string (List.length f1.Dv_xgmii.Tx_decoder.octets)
+         ; ", expected 64"
+         ]);
+  if not (List.equal Int.equal f1.Dv_xgmii.Tx_decoder.octets expected_frame1)
+  then
+    fail
+      row
+      "frame 1's decoded octets do not equal Frame.with_fcs (Frame.pad_to_60 \
+       (content_octets ~p:20)) — a design whose CRC register is not re-seeded after an \
+       abort would still pass the length and pad count and fail only here";
+  if f1.Dv_xgmii.Tx_decoder.underflowed
+  then fail row "frame 1's underflowed field is true, expected false";
+  (* Assertion 4: frame 1's terminate character at C+17, lane 0. *)
+  if f1.Dv_xgmii.Tx_decoder.terminate_cycle <> c + 17
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 1 terminate cycle = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.terminate_cycle
+         ; ", expected C+17"
+         ]);
+  if f1.Dv_xgmii.Tx_decoder.terminate_lane <> 0
+  then
+    fail
+      row
+      (String.concat
+         [ "frame 1 terminate lane = "
+         ; Int.to_string f1.Dv_xgmii.Tx_decoder.terminate_lane
+         ; ", expected 0"
+         ]);
+  (* Assertion 5: the aborted frame's 32 octets, length first, no FCS, no
+     pad (§4.2 fact 4). *)
+  if not f0.Dv_xgmii.Tx_decoder.underflowed
+  then fail row "the aborted frame's underflowed field is false, expected true";
+  let aborted_octets = f0.Dv_xgmii.Tx_decoder.octets in
+  if List.length aborted_octets <> 32
+  then
+    fail
+      row
+      (String.concat
+         [ "aborted frame wire octet count = "
+         ; Int.to_string (List.length aborted_octets)
+         ; ", expected 32 (8w, not padded, no FCS — §4.2 fact 4)"
+         ]);
+  if not (List.equal Int.equal aborted_octets (List.take (content_octets ~p:60) 32))
+  then
+    fail row "aborted frame's wire octets are not the first 32 octets of content_octets ~p:60"
+;;
+
+let%expect_test
+  "M04-G6: an underflowed frame followed by a P = 20 frame — the next \
+   frame transmits with a correctly re-seeded FCS"
+  =
+  run_g6 ();
   [%expect {||}]
 ;;
