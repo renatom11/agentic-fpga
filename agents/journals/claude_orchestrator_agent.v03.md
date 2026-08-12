@@ -235,3 +235,38 @@ remain the sponsor's.
 - site/public/process.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0272] 2026-08-12T02:41Z | task:none | The sponsor grades the fourth edition from outside and commissions two more rounds: the report card lands verbatim as the fifth edition's driving input, and the edit round runs single-seat by the sponsor's own instruction
+
+### Trigger
+
+Sponsor message, verbatim intent: incorporate the attached report card's
+feedback into another version of the document "without going through a crazy
+multi agent process," THEN run rounds 4 and 5 "using our full process. the
+same you did for round 2 and round 3," autonomously ("i'm driving for them
+next 2 hours so just do it and don't wait on me"). This entry lands the
+report card verbatim with provenance marked and records the plan.
+
+### Plan of record
+
+(1) This commit: the report card at
+docs/reports/process-council/sponsor-report-card-2026-08-12.md, sponsor's
+table verbatim, my two marked notes (provenance; the one dated cell whose
+premise adoption run two already discharged). (2) Architect fifth-edition
+round, SINGLE SEAT per the sponsor's instruction — no council for the edit;
+work order = the report card's actionable dimensions (conciseness dedupe,
+provenance demotion, annex-items-as-headings for the index, the measured/
+unmeasured seam, the retrieval-safety sentinel on superseded margins, B.0
+rows updated to executed-with-anchors) plus the accumulated fifth-edition
+ledger (both cold readers' residues and repair passages, HALT-06's surviving
+contradiction, HALT-12's unbudgeted repair class). The council's round-3
+DO-NOT fence stands. (3) Round 4 = full Sal-first topology on edition 5;
+revision; round 5 = same; final revision; delivery. Three engineering lanes
+(rtl, dv, auditor) continue in parallel — disjoint scopes, the new architect
+lane announced to all three per the corollary. My ADR-0021 implementation
+holds until the council rounds close (it edits the files the rounds' Bob
+reads). Committed as my act: the report card is a relay artifact and this
+directory is within my landing scope, as with every round's artifacts.
+
+### Files-in-this-commit
+- docs/reports/process-council/sponsor-report-card-2026-08-12.md
