@@ -1273,3 +1273,42 @@ and is the sponsor's call, not mine.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0292] 2026-08-12T16:57Z | task:none | The second figure set is scrapped whole on the sponsor's verdict and the framework tab returns to pure text - the visual treatment moves to a commissioned animated page, specified this time by the sponsor, not improvised by me
+
+### Trigger
+
+Sponsor, verbatim: "Im gonna scrap all of the graphics I dont like any of
+them." Followed by a detailed commission for what replaces the whole
+approach: one new animated, interactive page — a master reference for the
+framework — with the org chart and a nested-boxes repo as its two big
+components, a play/scrub timeline of a theoretical project's life, an
+annotation box narrating each beat, everything clickable, every idea in the
+one-pager represented somewhere, all of it generic to any project rather than
+this one. The sponsor was explicit that the last two rounds failed because I
+had free rein, and asked me to ask clarifying questions rather than guess.
+
+### This landing
+
+Demolition only, because it is the one unambiguous part: framework_figs.py
+DELETED (second set, five figures), build.py's figure injection removed, the
+framework tab now renders docs/FRAMEWORK.md as clean text. The one-pager
+itself byte-unchanged. The commissioned page is NOT started here — four
+questions go to the sponsor first (which optional beats the animation carries,
+how deep the repo box inventory goes, whether the LLM tool that runs the
+agents is drawn explicitly, and the fate of the existing org-chart tab) —
+because the sponsor asked for 10%-right-by-asking over wrong-at-scale.
+
+Also absorbed on arrival: incident seventeen, the container restored from a
+snapshot at 592a8b2 (days stale); one fetch cured it to 0bccc9b at zero loss,
+push-at-every-landing holding for the seventeenth time.
+
+### Files-in-this-commit
+- site/build.py
+- site/framework_figs.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
