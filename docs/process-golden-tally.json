@@ -1,0 +1,200 @@
+{
+  "$comment": [
+    "THE GOLDEN TALLY. This file is the machine-readable original of the worked",
+    "seeded-defect tally printed in docs/PROCESS.md §3.9. The document's figures are",
+    "DERIVED FROM THIS FILE and must not be edited in the document alone.",
+    "",
+    "Why it exists: the sixth edition's §3.9 carried a prose copy of the constitution's",
+    "two-column law and dropped the clause that made it determinate, so a cold reader",
+    "could produce two different tallies from one record (council round 5, Charlie F1 /",
+    "Outsider 1 / Bill F9 / Contrarian 3). A rule stated only in prose drifts; a rule",
+    "with a committed worked instance beside it cannot drift silently, because the",
+    "instance stops closing. This file is that instance in the form a script can read.",
+    "",
+    "It carries THIS program's real identifiers. docs/PROCESS.md is de-domained and",
+    "prints an anonymized rendering of the same numbers; docs/PROCESS-MEMOIR.md Annex C",
+    "is the name map between them. A fork deletes this file whole and writes its own",
+    "(docs/PROCESS.md §6.1, fork contract).",
+    "",
+    "The invariant a checker must enforce: sealed = seeded + |difference|, and",
+    "seeded = killed + survived + green_by_blindness. Both close below."
+  ],
+
+  "schema_version": 1,
+  "derived_at": {
+    "edition": "seventh edition of docs/PROCESS.md",
+    "date": "2026-08-12",
+    "note": "Figures re-derived from the committed record in the act that printed them, never quoted from the previous printing."
+  },
+
+  "law": {
+    "source": "agents/PROTOCOL.md §7, Mutation record (b.1)-(b.4)",
+    "sealed": "every defect class the manifest sealed, with nothing removed from it for any later reason",
+    "seeded": "the subset rendered against the artefact AS SEALED and run; the gate clause is read against this column",
+    "determinacy_clause": "All three sit in `sealed`, none in `seeded`, each named at the tally with its ground.",
+    "grounds_are_open": "A class excluded on any ground is named at the tally with it, where the gate reads that ground and may refuse it.",
+    "disclosure_rule": "A ground that turns on what the seal disclosed — grounds 2 and 3 — holds only where the disclosure was frozen in the seal BEFORE the run, never on what the run returned.",
+    "unit": "the defect class, not the branch, ref or file that delivered it"
+  },
+
+  "domain": {
+    "artefact": "M03 (xgmii_rx_64)",
+    "era": "class-based",
+    "campaigns": ["WO-0050", "WO-0055", "WO-0058", "WO-0061", "WO-0063B", "WO-0066", "WO-0073", "WO-0074", "WO-0076", "WO-0077"],
+    "campaign_count": 10,
+    "outside_this_tally": {
+      "pre_class_era": ["WO-0039", "WO-0041", "WO-0042", "WO-0045"],
+      "scored": "15 of 15 killed, with D-M3 ruled an equivalent mutant and excluded from the denominator by ruling",
+      "note": "Scored in a different unit (the mutation, not the class). A single ratio over all fourteen campaigns does not exist and is not manufactured here."
+    }
+  },
+
+  "tally": {
+    "sealed": 65,
+    "seeded": 62,
+    "difference": 3,
+    "killed": 61,
+    "survived": 1,
+    "green_by_blindness": 0,
+    "checks": {
+      "sealed_equals_seeded_plus_difference": "65 = 62 + 3",
+      "seeded_equals_killed_plus_survived_plus_gbb": "62 = 61 + 1 + 0"
+    }
+  },
+
+  "difference_itemised": [
+    {
+      "class": "IC-M5",
+      "campaign": "WO-0074",
+      "ground": "never rendered",
+      "ground_id": 1,
+      "in_sealed": true,
+      "in_seeded": false,
+      "scores": "nothing — this is not a defect the suite failed to kill; it is a defect that does not exist",
+      "disclosed_before_run": true,
+      "evidence": "WO-0074-mutations/README.md §3.5 — NOT SEEDED, self-declared under D-M5a; both attempted renderings failed the pre-seeding check and that failure is the declaration's evidence. No branch was cut and no CI job spent. Ruling: §8.1 IC-M5 rule 3.",
+      "narrow_claim": "unrenderable AT THIS DESIGN, not inherently unrenderable"
+    },
+    {
+      "class": "I-c1",
+      "campaign": "WO-0061",
+      "ground": "unscoreable — the rendering did not render the class as sealed",
+      "ground_id": 2,
+      "in_sealed": true,
+      "in_seeded": false,
+      "scores": "nothing in either direction — its run is a scope report, not a bench result",
+      "disclosed_before_run": true,
+      "evidence": "SO-xgmii_rx_64.md §2.2-D.4; ground disclosed pre-run and ruled at WO-0061 (FINDING A-1, DISP-0001). Sealed wide cells T-I6 and T-I4 both green; T-F1, T-F2, T-G7 red on a bench the seal was not written against.",
+      "note": "No mapping into the present unit namespace is owed and none is performed."
+    },
+    {
+      "class": "IC-2",
+      "campaign": "WO-0063B",
+      "ground": "negative control",
+      "ground_id": 3,
+      "in_sealed": true,
+      "in_seeded": false,
+      "scores": "nothing, by design and by declaration — its seal predicts a named assertion STAYS GREEN and says in advance that the class scores no kill",
+      "disclosed_before_run": true,
+      "evidence": "WO-0063B_m03-i2-report-path-campaign-SEALED-predictions.md §3.3 — 'IC-2 is a control, not a class this round scores. Its only REQUIRED cell is a green at M03-I2.' §5 item 5: 'IC-2 is a control and scores no kill in its own right.' Run: branch mut/wo-0063b-ic2 = dbc4b0a, CI run 30955861141; M03-I2 observed GREEN at all three members, both lanes; kills 0, by design.",
+      "seal_cell_falsified": "M03-D2 reddened under IC-2 where the seal predicted green; recorded unedited in the campaign verdict, corrected denominator stated there. A falsified prediction inside a negative control is still a frozen measurement and is not retro-edited.",
+      "why_this_row_matters": "This is the EXERCISED instance of ground 3. Council round 5 recorded that no such instance exists in the record and marked ground 3 as design intent on that basis; the record refutes it. The instance was missed because the era's own denominator had already removed IC-2, so a reader walking the tally never met it."
+    }
+  ],
+
+  "seeded_non_kills_itemised": [
+    {
+      "class": "G-c4",
+      "campaign": "WO-0055",
+      "disposition": "SURVIVED ITS OWN CAMPAIGN — its seal predicted a kill and no unit killed it",
+      "campaign_measurement": "survived; T-G4 was predicted and stayed green (R→G). This column stays 1, permanently and correctly.",
+      "rehabilitation": {
+        "form": "the strict one: the UNMODIFIED committed diff replayed against the bench as it stands, at a run id, with the killing unit named",
+        "diff": "g-c4.diff, unmodified",
+        "branch": "mut/wo-0056-gc4-replay = c95c9f4",
+        "run_id": "30852220315",
+        "killing_unit": "M03-G8, the only failing unit of twenty-seven",
+        "landed_at": "WO-0056"
+      },
+      "two_facts_never_folded": "the campaign's own `survived` count keeps what it measured; the defect is measured dead at the run id above. Neither sentence may be quoted without the other.",
+      "expiry_condition": "a rehabilitation is good only at the state it was taken at. The bench has since moved by nearly twenty thousand added lines across forty-five files; the patch still applies, so the repair costs a single run — but citing this run id after the patch stops applying is the same defect wearing the approved form."
+    }
+  ],
+
+  "unreachable_set": {
+    "$comment": "Published BESIDE the tally, never inside it. A check no possible defect of the artefact could reach discharges its requirement row like any other and contributes NOTHING to a coverage claim — counting it counts one observation twice. A check the seeded set merely happened not to reach is a seeding gap and may not be entered here.",
+    "members": [
+      {
+        "unit": "M03-J4",
+        "reason": "the specification leaves the same-cycle case unconstrained (spec §6.3 item 7 and C-14.5), so every rendering of it is an equivalent mutant by specification",
+        "consequence": "a five-of-five family-J scorecard is NOT full coverage of §4.J, and the sign-off says so rather than letting the score imply it"
+      },
+      {
+        "unit": "M03-M8",
+        "reason": "no mutant exists and none is expressible",
+        "consequence": "a full family-M scorecard is not full coverage of §4.M"
+      },
+      {
+        "unit": "M03-M9",
+        "reason": "no mutant exists and none is expressible",
+        "consequence": "a full family-M scorecard is not full coverage of §4.M"
+      },
+      {
+        "unit": "M03-B3",
+        "reason": "green by structural unreachability under DECLARATION WO-0074-D1",
+        "consequence": "never countable as coverage of §9's ruling 9"
+      },
+      {
+        "unit": "M03-N2",
+        "reason": "six sub-cases green by structural unreachability under DECLARATION WO-0074-D1",
+        "consequence": "never countable as coverage of §9's ruling 9"
+      }
+    ],
+    "declared_non_asserting": [
+      {
+        "unit": "M03-K3",
+        "reason": "NO-ASSERT — the row asserts nothing, so it is not scoreable. Declared rather than omitted.",
+        "note": "This is NOT an unreachable check: a row with no assertion and a check no defect can reach are different objects, and folding them would put an undischarged row inside a set that discharges."
+      }
+    ]
+  },
+
+  "per_campaign": {
+    "$comment": "sealed_by_manifest is what the manifest sealed. sealed_in_era_figure is what the era's own carried figure counted, which removed two non-scoring classes from the denominator under the pre-amendment reading. The difference between the two columns is the 63 → 65 movement the sign-off itself names and routes as owed to its carrier: a definition change with no measurement behind it.",
+    "rows": [
+      {"campaign": "WO-0050",  "sealed_by_manifest": 8,  "sealed_in_era_figure": 8,  "seeded": 8, "killed": 8, "survived": 0, "not_seeded": []},
+      {"campaign": "WO-0055",  "sealed_by_manifest": 5,  "sealed_in_era_figure": 5,  "seeded": 5, "killed": 4, "survived": 1, "not_seeded": []},
+      {"campaign": "WO-0058",  "sealed_by_manifest": 7,  "sealed_in_era_figure": 7,  "seeded": 7, "killed": 7, "survived": 0, "not_seeded": []},
+      {"campaign": "WO-0061",  "sealed_by_manifest": 10, "sealed_in_era_figure": 9,  "seeded": 9, "killed": 9, "survived": 0, "not_seeded": ["I-c1"]},
+      {"campaign": "WO-0063B", "sealed_by_manifest": 2,  "sealed_in_era_figure": 1,  "seeded": 1, "killed": 1, "survived": 0, "not_seeded": ["IC-2"]},
+      {"campaign": "WO-0066",  "sealed_by_manifest": 6,  "sealed_in_era_figure": 6,  "seeded": 6, "killed": 6, "survived": 0, "not_seeded": []},
+      {"campaign": "WO-0073",  "sealed_by_manifest": 5,  "sealed_in_era_figure": 5,  "seeded": 5, "killed": 5, "survived": 0, "not_seeded": []},
+      {"campaign": "WO-0074",  "sealed_by_manifest": 8,  "sealed_in_era_figure": 8,  "seeded": 7, "killed": 7, "survived": 0, "not_seeded": ["IC-M5"]},
+      {"campaign": "WO-0076",  "sealed_by_manifest": 5,  "sealed_in_era_figure": 5,  "seeded": 5, "killed": 5, "survived": 0, "not_seeded": []},
+      {"campaign": "WO-0077",  "sealed_by_manifest": 9,  "sealed_in_era_figure": 9,  "seeded": 9, "killed": 9, "survived": 0, "not_seeded": []}
+    ],
+    "totals": {
+      "sealed_by_manifest": 65,
+      "sealed_in_era_figure": 63,
+      "seeded": 62,
+      "killed": 61,
+      "survived": 1
+    }
+  },
+
+  "carried_era_figure": {
+    "$comment": "What the record's own sign-off packet carries, quoted rather than restated, so that this file never silently replaces a committed measurement.",
+    "figure": "63 sealed / 61 killed / 1 survived / 0 green-by-blindness / 1 void",
+    "arithmetic": "61 + 1 + 0 + 1 = 63",
+    "source": "agents/handoffs/SO-xgmii_rx_64.md §2.2 and §2.2-M, walked at 2183d71 over the campaign verdicts; ceiling of 61 fixed before the last campaign ran (WO-0077 §14) and reached exactly",
+    "why_it_differs_from_sealed_65": "The era figure counted IC-M5 inside `sealed` (as its `void` column) while removing I-c1 and IC-2 from the denominator entirely. Under the amended definition — nothing removed from `sealed` for any later reason — all three sit in `sealed` and none in `seeded`. The sign-off names this movement itself (§2.2-D.6 item 4: 'the movement (b.1) will make to the sealed figure (63 → 65) — a definition change with no measurement behind it, which lands on its own carrier and must say so in the same sentence'). This file is that carrier. NO MEASUREMENT MOVED: the killed, survived and green-by-blindness columns are unchanged, and every campaign score is quoted from its own committed verdict, unedited.",
+    "owed": "The sign-off packet's own re-statement of its SC-5 cell at the amended definition. Owner: the verification lead. Not performed here — this file is the document's derivation source, not the gate record."
+  },
+
+  "what_this_file_does_not_do": [
+    "It does not re-run, re-score or rehabilitate anything. Every campaign score is quoted from its own committed verdict and stands unedited, including the falsified seal cells.",
+    "It does not measure GREEN. The gate clause asks for each named killing unit present AND green at the gate SHA; presence is measured in SO-xgmii_rx_64.md §2.2-D.4, green is CI's verdict at a gate SHA that does not yet exist.",
+    "It does not form a ratio, and no reader may form one from it. Five columns exist precisely so that a single figure cannot destroy the fourth and fifth.",
+    "It does not cover the pre-class era's four campaigns, which are scored in a different unit and stated separately above."
+  ]
+}

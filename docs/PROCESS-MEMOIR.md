@@ -7,10 +7,36 @@ refuted it, every edition's item-by-item ledger of what it changed and what it
 refused, the debts each edition owed and to whom, and the map from that
 document's function names onto this program's own seats, paths and tokens.
 
-**What this file is not.** It states **no rule**. Nothing here binds any seat,
-and nothing here is current. Every claim preserved in Part I is preserved
-*because it was found false*, and every one of them is marked as such at the
-point a reader meets it.
+**What this file is not.** It states **no rule.** Nothing here binds any seat.
+Every claim preserved in Part I is preserved *because it was found false*, and
+every one of them is marked as such at the point a reader meets it.
+
+**And the self-description this volume carried for one edition, corrected here
+because it was false of its own contents.** `[B.12·17]` The line above used to
+continue *"and nothing here is current."* That is true of **Part I**, which is
+the superseded record, and it is **not true of Annex B**, which is a live ledger:
+dated conditions still open, an owed-confirmation matrix, an amendment queue with
+owners, and — the case that made the falsity load-bearing — the two **OPEN —
+CONDITION** rows a review council set as gates on any certification of the export
+unit at the level of the whole. Those are present-tense governance state. A
+reader of the core alone therefore learned that one of those instruments was
+*owed* and never that a verdict **blocks the unit's central claim on it**. **The
+conditions are now stated in the core, at §6.0, where the claim they gate is
+made**; they remain here with their history, and this volume's honest
+self-description is the one that distinguishes its two halves:
+
+> **Part I is history and binds nothing. Annex B is this program's own live
+> ledger of debts, conditions and owed acts — it binds no *adopter*, and it is
+> current for *this* program.** Where a row of Annex B and the core disagree
+about what is owed, the core governs and the row is stale.
+
+*The general form, and it is the split's own rule applied to the split's own
+product:* **a volume separated by tense must actually be separated by tense.**
+Annex B moved here by noun-locality — it is made of program nouns, so §1–§6 could
+not carry it — and noun-locality is a different axis from tense. The sixth
+edition's split rule says in terms that it divides *by tense and not by
+audience*, and its second clause did not. Naming the exception is what keeps the
+rule usable; leaving it unnamed is what made the first page false.
 
 > **The core governs.** Where this volume and `docs/PROCESS.md` disagree about
 > what any rule is, `docs/PROCESS.md` is right and this file is stale. There is
@@ -37,11 +63,13 @@ that act. And a **later edition's author**, who needs to know which repairs have
 already been tried and why the refused ones were refused, so that a rejected
 option does not return as a fresh proposal and get rejected again at full cost.
 
-**Edition anchor — companion to the sixth edition · 2026-08-12 · this program's
+**Edition anchor — companion to the seventh edition · 2026-08-12 · this program's
 working branch, at the commit that carries this line; created by the split
-recorded in Part 0, from `docs/PROCESS.md` as it stood at the fifth edition plus
-that edition's repairs. Written against `7b749f0` with one sibling landing at
-`91f005d` verified as touching no path of either volume.** This volume carries
+recorded in Part 0 and repaired by the restorations of §0.2a, which recover
+fourteen preserved margins from the **committed** fifth edition at `d96a5b1`.
+Written against `d96ffe2`; no sibling lane was declared live at dispatch and none
+landed during the round, so §4.2's inward declaration is a nil return rather than
+an unperformed act.** This volume carries
 no posture stamps of its own: every `[MC]`, `[RE]`, `[P1]`, `[PLANNED]`,
 `[CORRECTED]` and `[UNANCHORED]` mark appearing below is quoted material from a
 core passage as it stood when the quoted claim was superseded, and none of them
@@ -72,12 +100,32 @@ reviewer needs.
 - **S4 — nothing was deleted.** Every moved line is below. Every moved block
   records the core section it came from.
 
+**S4 was false when it was first checked from outside, and this is the record of
+that.** `[B.12·4]` An independent audit diffed the sixth edition against the
+**committed** fifth edition — not against the manifest below — and found
+**fourteen preserved margins in neither volume and in no manifest row**, among
+them the two the core's live `[CORRECTED · C-33]` and `[CORRECTED · C-114]`
+stamps promise. **All fourteen are restored**, verbatim from `d96a5b1`, under the
+core sections they were anchored to, and each carries a *restored by the seventh
+edition* note so the repair is countable in the same way the exception list of S3
+is. §0.2 carries the restoration table. **The loss is a defect of the sixth
+edition's split; the invisibility of the loss is a defect of its falsifier**, and
+§0.4 repairs the second, which is the half that would otherwise recur.
+
 ### 0.2 — The manifest
 
 **35 blocks, 330 lines**, plus the 752 annex lines, **1,082 lines total**. The
 line numbers are positions in `docs/PROCESS.md` **as it stood immediately before
-the split** — after the sixth edition's repairs and before the strip — which is
-the only state against which they resolve.
+the split** — after the sixth edition's repairs and before the strip.
+
+> **Read the line-number column as provenance, not as an address.** `[B.12·5]`
+> That pre-split state **exists at no commit**, so no reviewer can check the
+> numbers out, and this table's rows are therefore not independently resolvable.
+> The sixth edition presented them as though they were. They are kept because
+> they record what the strip did in the order it did it, and because deleting
+> them would destroy the only account of the operation; **they are not evidence,
+> and nothing in §0.4 depends on them any more.** The falsifiers now close
+> against `d96a5b1` and this commit, both of which a reviewer can check out.
 
 | Lines (pre-split) | Count | Anchored at | Clause |
 |---|---|---|---|
@@ -118,32 +166,76 @@ the only state against which they resolve.
 | 4567–4576 | 10 | §6.0 | S1 |
 | 5227–5978 | 752 | Annexes B and C | S2 |
 
-### 0.3 — The arithmetic, so it closes
+#### 0.2a — The restoration table (seventh edition)
+
+**Fourteen preserved margins the sixth edition's split lost, restored verbatim
+from the committed fifth edition at `d96a5b1`.** Each is checkable one at a time:
+take the fifth-edition line, read the margin there, and find it under the Part I
+anchor named here. **The anchor column is the core section, and five of these
+sections had no Part I block at all before this edition** — which is why their
+losses were the hardest to see: a reviewer checking whether a section's
+corrections were preserved found no heading to check under, and read the absence
+of a block as the absence of margins.
+
+| Fifth-edition line (`d96a5b1`) | Restored under Part I anchor | What the margin preserves | Orphaned stamp it re-anchors |
+|---|---|---|---|
+| 1036 | §1.5 | the withdrawn *"**the** one"* singular, against §1.4(b)'s *"one of"* | — |
+| 1276 | §1.6 | the drill claimed as an exercised fact | **`[CORRECTED · C-33]`**, cited at §1.6 and in §1.1's summed table |
+| 2036 | §3 *(new block)* | *"the taxonomy is closed, and this is it"* | — |
+| 2073 | §3 *(new block)* | *"Six types are defined"* | — |
+| 2167 | §3 *(new block)* | the placeholder called *a literal token* with no token named | — |
+| 2260 | §3.1 *(new block)* | *"spawn token"*, this document's own coinage | — |
+| 2440 | §3.3 | the seal facsimile carried as a paraphrase | — |
+| 2629 | §3.4 *(new block)* | the founding audit's tally quoted from a superseded line | **`[CORRECTED · C-82]`** |
+| 2657 | §3.4 *(new block)* | *"the finding's two halves"* | — |
+| 3651 | §4.7 | *"four commands"* where there are three | **`[CORRECTED · C-114]`** |
+| 3988 | §6.0 | the shell promised as *"named in §6.0"* by a §6.0 that named nothing | — |
+| 4081 | §6.0 | the shell called *"kept deliberately frozen"* | — |
+| 4455 | §6.2 *(new block)* | the uncomputable case-count equation | — |
+| 4643 | A.7 *(new block)* | the threshold called *stated* and stated nowhere | — |
+
+**One more block was preserved and mis-filed rather than lost**, and it is
+recorded here because a restoration table that only counts losses will let the
+next mis-file through: the fifth edition's line 4825 margin (*the sentence said
+"this edition" and would have been false the moment an edition succeeded it*)
+sits in **B.1** rather than under a Part I anchor. It is in the volume, so S4
+holds for it; it is not under the section it was anchored to, so S1 does not.
+Left where it is, named here, because moving it would edit a row three editions
+of readers have cited. *The general form worth carrying: **a warranty with two
+clauses needs two checks**, and the sixth edition's single falsifier tested only
+the weaker one.*
+
+### 0.3 — The arithmetic, across committed states and no others
+
+**The sixth edition's version of this section closed against a state that exists
+at no commit** — the fifth edition plus that edition's repairs, before the strip
+— so the sum was true and unrunnable: a reviewer could not check the baseline
+out, and the manifest's line numbers resolved against nothing. `[B.12·5]` This
+version uses **three states a reviewer can check out and nothing else**:
 
 ```
-pre-split source                     5,976 lines
-  − S1/S3 blocks moved                 330
-  − S2 annexes moved                   752
-  − blank lines swallowed at each
-    extraction point (35 + 1 trailing)  36
-                                     -------
-core body after strip                4,858 lines
-  + front matter the split itself adds
-    (the derivation block, the Contents
-     re-pointing, the boundary re-measure,
-     the re-derived subsection index)      62
-                                     -------
-docs/PROCESS.md, sixth edition       4,920 lines
+git show d96a5b1:docs/PROCESS.md | wc -l     fifth edition, committed   5,446
+wc -l docs/PROCESS.md                        seventh edition, this commit 5,538
+wc -l docs/PROCESS-MEMOIR.md                 this volume, this commit    2,028
+                                                                       -------
+                     the pair, this commit                              7,566
+                     less the fifth edition                            −5,446
+                                                                       -------
+     net lines added across two editions of repair and one split        2,120
 ```
 
-*Two figures in that sum are worth checking rather than trusting.* The **36
-swallowed blanks** are one blank line per extraction point (35) plus the file's
-trailing blank; and the **62 added** are the only lines in the core that the
-fifth edition's text does not contain, all of them in the front matter, all of
-them about the split. Every other line of the sixth edition is either fifth-
-edition text, a repair listed in **B.11**, or one of the 1,082 lines below.
+**What that figure is and is not.** It is the net growth of the two volumes over
+the fifth edition, produced by the sixth edition's repairs, the split's own front
+matter, the seventh edition's repairs, and the fourteen restorations of §0.2a. It
+is **not** a closure proof, and no arrangement of three line counts can be one:
+line counts cannot tell a moved block from a deleted block plus an added block of
+the same size. **The check that catches a silent deletion is falsifier 4, and the
+lesson of this section is that it always was** — the sixth edition's arithmetic
+looked like the stronger instrument and was the weaker one, because a sum that
+closes is persuasive and a sum's closing says nothing about what was removed.
+*A number that reconciles is not the same object as a claim that is checked.*
 
-### 0.4 — Four falsifiers
+### 0.4 — Four falsifiers, every one against a state somebody else committed
 
 Any of them coming back wrong is a defect of the split, **not** a claim that the
 matched text is law:
@@ -152,11 +244,35 @@ matched text is law:
    returns 0.** Against this file it returns the census in §0.5.
 2. **Every anchor resolves**: each Part I heading names a section of
    `docs/PROCESS.md`, and that section exists there.
-3. **The arithmetic in §0.3 closes.**
-4. **A diff of the sixth edition against the fifth contains no removal that is
-   not either a block in §0.2's manifest or a named repair in B.11.** This is
-   the strongest of the four and the only one that catches a silent deletion;
-   it is a reviewer's act and no script performs it.
+3. **The three committed line counts of §0.3 are what it says they are**, and the
+   subtraction between them is the growth it claims.
+4. **`git diff d96a5b1 -- docs/PROCESS.md`, and every removed passage is found in
+   one of the two volumes or is a named repair in B.11 or B.12 — with the *fifth
+   edition itself* as the standard for the search, never this volume's manifest.**
+   This is the only one of the four that catches a silent deletion, and it is the
+   one the sixth edition got wrong: it pointed the diff at **the manifest**, which
+   made the claim and the yardstick the same artifact, so a block dropped from
+   both the file and the manifest was undetectable by construction. Three
+   auditors ran the printed self-checks and all three passed; the loss surfaced
+   the moment somebody diffed against the committed fifth edition instead. **It is
+   a reviewer's act and no script performs it** — the governance check that would
+   is commissioned, with its owner, at the core's §6.0.
+
+> **The rule that generalizes all of this, adopted by the seventh edition as the
+> core's own drafting law and repeated here because this volume is where its
+> counterexample lives:** `[B.12·6]`
+>
+> **No printed self-check may use, as its standard, a list the same edition
+> wrote.**
+>
+> The test to apply before printing any self-check: *name the artifact this check
+> would have to disagree with, and ask who wrote that artifact.* If the answer is
+> *this edition*, the check cannot fail and is decoration. The document had
+> already convicted itself of this shape three times — a count stated over its own
+> list, a column defined by the practice that published it, a census whose
+> population its own author fixed — and then rebuilt it into the one structural
+> act of an edition. **A defect class you can name and still commit is a class you
+> have described rather than understood.**
 
 ### 0.5 — The sentinel, and its census
 
@@ -171,15 +287,26 @@ matched text is law:
   marker split by a line break is a marker a grep does not find, which is the
   whole of what it was for. A preserved claim without the token is a defect of
   this volume, not an assertion that its text is current. `[B.10·5]`
-- **Census at this edition: 33 preserved passages carry the token** — **32 in
+- **Census at this edition: 47 preserved passages carry the token** — **46 in
   Part I and 1 inside Annex B** (B.1's own note on the third edition's
   unrowed claims). Re-derivable by
   `grep -c 'SUPERSEDED — historical record, not current law:' docs/PROCESS-MEMOIR.md`,
-  **which returns 38**: the other **5** are mentions of the token rather than
+  **which returns 52**: the other **5** are mentions of the token rather than
   uses of it — **4 in this Part 0** (clause S1, falsifier 1, and this entry's
   two) and **1 in B.10's row** recording the convention's adoption. *A census
   that does not reconcile its own grep count to its own claim is a census
   nobody can run.*
+- **The movement from the sixth edition's census, stated rather than left to
+  subtraction.** That edition counted **33 uses / 38 total**; this one counts
+  **47 / 52**. The whole of the difference is **the fourteen restorations of
+  §0.2a**, and 33 + 14 = 47 exactly. **A census whose movement between editions is
+  not accounted for is a census that has been re-run rather than re-derived** —
+  and this figure is the one place where the previous edition's number and this
+  one's must differ by a stated cause, because the sixth edition's census was
+  **internally correct and externally false**: it reconciled its own grep to its
+  own claim, over a population that had already lost fourteen members. *That is
+  falsifier 4's lesson arriving in the census: an instrument can be exact about
+  what it holds and silent about what it should hold.*
 
 *And the property the split bought that the sentinel never could.* The core now
 contains **no preserved superseded claim at all**, so no fragment of it can
@@ -329,6 +456,16 @@ being outside the round's commissioned scope. **The fifth edition drops the
 count rather than asserting a new one**, and the enumeration is still owed a
 round (**B.9**, refusal 3). `[B.10·4]`
 
+*Margin note on item 1, **restored by the seventh edition** — lost in the sixth
+edition's split and recovered verbatim from the committed fifth edition at
+`d96a5b1`. See §0.2's restoration table.*
+*(**SUPERSEDED — historical record, not current law:** the previous edition called this
+"**the** one" while §1.4(b) called itself
+"**one of** the claims" that survived unqualified. Both could not be right,
+and a reader could not tell which sentence to trust — the singular is
+withdrawn here rather than asserted with a count nobody has re-measured.
+Corrected in the fourth edition.)* `[B.8·35]`
+
 **SUPERSEDED — historical record, not current law:** the first edition said the canary instances "never
 are" documented, which contradicted the finding route in the clause after it.
 The same contradicted sentence stood in the sponsor-facing guide, and was cured
@@ -356,6 +493,20 @@ and a stale aid is worse than a missing one, because a missing one sends the
 reader to the source.** If you carry a derived index, either derive it
 mechanically at read time or state in the file itself the date it was last
 true.
+
+*Margin note on the recovery drill, **restored by the seventh edition** — lost in
+the sixth edition's split and recovered verbatim from the committed fifth edition
+at `d96a5b1`. **This is the margin the core's live `[CORRECTED · C-33]` stamp
+promises**, at §1.6 and again in §1.1's summed table: for one edition that stamp
+pointed at preservation that did not exist, which by the legend's own sentence
+meant it meant nothing.*
+*(**SUPERSEDED — historical record, not current law:** the first edition stated it as an exercised fact.)*
+The running line that replaced it: *a drill — kill the orchestrator mid-program
+and rehydrate on purpose — is a scheduled obligation of the first phase and has
+not yet been performed.* The record contains no drill in any log, gate or board
+row, and the constitution schedules it in the future tense; the recovery
+procedure is therefore a **hypothesis**, and the claim that the org survives the
+loss of its orchestrator may not presently be made.
 
 
 ### Anchored at — 2.1 One agent per commit, coupled to a journal entry
@@ -451,6 +602,56 @@ compound sentence with one true half is the hardest false claim to find,
 because the true half is what the reader remembers checking.
 
 
+### Anchored at — 3. The artifact grammar
+
+*Three margins, all three **restored by the seventh edition** — lost in the sixth
+edition's split and recovered verbatim from the committed fifth edition at
+`d96a5b1`. This section had no Part I block at all until now, which is why its
+losses were the least visible: a reader checking whether §3's corrections were
+preserved found no heading to check under.*
+
+*Margin note on the taxonomy's closure rule.*
+*(**SUPERSEDED — historical record, not current law:** the second edition said "the taxonomy is closed, and
+this is it" over six types — and the record had already outgrown the list while
+the sentence was being written; it is the same defect class §3.2 warns about
+two pages further on.)*
+
+*Margin note on the packet table's own count, and it is the second half of the
+same defect.* The running line that replaced it reads: *six forms are in use;
+four of them are types the constitution defines, and two are this document's own
+construction* — a distinction erased by the withdrawn phrase
+(**SUPERSEDED — historical record, not current law:** the third edition's *"Six types are defined"*), which
+left a reader unable to tell this organization's law from this document's model
+of it.
+
+*And the placeholder is where this document has been describing an intention
+rather than a practice.* **SUPERSEDED — historical record, not current law:**
+the previous edition said the placeholder *"is a literal token, not a blank, so
+that an unallocated id is greppable"* and named no token. Re-derived from the
+record: **there is no literal token.** What the drafting
+seat actually does is write the **next free number per prefix, measured at a
+stated commit**, into the draft's own filename, and declare in its journal
+entry that the id is provisional until the committer allocates — a real,
+disciplined practice, and **not a greppable one**, because a provisional id is
+lexically indistinguishable from an allocated one. The one literal form the
+record does contain sits in a decision record, where a generic seal path is
+written `<TYPE>-XXXX_…`; it is used to *describe* the scheme, never to name a
+draft. `[B.9·5]`
+
+
+### Anchored at — 3.1 The journal entry
+
+*Margin note on the spawn short-id, **restored by the seventh edition** — lost in
+the sixth edition's split and recovered verbatim from the committed fifth edition
+at `d96a5b1`.*
+*(**SUPERSEDED — historical record, not current law:** the previous edition
+called it a "spawn token" — a synonym this document invented, against **spawn
+short-id** in the constitution and in every launcher. The term is aligned
+rather than glossed, because §6.2 Step 0 tells an adopter to grep this
+document's terms against the shell's machinery and a synonym returns nothing.)*
+`[B.9·12]`
+
+
 ### Anchored at — 3.3 Sealed predictions
 
 *Margin note.* **SUPERSEDED — historical record, not current law:** this
@@ -487,6 +688,38 @@ than a disclosed choice. **A rule that has never once been kept is not a rule
 with a deviation — it is a description of a different organization**, and the
 honest act is to withdraw it rather than to restate it with an apology
 attached.
+
+*Margin note on the seal facsimile, **restored by the seventh edition** — lost in
+the sixth edition's split and recovered verbatim from the committed fifth edition
+at `d96a5b1`.*
+*(**SUPERSEDED — historical record, not current law:** the
+edition before the fourth carried a paraphrase here, and the paraphrase
+weakened the single most independence-critical phrase in the file — see the
+freeze-point clause below.)* `[B.9·1]`
+
+
+### Anchored at — 3.4 Findings
+
+*Two margins, both **restored by the seventh edition** — lost in the sixth
+edition's split and recovered verbatim from the committed fifth edition at
+`d96a5b1`. The first is the margin the core's live `[CORRECTED · C-82]` stamp
+points at; like C-33's, it pointed at nothing for one edition.*
+
+*Margin note on the founding audit's own tally.* The running line it sits beside
+records that the severity scale in use has **four** grades — critical, major,
+minor, and a non-binding note — where the first edition listed three, and that
+this program's founding audit returned 1 critical, 7 major, 7 minor and 2 note.
+*(**SUPERSEDED — historical record, not current law:** the council that reviewed
+this document quoted that tally from a superseded line of the same report — 5
+major, 4 note — which the report itself had corrected in place; the finding
+stood either way, since it turns on the number of grades, not the split. The
+corrected figures are the ones above.)*
+
+*Margin note on the self-serving-filing test.*
+*(**SUPERSEDED — historical record, not current law:** the first edition wrote
+"the finding's two halves", which a cold reader could only map onto the
+rule/failure-class pair this document uses everywhere else. The test is about
+limbs, and findings are not limited to two.)*
 
 
 ### Anchored at — 3.7 Gates
@@ -574,6 +807,20 @@ item is added, and the claim is dated. **"Complete as of this edition, closed
 by amendment" is a claim a later reader can test; "completely enumerated" is
 one they can only believe.**
 
+*Margin note on the spot-check step count, **restored by the seventh edition** —
+lost in the sixth edition's split and recovered verbatim from the committed fifth
+edition at `d96a5b1`. **This is the margin the core's live `[CORRECTED · C-114]`
+stamp promises**, and it is the case the fifth council re-verified as the
+sharpest instance: the stamp stood live in the core while the claim it points at
+existed in neither volume.* The running line it sits beside describes the
+sponsor's hand spot-check as **five steps**: three version-control commands, plus
+a two-hop walk from the roster file to a charter to that seat's log tail, plus a
+look at the continuous-integration tab.
+*(**SUPERSEDED — historical record, not current law:** the first
+edition said "four commands". There are three commands; the other two steps are
+not commands. The correction is small and the class is not: a specific number
+is the part a reader remembers and the part they will check.)*
+
 
 ### Anchored at — 5. The failure museum
 
@@ -625,6 +872,52 @@ this document's own seat, in **Annex B**, with its closing event named. Until
 it lands, every facsimile in this document and every row of the table above is
 a claim about another repository — held to the same rule as every other claim
 here: **check it before you repeat it.**
+
+*Two margins, both **restored by the seventh edition** — lost in the sixth
+edition's split and recovered verbatim from the committed fifth edition at
+`d96a5b1`.*
+
+*Margin note on the shell's naming.* The running line it sits beside is the
+blockquote naming the shell's repository and address.
+*(**SUPERSEDED — historical record, not current law:**
+the edition before the fourth promised, in its own opening pages, that the
+shell was "named in §6.0" — and §6.0 named nothing: no repository, no
+location, no identifier of any kind. An adopter handed this document alone
+therefore **stopped at the first minute of the first step of §6.2** and
+reconstructed the entire executable layer from prose instead.)* `[B.8·7]`
+
+*Margin note on how the export moves.* **SUPERSEDED — historical record, not current law:** the edition
+before the fourth said the shell was *"kept deliberately frozen except for one
+commit per lessons harvest."* That was never a property of the shell; it was a
+rule this program wrote for **its own writes into** the shell. The shell is an
+independently maintained repository with its own maintainer and its own law,
+and at the first transit it was found **thirty-one commits ahead** of this
+program's picture of it. `[B.8·5]`
+
+
+### Anchored at — 6.2 The order that works
+
+*Margin note on the definition of done's self-test row, **restored by the seventh
+edition** — lost in the sixth edition's split and recovered verbatim from the
+committed fifth edition at `d96a5b1`.*
+*(**SUPERSEDED — historical record, not current law:** the previous
+edition asked that the case count **equal** the number of numbered rules
+plus amendments. That equation is uncomputable and was dropped: rows are not
+rules — this program's thirteen rows carry eleven numbers — and cases are
+not rows, since one rule can need several constructions and one rule can
+admit none at all. **A falsifiability instrument that cannot be evaluated
+is worse than none**, because it is checked off anyway. Source: council
+verdict Tier 2; HALT-10.)*
+
+
+### Anchored at — A.7 — The large-file threshold
+
+*Margin note on the threshold row, **restored by the seventh edition** — lost in
+the sixth edition's split and recovered verbatim from the committed fifth edition
+at `d96a5b1`. Annex A had no Part I block until now.*
+*(**SUPERSEDED — historical record, not current law:** the row before the
+fourth edition's called the threshold "stated" without stating it anywhere, and
+an adopter executing from the text invented one.)*
 
 ---
 
@@ -724,6 +1017,21 @@ These ask "is the claim true?", and neither can be answered by writing.*
 |---|---|---|---|---|---|
 | **B.0.4a** | **Build the doc–shell drift check** — a test reading the core's §2.6 rule table against the shell's actual rule set and failing loudly when either moves. Named in three consecutive editions, built in none; the sixth edition does not build it either (**B.11**, refusal 2). | **this document's own seat** — the exporter holds both halves, the adopter holds one | the fourth council's verdict, on this edition's landing **2026-08-12** | **before any unit-level replication claim is certified** — the gate the verdict set, replacing the fifth edition's *before any sixth edition is drafted*, which came and went | **OPEN — CONDITION, and now four editions old** |
 | **B.0.4b** | **One with-shell, alien-domain adoption run**, executed by a party **not commissioned by this orchestrator**, with its halt log returned through the federation inbox. | an external adopter | the fourth council's verdict | **before any unit-level replication claim is certified** | **OPEN — CONDITION.** Both executed runs to date happened in worlds that could not reach the shell, so the only tested path is the one no adopter with network access will take. This is the condition that makes the tested world the real one. |
+
+> **Both rows are now also stated in the core, at §6.0, as current law — and that
+> is the seventh edition's repair rather than a duplication.** `[B.12·17]` Through
+> the sixth edition these were the *only* statement of the two conditions gating
+> the unit's central claim, and they sat in the volume whose first page said
+> nothing in it is current. The core disclosed one of them in its own words and
+> disclosed the other as merely *owed*, so a core-only reader — the only reader
+> the split promises a clean file to — could not learn that a verdict blocks the
+> claim. **A warranty and the conditions on it must be readable from the same
+> file**, and §6.1's fork contract makes that structural rather than stylistic:
+> it deletes this volume whole, so a fork performed exactly as prescribed
+> inherited the warranty and deleted its brakes. *This is not the fact-once rule
+> being broken: the core states the conditions, and this table states their
+> history, their commissioner and their dates. The fact stated once is the
+> condition; what lives here is its provenance.*
 
 *Why these two and not a sixth-edition audit.* The council's own reasoning,
 which this volume records rather than paraphrases into something more
@@ -1518,6 +1826,83 @@ statement about the current text.
    a heading, a definition or a repair of an existing claim. The split moved the
    stamp boundary and the boundary block was re-measured in the same act.
 
+### B.12 — The seventh edition, item by item
+
+**Basis: the fifth council's verdict, `docs/reports/process-council/round-5/verdict.md`
+— a RETURN with eight numbered repairs, not an acceptance with conditions.** The
+verdict's own ground for refusing the conditions form is the one this table is
+written against: *this organization metabolizes conditions into ledger rows*, so
+every item below is **performed in the text and in the record**, and where an item
+could only be disclosed, it says so and names whose act it is. The pointer form
+`[B.12·n]` is used in both volumes, matching the numbering here.
+
+| # | What the council found | Where | What this edition did |
+|---|---|---|---|
+| 1 | **The constitution's determinacy clause was dropped from §3.9's prose copy**, leaving the two column definitions to contradict each other on where a negative control sits — four seats, four independent probes, the round's widest convergence, in law a human countersigns at a gate | §3.9; §3's sign-off facsimile | **Restored verbatim** — *All three sit in `sealed`, none in `seeded`, each named at the tally with its ground* — quoted as a blockquote rather than paraphrased, with the contradiction it settles stated underneath so a later editor cannot drop it again as redundant. The §3 facsimile gains the same clause as a comment inside the block, where a template author meets it. |
+| 2 | **Ground 3 should be marked design intent, not case law, because no exercised negative control exists in the record** | §3.9 | **REFUSED ON THE RECORD, and this is the substantive finding of the round.** The record contains one: a campaign whose seal, frozen before the run, named a single check, predicted it would **stay green**, and stated that the class **scores no kill in its own right**; the run observed that green at every member and both start conditions, at a branch and a run id. Ground 3 is therefore anchored, and is marked as anchored with its instance cited. **Why four seats missed it is carried in the core beside the ruling**: the era's own denominator had already removed the class, so a reader walking the tally never met it — *a class excluded from a denominator is a class excluded from review*. The dispatch's instruction was to verify the verdict's figures against the record before committing them, the record being the standard; performing that instruction produced this row. |
+| 3 | **No worked example of the densest law exists anywhere in the unit** — a careful human's first tally is their first contact with the arithmetic — and the tally should be made structurally unrecurrable rather than merely written | §3.9; new file | **A fifteen-line worked tally from the real record**, printed as a facsimile with its closure arithmetic inside the block: one member per ground, the survivor with its rehabilitation form and its expiry condition, the unreachable set beside the tally and not inside it, no ratio anywhere. **Its figures are derived from `docs/process-golden-tally.json`**, minted this round — every excluded class with its ground and the evidence that the ground was disclosed *before the run*, the survivor's replay identifiers, and both arithmetic checks. The golden tally has a kit row, a fork-contract disposition and a place in the commissioned governance check. The core also states the one place the worked tally departs from the figure the record carries, and whose act the re-statement is. |
+| 4 | **The split's preservation warranty is false when actually run**: fourteen preserved margins in neither volume, two live `[CORRECTED]` stamps pointing at preservation that does not exist | the split block; this volume's §0.1, §0.2a, Part I | **All fourteen restored**, verbatim from the committed fifth edition at `d96a5b1`, under the core sections they were anchored to, each carrying a *restored by the seventh edition* note. **§0.2a is the restoration table**, and it also names the one block that was preserved but **mis-filed** rather than lost — because a restoration table that counts only losses lets the next mis-file through. Restoration was preferred to stripping the stamps in every one of the fourteen cases, the margin existing at `d96a5b1` in all of them. Five of the anchoring sections had no Part I block at all, which is why their losses were the least visible. |
+| 5 | **Falsifier 3 closes only against an uncommitted intermediate state**, and the manifest's line numbers resolve against a state no reviewer can check out | the split block; §0.2, §0.3 | **Rebuilt against three committed states and no fourth**, with the arithmetic stated as a subtraction a reviewer can run — and with the honest admission the previous version's persuasive sum concealed: **no arrangement of line counts can prove a closure**, since a moved block and a deleted-plus-added block of the same size are indistinguishable to a line count. §0.2's line-number column is re-labelled **provenance, not address**, and nothing in §0.4 depends on it any more. |
+| 6 | **Falsifier 4 is self-referential**: the manifest is simultaneously the claim and the standard, so a block dropped from both was invisible by design — which is why three auditors confirmed the printed self-checks and the loss surfaced only from outside | the split block; §0.4 | **Rewritten to diff against `d96a5b1`**, searching both volumes for every removed passage, with the fifth edition itself as the standard. **And the Outsider's rule adopted as this document's own drafting law**, in both volumes, in the imperative: *no printed self-check may use, as its standard, a list the same edition wrote* — with the test that operationalizes it. Re-run at this edition, falsifier 4 returns **zero** losses. |
+| 7 | **"Substrate fact" appears in no legend row and has no fork disposition**, so the §1.0/§1.1 sole-spawner contradiction was unrepairable as written: a willing repairer had nothing defined to re-stamp to | the stamp legend; §6.1 | **The `[SF]` grade minted** as a seventh legend row, carrying no `C-nn` row deliberately — a posture list measures instruments, and this grade asserts that none is needed — and naming its **Annex A** row in every use. Its fork disposition is the one no other grade has: **re-measure, do not strip**, because a substrate fact is a claim about a runtime and the adopter's is the only one that decides it. |
+| 8 | **The sole-spawner claim is stamped `[RE]` at §1.0 and declared not review-enforced three lines into §1.1**, with the row citations shuffling between the two sites | §1.0, §1.1 | **Both sites repaired and split into their two limbs.** The spawning limb is `[SF]` with its annex row; the committing limb keeps `[RE · C-07]`. **The citation shuffle is adjudicated against the posture list rather than guessed**: the two sites cited different objects — the compound row and the two limb rows — and §1.0's set omitted precisely the row that graded its second limb **false**. That is stated in place, as what a compound stamp does in every instance: the strongest limb's citation standing over the weakest limb's claim. |
+| 9 | **"kit", "launcher" and "residue" are load-bearing and never defined**, and the dialect's admission criterion explains none of its exclusions | *The dialect* | **All three defined**, with *residue* — named the most load-bearing undefined term in the document — given the accounting duty it actually names: the remainder, its owner, and its cadence. **The admission criterion is replaced**: the old one (*used in more than one section*) was satisfied by five terms not in the list and so predicted nothing. The new one is the rule actually applied — *a term is admitted when this program uses it in a sense a competent stranger would get wrong* — with the excluded terms named. The count is re-stated over the list at fifteen. |
+| 10 | **The core exceeds its own A.3 anchor by twenty per cent, undisclosed, in the runtime that produced it**, and its only fine-grained navigation aid has no anchors | the boundary block; A.3 | **The byte figure stated against the anchor**, with the ratio, the fact that the declared blank-slate executor cannot load the file in one call, and — the part the finding asked for — **what a windowed reader should load first, in order**. The property that makes forced fragment-reading *safe* here rather than merely necessary is stated with it: no fragment of the core can carry a superseded claim, because it carries none. The scan-not-link residue is named, and the complete repair is declared a later edition's act. |
+| 11 | **Act 1a's seat-set decision is underdetermined** — a day-one, hour-one stall for every adopter in every domain, inherited unrepaired from run two's HALT-09 | §1.2 | **The minimum legal seat set derived from §1.4's five separations**: a fusion table naming, per row, the separation that decides it; a floor of **four internal seats plus an external human**; worker roles named as an **economy, not a separation**; contingent seats named as never mandatory; and the sponsor's exteriority derived from §1.7 rather than asserted. |
+| 12 | **The constitution contains no `R10` or `R11`** while the scripts refuse by those names and the core sells the table as *this program's real ids* | §2.6 | **Stated in the core's own text**: the constitution enumerates **nine of the eleven**, the diffs that would add them are written in an accepted record and never applied, and an adopter running act 1d is being told to finish what the reference program did not. The general form is stated with it — *a written-but-unapplied amendment is indistinguishable, from inside the document that cites it, from an applied one*. |
+| 13 | **§3.8 narrates an unlanded reform as landed**: *the rule moved to where the practice already was*, while four charters and the live gate checklist still oblige the outlawed ratio | §3.8 | **Corrected in place**: the constitutional clause moved; the restatements did not. The exhibit keeps both halves — the reporter was right, and the reform is nine-tenths landed — and gains the second general form this record keeps paying for: **an amendment is landed when every artifact that restates it has been re-quoted**, not when its record is accepted. |
+| 14 | **The failure museum is missing its own most-exercised exhibit** (the Contrarian): the amendment pipeline's last mile does not exist, and confession has substituted for repair | §5 | **§5.9 minted.** It carries this record's own inventory as its exhibit rather than an anonymized one, names the severity-cap arbitrage that lets the class survive disclosure, and states a three-part structural cure ending in a script. **This document earned the exhibit and the section says so.** |
+| 15 | **The kit table warrants that every original exists and does not say that two of them are known-defective**, so an importer obeying the mechanism-placement rule imports the defect from the normative source; and the launcher's kit pointer dangles | §6.0 | **A fourth column added — *known divergences from current law, at this edition*** — reading *none known* where that is true and naming the divergence where it is not, across all fifteen rows. The launcher row now states that its location is a **substrate parameter** rather than a repository path, with the instruction to measure it before Step 1. The table's own warranty sentence is corrected to say what it does *not* assert. |
+| 16 | **The mechanical closure the verdict graduated** — falsifier greps, line accounting, index derivation, cross-volume counts, as a script | §6.0 | **Named as commissioned, with its owner**: the routing-and-committing seat, whose scope the enforcement and workflow directories are. **Not built here**, because §2.3 refuses this seat's commit there, and the document says whose act it is rather than carrying it as a fifth unowned mention. |
+| 17 | **The volume that says nothing in it is current carries the only statement of the two OPEN — CONDITION rows gating certification**, plus the owed-acts ledger | §6.0; this volume's header and B.0.4 | **Both conditions moved into the core as current law**, in a marked block beside the claim they gate, with their owners — and the reason stated: §6.1's fork contract deletes this volume whole, so a fork performed exactly as prescribed inherited the warranty and deleted its brakes. **This volume's first page is corrected**: *Part I is history and binds nothing; Annex B is this program's live ledger.* B.0.4 keeps the conditions' provenance, which is what a ledger is for. |
+| 18 | **Step 0 reads the name map and the fork table deletes it as Step 0's first act** — four seats, the round's second-widest convergence | §6.1, §6.2 | **Resequenced, and the order is the repair.** Step 0 is four ordered acts: trace with the inherited map, record the trace, delete the map, write your own as Step 1 lands each seat. The fork table's Annex C row carries the same order with the reason a replacement cannot be written before Step 1 exists. |
+| 19 | **Step −1 says "fetch it" and never "check out the observed SHA"**, so two adopters on different days adopt different machinery under one warranty | §6.2 Step −1 | **Applied**, with the founding gate recording whichever SHA is taken, and the thirty-one-commit drift cited as the measured reason. |
+| 20 | **BOOTSTRAP.md governs every real adopter and §6.2 offers no order-independent form to conform to** | §6.2 | **Six invariants stated separately from the steps**, as the thing any order must satisfy and the thing to check conformance against when running the other one: founding range declared; machinery before adversarial review; CI green before protections; live-fire bounce; constitution authored from your own machinery before anything quotes it; gate signed before the first work order. |
+| 21 | **§6.2's steps are essays and no compact rendering exists**; a human under adoption pressure will make one by hand, and hand-made checklists of a subtle order are where its subtleties die | §6.2 | **A ten-line skeleton of Step −1 through 6**, printed as a block and declared explicitly not to be a substitute for reading the grounds once. |
+| 22 | **A.8's *and nowhere else*** — refutable from the document's own §1.6 without opening the repository, known-false for three editions, ledgered and unrepaired; the oldest unmarked false claim in the core | A.8 | **Repaired, not marked.** The launcher is named as the site that **binds**; the four restating sites are named as restating. Two transferable halves stated: a parameter with five statement sites and no designated canonical one cannot be maintained under §2.7's own rule, and the restating sites are exactly the ones that go stale. *This seat flagged A.8 as outside scope last round; the round-5 record put it in scope, and B.11's own corollary — a refusal repeated three times is a decision — made a fourth deferral indefensible.* |
+| 23 | **A.3's instruction is unexecutable where the anchor's quantity does not exist in the adopter's substrate** — run two met it and improvised past it, and the improvisation was never written down | A.3 | **The lawful improvisation written into the annex as the instruction**: adopt the received figures, declare them unmeasured in your residue list, carry the measurement as an open gate item. The environment-override residue on both thresholds is disclosed in the same row, and A.3 now points at the boundary block for the core's own violation of its own anchor. |
+| 24 | **~110 in-text pointers resolve into annexes the fork contract deletes, with no fork-table row for the pointers themselves** | §6.1 | **A row minted**: *strip, or re-point at your own ledger* — with the third option, leaving them pointed at this repository, named as the origin-citation defect one level down. A fork contract that disposes of the annexes and not of the references into them has disposed of nothing. |
+| 25 | **HALT ids are cited bare across two overlapping numbering sequences**, so a reader sent to verify one does not know which committed log to open | §6.2, A.3, A.6b | **Every citation run-tagged** — eleven citation sites, and every `HALT-` id in the core now carries its run — with the two genuine collisions named, since run one's HALT-10 and HALT-12 are different halts from run two's. |
+| 26 | **§6.3's *twenty-one numbered decision records* was stale at its own edition's commit** | §6.3 | **Corrected to twenty-two.** Carried against the verdict's explicit refusal to condition on polish, on the narrow ground that a count is re-measured in the act that moves it and this round moved it. |
+
+**Refusals and deferrals of the seventh edition, with grounds.**
+
+1. **The doc–shell drift check: STILL NOT BUILT, for the fifth consecutive
+   edition** — and the ground is unchanged and is not dressed up. What *has*
+   changed is that the condition is now stated in the **core**, where the claim
+   it gates is made, so a reader who never opens this volume meets it. That is a
+   repair of the disclosure, not of the debt, and this row says which.
+2. **The record-side repairs are NOT PERFORMED: the constitution's R10/R11
+   amendment, ADR-0022's three countersignatures, the four charters' and the gate
+   checklist's re-quoting.** Every one is another seat's file, and §2.3 refuses
+   this seat's commit to all of them. What this edition does instead is the only
+   thing left to it: **stop the prose from presenting the record as clean**, in
+   the core's own text, at every site the council named. *A seat that cannot pay
+   a debt can still stop describing it as paid.*
+3. **The posture list: NOT TOUCHED, for the sixth consecutive edition**, on the
+   ground at **B.2 item 8**. No line of it was read into this round as editable
+   and none was changed. It **was** read as evidence — the C-01/C-06/C-07
+   adjudication above rests on its rows — which is the reading a grader's
+   artifact is for.
+4. **Probe 5.2 — the blank-agent, empty-repository, shell-reachable run the
+   verdict requires alongside this edition's presentation — is NOT RUN HERE.** It
+   is commissioned on this edition's landing by the seat that spawns, and this
+   document may not perform it: an adoption run executed by the document's own
+   author measures nothing (§5.7). The gate stands as the council set it.
+5. **The polish items the verdict explicitly declined to condition on — fact-once
+   duplicates, A.6b's ordering, the preamble's placement, the hybrid stamp
+   forms — are NOT APPLIED**, deliberately, and this row exists so the omission
+   is a decision rather than an oversight. One exception was taken: §6.3's
+   *twenty-one numbered decision records* was stale at twenty-two and is
+   corrected, because a count re-measured in the act that moves it is this
+   document's own rule and the act moved it.
+6. **The verdict is not argued with**, including where this seat disagrees. One
+   item is refused — ground 3's anchoring — and it is refused **against the
+   record, with the evidence named and the reason the council erred stated in
+   the document itself**, which is the only form of disagreement this process
+   recognizes. Nothing else in the verdict is contested, and the Contrarian's
+   diagnosis is applied rather than answered.
+
 ---
 
 ## Annex C: the name map
@@ -1565,6 +1950,8 @@ This document names seats by function; the record names them by role.
 | the escape ledger | `docs/reports/audit/dv_escapes.md` — **named in the auditor's charter; never created** (§1.5 item 5) |
 | the sponsor guide | `docs/SPONSOR.md` |
 | the shell (the export unit's other half) | `generic-agentic-fpga-org` — see §6.0's pin |
+| the golden tally (§3.9's worked tally, machine-readable) | `docs/process-golden-tally.json` — the file the core's printed tally derives from |
+| the launcher definitions | a per-tool hidden directory, named in the constitution rather than in either volume — a **substrate-specific** location, not a repository convention (**Annex A.8**) |
 
 ### C.3 — Packet and identifier tokens
 
@@ -1606,7 +1993,7 @@ in whichever direction your machinery reads.
 
 ## Part IV — the edition genealogy
 
-Six editions, each driven by a committed external measurement, in the order they
+Seven editions, each driven by a committed external measurement, in the order they
 landed. It is here in one place because the per-edition tables above answer
 *what changed* and none of them answers *what kept changing it* — and that is
 the only part of this volume an adopter has any use for.
@@ -1619,10 +2006,11 @@ the only part of this volume an adopter has any use for.
 | **fourth** | a **second council** with six blocking revisions carrying acceptance tests | The campaign seal rewritten from the record at an independence boundary; the shell pinned to what this repository can attest; Annex B converted from ledger to schedule. |
 | **fifth** | a **sponsor-relayed external grading**, thirteen dimensions, no council; plus two cold readers and a **second adoption run** — 17 halts, 0 stops | Provenance demoted out of running text into annex pointers; the sentinel put in front of every preserved false claim; the unmeasured surface given a derived seam. |
 | **sixth** | a **fourth council** — FIT WITH REPAIRS for the document, UNTESTED for the unit — with a closed, ordered scope | Determinism first: the five order defects repaired and their confession deleted, the preflight added, the countersignature given a form. Then **the split**, which created this volume. |
+| **seventh** | a **fifth council** — a **RETURN**, eight numbered repairs, refusing the accept-with-conditions form on the ground that this organization turns conditions into ledger rows | The split's warranty repaired where it was found false: fourteen lost margins restored and both self-referential falsifiers rebuilt against committed states. The densest law made determinate — the constitution's clause restored, a worked tally printed from the record, and a machine-readable golden tally minted so the contradiction cannot recur. The prose stopped presenting the record as clean. |
 
 **The pattern worth carrying, and it is the one thing here that generalizes.**
 Every edition was produced by a measurement the document could not perform on
-itself, and **the anchor moved on contact every time** — six for six. No edition
+itself, and **the anchor moved on contact every time** — seven for seven. No edition
 was produced by its author noticing something. That is not a compliment to the
 authors; it is the argument for the instrument: *a document about a process
 cannot audit itself, and the only editions that improved it are the ones that
@@ -1630,8 +2018,8 @@ followed somebody else's committed report.*
 
 **And the counter-pattern, which is this volume's own best evidence against the
 program that wrote it.** Read the refusal lists end to end: the doc–shell drift
-check is named in four consecutive editions and built in none. The posture list
-has gone un-re-measured for five. The recovery drill scheduled at the founding
+check is named in five consecutive editions and built in none. The posture list
+has gone un-re-measured for six. The recovery drill scheduled at the founding
 has never run. The escape ledger has never existed. **The editions converge on
 prose and diverge on instruments** — which is exactly what §5.1 predicts about
 remedies with no mechanical check, applied to the document that contains §5.1.

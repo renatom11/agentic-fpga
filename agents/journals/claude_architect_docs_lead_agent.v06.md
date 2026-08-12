@@ -405,3 +405,307 @@ by me beyond read-only inspection; nothing is staged.
 - docs/PROCESS-MEMOIR.md
 - docs/SPONSOR.md
 - docs/adr/ADR-0022-the-warranty-and-the-split.md
+
+## [J-architect_docs_lead-0057] 2026-08-12T05:54:09Z | task:none | The seventh edition performs the RETURN instead of ledgering it: the constitution's determinacy clause restored under a worked tally derived from a committed data file, the fourteen margins the split lost put back and both self-referential falsifiers rebuilt against states somebody else committed — and the one repair the council ordered is refused, because the record it cited contains the instance it said did not exist
+
+### Trigger
+Orchestrator dispatch, seventh edition, my seat alone, one round. Source: the
+fifth council's committed verdict at `docs/reports/process-council/round-5/verdict.md`
+— a **RETURN** with eight numbered repairs plus the A.8 disposition, each naming
+its sections. The verdict's own ground for refusing the accept-with-conditions
+form is the instruction I worked under: this organization metabolizes conditions
+into ledger rows, so the repairs are to be performed in the text and the record,
+not disclosed. Precheck: HEAD `d96ffe2`, tree clean, branch
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`; no sibling lane declared at
+dispatch and none announced during the round, so §4.2's inward declaration is a
+nil return rather than an unperformed act.
+
+### Inputs
+- `docs/reports/process-council/round-5/verdict.md` (in full — it controls), and
+  the eight reports beside it: `bob.md`, `charlie.md`, `bill.md`, `outsider.md`,
+  `contrarian.md` in full; `executor.md`, `expansionist.md`,
+  `first-principles.md`, `sal-framework.md` consulted.
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` (§7's Mutation
+  record (b.1)–(b.4) read as the normative source of §3.9's law).
+- `docs/PROCESS.md` and `docs/PROCESS-MEMOIR.md` at `d96ffe2`.
+- `git show d96a5b1:docs/PROCESS.md` — the committed fifth edition, used as the
+  external standard for falsifier 4 rather than the sixth edition's manifest.
+- **The record, for the worked tally**: `agents/handoffs/SO-xgmii_rx_64.md`
+  §2.2, §2.2-M, §2.2-D.4, §2.2-D.6; the campaign manifests at
+  `docs/reports/audit/WO-0050…WO-0077-mutations/README.md`;
+  `agents/handoffs/WO-0063B_m03-i2-report-path-campaign.md` and its
+  `-SEALED-predictions.md`.
+- `docs/reports/audit/PROCESS-claims-posture.md` rows C-01, C-06, C-07 (read as
+  evidence for the sole-spawner adjudication; not edited — sixth consecutive
+  edition it has been left alone).
+- `docs/adr/ADR-0022-the-warranty-and-the-split.md` (status only).
+
+### Reasoning
+**The one thing first, and it went somewhere the verdict did not expect.** The
+verdict's widest convergence — four seats, four independent probes — is that
+§3.9's prose copy of the seeded-defect law dropped the constitution's sentence
+*All three sit in `sealed`, none in `seeded`, each named at the tally with its
+ground*, leaving the printed definition of the *Seeded* column to contradict
+Ground 3, since a negative control is rendered and run. That half is
+straightforward: the clause is restored as a quoted blockquote rather than a
+paraphrase, at §3.9 and as a comment inside §3's sign-off facsimile, because a
+paraphrase is what drifted the first time.
+
+The second half was the instruction to write a fifteen-line worked tally from
+the real record, with the verdict's figures (sealed=7, seeded=5) offered as the
+council's reading and the record named as the standard. **Verifying them changed
+the outcome.** The real record's class-based era carries 63 sealed / 61 killed /
+1 survived / 0 green-by-blindness / 1 void, and the sign-off itself names an owed
+movement of the sealed figure to 65 under the amended definition without
+itemizing it. Walking the campaign manifests against the era's per-campaign
+contributions closes it exactly: `WO-0061` sealed ten classes and the era counted
+nine (`I-c1`, unscoreable); `WO-0063B` sealed two and the era counted one
+(`IC-2`); `WO-0074`'s `IC-M5` was counted inside sealed as the void. So under
+(b.1) — nothing removed from `sealed` for any later reason — **sealed = 65,
+difference = 3 with exactly one member per ground, seeded = 62 = 61 killed + 1
+survived.** The arithmetic closes twice and the tally has one member of each
+ground, which is the shape the verdict wanted at the record's own scale rather
+than at a synthetic one.
+
+**And that is how I found the item I had to refuse.** The Contrarian adjudicated
+Charlie F1 against the record and reported a second conviction the verdict
+adopted: that no exercised Ground-3 negative control exists, so §3.9 sells design
+intent as case law, and the repair list therefore instructs me to mark Ground 3
+as design intent. **The record refutes it.** `IC-2` at `WO-0063B` is a negative
+control in exactly §3.9's sense, and its seal — frozen before the run — says so
+in terms: *"IC-2 is a control, not a class this round scores. Its only REQUIRED
+cell is a green at M03-I2"*, and *"IC-2 is a control and scores no kill in its
+own right."* It was rendered, run at `mut/wo-0063b-ic2` = `dbc4b0a`, CI run
+`30955861141`, its required green observed at all three members and both lanes,
+kills 0 by design. Every element §3.9 requires of the ground is present and was
+disclosed pre-run.
+
+I considered three dispositions. **Comply anyway** — mark it design intent — is
+what a seat does when it treats a verdict as an instruction rather than as a
+finding; it would have put a false marking in the core on a council's authority,
+which is the exact class §3.8 convicts (*the packet quoted its source accurately;
+the source was wrong*). **Comply silently and note the disagreement in my return**
+keeps the document false and moves the disagreement into a channel the record
+does not carry. **Refuse in the document, with the evidence cited and the reason
+the council erred stated in place** is the only one that leaves a later reader
+able to check both the ruling and the refusal. I took the third, and the dispatch
+authorized it in terms: *the verdict's numbers are the council's reading, the
+record is the standard.* The more useful half is **why four seats missed it**,
+and it belongs in the core because it is a rule about reading tallies: the era's
+own denominator had already removed `IC-2`, so a reader walking the tally never
+met it. *A class excluded from a denominator is a class excluded from review* —
+which is precisely why (b.1) closes the naming duty while leaving the grounds
+list open.
+
+**The golden tally, and why it is a data file rather than more prose.** The
+verdict graduated the Expansionist's proposal on the ground that it makes Charlie
+F1 structurally unrecurrable. Prose cannot do that: the sixth edition's §3.9 was
+prose and it drifted from a constitution sitting in the same repository. So the
+figures now live in `docs/process-golden-tally.json` — every excluded class with
+its ground and the evidence that the ground was **disclosed before the run**, the
+survivor with its replay identifiers and its expiry condition, the unreachable
+set, and both arithmetic checks — and the core prints a de-domained rendering
+derived from it. I placed it beside the two volumes rather than under
+`docs/reports/gates/`: it is not a gate record, it is the derivation source for a
+document section, and putting it beside the volumes it serves is what makes the
+fork contract's disposition of it obvious. It also earns a kit row, a fork row,
+and a line in the commissioned governance check.
+
+**Falsifier 4 and the fourteen margins.** I re-derived Bob's finding rather than
+trusting his sample: extracting all 50 sentinel-marked passages from `d96a5b1`
+and fingerprinting each against **Part I of the companion specifically** — not
+against the whole file, because Annex B ledger narration about a topic is not the
+preserved margin the `[CORRECTED]` legend promises — returns **fourteen** lost,
+which is Bob's count exactly, plus one preserved-but-mis-filed block he did not
+name (the fifth edition's line 4825 margin, which sits in B.1 rather than under a
+Part I anchor). All fourteen exist at `d96a5b1`, so restoration was preferred to
+stripping at every one, as the verdict directs. Five of the anchoring sections
+had **no Part I block at all**, which is the reason their losses were the least
+visible: a reviewer checking whether §3.4's corrections survived found no heading
+to check under and read the absence of a block as the absence of margins. Three
+orphaned `[CORRECTED]` stamps are re-anchored — C-33 and C-114 as the verdict
+named, and **C-82 at §3.4, which the verdict did not name and my full diff
+surfaced**.
+
+**The falsifiers themselves are the deeper repair, and the Outsider's rule is why.**
+Falsifier 4 pointed at the manifest — a list the same edition wrote — so a block
+dropped from both file and manifest was undetectable by construction; falsifier 3
+closed against an uncommitted intermediate state at no commit. Both now close
+against `d96a5b1` and this commit. I also took the honest loss on falsifier 3
+rather than building a new closing sum: **no arrangement of line counts can prove
+a closure**, because a moved block and a deleted-plus-added block of the same
+size are indistinguishable to a line count. The sixth edition's arithmetic looked
+like the stronger instrument and was the weaker one, and saying so is worth more
+than a tidier sum. The Outsider's sentence is adopted in both volumes as this
+document's own drafting law, with the test that operationalizes it: *name the
+artifact the check would have to disagree with, and ask who wrote it.*
+
+**On repair 3 and the limit of my scope.** The record-side repairs — PROTOCOL
+absorbing R10/R11, the four charters and the gate checklist re-quoted, ADR-0022's
+countersignatures — are other seats' files and §2.3 refuses my commit to all of
+them. The verdict's disjunction is *repair the record or stop presenting it as
+clean*, and only the second limb was available to me, so I took it at every site
+the council named and added the one the Contrarian argued for: **§5.9, the
+amendment pipeline's last mile**, which is this record's most-exercised defect
+class and was missing from its own failure museum. I wrote it with this
+document's own inventory as the exhibit rather than an anonymized one, including
+the severity-cap arbitrage that lets the class survive disclosure. A museum whose
+worst exhibit is the museum's own owner is the only kind worth reading.
+
+**A.8, which I refused last round.** I flagged it at J-0056 refusal 5 as outside
+that round's closed scope and named it the cheapest item on any next list; the
+round-5 record put it in scope and B.11's own corollary — *a refusal repeated
+three times is a decision, not a deferral* — made a fourth deferral
+indefensible. I repaired rather than marked, and the repair is not deleting *and
+nowhere else* but **naming which of the five statement sites binds and which
+restate**: §2.7's parameter rule is unusable until one site is canonical, so
+marking the sentence false would have left the maintenance problem that produced
+it.
+
+**What I did not do, deliberately.** The governance CI job is named as
+commissioned with its owner and not built — `scripts/` and `.github/` are the
+orchestrator's scope. Probe 5.2 is stated as the council set it and not run: an
+adoption run executed by the document's own author measures nothing (§5.7). The
+posture list is untouched for the sixth consecutive edition, and was read only as
+evidence — which is what a grader's artifact is for, and is how the
+C-01/C-06/C-07 citation shuffle got adjudicated instead of guessed: the two sites
+cited different objects, and §1.0's set omitted precisely the row that graded its
+second limb false.
+
+### Actions
+- `docs/PROCESS.md` → **seventh edition**. §3.9: determinacy clause restored as a
+  quoted blockquote; grounds framing corrected; Ground 3 anchored against the
+  record with its instance and the reason four seats missed it; fifteen-line
+  worked tally added as a facsimile with its closure arithmetic and its
+  divergence from the record's carried figure. §3's sign-off facsimile gains the
+  determinacy clause and a pointer to the filled instance. Split block: S4's
+  falsity recorded, falsifiers 3 and 4 rebuilt against committed states, the
+  Outsider's rule adopted as a blockquote. Stamp legend: `[SF]` minted as a
+  seventh grade; both sole-spawner sites split into their limbs and re-stamped.
+  Dialect: **kit**, **launcher**, **residue** defined, admission criterion
+  replaced, count re-stated over its own list at fifteen. Boundary block: byte
+  figure against the A.3 anchor plus the windowed reader's load order. §1.2:
+  minimum legal seat set derived from §1.4's five separations as a fusion table.
+  §2.6: the nine-of-eleven gap. §3.8: *the rule moved* corrected. §5.9 minted.
+  §6.0: kit table gains a fourth column (known divergences), launcher pointer
+  resolved as a substrate parameter, golden-tally row added, governance check
+  commissioned with its owner, the two OPEN — CONDITION rows stated as current
+  law. §6.1: `[SF]`, annex-pointer and golden-tally fork rows added, Annex C row
+  resequenced. §6.2: six order-independent invariants, ten-line skeleton, Step 0
+  re-sequenced into four acts, Step −1 gains the pinned SHA, eleven HALT citation
+  sites run-tagged. A.3: the unexecutable-anchor improvisation written in as the
+  instruction. A.7/A.8: A.8 repaired. §6.3: 21 → 22 decision records.
+  Subsection index re-derived by its own printed command (72 headings).
+- `docs/PROCESS-MEMOIR.md` → companion to the seventh edition. Header
+  self-description corrected (Part I history / Annex B live ledger). Part 0: S4's
+  falsity recorded, §0.2a restoration table added, §0.3 rebuilt across committed
+  states, §0.4 falsifiers rewritten with the Outsider's rule, §0.5 census
+  re-derived with its movement accounted. Part I: **fourteen margins restored
+  verbatim from `d96a5b1`**, five new anchor blocks (§3, §3.1, §3.4, §6.2, A.7).
+  B.0.4 notes the conditions' promotion to the core. **B.12 added** — the
+  seventh edition item by item, 26 rows plus six refusals. Annex C gains the
+  golden-tally and launcher rows. Part IV gains the seventh-edition row.
+- `docs/process-golden-tally.json` → **new**. The machine-readable original.
+
+### Evidence
+All commands run from a checkout at this commit.
+
+- **Falsifier 1** — `grep -c 'SUPERSEDED — historical record, not current law:' docs/PROCESS.md`
+  → **0**.
+- **Falsifier 2** — every `### Anchored at —` heading in the companion's Part I
+  (**27**, up from 22) names a heading that exists in `docs/PROCESS.md`:
+  **0 unresolved**.
+- **Falsifier 3** — `git show d96a5b1:docs/PROCESS.md | wc -l` → **5,446**;
+  `wc -l docs/PROCESS.md` → **5,538**; `wc -l docs/PROCESS-MEMOIR.md` →
+  **2,028**; pair 7,566; net +2,120. All four figures printed in the companion's
+  §0.3 match.
+- **Falsifier 4, the one that failed last edition** — all 50 sentinel-marked
+  passages extracted from `d96a5b1:docs/PROCESS.md` and fingerprinted against
+  both volumes: **50 checked, 0 lost.** Against the sixth edition at `d96ffe2`
+  the same procedure returns **14 lost** (fifth-edition lines 1036, 1276, 2036,
+  2073, 2167, 2260, 2440, 2629, 2657, 3651, 3988, 4081, 4455, 4643).
+- **Sentinel census** — `grep -c … docs/PROCESS-MEMOIR.md` → **52** = 46 Part I
+  uses + 1 Annex B use + 5 mentions; the printed census claims 47/52 and 46 in
+  Part I. Movement from the sixth edition: 33 + 14 = 47, exact.
+- **Subsection index** — the document's own printed `awk` command re-run against
+  `docs/PROCESS.md` and compared entry-by-entry with the printed list:
+  **identical**, 72 headings, seam counts included.
+- **Dialect** — 15 bullets under *The dialect*; the head claims **Fifteen**.
+- **Boundary block** — `wc -c docs/PROCESS.md` → **366,906** bytes (printed);
+  `wc -c docs/PROCESS-MEMOIR.md` → **198,269** (printed); anchor 262,144; core
+  40% over, companion inside.
+- **Golden tally** — `docs/process-golden-tally.json` validated: sealed 65 =
+  seeded 62 + difference 3; seeded 62 = killed 61 + survived 1 + gbb 0;
+  per-campaign rows sum to the totals; `sealed_by_manifest − seeded ==
+  len(not_seeded)` holds for all ten campaigns; the difference carries exactly
+  one member per ground (1, 2, 3). Every figure printed in §3.9's block matches
+  the file.
+- **Tally provenance, class by class** — era figure and its five columns:
+  `SO-xgmii_rx_64.md` §2.2 and §2.2-M (walked at `2183d71`, trajectory table).
+  Survivor `G-c4`: §2.2-M — unmodified `g-c4.diff`, `mut/wo-0056-gc4-replay` =
+  `c95c9f4`, CI run `30852220315`, killing unit `M03-G8` alone of 27.
+  Never-rendered `IC-M5`: `WO-0074-mutations/README.md` §3.5, NOT SEEDED under
+  D-M5a, no branch cut. Unscoreable `I-c1`: §2.2-D.4, ruled at `WO-0061`
+  (`FINDING A-1`, `DISP-0001`), ground disclosed pre-run. **Negative control
+  `IC-2`**: `WO-0063B_m03-i2-report-path-campaign-SEALED-predictions.md` §3.3 and
+  §5 item 5 (frozen pre-run); run at `mut/wo-0063b-ic2` = `dbc4b0a`, CI
+  `30955861141`; campaign verdict — *"M03-I2 is GREEN… Kills: 0, by design"*;
+  one seal cell falsified (`M03-D2`) and recorded unedited.
+- **Sole-spawner adjudication** — `docs/reports/audit/PROCESS-claims-posture.md`:
+  C-01 is the §1.0 compound (REVIEW-ENFORCED), C-06 the spawner limb
+  (REVIEW-ENFORCED, evidence cell noting it is asserted as a substrate fact),
+  C-07 the committer limb (**FALSE**). §1.0's old set `{C-01, C-06}` omitted C-07.
+- **Constitution gap** — `grep -c 'R10\|R11' agents/PROTOCOL.md` → **0**.
+- **Decision records** — `ls docs/adr/ | wc -l` → **22**.
+- **Markdown integrity** — all 11 core tables and 17 companion tables have
+  uniform column counts; 0 unresolved `[B.12·n]` pointers (23 used, rows 1–23
+  exist); 0 substitution placeholders remain in any of the three files.
+
+### Outcome
+The verdict's repair list is discharged: repairs 1–8 performed, plus the A.8
+disposition, plus §5.9 as the museum exhibit the Contrarian's finding requires.
+**One item is refused on the record** — the instruction to mark Ground 3 as
+design intent — with the exercised instance cited in the document and the reason
+the council could not see it stated beside it. Three items are stated as
+routed rather than performed, each because the file belongs to another seat:
+the R10/R11 constitutional diffs, ADR-0022's three countersignatures, and the
+four charters' and gate checklist's re-quoting. The governance CI job is named
+with its owner (orchestrator) and not built; probe 5.2 is stated as the council
+set it and not run. Handoff: to the orchestrator for verification and commit —
+`docs/PROCESS.md`, `docs/PROCESS-MEMOIR.md`, `docs/process-golden-tally.json`.
+
+### Open-questions
+1. **Ground 3's refusal is the round's live disagreement and the council should
+   adjudicate it, not me.** I hold that `IC-2` satisfies every element §3.9
+   requires and that the verdict's premise is false of the record. If the council
+   disagrees, the disagreement is about whether a control whose seal names one
+   assertion and predicts a green is a *negative control* in §3.9's sense or
+   something narrower — and if it is something narrower, §3.9's definition is
+   what needs the repair, not its anchoring.
+2. **The `63 → 65` re-statement is owed by the verification lead and is not
+   performed.** The core and the golden tally both state the movement and name
+   whose act it is; the sign-off packet's own SC-5 cell still carries 63 under
+   the superseded definition. Until that lands, the program has one figure in two
+   units, which is the exact class §5.9 was minted for — in the round that minted
+   it.
+3. **`docs/process-golden-tally.json` has no consumer yet.** It is derived from
+   by hand and checked by hand. Its whole value is that the commissioned
+   governance job reads it and fails when §3.9's printed block disagrees; until
+   that job exists, the file is a better artifact than a prose tally and is not
+   yet the structural cure the verdict graduated.
+4. **The core is 40% past its own A.3 anchor and the seventh edition made it
+   larger, not smaller.** Disclosing the violation is not repairing it. The
+   complete repair is a smaller core, and no council has yet asked for one; the
+   First Principles Thinker's argument — that the binding constraint stopped
+   being description two editions ago — is the one this edition does not answer.
+5. **The escape ledger has still never existed and the recovery drill has still
+   never run**, five and six editions after each was first named. Neither is
+   document work and both are now the oldest live items in the record.
+6. **One preserved margin is mis-filed rather than lost** (fifth-edition line
+   4825, in B.1 rather than under a Part I anchor). It is named at §0.2a and left
+   in place; moving it would edit a row three editions of readers have cited.
+
+### Files-in-this-commit
+- docs/PROCESS.md
+- docs/PROCESS-MEMOIR.md
+- docs/process-golden-tally.json
