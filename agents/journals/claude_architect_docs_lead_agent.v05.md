@@ -2598,3 +2598,411 @@ convenes on the text as it now stands; `Annex B.7` is the round's audit surface.
 ### Files-in-this-commit
 - docs/PROCESS.md
 - docs/SPONSOR.md
+
+## [J-architect_docs_lead-0052] 2026-08-12T00:37Z | task:none | The council's four tiers and eighteen halts applied to the process description: a compound sentence convicted twice for wearing one stamp, the stamp apparatus confessed to covering half the document it certifies, the shell finally named — and the drift check taken off the adopter and put on the seat that holds both halves
+
+### Trigger
+
+Orchestrator dispatch, **one round, my seat**: the round-2 revision of
+`docs/PROCESS.md`, standing under the sponsor's three-round commission (three
+council rounds with verdict-driven revisions between them; this is the revision
+between rounds 2 and 3). No work order — dispatch-only, which is itself an
+instance of the class the document names at §3 and rows at B.6, and the second
+consecutive revision of this file commissioned that way.
+
+**Declared as an incident by the dispatch**: this is a **respawn**. An identical
+round was dispatched at 00:00Z and killed by a container restart before it had
+written anything; the tree was verified clean at respawn and nothing partial
+survived. Twelfth incident in the program's ledger, zero loss. Per §4.5 of the
+document I was editing — and per the dispatch's own instruction — I derived
+everything fresh from the committed record and consulted no prior partial,
+because none exists.
+
+Two source artifacts named as the work order's spine, both committed:
+`docs/reports/process-council/round-2/verdict.md` (PASS WITH CONDITIONS, four
+revision tiers, and *The One Thing to Do First*) and
+`docs/reports/process-council/round-2/adoption-run-halt-log.md` — the One Thing
+executed. A blank adopter ran §6.2 literally in a clean world containing only
+the document and returned **18 halts: 3 STOPPED, 15 PROCEEDED-BY-IMPROVISATION**.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` — in full,
+  first acts of the round.
+- `docs/reports/process-council/round-2/verdict.md` — in full. Its
+  *Recommendation* section is the work order's spine; its *Blind Spots the
+  Council Caught* section produced the single largest repair of this round.
+- `docs/reports/process-council/round-2/adoption-run-halt-log.md` — in full,
+  all 18 halts plus the RAN-CLEAN list and the summary.
+- `docs/reports/process-council/round-2/bob.md` (13 findings, re-executed
+  against the record), `bill.md` (13, adoption-risk ranked), `charlie.md` (10 +
+  minors, cold reader with no repo access) — in full;
+  `first-principles.md`, `expansionist.md` in full; `contrarian.md`,
+  `executor.md`, `outsider.md` as quoted through the verdict.
+- `docs/PROCESS.md` at `592a8b2`, 2,973 lines — in full, in four reads.
+- **Machinery read directly this round rather than quoted**, because three of
+  the repairs are claims about instruments and this document's own rule is that
+  a figure carried across rounds is re-derived by the method its carrier claims:
+  `scripts/agent_commit.sh`, `scripts/check_journals.sh`, `scripts/policy.sh`,
+  `scripts/verify_journal_chain.sh` (header + chain semantics),
+  `scripts/test_protocol.sh` (scenario census, S29–S37 located),
+  `.github/workflows/` listing.
+- Artifacts the facsimiles were written **from**, per §3.3's own rule that a
+  description written from the intention contains steps that cannot be executed:
+  `agents/handoffs/WO-0039_m03-mutation-campaign-SEALED.md` (seal header),
+  `agents/handoffs/WO-0039_m03-mutation-campaign.md` and
+  `agents/handoffs/SO-xgmii_rx_64.md` (packet header, practiced states),
+  `agents/journals/claude_architect_docs_lead_agent.v05.md` header block
+  (volume-header field names), `docs/gates/G0-checklist.md` (sponsor signature
+  form, ruleset click-path, picker sequencing).
+- `agents/handoffs/HT-01_first-harvest-transit.md` — the shell's identity and
+  the federation transit's four steps.
+- `agents/charters/auditor.md` — the five charter mechanisms exported at §1.5.
+- `docs/reports/audit/PROCESS-claims-posture.md` — **read only**: header,
+  rows `C-09`, `C-67`, `C-88`, `C-100`, the collected-false table. Not touched;
+  see Reasoning.
+- `git ls-remote origin` (86 `mut/*` refs), `.claude/agents/*.md` front matter
+  (model tiers), `docs/federation/outbox/`.
+
+### Reasoning
+
+**The frame I worked in.** The verdict is a *pass with conditions*, and the
+conditions are precedent — the document may not be handed to an adopter or
+called replication-grade until they are discharged. That is a work order with a
+closed scope, and the halt log converts each condition from testimony into the
+evidence form this document teaches: an attempt that bounced, cited by
+identifier. So every change I made carries either a tier item or a HALT number,
+and the ones that carry neither are listed as refusals. **A revision that
+quietly widens its own scope is a revision whose scope nobody can check** — that
+sentence is now in the document, and it is the rule I held myself to.
+
+**Tier 1 first, because a false claim is not a design question.** Five truth
+repairs, and the useful thing is what they had in common. Four of the five were
+**compound sentences with one true limb**. §2.7 said an instrument was in force
+"with its constitutional diffs *and its owed test cases* still unapplied" — the
+first half true, the second refuted by nine test cases that run green inside the
+very count §6.3 quotes back at the reader. §1.1 said "history is serialized on
+one branch, so there is a single order of events" under one machine-checked
+stamp, when the machine holds merge triviality and holds nothing at all about
+one-branch-or-force-push. §4.7 enumerated the sponsor's surface "completely" and
+omitted the one power that gates the export. §2.2's chain claim said "on every
+commit and again over pushed history" for a walk that happens on one of those.
+**The pattern is the finding**: a claim-by-claim census measures postures — is
+there a script? — and a compound sentence answers *yes* on the strength of its
+strongest limb. That is how fifteen false claims were purged and four more of
+exactly the same shape shipped in the edition that purged them. I repaired each
+by splitting it into limbs with a posture each, and I said so at each site,
+because the general form is worth more to an adopter than any of the four
+instances.
+
+**On §1.1 and HALT-18 specifically: I re-executed rather than adjudicated.**
+The adopter met `[MC · C-09]` against `[CORRECTED · C-67]`'s "No script
+anywhere" and had no way to know which row the audit measured. Both stamps are
+honest; the posture list's evidence cell for `C-09` names merge-triviality and
+octopus refusal as the check and says in terms that no-force-push is in no
+script. So the wrong side is neither row — it is §1.1's compound sentence, which
+took a stamp earned by one property and spent it on three. I read every
+enforcement script for a force-push, rebase or branch-name check and found none;
+I located the merge and octopus refusals in the pushed-history re-check. That is
+a measurement I took this round, and I said in the running line that I took it,
+because the dispatch is right that a new claim may not wear an inherited stamp.
+
+**The blind spot was the largest repair and no auditor made it.** The stamps
+measured the document at 1,445 lines; the document is 2,973. More than half of
+the text postdates its own evidentiary spine, and the preamble asserted the
+opposite in two sentences — "the one place a reader will see unstamped
+normative-sounding text" and "exactly two rules" added after the measurement.
+Both were true when written. **A boundary claim about a document's own coverage
+decays faster than any claim inside it**, because every edit moves the boundary
+and none of them touches the sentence. I replaced them with a block quote that
+states the coverage honestly, including the part that hurts: there is no visible
+seam, and a stamped sentence lends its authority to the unstamped one beside it.
+I considered and rejected marking every post-measurement claim individually —
+the count is now in the hundreds, the marking would itself go stale, and the
+honest instrument is the boundary plus the owed re-measurement, not a second
+apparatus nobody re-runs.
+
+**What I refused to touch, and why it is the most important refusal.** The
+posture list is the auditor's artifact. Its re-measurement against the grown
+document is the auditor's act, in the auditor's scope. **An author who edits the
+measurement that grades its own document is §5.7's root class in one act** — the
+document says this about other seats in six places and would have been convicted
+of it here. I did not open the file for editing; I read five rows and the header
+and rowed the re-measurement at B.2. The same reasoning made me route rather
+than perform the Tier-4 constitutional binding: writing into this document a duty
+that binds every seat is §3.7's checklist-amending-the-constitution defect run
+from the other end, so §2.7 now binds *my* seat and B.2 item 7 carries the
+amendment candidate into the queued batch, by the same route as the two false
+premises the last revision routed.
+
+**The mechanism clash, and why the resolution is a structure rather than a
+compromise.** The council split cleanly: four reviewers wanted format blocks in
+the body; one argued that a prose mirror of a rule set is a second unverifiable
+copy — §2.4's "rule and its check that disagree" one level up. Both are right
+about a real hazard, and the halt log priced the first one exactly: roughly one
+hundred percent of the executable layer invented, "constrained but never
+determined by the prose." I adopted the verdict's structure and wrote the rule
+down at the top, where the promise of mechanism is made: **the shell is the
+normative source; this document carries at most one marked, anonymized facsimile
+per artifact class, written from the real artifact, and where they disagree the
+shell wins and the facsimile is the defect.** Nine facsimiles landed — trailer
+block and protected keys, volume header, scope-table row, rule-id column, packet
+skeleton with id and path templates, entry header with the spawn token, seal
+state line, marked-reference prefix, residue row. Every one was written by
+opening the real artifact, which is the rule §3.3 states about itself and which
+the first edition violated when it invented a field a file cannot contain.
+
+**The reassignment I am least comfortable with and most sure of.** The previous
+edition called the doc–shell drift check "the most useful thing an adopter could
+build first." The Executor named what no auditor did: the exporter holds both
+halves and the adopter holds one, so this is not a residue, it is a shirk. I
+moved it onto my own seat, `[PLANNED]`, with a closing event, and left it
+unbuilt — because building it is a round of its own and because naming an
+instrument early is the failure §2.4 convicts. It is uncomfortable precisely
+because it is now a debt with my name on it that a later reader is obliged to
+see, which is what §5.5 says a routing rule needs.
+
+**On the auditor charter I exercised the judgement the dispatch left me.** The
+skeleton goes to the kit as a template row; the *mechanisms* — cadenced duties,
+the escape ledger, the canary information rule, no direct worker interface,
+falsifiable evaluation criteria — go into §1.5 as prose. Grounds: copying a
+normative artifact into the explaining half manufactures the drift the whole
+placement rule exists to prevent, while the mechanisms are not a copy of the
+charter at all, they are the reasons this document's own review-enforced
+postures survive. Export the artifact once, where it runs; export the reasons
+where they explain.
+
+**On the solo adopter, I took the adopter's own framing.** HALT-14 makes the
+definition of done formally unsatisfiable for a solo cold boot: no external
+ratifier exists, and self-signing is §5.7's permission slip wearing a gate's
+clothes. The adopter refused both evasions and called the open gate "the honest
+result." I wrote that into Step 5 as a block quote — found self-signed, rows
+open, limitation declared, gate stays open — rather than leaving the DoD
+unsatisfiable in silence or, worse, softening it. The DoD's retro-audit checkbox
+now carries the same option and the sentence that makes it usable: **an open row
+is a true row.**
+
+**On the DoD equation I chose replacement over repair.** The old checkbox asked
+that the case count *equal* the numbered rules plus amendments. Thirteen rows
+carry eleven numbers; one rule admits no constructible case at all; one case can
+be needed twice for one rule. No counting rule makes the equation true without
+inventing one, so I stated why it is uncomputable and replaced it with the
+verdict's own formulation. **A falsifiability instrument that cannot be
+evaluated is worse than none, because it is checked off anyway.**
+
+**Four things I declined, all recorded in the document rather than only here.**
+The subsection index (real defect, but a hand-maintained derived index is
+exactly the stale aid §1.6 convicts — the right repair is derivation at read
+time or a last-true date, and that is a round of its own). The worker-role
+enumeration and roster/state formats from HALT-03 (role names are a program's
+own decomposition; exporting mine exports a domain, so the honest placement is a
+kit template with slots). The adopter's own machinery gap from HALT-17 (a true
+finding against *their* re-check, not against this document; what I applied is
+the general form in the DoD — expect the trace to convict your machinery too).
+And everything the council filed that the chairman did not make a condition —
+named in B.8's refusal list so the debt is countable rather than silently
+absorbed.
+
+**Two repairs I made outside the tiers, and I want the grounds on the record
+because they are the borderline cases.** §1.5's "the one claim that survived"
+against §1.4(b)'s "one of the claims" is a flat internal contradiction; I
+withdrew the singular rather than assert a count I had not re-measured. And
+§2.5's "the entire pushed history" is an unqualified quantifier in the section
+that convicts the first edition for one; I delimited it to the lineage and
+stated the two frames — the gate binds what passes through it, the re-check
+binds what lands — which is the reconciliation the council had to assemble from
+three reports and which explains, in the text at last, how eight mechanically
+refused acts happened. Both are the same defect family as the Tier-1 repairs and
+cost three sentences each; declining them would have been an economy against the
+reader.
+
+### Actions
+
+Edited `docs/PROCESS.md` only. Twenty-eight edits, by section:
+
+- **Head**: edition anchor (edition, date, commit-bearing line) with the
+  explicit statement that no stamp in this edition has been re-measured.
+- **Read this first**: the stamp-coverage boundary block replacing two false
+  sentences; the posture list's path; the mechanism-placement rule and the
+  `FACSIMILE` label definition.
+- **The dialect**: five terms to nine — council, census, surface, margin — with
+  the per-edition cold-readability lesson stated at the point of cost.
+- **§1.1**: honest statement of both monopolies hoisted into the running line,
+  archaeology to the margin; the serialized-history sentence split into two
+  limbs with two postures (HALT-18), re-executed this round.
+- **§1.2**: model-tier invariant; contingent seats; onboarding as one act.
+- **§1.4**: five separations stated plainly before the count's archaeology.
+- **§1.5**: fifth structural distinction (the escape ledger); the five auditor-
+  charter mechanisms with the placement judgement stated; the singular in item 1
+  withdrawn.
+- **§2.1**: trailer-block facsimile, protected keys, journal-only marker, empty
+  file-list marker.
+- **§2.2**: volume-header facsimile; the chain claim split by surface; the
+  onboarding cross-reference.
+- **§2.3**: scope-table facsimile with the disjointness arithmetic read off it.
+- **§2.5**: "entire pushed history" delimited; the two frames stated.
+- **§2.6**: rule-id column `R1`–`R11`; the three things it makes visible; the
+  large-file threshold stated at 1,000,000 bytes.
+- **§2.7**: false limb deleted with its margin; the amendment binding added for
+  this seat and routed for the constitution.
+- **§3**: closure *rule* replacing the closed list; practiced extensions and
+  states named as unrouted; packet-skeleton and identifier facsimiles.
+- **§3.1**: entry-header facsimile and spawn token; the parser rule made
+  implementable.
+- **§3.3**: seal-header facsimile.
+- **§3.8**: the escape ledger as the sign-off's necessary companion.
+- **§3.9**: survivor exhibit re-layered (rule first, correction to margin);
+  marked-reference prefix facsimile; reference count re-measured at this commit.
+- **§3.10**: the sponsor's candidate-by-candidate refusal.
+- **§4.3**: sealed predictions into the protected classes, with the
+  not-relayed-before-unsealing rule.
+- **§4.7**: five-item enumeration with the fifth power; the quantifier dated;
+  how a journal-less sponsor signs.
+- **§5.5**: the three-clause count given its boundary — *labelled* declarations.
+- **§6.0**: the shell named; three kit rows; the freeze claim corrected; the
+  federation transit in four steps; the drift check named, `[PLANNED]`, and
+  reassigned to the exporter.
+- **§6.1**: substrate qualifier on "transfers directly"; the fork contract as a
+  per-mark table.
+- **§6.2**: reordered to machinery → adversarial review → platform; stamped
+  performed/dated with the halt log cited; every step annotated with the halts
+  it was rewritten from; the founding-commit paradox; the solo-adopter block;
+  the DoD equation replaced; residue-row facsimile.
+- **Annex A**: A.5 gains the ruleset and picker-sequencing facts; **A.6b** (no
+  platform at all) and **A.7** (large-file threshold) and **A.8** (capability
+  tiers) added.
+- **Annex B**: standing cold-reader row in B.1; three routed items in B.2
+  (constitutional binding, posture re-measurement, drift check); B.6 updated
+  with the two external anchors and what they did not close; **B.8** — the
+  revision ledger, 37 applied items with sources and 7 refusals with grounds.
+
+No `git add`, no `git commit`, no `git push`. Nothing staged.
+
+### Evidence
+
+Precheck (§4.1), before any file was opened for editing:
+`git rev-parse HEAD` → `592a8b2`, the expected head, on
+`claude/fpga-hardcaml-agent-orchestration-37ceyf`; `git status --porcelain` →
+empty. Tree clean at respawn exactly as the dispatch declared; no sibling in
+flight, none declared.
+
+Measurements taken this round, each reproducible at this commit:
+
+- **The `C-09`/`C-67` split.** `grep -n "force\|non-fast-forward" scripts/*.sh`
+  over `agent_commit.sh`, `check_journals.sh`, `policy.sh`,
+  `verify_journal_chain.sh` → no force-push, rebase or branch-name check in any
+  of them. `scripts/check_journals.sh` lines 40–56 carry the octopus refusal and
+  the tree-equals-a-parent merge check. Both limbs as written in §1.1.
+- **The §2.7 false limb.** `grep -o 'say "S[0-9]*' scripts/test_protocol.sh` →
+  scenarios through `S39`; `S29`–`S37` present and named for the journal-chain
+  regime (rotation, per-volume renumbering, wrong back-link, frozen-volume
+  append, two staged volumes, foreign volume seed, carve-out boundary pair,
+  chain verification, hard-threshold rotation). The cases the sentence called
+  unapplied exist and are the ones §6.3's count includes.
+- **The rule numbering.** Rule ids read from the refusal strings in
+  `scripts/agent_commit.sh` (`R2`–`R8`, `R10`, blob gate) and
+  `scripts/check_journals.sh` (`R9` merge/octopus, `R11` blob) — `R1`–`R11`,
+  eleven numbers over §2.6's thirteen rows.
+- **The large-file threshold.** `BLOB_MAX="${AGENT_COMMIT_BLOB_MAX:-1000000}"`
+  in both `agent_commit.sh` and `check_journals.sh`; journals carved out with
+  the reason stated in the script's own comment. Journal thresholds
+  `262144`/`524288` in `policy.sh`, matching Annex A.3 unchanged.
+- **The chain-verification limb split.** `agent_commit.sh` verifies chain
+  headers only under the rotation branch and entry-id monotonicity across the
+  chain on every commit; the gapless/back-link/digest walk is in
+  `check_journals.sh` and in `verify_journal_chain.sh`, whose own header states
+  what a green result does and does not certify.
+- **The reference census.** `git ls-remote origin | grep -c "refs/heads/mut/"`
+  → **86**, unchanged from the figure §3.9 carries; naming pattern
+  `mut/<campaign>-<class>` and `mut/<probe-slug>` read off the listing and used
+  for the facsimile.
+- **Model tiers.** `grep "model:" .claude/agents/*.md` → `opus` for
+  architect_docs_lead, auditor, dv_lead, rtl_lead; `sonnet` for data_wrangler,
+  formal_dv, rtl_module_dev, tb_writer. Eight launchers, no orchestrator
+  launcher — the invariant in §1.2 and Annex A.8 is derived from this listing.
+- **The shell's identity.** `agents/handoffs/HT-01_first-harvest-transit.md`
+  §Feeds and §5 name `generic-agentic-fpga-org` and the inbox pull request;
+  §5-pre records the shell 31 commits ahead at transit time and the federation
+  law reshaping the delivery. The four transit steps in §6.0 are read from that
+  packet, not from memory.
+- **Sponsor signature form and platform sequencing.**
+  `docs/gates/G0-checklist.md` rows 8–9 (sponsor acts transcribed as dated lines
+  with the recording entry named) and its item-9 click-path (rulesets not
+  classic protection; "only after item 5 is green — the status check must have
+  run at least once before it appears in the picker").
+
+Document size: **2,973 → 4,142 lines**, +1,169. Nine `FACSIMILE` blocks, all
+labelled; eight fenced, one a live table (§2.6's, which has to render).
+Post-edit greps confirm the five superseded claims survive **only** inside
+margins that quote them: "completely enumerated" (§4.7 margin, B.8 row),
+"the taxonomy is closed" (§3 correction, B.8 row), "kept deliberately frozen"
+(§6.0 correction, B.8 row), "the one place a reader…" (preamble boundary block),
+"owed test cases still unapplied" (§2.7 margin, B.8 row). No running line
+carries any of them.
+
+**Not measured, and stated as such:** I did not execute `test_protocol.sh`, so
+the "51 cases" figure §6.3 carries is quoted from the council's execution and
+not re-derived by me — it is untouched in this edition either way. I did not
+open the shell repository; every statement about it in §6.0 rests on `HT-01` and
+the export packet, and the section says in its own text that the shell is named,
+not inspected. I did not re-measure any `C-nn` row.
+
+### Outcome
+
+**All four tiers applied, plus the halt log's specific items.** 37 applied
+changes and 7 recorded refusals, each carrying its source, tabulated in the
+document itself at Annex B.8 so that the next council reads the dispositions
+from the artifact rather than from this entry.
+
+Against the verdict's conditions: Tier 1 — five of five. Tier 2 — shell named,
+three kit rows, edition anchor, §6.2 reordered, DoD equation replaced. Tier 3 —
+mechanism placement resolved by structure with nine facsimiles, four coverage
+gaps closed, four layering sites repaired, dialect completed, fork contract
+added. Tier 4 — amendment binding applied for this seat and routed for the
+constitution, cold-reader row standing in B.1, §6.2 stamped with the run that
+performed it.
+
+**What this revision does not discharge**, and the verdict's own words are the
+bar: the document may not be called replication-grade until an adopter can act
+on it. Two of the three STOPPED halts are now cured at the source — the shell is
+named, the ordering contradiction is gone. The third, HALT-14, is not curable by
+any edit and is now stated honestly instead of being silently unsatisfiable. The
+machinery half of HALT-06 is mitigated by facsimiles and by naming the shell; it
+is not closed until the drift check exists, which is my debt now and not the
+adopter's.
+
+Handoff: back to the orchestrator for verification and commit. Nothing staged;
+no git command run.
+
+### Open-questions
+
+1. **The drift check is now owed by this seat and does not exist** (B.2 item 9,
+   §6.0). It needs a round, and it needs a decision about which repository can
+   run it — this one can read both halves only if the shell is fetched, which is
+   itself the fetch-first habit the transit taught.
+2. **The posture list's re-measurement is the auditor's and is now the binding
+   constraint on this document's honesty** (B.2 item 8). The preamble tells a
+   reader that more than half the text is unmeasured; that sentence is true and
+   it is not a resting place.
+3. **The constitutional binding of §2.7 is routed and unbatched** (B.2 item 7).
+   Four amendment candidates now sit in that batch — the two false premises from
+   the last revision, the stopped one-word cure, and this one. A batch that
+   never issues is a queue pretending to be a route.
+4. **Cold-reader row for edition 3 is owed before the next council reads it**
+   (B.1). This edition added four terms of its own — facsimile, limb-split,
+   surface-frame, fork contract — and by its own lesson the seat that can see
+   the new opacity is the one that was not in the room.
+5. **HALT-12 is the thinnest repair in the table and I named it as such**: §6.2
+   still assumes the constitution template rather than scheduling the
+   constitution's authorship, so an adopter without the kit will still write a
+   constitution backwards from the checklist that quotes it. Carried as owed
+   rather than papered over.
+6. **A prose defect I did not touch and am reporting rather than silently
+   fixing**: §2.5 contains "**Two things that matters for.**" — a plain
+   agreement error in a running line, present since the second edition. It is
+   inside my scope and outside this round's work order, and I did not want an
+   unattributable edit sitting among 37 sourced ones. Fix it in the next round
+   that opens the file.
+
+### Files-in-this-commit
+- docs/PROCESS.md

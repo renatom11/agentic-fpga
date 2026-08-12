@@ -4,6 +4,16 @@ A reference for the way a program is run here: the seats, the rules they work
 under, the artifacts they produce, the disciplines they keep, and the failures
 each of those exists to prevent.
 
+**Edition anchor — third edition · 2026-08-12 · `docs/PROCESS.md` on this
+program's working branch, at the commit that carries this line.** The second
+edition was measured claim-by-claim at one commit; that measurement is what
+every `C-nn` stamp below cites, and **no stamp in this edition has been
+re-measured.** This edition's own additions and repairs postdate it, carry no
+row, and are listed one by one — each with the condition or the numbered
+adoption halt that produced it — in **Annex B.8**. *A stamp is a measurement at
+one commit. So is a document: an edition with no anchor cannot be cited, and a
+reader cannot tell which repository state it describes.*
+
 ---
 
 ## Read this first
@@ -41,6 +51,31 @@ domain nouns, which is how it came to describe a machine no reader could
 construct: three independent reviewers, one of them working from the text alone,
 each stalled at the same place — the point where a worker's staged changes become
 a commit executed by another seat. That mechanism is now written down (§2.1).
+
+**Where mechanism lives, exactly — the rule this edition adopts.** *(Added in
+this edition, resolving a clash the council could not close by compromise.
+Source: council condition, Tier 3 mechanism placement — Annex B.8.)* Two
+hazards pull in opposite directions. Describe a grammar in prose only, and an
+adopter under-determines every file-producing rule — which an executed adoption
+run measured at roughly **one hundred percent of the executable layer invented**:
+entry syntax, trailer keys, marker names, path layouts, table syntax, rule
+numbers, one threshold the text called *stated* and never stated. Restate the
+grammar as normative prose, and the document becomes a second, unverifiable copy
+of the shell's rule set that will drift from it. So:
+
+> **The shell is the normative source of every grammar. This document carries at
+> most one *marked, anonymized facsimile* per artifact class — an instance, not
+> a norm — written from the real artifact rather than from the intention
+> (§3.3's own rule), with its project nouns replaced by function names.**
+
+A facsimile is labelled **`FACSIMILE — instance, not norm`**. It exists so a
+reader can see the shape of the thing, write a parser against it, and recognize
+the real one; it does not define it, and where the shell and a facsimile
+disagree, **the shell wins and the facsimile is the defect**. The instrument
+that would catch such a disagreement is the doc–shell drift check named in §6.0,
+which does not exist yet and is owed by the exporter. Until it does, every
+facsimile here is a claim about another repository, held to the same standard as
+every other claim in this document: **check it before you repeat it.**
 
 **Included: substrate.** Facts about the runtime the design leans on — that a
 spawned agent cannot spawn, that a reader has a maximum single-file size, that
@@ -85,25 +120,73 @@ Four properties of the stamps, so they are not over-read:
   next one.
 - **Failure-class prose is not stamped.** The italic *Failure class* passages
   assert nothing about this program's controls — they generalize an incident —
-  so they were outside the audit's frame and are outside the stamping. This is
-  deliberate and is the one place a reader will see unstamped normative-sounding
-  text.
+  so they were outside the audit's frame and are outside the stamping.
 - **A claim added after the measurement carries no row, and says so.** The
   posture list is a frozen measurement of the text as it stood when it was
   taken. A claim added afterwards has no row to cite, and citing a row that does
   not decide it would be worse than citing none — so such a claim is marked
   *(no posture row — added after the measurement)*, states its posture in prose,
-  and is owed a row at the next audit (**Annex B**). Exactly **two rules** are
-  added that way: the fifth separation of §1.4(e) and one element of §3.8's
-  list, both on the correction of the seat those rules bind. Added and corrected
+  and is owed a row at the next audit (**Annex B**). Added and corrected
   **exhibits** — claims about episodes rather than about controls — carry no row
   either; each says in its own margin which seat's confirmation produced it, and
   **Annex B** lists the round that filed them.
 
+**And now the boundary of the whole apparatus, which is the thing to read
+before you read anything as evidence.** *(Corrected in this edition; the
+superseded claims are quoted below. Source: the council's blind-spot finding.
+See Annex B.8.)*
+
+> **The stamps do not cover this document. They cover the document it used to
+> be.** The posture list measured `docs/PROCESS.md` as it stood at one commit,
+> at **1,445 lines**. The text you are reading is **nearly three times that**.
+> Well over half of it — every line the second edition added in response to the
+> measurement, and everything this third edition adds in response to a council
+> and an executed adoption run — **postdates its own evidentiary spine and has
+> never been audited against the machinery.** There is no visible seam. A
+> stamped sentence and an unstamped one sit in the same paragraph, in the same
+> voice, and the stamped one lends its authority to its neighbour whether or not
+> the neighbour earned it.
+
+The two sentences this replaces were the sharpest false claims in the second
+edition, and they were false in the most expensive direction — they told a
+reader the unmeasured surface was small and locatable. They said the
+failure-class prose is *"the one place a reader will see unstamped
+normative-sounding text"*, and that *"exactly two rules"* were added after the
+measurement. Both were true of the text when they were written and were left
+standing while the document doubled around them. **A boundary claim about a
+document's own coverage decays faster than any claim inside it**, because every
+edit moves the boundary and none of them touches the sentence.
+
+What you can rely on, stated exactly:
+
+- A `[MC]`, `[RE]`, `[P1]`, `[PLANNED]`, `[CORRECTED]` or `[UNANCHORED]` stamp
+  carrying a `C-nn` row was decided by an independent seat re-executing that
+  claim against the machinery **at that one commit**. Those hold as measurements
+  of that state, and an independent re-execution of about twenty-five of them
+  confirmed the transcription.
+- **Anything without a row is unmeasured.** Not false — unmeasured. It states
+  its posture in prose because that is the strongest thing available to it.
+- The re-measurement of the grown document against its machinery is **owed**,
+  and it belongs to the seat that owns the posture list, not to this document
+  (**Annex B**).
+- **The posture list is a real file with a path**:
+  `docs/reports/audit/PROCESS-claims-posture.md` in this program's repository,
+  and it is a row in §6.0's kit table. Until this edition every stamp cited an
+  artifact the document never located — which, by §3.1's own evidence rule,
+  made the entire apparatus testimony for anyone outside this repository.
+
 ### The dialect
 
-Five terms were absorbed into this program's speech and used here without
-definition until a cold reader proved they could not be inferred. They are:
+Nine terms were absorbed into this program's speech and used here without
+definition until a cold reader proved they could not be inferred. **Five came
+from the first cold reading and four from the second** — and that is the fact
+worth carrying, not the list: *cold-readability is a per-edition measurement,
+not a fixture.* Each edition invents vocabulary while correcting the last one's,
+and the seat that can see the new opacity is the one that was not in the room.
+This edition's own review board had auditor, verification-lead and orchestrator
+rows and **no cold-reader row**; the four terms below are what that omission
+cost, and **Annex B.1** now carries the row so the measurement is re-run rather
+than fossilized. The terms:
 
 - **round** — one spawn of one seat against one commissioned unit of work. Not a
   commit (a round may produce several, or none), not a work order (a work order
@@ -123,6 +206,36 @@ definition until a cold reader proved they could not be inferred. They are:
   text or check that enforces it. They are not the same object, and the whole
   countersignature discipline (§3.5) exists to ask one question about the gap
   between them: *is the guard exactly the rule, or is it wider?*
+- **council** — a convened review round, not a standing body: several
+  independent reviewers, commissioned at once against one artifact, each
+  reading it from a declared seat (hostile, cold, executor, and so on), each
+  returning its own committed report, adjudicated by one chair into a single
+  verdict with conditions. It is a *review instrument*, not a seat in §1.2's
+  roster; it exists for the artifact class §1.4(a) calls the last one anyone
+  routes through review — this document is the only artifact this program has
+  ever convened one for. A council's value is that its members do not share a
+  reading; where they converge independently, the convergence is the finding.
+- **census** — an exhaustive re-derivation of one property over every instance
+  of it in the record, run as a single act and reported as a distribution rather
+  than an example: every dated stamp against its cited entry, every marker
+  against its row, every identifier against its packet. It is what a program
+  runs when it stops trusting spot-checks about a class of claim. **A census is
+  not one number** (§5.1): it reports what it measured, at what band, over what
+  population. Who runs one is whoever owns the property; what triggers one is a
+  spot-check that came back wrong twice.
+- **surface** — one of the two places a rule can be checked: the **commit
+  surface**, the local gate that refuses before a commit object exists, and the
+  **pushed-history surface**, the re-check that runs in continuous integration
+  over all of history. The word is load-bearing because a rule present on one
+  and absent from the other is §2.4's asymmetry defect, and because a stamp that
+  does not say its surface has not said where its guarantee holds.
+- **margin** — an italic passage, labelled *Margin note*, carrying the
+  superseded text a correction replaced and what refuted it. This is a flat
+  file with no margins in the typographic sense; the word is inherited from the
+  practice, and it names the layer, not the place. **The rule that governs a
+  margin is one line: the running line carries the current truth and the margin
+  carries the history, never the reverse.** A correction that lives only in a
+  margin has not been made.
 
 ---
 
@@ -193,18 +306,23 @@ The orchestrator is the **sole spawner** — no other agent starts an agent — 
 the **sole committer**: no other agent runs a commit or a push. `[RE · C-06,
 C-07]`
 
-*Margin note — what the first edition claimed here.* It stated the second
-monopoly as an unqualified fact of the record `[CORRECTED · C-07]`. The record
-contradicts it. The rule became standing only late in the program, after an
-episode in which the auditor — the one seat whose whole value is that it does not
-touch what it grades — cut, committed and pushed five transient references on the
-orchestrator's own dispatch, plus three earlier deviations of the same shape. The
-instrument that codifies the rule is, at this writing, still *proposed*. So the
-honest statement is: **the committing monopoly is a rule the seats keep, not a
-property the machinery holds** — it has been broken, on instruction, by the seat
-least able to afford it, and the repair was to write the rule down rather than to
-build a check that could not exist. What the machinery does hold is narrower and
-real: no seat can commit *outside its write scope* (§2.3), whoever runs the tool.
+**Both monopolies are rules the seats keep, not properties the machinery
+holds.** No instrument in this repository binds who runs the version-control
+tool. What the machinery does hold is narrower and real: no seat can commit
+*outside its write scope* (§2.3), whoever runs the tool. Read the committing
+monopoly as a discipline with a scope check underneath it, and you will build
+the right compensating control; read it as a guarantee and you will build none.
+
+*Margin note — what the first edition claimed here, and what refuted it.* It
+stated the second monopoly as an unqualified fact of the record
+`[CORRECTED · C-07]`. The record contradicts it. The rule became standing only
+late in the program, after an episode in which the auditor — the one seat whose
+whole value is that it does not touch what it grades — cut, committed and pushed
+five transient references on the orchestrator's own dispatch, plus three earlier
+deviations of the same shape. The instrument that codifies the rule is, at this
+writing, still *proposed*. It has been broken, on instruction, by the seat least
+able to afford it, and the repair was to write the rule down rather than to
+build a check that could not exist.
 
 The first monopoly starts as a fact about the substrate: in the environment this
 was built for, a spawned agent cannot itself spawn. Rather than fight that, the
@@ -227,8 +345,35 @@ party it binds cannot be applied.
 The second monopoly — one committer — is what makes the numbering, the ordering
 and the attribution of the whole record enforceable by a single authority. Packet
 numbers are allocated at commit time by the one seat that commits, which puts
-allocation under one authority `[RE · C-08]`. History is serialized on one
-branch, so there is a single order of events `[MC · C-09]`.
+allocation under one authority `[RE · C-08]`.
+
+**History is serialized — and that sentence has two limbs with two different
+postures, which is why it is now written as two.** *(Split in this edition. The
+second edition carried both limbs under one machine-checked stamp; an adopter
+executing this document met the contradiction at the trace and could not tell
+which posture to inherit. Source: adoption-run HALT-18 and the council's
+cross-report assembly — Annex B.8.)*
+
+- **The limb a machine holds.** A merge into the trunk must introduce no content
+  of its own — its tree must equal one of its parents' — and a merge with more
+  than two parents is refused outright. That refusal exists, on the
+  pushed-history surface, and it is what this sentence's stamp was measured
+  against `[MC · C-09]`.
+- **The limb no machine holds.** That work lands on *one* branch, that pushed
+  history is never rebased, and that nothing is ever force-pushed rest entirely
+  on the hosting platform's branch protection (§2.5) and on **no script
+  anywhere** — which is exactly what §2.6's row for the same property says
+  `[CORRECTED · C-67]`.
+
+*Re-executed in this revision rather than quoted, since the split is a claim
+about instruments:* every enforcement script was read for a force-push, rebase
+or branch-name check and none carries one; the merge-triviality and octopus
+refusals were located in the pushed-history re-check. **The two limbs were true
+separately and false together.** A reader of §1.1 alone inherited a
+machine-checked guarantee for a property §2.6 says nothing holds, and the
+reconciliation lived only in the posture list's evidence cell — which is to say,
+outside the document. **A stamp on a compound sentence is a stamp on its
+strongest limb, and it will be read as a stamp on its weakest.**
 
 *Margin note.* The first edition said the numbering was "monotonic by
 construction rather than by convention" `[CORRECTED · C-08]`. It is not.
@@ -327,6 +472,52 @@ which is carved out of the scope check for exactly that reason. The general
 form matters more than the correction: **a write-scope statement that forgets the
 journal carve-out describes a seat that cannot legally commit anything.**
 
+**Seats are staffed at a capability tier, and the allocation is a design
+decision with a budget attached.** *(Added in this edition; no posture row —
+added after the measurement. Posture: **review-enforced**, carried by the
+launcher definitions, which name a tier per seat. Source: council condition,
+Tier 3 coverage — Annex B.8.)* In this program every long-lived seat that
+**reviews, adjudicates, grades or audits** runs on the strong reasoning tier,
+and every short-lived seat spawned per packet runs on the cheaper one. The
+invariant, which is the part that transfers:
+
+> **The reviewing tier is at least the producing tier.** A seat may be graded by
+> an equal or a stronger reasoner; never by a weaker one.
+
+Get it backwards and the review becomes a formality that cannot see the defect
+it was convened for — and it fails silently, because a weaker reviewer returns
+*accept* fluently. This is a **substrate parameter** in Annex A's declared
+sense: what tiers exist, what they cost, and what one call of each can hold are
+facts about your runtime, not about this design. Measure them, then allocate.
+Note the second-order cost the invariant creates: it makes the review line the
+expensive line, which is precisely the line a schedule crunch will try to
+downgrade.
+
+**Contingent seats: chartered before they are activated.** *(Added in this
+edition; no posture row. Posture: **review-enforced**. Source: council
+condition, Tier 3 coverage.)* Not every seat in the roster is staffed on day
+one. A seat that a later phase will need — a second lead in one line when the
+work splits, a specialist that only a hardening window uses — is **written into
+the roster, given a charter and a scope row, and left dormant with its
+activation trigger named**, rather than invented at the moment the work arrives.
+The trigger is a stated event (a phase boundary, an overlap condition), not a
+judgement call. **A seat improvised under load is a seat whose boundaries are
+drawn by the load** — which is §1.3's failure class, arriving through the
+roster instead of through the charter.
+
+**Onboarding a seat is one act, not four.** *(Added in this edition; no posture
+row. Posture: **review-enforced**.)* Whether at the founding or mid-life, a seat
+becomes real only when four things land **together**: its **charter**, its
+**row in the scope table** (§2.3), its **launcher text** (which makes
+charter-reading and the §4.1 precheck its first acts), and its **seeded, empty
+reasoning log** — the one case where a seat's journal is created by another seat
+(§2.2). Split them across commits and every intermediate state is a defect: a
+charter with no scope row describes a seat that cannot commit; a scope row with
+no charter grants write access to a role nobody has defined; a launcher with no
+seeded log spawns an agent whose first commit is refused by the coupling rule.
+This is §5.6's *repairs that verify each other belong in one commit*, applied to
+the founding act rather than to a repair.
+
 **The failure class the fixed roster prevents.** Role drift, where a seat under
 schedule pressure absorbs an adjacent duty because it is faster to do it than to
 route it — and the absorbed duty is almost always a check on the absorbing seat.
@@ -377,14 +568,28 @@ committed artifacts. §1.7 states the sequence this belongs to.
 
 ### 1.4 Separation of duties — five separations, each drawn against a specific temptation
 
-*(The first edition's header said "three lines" over a list of four. It was a
-count of the organization's three working lines — specifying, building,
-verifying — sitting over a list of four separations, only two of which are drawn
-between those lines. Four was the count that matched the list, until this
-revision added **(e)** on the verification lead's own correction: a separation the
-constitution draws, the one sign-off in the record executes, and this document
-carried nowhere — not in this list, not in the sign-off form of §3.8, not
-anywhere. The seat that found it is the seat the separation constrains.)*
+**There are five separations, and each is drawn against one specific
+temptation.** Two of them are drawn *between* the organization's three working
+lines — specifying, building, verifying. The other three are drawn against
+temptations that live *inside* a single line, which is why the count of the
+separations is not the count of the lines. They are: **(a)** no seat reviews its
+own work; **(b)** builders never write the tests that gate them; **(c)** the
+test author is blinded from the implementation; **(d)** the party a measurement
+grades is not that measurement's check; **(e)** the thing that grades is itself
+graded, against something the organization did not write. Each is stated below
+with its failure class.
+
+*Margin note — this list's own count was wrong twice, and the second correction
+is the more interesting one.* The first edition's header said "three lines" over
+a list of four: a count of the working lines standing over a list of
+separations. Four was the count that matched the list — until the second edition
+added **(e)**, on the verification lead's own correction. That separation is
+drawn by the constitution and executed by the one sign-off in the record, and
+this document carried it **nowhere**: not in this list, not in the sign-off form
+of §3.8, not anywhere. **The seat that found it is the seat the separation
+constrains** — which is the shape §3.4 calls the finding worth trusting, and
+which is also why the number in a header is worth checking against the list
+under it.
 
 **(a) No seat reviews its own work.** Every output is accepted by a seat that did
 not produce it `[RE · C-20]`. Where the producing seat is the only competent
@@ -510,14 +715,19 @@ passing classes be summed into an artifact-level claim nobody measured.
 
 ### 1.5 The auditor is a different kind of seat
 
-The auditor is not a stricter reviewer. It is structurally distinct in four ways,
+The auditor is not a stricter reviewer. It is structurally distinct in five ways,
 each of which is a control:
 
 1. **It can write only its own reports.** Not the specifications it audits, not
    the tests, not the artifacts, not even the shared task packets. This is
-   enforced mechanically `[MC · C-25]` — of every "enforced mechanically" claim
-   in the first edition, this is the one that survived its own §6.1 test with no
-   qualification at all.
+   enforced mechanically `[MC · C-25]` — one of the claims from the first
+   edition that survived its own §6.1 test with no qualification at all;
+   §1.4(b)'s boundary between the building and verifying lines is another.
+   *(The previous edition called this "**the** one" while §1.4(b) called itself
+   "**one of** the claims" that survived unqualified. Both could not be right,
+   and a reader could not tell which sentence to trust — the singular is
+   withdrawn here rather than asserted with a count nobody has re-measured.
+   Corrected in this edition; a council precision — Annex B.8.)*
 2. **It never fixes what it finds.** A finding is routed to the owner, who
    repairs it. An auditor that repairs is an auditor with an incentive to find
    what it can repair. `[MC · C-26]` — same instrument as (1): it cannot stage
@@ -532,6 +742,27 @@ each of which is a control:
    program's life; the second instance is the audit that produced this edition's
    stamps. Between them lay the entire build phase. §1.1's residue note explains
    why, and Annex B carries the obligation.
+5. **It owns the ledger of what verification missed.** Every divergence
+   discovered **after** a sign-off has passed — in a later replay, in an
+   integration, in an audit — is recorded in a standing ledger owned by the
+   auditor, in the auditor's own report directory, **not by the line whose
+   sign-off missed it**. Each entry names the sign-off that let it through, the
+   event that surfaced it, and the owning line's own account of the root cause.
+   *(Added in this edition; no posture row — added after the measurement. Its
+   posture is **review-enforced**: the ledger is a mandatory artifact of the
+   auditor's charter and a checked item of its definition of done, and no script
+   reads it. Source: council condition, Tier 3 coverage — Annex B.8.)*
+
+*Why this is a separation and not bookkeeping.* A verification line that keeps
+its own record of its own escapes controls the count of its own misses, which is
+§5.7's root class wearing an accountant's coat: the seat with the strongest
+motive to grade an escape as "not really an escape" is the seat that signed the
+artifact off. Moving the ledger to the seat that cannot repair anything makes
+the count adversarial. And it is the only instrument in this document that can
+distinguish **"we fixed it"** from **"we never had the problem"** — the
+distinction §3.8 says a later reader most needs, and which no sign-off, however
+honest, can supply about itself. **A process with sign-offs and no escape ledger
+measures its verification by its verification's own opinion of it.**
 
 **And the seat that authors defect manifests is this one.** §3.9's campaigns
 need an independent seat to compose the deliberate defects, and a cold reader of
@@ -552,6 +783,46 @@ authority lives in the auditor's artifact, not in the transcription
 `[RE · C-29]`. The prohibition half is mechanical; the transcription duty is a
 convention, and a transcription that never happens leaves the verdict live in a
 report nobody routed.
+
+**What carries all of this is the auditor's charter — and it is the charter an
+adopter most needs and least can reconstruct.** *(Added in this edition. Source:
+council condition, Tier 3 coverage — Annex B.8.)* This document leans on that
+one charter for a striking share of its **review-enforced** postures: the
+relay-fidelity sampling of §4.3, the *Inputs*-section audit that compensates for
+unenforceable read restrictions (§1.4(c)), the ordering check on §1.4(e)'s
+external anchor, the escape ledger above. An adopter who writes charters from
+§1.3's field list alone regenerates none of them — and §1.1's residue lesson
+says a control routed to the auditor dies exactly where the auditor's charter
+has no cadence. Four mechanisms in it are domain-free and load-bearing:
+
+- **Cadenced duties, not standing intentions.** Duties phrased with their
+  interval — *once per phase, re-run one full validation replay from the
+  committed manifest and confirm it reproduces the verification line's result* —
+  rather than as things the seat does when it can. A duty with no interval is
+  the residue §1.1 describes.
+- **The escape ledger as a named owned artifact**, with the fields each entry
+  must carry (item 5 above).
+- **The canary interface, stated as an information rule**: *I am told nothing in
+  advance, and there is no other direct contact with the sponsor.* Written into
+  the charter, it makes the power of §1.5's canary clause operable without
+  making any instance discoverable.
+- **No direct interface with workers.** Findings about a worker's output go to
+  that worker's lead, never to the worker. Otherwise the auditor becomes a
+  second reviewing line, and a seat that can direct work can be argued to own
+  some of it.
+- **Evaluation criteria written as falsifiable percentages** — *100% of findings
+  carry a checkable citation; a finding successfully rebutted as uncheckable
+  counts against the seat* — rather than as virtues. A criterion nobody can fail
+  grades nobody.
+
+*Where the skeleton itself belongs, and why not here.* The **anonymized auditor
+charter goes in the kit as a template file** (§6.0), not into this document as a
+block of prose. Copying a normative artifact into the explaining half creates a
+second copy that drifts — the exact hazard §2.4 names as *a rule and its check
+that disagree*, one level up — while the mechanisms above are not a copy of the
+charter but the reasons the postures in this document survive. **Export the
+artifact once, in the half that runs; export the reasons in the half that
+explains.**
 
 **The failure class.** An auditor with edit rights on what it audits produces an
 unfalsifiable record: after the fact, no reader can distinguish "this was always
@@ -752,6 +1023,34 @@ The commit message ends in fixed metadata: the agent's name, the work-order
 identifier or `none`, and the entry id `[MC · C-39]`. That metadata is what makes
 an agent's entire thread of work recoverable with a single log query.
 
+**FACSIMILE — instance, not norm.** The trailer block as this program's
+machinery actually writes and checks it, with the seat name anonymized. Three
+keys are always present; the fourth appears only on a journal-only commit. All
+four are **protected**: they may not be supplied as extra trailers, may not be
+duplicated, and may not be shadowed by a later line — the commit gate refuses,
+and the pushed-history re-check refuses again.
+
+```
+Agent: <seat-name>
+Work-Order: <packet-id | none>
+Journal-Entry: J-<seat-name>-<NNNN>
+Journal-Only: true          # only on a commit with no work products
+```
+
+The **empty file-list marker** that must accompany a journal-only commit is the
+literal line `- (none)` under the entry's file-list heading — the marker §2.1's
+rule above calls *the empty marker* and never names. Informational trailers
+(co-authorship, session references) may be appended beside these; the four keys
+above are refused as extras precisely so an author cannot mint a second `Agent:`
+line and choose which one a reader believes.
+
+*Why an adopter cannot skip this block.* Every rule in §2.6 that quantifies over
+"the metadata" is unimplementable without the key names, and an adopter who
+invents their own gets a working machine that enforces **a** version of these
+rules with no way to show it enforces **this** one. That is not hypothetical: it
+is what the one executed adoption run reported, in those terms, as its second
+most expensive halt.
+
 **How a commit actually happens**, since every rule above quantifies over an act
 the first edition never described. There is one working tree and one index; "each
 agent stages only inside its scope" is not a version-control feature and cannot
@@ -839,6 +1138,10 @@ header and thereafter grows *only* by whole entries appended at the end. Nothing
 above the last byte is ever edited `[MC · C-42]`. No agent writes another agent's
 journal `[MC · C-43]` — the one exception being the creation of an empty,
 entry-free volume for a seat that has none, which is how a new seat is onboarded.
+That seeding is not a step on its own: it is one of the four things §1.2 requires
+to land **together** when a seat is created, at the founding or mid-life, and a
+seed committed ahead of the seat's charter and scope row describes a seat that
+cannot legally commit.
 The commit gate verifies the append byte-wise: the version at the previous commit
 must be a prefix of the version being committed, and journal deletion and
 renaming are refused outright.
@@ -859,18 +1162,53 @@ append-only guarantee silently breaks, because a per-file check cannot see a
 volume that was dropped. So a journal is defined as a **chain**: each new volume
 carries, in its frozen header, the previous volume's path, its SHA-256 and its
 byte count. The active volume is the highest-numbered one; every earlier volume is
-frozen and any change to it breaks the successor's recorded hash `[MC · C-45]` —
-the whole chain is re-verified on every commit and again over pushed history:
-gapless numbering, back-link, digest, and contiguous entry ids across the seam.
+frozen and any change to it breaks the successor's recorded hash `[MC · C-45]`.
 
-*Which of those header fields is structure and which is testimony* `[MC · C-44]`,
+**FACSIMILE — instance, not norm.** The frozen header block of a rotated
+volume, with the seat name anonymized. The field names are what the machinery
+actually reads; an adopter who invents different ones has a chain no
+reimplementation can verify.
+
+```
+# Journal: <seat-name> — volume 05
+
+- **Volume**: 05
+- **Continues-from**: J-<seat-name>-0045
+- **Previous-volume**: journals/<seat-name>.v04.md
+- **Previous-volume-sha256**: <64 hex digits>
+- **Previous-volume-bytes**: 227077
+```
+
+*Which of those fields is structure and which is testimony* `[MC · C-44]`,
 because §5.4 demands that a record say so and this one did not. Path and digest
-are **checked** on both surfaces. `Volume` and the continuation id are **checked**.
-The **byte count is checked by nothing** — it is an author's assertion sitting in
-a list of verified fields, which is the precise shape §5.4 warns about. It is
-kept because it is cheap to read and it fails loudly against the digest if it is
-wrong; it is marked because an unmarked assertion inside a verified block borrows
-the block's authority.
+are **checked**. `Volume` and the continuation id are **checked**. The **byte
+count is checked by nothing** — it is an author's assertion sitting in a list of
+verified fields, which is the precise shape §5.4 warns about. It is kept because
+it is cheap to read and it fails loudly against the digest if it is wrong; it is
+marked because an unmarked assertion inside a verified block borrows the block's
+authority.
+
+**Where the chain is verified, by limb — because "on every commit and again over
+pushed history" was two claims wearing one stamp.** *(Corrected in this edition,
+re-executed against the scripts in this round rather than quoted. Found by the
+council; not a verdict condition, applied because it is the same compound-stamp
+defect as §1.1's — Annex B.8.)*
+
+- On the **commit surface**, the gate verifies the chain **headers on a rotation
+  commit** — that the predecessor exists and is untouched, that the declared
+  volume number, back-link path, digest and continuation id are right — and
+  verifies **entry-id monotonicity across the chain** on every commit. It does
+  not walk every volume on every commit.
+- On the **pushed-history surface**, the re-check walks the whole chain: gapless
+  numbering, back-link, digest, and contiguous entry ids across every seam.
+- A **standalone chain verifier** performs the same walk from a bare checkout
+  with no history at all, which is what makes the property checkable by a
+  stranger who has only a clone. It is the fifth enforcement script, and it is
+  in the kit table of §6.0.
+
+The stamp stands; its *scope* is the correction. **"Re-verified on every commit"
+was true of the part that changes on that commit and false of the walk**, and
+the distinction matters to exactly one reader: the one building the layer.
 
 *Failure class.* A guarantee that is checked per file rather than per identity.
 Without the chain, "this file is append-only" remains true of every file while an
@@ -903,6 +1241,32 @@ the check is an allow-list, for the reason §3.9 gives about allow-lists failing
 closed. Two rows are special: the seat whose cell is "everything", and every
 seat's own journal path, which is carved out of the scope test entirely because
 the coupling rule of §2.1 forces every commit to touch it.
+
+**FACSIMILE — instance, not norm.** This program's table, with every seat named
+by function and every domain path generalized. The *contents* are yours to
+write; the *shape* is the mechanism.
+
+```
+| Seat                 | May stage (non-journal)                                        |
+|----------------------|----------------------------------------------------------------|
+| orchestrator         | everything — sole owner of the enforcement, workflow, launcher,|
+|                      | program-state, constitution and charter trees                   |
+| specification lead   | docs/** EXCEPT docs/reports/audit/**, docs/reports/<metrics>/**;|
+|                      | README; the roster file; packets/**                             |
+| implementation lead  | <product trees>/**; packets/**                                  |
+| verification lead    | test/**; tools/**; docs/reports/<metrics>/**; packets/**        |
+| auditor              | docs/reports/audit/** ONLY                                      |
+| <worker role>        | its line's tree, narrowed further by its own packet; packets/** |
+|                      | (its own return log only)                                       |
+| <contingent seat>    | as its line's lead, scoped to the sub-domain it activates for   |
+```
+*Carved out of the test entirely: every seat's own journal path.*
+
+Read the arithmetic off it before you trust it (§2.1): in this table the packet
+directory is granted to three leads and every worker role, the product tree to a
+lead and its worker, the test tree to a lead and two worker roles. **Four path
+classes are shared by two to four seats**, and for every such pair
+one-agent-per-commit is review-enforced, not emergent.
 
 The consequences are the separations of §1.4 made physical: the implementation
 line cannot stage tests, the verification line cannot stage implementation
@@ -1024,6 +1388,22 @@ surfaces. A proposed decision record specifies the missing limb; it is **not in
 force** (**Annex B**), and this sentence will be true without qualification only
 when it lands.
 
+*And the quantifier in "the entire pushed history" wants delimiting too, in the
+section that convicts the first edition for an unqualified one.* The re-check
+adjudicates **the lineage**: the working branch and the trunk, over all of their
+history rather than the newly pushed range. It does **not** adjudicate the
+marked campaign references of §3.9 — eighty-six of them, pushed and never
+merged — which sit outside its frame entirely. That is defensible (they are not
+history; nothing accumulates there) and it is not obvious, and it is half the
+reconciliation a reader needs for §1.5's mechanical stamps against §1.1's record
+of eight acts that ought to have been refused. The other half: **the commit gate
+is a wrapper somebody invokes**, and every version-control tool has a bypass
+flag — so the gate binds what passes through it, and the re-check binds what
+lands in the lineage, and an act that is neither is bounded by neither. **State
+your two frames explicitly. A stamp that does not name its surface has not said
+where its guarantee holds.** *(Added in this edition; council finding, and the
+same defect family as §1.1's limb split — Annex B.8.)*
+
 **The failure class.** A check that runs only where the checked party runs it is
 a self-report. And the specific reason for full-history rather than incremental
 re-checking: **an incremental range check cannot detect a rewrite of history
@@ -1066,21 +1446,54 @@ edition did not have: **where each one is actually enforced.** A table headed
 "the commit script enforces" that contains rules the commit script does not
 enforce is the exact defect §2.4 warns about, and it contained two.
 
-| Rule | Function | Enforced where |
-|---|---|---|
-| One agent per commit | Mixed-agent changes are split into sequential commits; the mechanical invariant is one journal append per commit | Both surfaces, **as the invariant** — the splitting itself is review-enforced for overlapping scopes and for the unscoped seat (§2.1) `[MC · C-59]` |
-| Coupling | Work must stage a pure append to the responsible agent's journal; journal-only commits are legal but must be marked | Both surfaces `[MC · C-60]` |
-| Append-only | The previous version of the journal must be a byte prefix of the staged one; journal deletion and renaming are always refused | Both surfaces `[MC · C-61]` |
-| Files-list equality | The entry's declared file list must set-equal the commit's changed paths, excluding the author's own journal | Both surfaces `[MC · C-62]` |
-| Monotonic entry ids | The new entry's number is exactly the previous one plus one — across volumes, not merely within a file | Both surfaces `[MC · C-63]` |
-| Trailers | The fixed metadata block must be present and well-formed; protected keys cannot be shadowed or duplicated | Both surfaces `[MC · C-64]` |
-| Path isolation | Every staged non-journal path must be in the committing agent's scope | Both surfaces `[MC · C-65]` |
-| Foreign journal seeding only | Another agent's journal may be staged only as a newly created, entry-free file (onboarding); modifying an existing one is always refused | Both surfaces `[MC · C-66]` |
-| Journal chain and rotation | Volumes are gapless, each carries its predecessor's path and digest, only the active volume may change | Both surfaces `[MC · C-45]` |
-| Journal size thresholds | A soft threshold warns, a hard one refuses, anchored to the reader's single-file limit | **Commit surface only** — the asymmetry of §2.5 `[MC · C-46]` |
-| Large-file gate | A staged file over a stated byte threshold is refused, with the journal carved out | Both surfaces — the one place the both-surfaces corollary was applied |
-| Merge triviality | A merge commit's tree must equal one of its parents' trees; multi-parent merges beyond two are rejected outright | **Pushed-history re-check only**, not the commit script `[CORRECTED · C-67]` |
-| One branch, no rebases, no force pushes | Work lands sequentially on one working branch; pushed history is never rewritten | **No script anywhere.** The hosting platform's branch protection, and nothing else `[CORRECTED · C-67]` |
+**And so is the column the second edition did not have: the numbers
+themselves.** *(Added in this edition. The text said the rules are "numbered,
+and cited by number" and never printed a single number — so an adopter executing
+the self-test step of §6.2 had to invent a numbering, and then could evaluate the
+adoption's own definition of done only against their own invention. Source:
+adoption-run HALT-10 — Annex B.8.)*
+
+**FACSIMILE — instance, not norm.** The ids below are this program's, and they
+are printed so that the rule/case/citation machinery is executable rather than
+implied. Yours may differ; what may not differ is that they exist, are stable,
+and are what every later argument cites.
+
+| Id | Rule | Function | Enforced where |
+|---|---|---|---|
+| `R1` | One agent per commit | Mixed-agent changes are split into sequential commits; the mechanical invariant is one journal append per commit | Both surfaces, **as the invariant** — the splitting itself is review-enforced for overlapping scopes and for the unscoped seat (§2.1) `[MC · C-59]` |
+| `R2` | Coupling | Work must stage a pure append to the responsible agent's journal; journal-only commits are legal but must be marked | Both surfaces `[MC · C-60]` |
+| `R3` | Append-only | The previous version of the journal must be a byte prefix of the staged one; journal deletion and renaming are always refused | Both surfaces `[MC · C-61]` |
+| `R4` | Files-list equality | The entry's declared file list must set-equal the commit's changed paths, excluding the author's own journal | Both surfaces `[MC · C-62]` |
+| `R5` | Monotonic entry ids | The new entry's number is exactly the previous one plus one — across volumes, not merely within a file | Both surfaces `[MC · C-63]` |
+| `R6` | Trailers | The fixed metadata block must be present and well-formed; protected keys cannot be shadowed or duplicated | Both surfaces `[MC · C-64]` |
+| `R7` | Path isolation | Every staged non-journal path must be in the committing agent's scope | Both surfaces `[MC · C-65]` |
+| `R8` | Foreign journal seeding only | Another agent's journal may be staged only as a newly created, entry-free file (onboarding); modifying an existing one is always refused | Both surfaces `[MC · C-66]` |
+| `R10` | Journal chain and rotation | Volumes are gapless, each carries its predecessor's path and digest, only the active volume may change | Both surfaces, by limb — headers at rotation plus chain-wide ids on the commit surface, the full walk on the pushed-history surface and in the standalone verifier (§2.2) `[MC · C-45]` |
+| `R10` | Journal size thresholds | A soft threshold warns, a hard one refuses, anchored to the reader's single-file limit | **Commit surface only** — the asymmetry of §2.5 `[MC · C-46]` |
+| `R11` | Large-file gate | A staged file over **1,000,000 bytes** is refused, with the journal carved out (**Annex A.7**) | Both surfaces — the one place the both-surfaces corollary was applied |
+| `R9` | Merge triviality | A merge commit's tree must equal one of its parents' trees; multi-parent merges beyond two are rejected outright | **Pushed-history re-check only**, not the commit script `[CORRECTED · C-67]` |
+| `R9` | One branch, no rebases, no force pushes | Work lands sequentially on one working branch; pushed history is never rewritten | **No script anywhere.** The hosting platform's branch protection, and nothing else `[CORRECTED · C-67]` |
+
+**Three things the id column makes visible that thirteen unnumbered rows hid.**
+*Thirteen rows, eleven numbers*: two pairs of rows share a number because one
+rule has two limbs enforced on different surfaces, and the table is ordered for
+reading rather than by id. *A row is not a case*: a self-test grows by cases per
+amendment, not per row, which is why any equation between row count and case
+count is uncomputable and why §6.2's definition of done no longer contains one.
+And *one rule has no script to name it at all* — the branch limb of `R9` — so
+the self-test's own form (construct a violation, assert the refusal names the
+rule) **cannot be written for it**; what stands in its place is the live-fire
+bounce against the platform, cited by identifier, which is a different evidence
+form and is worth as much. **A rule set with an id column can be argued about; a
+rule set without one can only be agreed with.**
+
+*The threshold that this table called "stated" and never stated.* The large-file
+gate refuses any staged file over **1,000,000 bytes**, with every journal path
+carved out of it — journals are governed by `R10`'s rotation thresholds instead,
+because a size refusal cannot apply to a file that `R2` requires in every commit
+and `R3` requires to continue its own bytes. The number and its anchor are in
+**Annex A.7**; an adopter executing this document from the text alone had to
+invent one, and invented a different one.
 
 *Margin note on the last two rows.* The first edition folded them into a single
 "serialized history" row sitting under the sentence "the commit script enforces".
@@ -1129,8 +1542,24 @@ requires three things:
 `[RE · C-69]` — **no script tests any of the three.** The coupling rule forces
 *an* entry to exist on the amending commit; nothing checks that the entry accepts
 anything, that a decision record accompanies it, or that a test case was added.
-The record shows the procedure working, twice, and shows its debt: an instrument
-in force with its constitutional diffs and its owed test cases still unapplied.
+The record shows the procedure working, twice, and shows its debt: **an
+instrument in force whose constitutional diffs are written but not applied.**
+
+*Margin note — a false limb, deleted in this edition, and it is the sharpest
+lesson of the round that deleted it.* The sentence above previously ended: *"an
+instrument in force with its constitutional diffs **and its owed test cases**
+still unapplied."* The test-case half was **false**. Those cases landed, at a
+commit an independent reader could open, and they run green inside the very
+self-test count §6.3 quotes back at the reader — so the document simultaneously
+counted them and called them unapplied. *(Refuted by execution against the
+suite; source: council verdict Tier 1 and the re-execution behind it. The
+constitutional-diffs half is true and survives alone — Annex B.8.)* **The class
+is the one this edition exists to purge, in the section describing the procedure
+that purges it**, and it survived a claim-by-claim census because the census
+measured *postures* — is there a script? — and this limb is a claim about
+**events**, which is the tissue §6.1 says false claims cluster in. A compound
+sentence with one true half is the hardest false claim to find, because the true
+half is what the reader remembers checking.
 
 **The enforcement self-test**, since it is named as a precondition here and as an
 adoption step in §6.2 and was never described: a runnable scenario suite that,
@@ -1145,6 +1574,39 @@ Program-scope parameters (phases, headline figures, scope limits) are canonicall
 stated in exactly one place, and everywhere else that repeats them does so for
 convenience only. A change to such a parameter updates the canonical statement and
 every restatement, and the amending decision record lists the touched files.
+
+**And the process description is inside the amendment procedure, not beside
+it.** *(Added in this edition — the drift-resistance condition. Source: council
+verdict Tier 4 — Annex B.8.)* A fourth requirement joins the three above:
+
+4. if the change alters **enforcement semantics** — what a rule refuses, on
+   which surface, under what posture — it obliges either a **re-edition of this
+   document** naming the clauses that moved, or a **logged waiver** stating that
+   nothing here needs to change and why. Both are acts with an author and a
+   date; neither may be silent. The obligation is **owned by the specification
+   lead**, discharged in that seat's own reasoning log, and it is
+   **review-enforced** — no script reads it. *(No posture row — added after the
+   measurement.)*
+
+*Why this rule and not more careful prose.* Every falsehood this edition and the
+last one removed had the same life cycle: a sentence that was true when written,
+a machine that moved underneath it, and no act that obliged anyone to look at
+the sentence again. Per-claim editing of a document this size **does not
+converge** — two consecutive editions purged the class and both shipped fresh
+instances of it. What converges is binding the document to the event that
+invalidates it. The waiver limb matters as much as the re-edition limb: a rule
+that can only be discharged by editing a three-thousand-line document will be
+discharged by not invoking it.
+
+*Routed, not applied — the half of this rule that is another seat's file.* The
+same binding belongs in the constitution's own amendment clause, where it would
+bind every seat rather than this document's author. That is an amendment: it
+needs a numbered decision record and it touches a file outside this seat's
+scope. It is recorded as an amendment candidate in **Annex B.2** and joins the
+batch already queued there — by the same route, and for the same reason, as the
+two false premises §2.1 and §3.7 corrected here and could not correct at their
+source. **A document that discovers a rule its own constitution should carry
+proposes it; it does not enact it by writing it down.**
 
 **The failure class.** Constitutional drift by convenience — the constitution
 changing because someone needed it to, in a round where nobody was looking at it
@@ -1163,8 +1625,25 @@ contradiction between two correct-looking sources.
 
 **A packet** is a versioned file that carries work or a verdict between seats: it
 has an identifier, a state, a named author and a named addressee, and it is
-committed, so it can be diffed, cited and bounced. The taxonomy is closed, and
-this is it:
+committed, so it can be diffed, cited and bounced.
+
+**The taxonomy is closed by a rule, not by a list.** *(Corrected in this
+edition. The second edition said "the taxonomy is closed, and this is it" over
+six types — and the record had already outgrown the list while the sentence was
+being written. Source: council verdict Tier 1; the same defect class §3.2 warns
+about two pages further on — Annex B.8.)* The rule:
+
+> **A new packet type may be minted only by the amendment procedure (§2.7): a
+> numbered decision record naming the type, its required fields, its relay class
+> and its state vocabulary, accepted by a seat that did not propose it. No seat
+> mints a type by using one.** A form that appears in the record without that
+> route is not a new type — it is either an instance of an existing one, or an
+> unrouted extension, and naming which is the reviewer's job.
+
+That is the invariant worth exporting. The **list** below is an instance of the
+rule, current at this edition, and it is the kind of thing that goes stale
+between readings — which is why the list belongs in the kit, where a drift check
+can bind it, and the rule belongs here. Six types are defined:
 
 | Packet | Carries | Written by | Relay class |
 |---|---|---|---|
@@ -1179,6 +1658,67 @@ this is it:
 not of the round — it decides in advance whether the routing seat may compress
 it (§4.3). And a review verdict is a *packet type*, but see §3.2: in this
 program's record it has never existed as its own file.
+
+**What the record grew that the list does not contain, named rather than
+implied.** *(Added in this edition, per §3.2's own ghost-nouns instruction:
+where practice has diverged from the defined form, describe the practice.
+Source: council verdict Tier 1 — Annex B.8.)* Two kinds of divergence, and they
+want different responses.
+
+*Forms outside the six.* A **transit packet** carrying a harvest across an
+organizational boundary (§3.10, §6.0) — collation record, delivery record and
+conformance notes, with its own state vocabulary. An **adjudication companion**
+to a work order, holding a ruling too long for a return log. A **pre-run reading
+note**, filed before a round begins, recording what its author read. A
+**campaign packet** and its **defect manifest** and **campaign brief** (§3.9) —
+the manifest doubling as one of the auditor's own reports, which is what seats
+it (§1.5). None of these was minted by the route above; each is an **unrouted
+extension**, and saying so is the point. The honest posture is not that the
+taxonomy is closed but that **these are live forms with no instrument**, and
+their routing is owed.
+
+*States outside the five.* §3.2's lifecycle — draft, issued, returned, accepted,
+bounced — is the work order's. The record also runs **EXECUTED** (a transit that
+has been performed), **CLOSED** (a campaign complete and adjudicated),
+**RE-ISSUED / RE-VERDICT** (a sign-off re-run at a new state, with every
+superseded verdict preserved in place), **UNSEALED** (§3.3), and
+**letter-suffixed splits** of one commission into parts. An adopter who builds
+the five states and meets the sixth will assume they have misread the process.
+**A state vocabulary is part of a packet type's definition, and a type whose
+states are defined only by usage has no definition.**
+
+**FACSIMILE — instance, not norm.** The packet skeleton, the identifier schemes
+and the path layout this program actually uses, with domain nouns removed. These
+are the carriers an adoption run has to invent otherwise, and inventing them is
+what makes an adopter's machinery incomparable with anyone else's.
+
+```
+packets/<TYPE>-NNNN_<slug>.md          # numbered types: work orders, defects, verdicts
+packets/<TYPE>-<subject>.md            # per-subject types: sign-offs, transits
+packets/<TYPE>-NNNN_<slug>-SEALED.md   # a seal ships beside its own commission
+
+# --- packet skeleton -------------------------------------------------------
+# <TYPE>-NNNN — <one-line title>
+
+- **State**: <state> (<what changed, and at which entry>)
+- **From** / **To**: <seat> → <seat>  (relay class: <Summarizable | Verbatim>)
+- **Basis**: <the specification section or parent record this rests on>
+- **Deliverables**: <constrained to the assignee's write scope>
+- **Definition of done**: <checkable items>
+- **Context handed over**: <exactly what is included>
+- **What you may not read**: <the omission, as a property of the packet>
+- **Out of scope**: <explicit>
+
+## Return log
+- <seat> · <entry-id> · <state transition> · <verdict or defect list>
+```
+
+Identifier schemes, in the same spirit: entry ids `J-<seat>-NNNN`; decision
+records `ADR-NNNN-<slug>`; findings `F-<origin>-<n>`; per-round gate signatures
+carried as entry references. **Numbers are allocated by the sole committer at
+first commit, and drafts in flight carry a placeholder rather than a guess**
+(§3.2) — the placeholder is a literal token, not a blank, so that an unallocated
+id is greppable.
 
 Everything that moves between seats is a versioned file — **with one class of
 exception the record institutionalized and the first edition did not name.**
@@ -1230,6 +1770,40 @@ and a one-line title — followed by fixed sections:
 - **Open-questions** — escalations and unresolved items, or an explicit "none".
 - **Files-in-this-commit** — the declared file set (§2.6).
 
+**FACSIMILE — instance, not norm.** The entry as this program's parsers actually
+read it, with the seat name anonymized. Everything the machinery keys on is on
+the header line and in the last section; the rest is carried by the template and
+by review.
+
+```
+## [J-<seat>-NNNN] <UTC ISO-8601> | task:<packet-id|none> | <one-line title>
+### Trigger
+### Inputs
+### Reasoning
+### Actions
+### Evidence
+### Outcome
+### Open-questions
+### Files-in-this-commit
+- path/to/every/staged/non-journal/file
+- (none)                      # the empty marker, for a journal-only commit
+```
+
+Worker roles share one journal per role rather than per spawn, so a worker entry
+additionally carries the **spawn token** in its `task:` field and quotes it
+verbatim in *Trigger*: a unique string minted by the spawning seat into the
+prompt — packet id plus spawn timestamp, e.g. `WO-0012/2026-08-01T16:00Z`. That
+token is the whole of what preserves attribution inside a shared log, and it is
+**review-enforced**: no script checks that the token in the entry is the token
+that was minted.
+
+*And now §3.1's own parser rule is implementable.* An entry body may never
+contain a line beginning `## [J-` at column zero for its own journal — quote a
+prior header indented, or inside a sentence — because the parsers are
+deliberately simple and count such a line as a new entry `[MC · C-74]`. That
+rule was unimplementable in the previous edition for the plain reason that the
+reader was never shown what a header looks like.
+
 **Of those eight sections, exactly one is machine-checked** `[RE · C-72]`: the
 declared file set. An entry with no *Reasoning* section at all commits clean. The
 seven narrative sections are carried by the entry template, by review, and by the
@@ -1241,10 +1815,7 @@ refused. It is not.
 Entry ids are strictly monotonic **per chain**, across volume boundaries, not
 merely within a file `[MC · C-73]` — stronger than the first edition's "per
 journal", and the stronger property is the one that matters, since rotation is
-where a per-file guarantee silently breaks. An entry body may never contain a
-line that looks like its own journal's entry header at the start of a line —
-quoted headers are indented or embedded in a sentence — because the parsers are
-deliberately simple and would count such a line as a new entry `[MC · C-74]`.
+where a per-file guarantee silently breaks.
 
 **The failure class of each section, briefly.** *Inputs* is the audit evidence for
 the blinding rules of §1.4(c): a test author who read the implementation cannot
@@ -1356,7 +1927,36 @@ instrument.
 
 A sealed prediction file carries: its state (and the single line that is flipped
 at unsealing), the campaign it belongs to, the base state it was formed against,
-and the commit at which it was frozen. **Byte equality between freeze and
+and the commit at which it was frozen.
+
+**FACSIMILE — instance, not norm.** The seal's header, written from a real one,
+with domain nouns removed. Note that the state line says *of itself* that it is
+the only line altered since the freeze — the file discloses its own single
+mutable point, which is what makes the diff check meaningful.
+
+```
+# <PACKET-ID> SEALED — <seat>'s frozen predictions for <campaign>
+
+> SEALED. <the seat that must not read it> must not open this file until
+> <the event that makes reading it harmless>. Reading it earlier does not bend
+> a rule, it destroys the campaign's claim to be a test rather than a
+> confirmation.
+
+- **State**: SEALED | UNSEALED <date>, on <whose word, at which entry>.
+  **This state line is the only line of this file altered since the freeze** —
+  no prediction, table, message string or classification below has been
+  touched, and a diff against the freezing commit is the check.
+- **Frozen against**: <the base state, at its identifier>
+- **Frozen by**: <seat>, <entry-id>, **before any evidence existed**
+- **Companion**: <the commissioning packet — intents only, no predictions>
+
+## 0. Integrity note — why this is written twice
+Everything committed here is also committed, in substance, in <entry-id>.
+Two independent append-only copies of a freeze is not redundancy: if either is
+later edited to fit a result, the other exposes it.
+```
+
+**Byte equality between freeze and
 unsealing is established by two mechanisms, neither of which is a field in the
 file** `[CORRECTED · C-80]`:
 
@@ -1675,6 +2275,25 @@ The packet was right and the rule was wrong; the rule moved to where the practic
 already was. The general form: **when an honest reporter's output does not fit the
 reporting rule, check the rule first.**
 
+**What a sign-off cannot account for is accounted for by someone else.** *(Added
+in this edition. Source: council verdict Tier 3 coverage — Annex B.8.)* A
+sign-off is a verdict at one state, by the line that produced the measurements.
+It cannot report what it is about to miss. So every divergence found **after**
+it passes — in a later replay, an integration, an audit — lands in the
+auditor's **escape ledger** (§1.5, item 5), naming the sign-off that let it
+through, the event that surfaced it, and the owning line's own root-cause entry.
+The verification line's cooperation is a duty; the *record* is not its
+property.
+
+Two properties make this the sign-off's necessary companion rather than a
+report. It is the only instrument that makes a **pass rate** falsifiable — a
+line whose sign-offs are never revisited has an unfalsifiable one — and it puts
+the count of the misses **outside the seat whose misses are counted**, which is
+§5.7's root class applied to the one number a verification line would most like
+to own. *Posture: no row — added after the measurement; **review-enforced**,
+carried by the auditor's charter as a mandatory owned artifact and a checked
+item of its definition of done.*
+
 **The failure class.** A sign-off that can only say PASS is a rubber stamp, and
 everyone downstream knows it, so it stops being read. Preserving failures is what
 makes a pass mean something. Beyond that: a system that erases superseded
@@ -1723,7 +2342,24 @@ next reader will divide by it. And the count is of *references*: not of
 campaigns, of which there are fifteen, and still less of defect classes, which is
 the unit every rule below insists on. The shape an adopter will actually find in
 this record is a run of campaigns against one artifact, interleaved with defect
-packets and their repairs — not one campaign sitting in one gap.)*
+packets and their repairs — not one campaign sitting in one gap. The count was
+re-measured once more at this edition's own commit and is unchanged: eighty-six,
+none merged.)*
+
+**FACSIMILE — instance, not norm.** How a reference is *marked*, since the whole
+never-merged property rests on the marked population being enumerable and the
+previous edition never said what marking is. It is a **reserved name prefix**,
+one segment, used for nothing else:
+
+```
+<prefix>/<campaign-id>-<class-id>       e.g.  mut/wo-0039-b2
+<prefix>/<probe-slug>                   e.g.  mut/bug3-sev-probe
+```
+
+The prefix is what turns *"is this reference part of the lineage?"* into a
+question a script can ask and a standing duty can answer. **A model that depends
+on a population being enumerable needs its enumeration rule written down**, or
+the measurement guarding it measures whatever its author remembered to look at.
 
 The sequencing and the separations matter more than the technique:
 
@@ -1921,17 +2557,12 @@ The exact route is the sharper telling and the one worth carrying: **two of the
 three were found by looking at the record, and the third by writing against it.**
 This is why the naming duty is closed while the list of grounds is open (§5.2).
 
-**The survivor whose rehabilitation expires.** *(Corrected, and the correction is
-the exhibit's whole point. This passage previously opened on a defect "later said
-to be handled, on the strength of a suite that had grown since" — an event this
-record does not contain. Both seats confirming this section returned that
-correction independently, one of them the seat whose campaigns the exhibit
-describes: no weaker form was ever used here. The one defect that survived its
-own campaign was rehabilitated in the strict form from the first statement of it,
-and **the rule was written from that practice, not against a lapse.** Crediting a
-record with a fault it did not have is the same class of false claim this edition
-exists to remove, and it is the worst kind to find, because it is attached to a
-rule that is correct.)*
+**The survivor whose rehabilitation expires.** Exactly one defect in this record
+survived its own campaign — its seal predicted a kill and no unit killed it —
+and it was rehabilitated in the strict form from the first statement of it.
+**This is the exhibit written *from* a practice rather than against a lapse**,
+which is the rarer and better kind. The hazard it exists to name arrived
+afterwards, and it is the one an adopter will actually meet.
 
 The form the rule demands is the narrow one that cannot be argued — the
 **unmodified committed patch**, replayed against the suite as it stands at the
@@ -1951,6 +2582,16 @@ identifier is the same defect wearing the approved form.** That is the failure a
 adopter will actually meet, because the strong form looks identical on the day it
 stops being true. **When you adopt an evidence form because it cannot be argued
 with, record its expiry conditions in the same clause.**
+
+*Margin note — what this exhibit said before, and why the correction is worth
+keeping.* It previously opened on a defect *"later said to be handled, on the
+strength of a suite that had grown since"* — **an event this record does not
+contain.** Both seats confirming this section returned that correction
+independently, one of them the seat whose campaigns the exhibit describes: no
+weaker form was ever used here. Crediting a record with a fault it did not have
+is the same class of false claim this edition exists to remove, and it is the
+worst kind to find, **because it is attached to a rule that is correct** — the
+rule survives the audit and carries the invented lapse along with it.
 
 **The killing unit that had no unique referent.** A clause required a kill to be
 dispositioned by naming *the* killing unit — singular — against a record in which
@@ -2028,6 +2669,26 @@ The collating seat re-runs it as a check, with the provenance hidden.
 Collation is clerical. The collating seat may bounce a defective statement back to
 its author and may not improve one `[RE · C-106]`.
 
+**And the harvest is where the sponsor's fifth standing power is exercised.**
+*(Added in this edition; the second edition omitted the sponsor from this
+section entirely and asserted a complete enumeration of the sponsor's surface at
+§4.7 that did not contain it. Source: council verdict Tier 1 — Annex B.8. No
+posture row — added after the measurement; posture **review-enforced**, granted
+by the constitution's harvest clause.)* The collated candidates are
+**sponsor-visible at the gate, and the sponsor may refuse a candidate — one at a
+time, by name, with no obligation to refuse the batch or accept it.** That is
+why this program's transit takes the form it does (§6.0): the harvest is
+delivered to its destination as a *proposed* change that a human can decline
+item by item, rather than as a push that has already happened.
+
+*Why the granularity is the whole point.* A batch that can only be accepted or
+rejected whole converts the one human judgement in the export path into a
+formality — nobody refuses eleven good rules to stop one bad one. **A refusal
+power that cannot be exercised at the granularity of the thing being refused is
+not a power, it is a notification.** Note also which direction it runs: this is
+the only place in the process where the sponsor can stop something that is
+*correct by every internal check* and still not wanted outside the program.
+
 **The failure classes.** *Without the cadence:* lessons live in one session's
 context and die with it, and the same defect is rediscovered at full price. *Without
 the provenance requirement:* a lesson decays into a preference — a strongly held
@@ -2096,10 +2757,22 @@ forgotten, and it is the one that produces confidently stale evidence.
 ### 4.3 Verbatim relay, with the relayer's additions marked
 
 Traffic between seats is classified. Routine traffic may be summarized when
-routed. Protected classes — sign-off packets, defect packets, and every auditor
-finding — are relayed **unedited**, because fidelity is load-bearing there. The
-relay-fidelity spot-check on the protected classes is the auditor's charter duty
-`[PLANNED · C-109]`.
+routed. Protected classes — sign-off packets, defect packets, **sealed
+predictions**, and every auditor finding — are relayed **unedited**, because
+fidelity is load-bearing there. The relay-fidelity spot-check on the protected
+classes is the auditor's charter duty `[PLANNED · C-109]`.
+
+*The seal's inclusion is a repair, and it carries one extra rule.* §3's relay
+table has always marked a sealed prediction **Verbatim**; this section's list of
+protected classes omitted it, so an agent implementing relay policy from §4.3
+alone would have summarized a seal — and a summarized prediction is a prediction
+its author can be argued out of. *(Corrected in this edition; source: council
+verdict Tier 1, reconciling §4.3 against §3 — Annex B.8.)* The extra rule:
+**before unsealing, a seal is not relayed at all.** Verbatim is the rule for
+traffic that moves; a seal that has not been opened does not move, and the
+routing seat's duty is to carry the *fact* of it and none of its content. Both
+halves matter — relay it early and the campaign is a confirmation, summarize it
+late and the score is negotiable.
 
 *Stated as owed, because it has never happened.* Early in the program the auditor
 recorded that fidelity was untestable — no protected-class packet had yet been
@@ -2250,11 +2923,42 @@ already rejected converts a disagreement into a legitimacy problem.
 
 ### 4.7 The sponsor's reserved decisions
 
-The sponsor's surface is deliberately small and completely enumerated: the six
-escalation classes, one one-time infrastructure setup (the branch protection
-without which the history guarantee is convention `[P1 · 2026-08-01 · C-115]`,
-configured and live-fire verified — §2.5), the standing canary power, and the
-ratification of the organization itself.
+The sponsor's surface is deliberately small, and this is it **as of this
+edition** — five standing items, closed by the amendment procedure rather than
+by assertion:
+
+1. the **six escalation classes** (§4.6);
+2. one **one-time infrastructure setup** — the branch protection without which
+   the history guarantee is convention `[P1 · 2026-08-01 · C-115]`, configured
+   and live-fire verified (§2.5);
+3. the standing **canary** power (§1.5);
+4. **ratification of the organization itself** (§1.7);
+5. **candidate-by-candidate refusal at the lessons harvest** (§3.10) — the human
+   gate on what leaves the program. *(Added in this edition; no posture row —
+   added after the measurement. Posture **review-enforced**, granted by the
+   constitution's harvest clause and exercised by the form the transit takes.)*
+
+*Margin note — the quantifier that had to go.* The second edition called this
+list *"completely enumerated"* and then omitted the fifth item, which was
+already granted by the constitution and already being exercised. **A document
+that convicts its own first edition of unqualified quantifiers asserted complete
+enumeration over an incomplete list** — and the omitted item was the one human
+check on the document's own subject, the export. *(Source: council verdict Tier
+1 — Annex B.8.)* The repair is both halves: the item is added, and the claim is
+dated. **"Complete as of this edition, closed by amendment" is a claim a later
+reader can test; "completely enumerated" is one they can only believe.**
+
+*And how a sponsor signs anything, since they have no reasoning log.* §3.7
+requires every gate signature to resolve to an entry in the signer's own log,
+and the sponsor — a human, outside the machinery — has none. The practised form:
+the sponsor's act happens outside the repository, and the **orchestrator
+transcribes it** into the gate row as a dated line naming the act, with the
+authority living in the orchestrator's own entry recording that the act
+occurred. It is the same clerical-transcription rule §1.5 uses for the auditor's
+verdicts, and it has the same residue: the transcription is the only artifact,
+so a transcription nobody makes is an act nobody can cite. **State this in your
+own version — an adopter reading §3.7 literally concludes the sponsor cannot
+sign, which is one step from concluding that someone inside may sign for them.**
 
 **A single file tells them how to spot-check the whole program by hand**, in five
 steps: three version-control commands — every commit title with its one agent,
@@ -2465,15 +3169,34 @@ constitution as a posture declaration: **a clause says whether it is
 machine-enforced or review-enforced in its own text rather than in a footnote.**
 `[CORRECTED · C-123]`
 
-*And the correction here is the reason this edition exists.* The first edition
-said *each clause* does this. **Exactly three clauses in the constitution carry an
-in-clause posture declaration.** Every other clause states its posture in
-surrounding prose or not at all — including the honesty note on the
-one-agent-per-commit rule, the read-access residue, and the whole of the commit
-protocol. It is an excellent practice, applied three times, described as
-universal. The same over-generalization is what the first edition did to itself:
-it stated the posture rule and stamped nothing. **A practice you have applied
-three times is a practice; write the number.**
+**How far the practice actually goes, stated plainly and with its boundary
+drawn, because a count is only as good as the thing it counts.** *(Boundary
+added in this edition; the count itself is the second edition's and stands.
+Source: a council precision — Annex B.8.)*
+
+- **Three clauses** in this program's constitution carry a **labelled** posture
+  declaration — a formal *Enforcement:* tag inside the clause, saying
+  machine-enforced or review-enforced in so many words.
+- **Several more** declare their posture **in the clause's own prose without the
+  tag**: a section heading that says *structure machine-checked, narrative
+  audit-enforced*; a rule whose own honesty note says it is audit-enforced
+  rather than mechanical; a rule that says it is convention until an
+  out-of-repository setting exists.
+- **The rest** state it in surrounding prose, or not at all — including the
+  whole of the commit protocol.
+
+The number to carry is **three**, and the boundary is *labelled*, because a
+labelled declaration is the one a reader can find without knowing where to look
+and a script could one day count. **A count of a practice needs the practice's
+definition beside it**, or the count is contestable in exactly the sentence
+whose point is that counts should not be.
+
+*And the correction underneath is the reason this edition's predecessor
+existed.* The first edition said *each clause* does this. It is an excellent
+practice, applied three times, described as universal. The same
+over-generalization is what that edition did to itself: it stated the posture
+rule and stamped nothing. **A practice you have applied three times is a
+practice; write the number.**
 
 **Without it:** you will build an enforcement layer that is simultaneously
 oppressive and porous — refusing things that should be argued, and advising about
@@ -2574,14 +3297,36 @@ boundary — because the moment of violation is before comprehension, not after.
 **This document is half of an export unit, and it is the half that explains
 rather than the half that runs.** The other half is an executable **shell**: the
 machinery, extracted project-free into its own repository, which an adopter
-clones and starts from. The first edition never mentioned it. That omission is
-why its adoption order could put "turn on the mechanical layer" in a single
-bullet: with no reference implementation named, the bullet stands in for
-building, from prose, several hundred lines of enforcement script whose value is
-almost entirely in the incident-hardened details — the failure modes of a
-pipeline that swallows an error, enumeration of a journal chain from committed
-state rather than from the working tree, protection of the metadata keys against
-shadowing — none of which any prose description will regenerate.
+clones and starts from.
+
+> **The shell is the repository `generic-agentic-fpga-org`, at
+> `github.com/renatom11/generic-agentic-fpga-org`.** *(Named in this edition.
+> The previous edition promised, in its own opening pages, that the shell was
+> "named in §6.0" — and §6.0 named nothing: no repository, no location, no
+> identifier of any kind. An adopter handed this document alone therefore
+> **stopped at the first minute of the first step of §6.2** and reconstructed
+> the entire executable layer from prose instead. Source: council verdict Tier
+> 2, and adoption-run HALT-01, the run's most expensive halt — Annex B.8.)*
+
+The name is a **program noun**, deliberately, and it is one of the few in §1–§6:
+an identifier a reader cannot resolve is worth nothing, and the whole argument
+of this section is that half of the unit must be obtainable. A fork replaces
+this line with its own (§6.1, the fork contract).
+
+The first edition never mentioned the shell at all. That omission is why its
+adoption order could put "turn on the mechanical layer" in a single bullet: with
+no reference implementation named, the bullet stands in for building, from
+prose, several hundred lines of enforcement script whose value is almost
+entirely in the incident-hardened details — the failure modes of a pipeline that
+swallows an error, enumeration of a journal chain from committed state rather
+than from the working tree, protection of the metadata keys against shadowing —
+none of which any prose description will regenerate. **That prediction has now
+been tested.** A cold adopter executing §6.2 with this document and nothing else
+reported the machinery as *roughly one hundred percent invention*: every script
+line, every file format, every identifier scheme, every marker name, the rule
+numbering and one enforcement threshold, "constrained but never determined by
+the prose." The section predicted its own failure and was believed by nobody
+until somebody ran it.
 
 The unit's contents, and what each is for:
 
@@ -2597,22 +3342,81 @@ The unit's contents, and what each is for:
 | **The launcher prompts** | The spawn-time text that makes charter-reading and the §4.1 precheck the first acts of every round | this repository, launcher directory |
 | **The packet forms** | The taxonomy of §3, as skeletons with their required sections | this repository, packet directory |
 | **The sponsor guide** | §4.7's surface, in the sponsor's language, including the spot-check steps and the one-time platform setup | this repository, sponsor file |
+| **The chain verifier** | The fifth enforcement script: the whole journal chain walked from a bare checkout with no history — gapless volumes, back-links, digests, contiguous ids — so the property is checkable by a stranger holding only a clone (§2.2) | this repository, enforcement directory |
+| **The posture list** | The claim-by-claim measurement every `C-nn` stamp in this document cites: one row per enforcement or event claim, its posture, and the evidence that decided it | this repository, `docs/reports/audit/PROCESS-claims-posture.md` |
+| **The anonymized auditor charter** | The one charter whose mechanisms this document leans on and cannot delegate: cadenced duties, the escape ledger, the canary information rule, no direct worker interface, falsifiable evaluation criteria (§1.5) | this repository, charter directory |
+
+*Three rows added in this edition.* The chain verifier and the posture list were
+both **absent from a table that claimed to list the unit's contents** — the
+first meaning an enforcement reconstruction from this document ships without the
+auditor's chain instrument, the second meaning all ~135 stamps cited an artifact
+with no path, which under §3.1's own evidence rule made the document's entire
+evidentiary spine testimony for its declared audience. *(Source: council verdict
+Tier 2 — Annex B.8.)*
 
 **What this table asserts, and what it does not.** Every artifact above **exists,
 in its original form, in the repository that paid for it** — that is checkable
 from a clone. The shell is their extracted, project-free copy in a separate
-repository, kept deliberately frozen except for one commit per lessons harvest
-(§3.10), and **its contents are not verifiable from here**: an adopter reading
+repository, and **its contents are not verifiable from here**: an adopter reading
 this document should treat the shell as named, not as inspected, until they have
-looked at it. Two export vehicles that do not reference each other is §2.4's
-"rule and its check that disagree" one level up, and this section exists to make
-them reference each other; the check that keeps them honest — a test that the
-shell's rule set and this document's §2.6 table have not drifted apart — **does
-not exist yet** and is the most useful thing an adopter could build first.
+looked at it.
+
+**How the export actually moves, which this document did not describe.**
+*(Added in this edition, correcting a claim of fact. Source: council verdict
+Tier 1 and Tier 2 — Annex B.8.)* The previous edition said the shell was *"kept
+deliberately frozen except for one commit per lessons harvest."* That was never
+a property of the shell; it was a rule this program wrote for **its own writes
+into** the shell. The shell is an independently maintained repository with its
+own maintainer and its own law, and at the first transit it was found **thirty-one
+commits ahead** of this program's picture of it. What actually happens:
+
+1. The origin program collates a harvest (§3.10) and freezes it as an **export
+   packet** in its own outbox — a versioned file, in the origin's repository,
+   under the origin's rules, with its provenance citations bound to a stated
+   base.
+2. The packet is delivered to the shell as an **inbox pull request** — one
+   branch, one file, byte-identical to the outbox copy — which is a *proposal*,
+   not a landing. It carries no commit to the shell's own corpus.
+3. The shell's maintainer screens it under the shell's **federation law**, maps
+   identifiers into the shell's own scheme, and lands whatever conforms, in
+   commits that are the shell's, counted at the shell.
+4. **There is no privileged lane for the origin.** The program that seeded the
+   shell enters by the same inbox as any other program, and the sponsor's
+   candidate-by-candidate refusal (§3.10, §4.7) is exercisable precisely because
+   the delivery is a proposal a human can decline item by item.
+
+*Why the correction matters more than the mechanism.* An adopter told the shell
+is frozen will treat it as a fixed artifact and will not look for its law; an
+adopter told the truth builds the fetch-first habit that caught the drift here.
+And note what the record was doing while the document said "frozen": it had
+already built a working transfer pipeline between organizations — outbox packet,
+inbox proposal, no origin privilege — **invisible in the chapter about
+exporting**. The document believed it was the primary artifact with an
+executable appendix. The record shows it is the rationale half of a
+shell-primary unit, and it fails exactly where it impersonates the machine half.
+
+**The instrument that binds the two halves, named and owed.** A **doc–shell
+drift check**: a test that this document's §2.6 rule table — ids, functions and
+enforcing surfaces — agrees with the shell's actual rule set, failing loudly when
+either moves. `[PLANNED — no posture row; the instrument does not exist]`
+
+*And it is the **exporter's** to build, not the adopter's.* The previous edition
+called it "the most useful thing an adopter could build first." That is the
+wrong party: **the exporter holds both halves of the export unit and the adopter
+holds one.** Asking the party with the least information to perform the
+verification the party with the most information skipped is not a residue, it is
+a shirk. It is recorded as owed by this document's own seat, in **Annex B**,
+with its closing event named. Until it lands, every facsimile in this document
+and every row of the table above is a claim about another repository — held to
+the same rule as every other claim here: **check it before you repeat it.**
 
 ### 6.1 What transfers, and what has to be re-earned
 
-**Transfers directly:** the seat topology and the two monopolies; the write-scope
+**Transfers directly** — *subject, throughout, to the substrate parameters of
+Annex A, which is where this list would otherwise overstate itself: the
+sole-spawner monopoly is a substrate fact in A.1 and becomes a policy needing
+new mechanism if yours differs, and three of the six escalation classes have
+never fired here (§4.6)*: the seat topology and the two monopolies; the write-scope
 table; the commit rules and the coupling of work to reasoning; append-only journals
 with chained volumes; the packet forms and the work-order state machine; the
 countersignature discipline; the decision-record and amendment route; gates as
@@ -2644,61 +3448,179 @@ merely testify. The second is that the cost of finding all fifteen was **one
 seat, one round**, against a record that made every claim checkable — which is
 the return on the traceability property, collected in a single payment.
 
+**The fork contract — what a fork does with every mark on this page.** *(Added
+in this edition. The document's best sentence — *do not import any statement
+that a control is mechanically enforced* — had no companion telling a forker
+what to do with the ~135 stamps that carry exactly such statements. Source:
+council verdict Tier 3 — Annex B.8.)* Every stamp, margin and annex on this page
+is a measurement of **this** program, and each becomes false-by-inheritance the
+moment a fork's machinery diverges — which is on the fork's first commit. So the
+fork operation is defined, per mark, and it is one of exactly two acts:
+
+| Mark | What a fork does |
+|---|---|
+| `[MC · C-nn]`, `[RE · C-nn]` | **Re-anchor or strip.** Trace the claim to a refusal in *your* machinery (§6.2 Step 0). Traced → re-stamp against **your** posture list's row. Not traced → re-stamp `[RE]` or `[PLANNED]`, whichever is true of you. Never carry a `C-nn` row number: it indexes a file you do not have. |
+| `[P1 · date · C-nn]` | **Strip.** A performed, dated event of another organization is not a fact about yours. Where the event is one you also intend to perform, it becomes an item in your own gate record, not a stamp here. |
+| `[CORRECTED · C-nn]` and its margin | **Strip, or keep as history and say so.** These narrate an edition you never held. Keeping them is legitimate — the corrections are often the lesson — but only under a heading that says *this is the exporting program's revision history*, so a retrieval-fed reader cannot pattern-match a superseded claim as a current one. |
+| `[UNANCHORED · C-nn]` | **Strip with its exhibit**, unless you can anchor it in *your* record. An exhibit nobody can locate in the forking program's history is not evidence anywhere. |
+| `FACSIMILE` blocks | **Replace with your own, or delete.** A facsimile is an instance of another program's artifacts; keeping it while your shapes differ manufactures exactly the drift the label warns about. |
+| **Annex B** | **Delete whole and start your own.** It is program-local by construction, and its debts are not yours. Its *shape* — owed confirmations, routed-not-performed items, instruments named and not in force — is the part to copy. |
+| The edition anchor | **Replace**, with your own edition, date and commit. |
+
+**The rule under the table**: *a fork inherits the rules and the reasons, and
+inherits no measurement.* Stripping is always safe and re-anchoring is always
+work; a fork that does neither ships a document whose evidence apparatus points
+at a repository its readers cannot open — which is the defect this edition spent
+three of its own repairs removing.
+
 ### 6.2 The order that works
 
 A load-ordered checklist, each step keyed to the kit artifact that performs it
 (§6.0). The order is not a preference: each step's failure is unrecoverable once
 the following steps have run on top of it.
 
+**This order has been executed, once, by somebody who did not write it.**
+`[P1 · 2026-08-11/12 — no posture row; performed after the measurement]` A cold
+adopter was handed this document alone, in an empty repository, and told to run
+§6.2 literally and to log a halt at every point where the text
+under-determines, contradicts itself, or fails against the platform. The run
+returned **eighteen halts: three stops and fifteen proceed-by-improvisation.**
+The log is a committed artifact of this program
+(`docs/reports/process-council/round-2/adoption-run-halt-log.md`) and it is the
+work order this revision was written from. Every change to the order below
+carries the halt that produced it. *An adoption procedure that has never been
+executed is a hypothesis, and this document does not get to say that about other
+people's controls and not about its own.*
+
 **Step 0 — verify the reference implementation's claims against its own
 machinery.** Before adopting anything, take this document's mechanically-enforced
-claims and check them in the shell you have been handed: for each `[MC]` stamp,
+claims and check them in the shell (§6.0 names it): for each `[MC]` stamp,
 find the refusal, and for each numbered rule, find the self-test case that
 constructs a violation of it. Anything you cannot find is `[RE]` in your hands
 whatever it is stamped here, and belongs in your own residue list. *This step
 exists because the program that wrote this document had never performed it, and
 performing it returned fifteen false claims. You are inheriting a corrected
 document; you are not inheriting the correction of your own copy.*
-→ *kit: the self-test, the commit script, the policy module.*
+→ *kit: the self-test, the commit script, the policy module, the posture list.*
+*(HALT-01: the first execution of this step stopped here — nothing in the
+previous edition named the shell, so nought of thirty-four stamps was traceable
+and nought self-test cases were findable. The step's own fallback sentence was
+then executed, which is the one thing about the run that went right.)*
 
-**Step 1 — ratify the roles, adversarially, before anyone works under them.**
-Attack the charter set from at least three lenses — role coherence,
-enforceability, and readability by the non-specialist who will sponsor it —
-and dispose of every finding in a committed artifact. §1.7 is the sequence this
-belongs to and §1.3 carries the caveat: run the review **into the repository**,
-not before it exists, or its evidence will not survive.
-→ *kit: the charter template.*
+**Step 1 — turn on the mechanical layer, before the first commit you intend to
+keep.** Coupling, append-only with the chain, path isolation, files-list
+equality, monotonic ids, trailer protection, the large-file gate, and the
+full-history re-check. Retrofitting these onto an existing history is far more
+expensive, and the history you most want them for is the earliest history —
+which is also the history no control will ever have touched if you defer them
+(§1.7 act 1).
+→ *kit: the commit script, the history re-check, the policy module, the workflow,
+the chain verifier.*
 
-**Step 2 — turn on the mechanical layer before the first real work.** Coupling,
-append-only with the chain, path isolation, files-list equality, monotonic ids,
-trailer protection, the large-file gate, and the full-history re-check.
-Retrofitting these onto an existing history is far more expensive, and the
-history you most want them for is the earliest history — which is also the
-history no control will ever have touched if you defer them (§1.7).
-→ *kit: the commit script, the history re-check, the policy module, the workflow.*
+*Two things this step has to say out loud, both learned by watching it fail.*
+
+- **This was Step 2 in the previous edition, and Step 1 was the adversarial
+  review.** That order contradicted §1.7, contradicted this program's own
+  founding record, and — when executed literally — manufactured exactly the
+  ungated early history both of them warn about: the review landed in four
+  commits made before the layer existed, and the full-history re-check then
+  convicted all four. The adopter's cure was a recorded baseline exempting the
+  founding range, *which is the very thing §1.7 act 1 exists to prevent.* The
+  order is now machinery-first, so that no literal executor needs that
+  improvisation. *(HALT-05; council verdict Tier 2 — Annex B.8.)*
+- **The commit that introduces the gate cannot pass the gate**, because no
+  journal exists yet for it to couple to. This is not a defect, it is the
+  bootstrap paradox arriving at commit granularity, and it has one honest
+  handling: land the machinery in a **named, minimal founding range**, declare
+  that range self-signed in your founding gate (§1.7 act 1), and have the
+  retro-audit of Step 5 examine it specifically. What you may not do is exempt
+  it from the re-check quietly — an exemption nobody reads is indistinguishable
+  from the ungated history it was invented to excuse. *(HALT-05's sub-problem,
+  which the previous edition did not address at all.)*
+
+**Step 2 — launder the roles through adversarial review, into the now-gated
+repository.** Attack the charter set from at least three lenses — role coherence,
+enforceability, and readability by the non-specialist who will sponsor it — and
+dispose of every finding in a committed artifact. §1.7 act 2 is the sequence this
+belongs to; §1.3 carries the caveat, and now it is satisfiable rather than
+paradoxical: run the review **into the repository**, whose machinery is on as of
+Step 1, so its evidence survives *and* is gated.
+→ *kit: the charter template, the anonymized auditor charter.*
+*(HALT-04: a solo adopter has one actor, so three independent reviewers is
+structurally unachievable and the review is §1.4(a)'s forbidden self-review by
+construction. What that adopter did is the right shape and worth copying: write
+all three lens reviews, **declare the non-independence inside the review
+artifact itself**, file it as a critical finding against your own founding, and
+carry it into the retro-audit. The findings are real even when the independence
+is not — and a declared fiction is a debt; an undeclared one is a lie.)*
 
 **Step 3 — configure the out-of-repository dependency and verify it by live
-fire.** Branch protection on every protected branch, with an **empty bypass
-list** so that the account your own automation pushes with cannot override it,
-and then an attempted violation that actually bounces, cited by identifier in the
-gate record. An unverified protective setting is a belief. *This program did
-this, on both branches, on its first day, and had it re-proved in anger later
-when a forced push on a working reference was refused mid-incident — the two best
+fire — after your continuous integration has run green at least once.** Branch
+protection on every protected branch, with an **empty bypass list** so that the
+account your own automation pushes with cannot override it, and then an
+attempted violation that actually bounces, cited by identifier in the gate
+record. An unverified protective setting is a belief. *This program did this, on
+both branches, on its first day, and had it re-proved in anger later when a
+forced push on a working reference was refused mid-incident — the two best
 pieces of evidence it owns for the guarantee the whole append-only design rests
 on.* `[P1 · 2026-08-01 · C-128]`
 → *kit: the sponsor guide.*
+
+*Two platform facts this program's own founding record carries and the previous
+edition dropped, both of which make this step executable or not (Annex A.5).*
+**Use rulesets rather than classic branch protection**, because an empty bypass
+list makes a ruleset admin-proof by default. And **the required-status-check half
+cannot be configured before the check has run once** — the platform's picker
+lists only checks it has seen, so a sponsor following the old order arrived at
+an empty picker with no explanation. That is why this step now sits after the
+layer and its workflow exist. *(Council verdict Tier 2; the ordering constraint
+is recorded in this program's own founding checklist and was lost in export.)*
 
 **Step 4 — run the enforcement self-test green, and bind it to the amendment
 procedure**: every amendment that changes enforcement semantics adds a case
 (§2.7). A rule whose test case cannot be written has a predicate nobody has
 pinned down.
-→ *kit: the self-test.*
+→ *kit: the self-test, the constitution template.*
+*(HALT-10 and HALT-11, and both are worth knowing before you start. This step is
+unexecutable until your rules have **numbers** — §2.6 now prints this program's,
+as a facsimile. And one rule will resist the self-test's own form: the branch
+limb of `R9` has no script whose refusal could name it, so no violating
+construction exists. Do not invent an instrument to satisfy the count. Record
+that case as discharged by Step 3's live-fire bounce instead, and say so in the
+suite. Expect also that one construction is intercepted by a different rule
+before the rule under test can fire — which is not a bug in the suite but the
+suite discovering, correctly, that the rule's real invariant is narrower than
+its name.)*
 
 **Step 5 — instantiate the gate that closes the founding**, including the
 retro-audit of the whole bootstrap range by a seat that did not exist during it,
 with its own weakness declared, and the sponsor's ratification row. Do not issue
-the first real work order until every row is signed (§1.7).
+the first real work order until every row is signed (§1.7 acts 3 and 4).
 → *kit: the packet forms, the constitution template.*
+
+*What a solo adopter can and cannot do here, stated because leaving it silent
+makes the definition of done unsatisfiable in a way nobody warns them about.*
+Two acts in this step **cannot be performed from inside**: ratification, which
+§1.7 says exists precisely because an organization cannot vote itself legitimate,
+and the retro-audit's independence, which needs a seat that did not witness the
+range. A solo cold boot has neither.
+
+> **The honest result, and it is a result rather than a failure:** found the
+> organization **self-signed**, with the ratification and independence rows left
+> **open** in the gate record and the limitation declared in the gate file
+> itself. The gate stays open; by §1.7 the first real work order does not issue
+> until an external party closes those rows. **Do not self-sign as the
+> sponsor** — that is §5.7's permission slip wearing a gate's clothes, and §1.7
+> forecloses it in terms. Do not stage a fictional independent seat either;
+> perform the audit in persona if you must, and have it declare in its own text
+> that its author witnessed everything it audits. *The findings are then
+> checkable by a stranger even though the independence is fiction — and the
+> fiction is written down.*
+
+*(HALT-14 and HALT-15: the adopter refused both evasions and recorded the
+refusal in a decision record, which is what §4.8 asks of any seat that cannot
+perform what it was commissioned to. HALT-16 follows from it: the first work
+order never issued, because the gate never closed. That is the design working.)*
 
 **Step 6 — only then start the work**, and start the harvest cadence with it
 rather than after it — with the harvest's destination decided on day one (§3.10),
@@ -2707,19 +3629,52 @@ even if that destination is one file in your own repository.
 **The definition of done for an adoption**, so that "we adopted it" is a
 falsifiable claim rather than a feeling:
 
-- [ ] The self-test runs green from a clean clone, and its case count equals the
-      number of numbered rules plus the amendments since.
+- [ ] The self-test **runs green from a clean clone**, and carries **at least one
+      case per numbered rule**, verified by reading the suite against your rule
+      table — plus one case per semantic amendment since. *(The previous edition
+      asked that the case count **equal** the number of numbered rules plus
+      amendments. That equation is uncomputable and was dropped: rows are not
+      rules — this program's thirteen rows carry eleven numbers — and cases are
+      not rows, since one rule can need several constructions and one rule can
+      admit none at all. **A falsifiability instrument that cannot be evaluated
+      is worse than none**, because it is checked off anyway. Source: council
+      verdict Tier 2; HALT-10.)*
 - [ ] Every `[MC]` claim in **your** copy of this document has been traced to a
       refusal in **your** machinery, and every one that could not be traced has
       been re-stamped `[RE]` or `[PLANNED]` in your copy. Step 0, recorded.
+      *(A trace table beside the document, rather than stamp-by-stamp edits
+      inside it, is a form deviation and an acceptable one — say which you did.
+      Expect the trace to find defects in **your own** machinery as well as
+      untraceable claims in this one; the first adopter's did, and left the gap
+      open and declared rather than silently patched.)*
 - [ ] The platform dependency has bounced a real attempted violation, and the
       bounce is cited in your founding gate record.
 - [ ] The bootstrap range has been retro-audited by a seat that did not write it,
       the audit returned findings, and any critical finding blocked the gate
-      until dispositioned and re-verified.
+      until dispositioned and re-verified. *(Or: the independence is declared
+      unachievable in your environment, the audit is performed with its own
+      weakness in its text, and this row stays **open**. An open row is a true
+      row.)*
 - [ ] Your residue list exists as a file: every control you have that is
       review-enforced, named, with the seat it is routed to — and a cadence for
       each, because §1.1's residue note is the failure that eats the rest.
+
+**FACSIMILE — instance, not norm.** A residue row, because the checkbox above
+demands a file the previous edition never gave a shape to, and demands a routing
+field that presupposes seats Step 2 has not yet created. Open the file at Step 0
+with the routing columns empty, and fill them at Step 2 — the file exists from
+the first act, which is the point. *(HALT-02.)*
+
+```
+| Id | Control (review-enforced) | Why no instrument | Routed to | Cadence | Closing event |
+|----|---------------------------|-------------------|-----------|---------|---------------|
+| B.1| <the control, in one line>| <semantic? no substrate?> | <seat>  | <interval> | <what would make it machine-checked> |
+```
+
+*The cadence column is the one that matters and the one an adopter will leave
+blank.* A residue routed to a seat with no interval attached is routed to
+nobody — §1.1's own lesson, and this program's six owed postures are what it
+costs.
 
 ### 6.3 The failure of exporting rules alone
 
@@ -2807,6 +3762,35 @@ no-rewrite guarantee drops to **convention**, and the append-only property of
 §2.2 — which everything else in §2 rests on — becomes unenforced. Verify it by
 live fire (§6.2 step 3) rather than by reading the settings page.
 
+*Two mechanics of the platform this was built for, carried because dropping them
+made §6.2 unexecutable in sequence.* **Use the platform's newer *rulesets*
+rather than its classic branch-protection form** — on this platform an empty
+bypass list makes a ruleset admin-proof by default, which the classic form does
+not give you. And **the required-check binding is not configurable until the
+check has run at least once**: the picker offers only checks the platform has
+already seen, so the setting cannot precede the first green run. That is a
+sequencing constraint on the adoption order, not a detail: it is why §6.2's
+platform step now follows the machinery step rather than preceding it. *If your
+platform differs*, the constraint may not exist — but assume it does until you
+have watched the picker, because the failure mode is a sponsor staring at an
+empty list with no explanation in the document that sent them there.
+
+**A.6b — There is no reachable hosting platform at all.** *Anchor:* your
+environment, not this design. *What rests on it:* everything in A.5, plus the
+continuous-integration surface of §2.5 and the whole of §6.2 Step 3. *If your
+substrate differs this way:* both fall to **convention**, and say so rather than
+substituting. A local stand-in — a bare remote with a hook refusing
+non-fast-forward pushes and deletions — reproduces the *bounce* and is worth
+building for the live-fire evidence, but declare the two material differences:
+the empty-bypass-list concept has no analogue, and any actor with filesystem
+access can remove the hook. **A guarantee whose enforcement anyone in the room
+can delete is convention wearing a refusal's clothes**, and the honest posture
+for every claim resting on it drops accordingly. Likewise a re-check run by hand
+after each push is not continuous integration: it converts the adjudicator into
+the committing seat's self-report, which is the exact failure §2.5 names.
+*(Added in this edition from the adoption run's own environment — HALT-08,
+HALT-09.)*
+
 **A.6 — The only environment that can run the suite runs on pushed references.**
 *Anchor:* this program's toolchain decision, recorded in its own decision record;
 a local run is impossible. *What rests on it:* the campaign model of §3.9 — marked
@@ -2815,6 +3799,33 @@ model, which is what the constitution originally described and what the first
 edition of this document repeated. *If your substrate differs* and you can run the
 suite locally, take the transient model: it is strictly better, because the
 never-merged property stops being a measured fact someone has to keep measuring.
+
+**A.7 — The large-file threshold.** *Anchor:* what your version-control host and
+your reviewers can carry; in this program, **1,000,000 bytes** per staged file,
+with every journal path carved out. *Derived:* nothing — unlike A.3's journal
+thresholds, this one is a policy choice rather than a consequence, which is
+exactly why it has to be **stated** rather than described. *What rests on it:*
+`R11` of §2.6, on both surfaces. *If your substrate differs:* pick your number
+and state it in the same act, because the previous edition's row called the
+threshold "stated" without stating it anywhere, and an adopter executing from
+the text invented one. **A parameter a document calls stated and does not state
+is worse than an unstated one**: the reader stops looking. *(Added in this
+edition — HALT-07.)*
+
+**A.8 — Capability tiers of the agents themselves.** *Anchor:* the model
+family available to you, and its price. In this program every long-lived seat
+that reviews, adjudicates, grades or audits runs on the stronger reasoning tier
+(`opus`-class), and every short-lived, packet-scoped worker on the cheaper one
+(`sonnet`-class); the assignment is declared per seat in the launcher
+definitions and nowhere else. *What rests on it:* the invariant of §1.2 — **the
+reviewing tier is at least the producing tier** — which is what stops a review
+from being a formality that cannot see the defect it was convened for. *If your
+substrate differs:* the invariant is the part that transfers, not the tier
+names. Two consequences to price on day one: the review line is the expensive
+line, so a schedule crunch will attack exactly the seats the invariant protects;
+and a seat's tier bounds what one round of it can hold, which is a second
+parameter worth measuring beside A.3's file limit. *(Added in this edition;
+council verdict Tier 3 coverage.)*
 
 ---
 
@@ -2840,6 +3851,18 @@ of its own discipline; the round runs before the next review of this text.
 | §1.7 genesis sequence | **orchestrator**, **auditor** | the founding sequence and the retro-audit's self-description | auditor half **CONFIRMED** `J-auditor-0025`; orchestrator half owed |
 | §6.0 kit table | **orchestrator** | that each named original exists where the table says, and the shell's stated contents | owed |
 | Every `[MC]`, `[RE]`, `[P1]`, `[PLANNED]` stamp | **auditor** | transcription fidelity against its own posture list | **CENSUSED** `J-auditor-0025`: 135 stamp occurrences against 128 rows, all 26 dated stamps re-anchored; three defects, all cured in the correction round |
+| **The whole text, read cold — one row per edition, standing** | **a reader with no session context, no participation in any round, and access to this document only** | that the terms it uses are inferable from the text, that its sections are reachable from its contents, that a first reader can follow it without the edition it corrects, and that a stranger can locate every artifact it cites | **edition 2: NOT RUN** — the confirmation matrix carried auditor, verification-lead and orchestrator rows and no cold reader, and the four dialect terms of *The dialect*, the unnamed shell and the unlocated posture list are what that omission cost. **edition 3: owed** |
+
+*Why that last row is standing rather than one-off, and it is the most portable
+thing in this annex.* An edition **corrects what insiders can see** — accuracy,
+postures, counts — and **regenerates what only outsiders can see**: new
+vocabulary, new forward references, new artifacts cited by names only the author
+can resolve. The second edition swapped the outsider out of its own quality
+check and then invented a dialect. **Cold-readability is a per-edition
+measurement, and this edition treated it as a fixture.** Any confirmation matrix
+staffed entirely by seats whose own disciplines are being described is measuring
+one axis and calling it review. *(Added in this edition; council verdict Tier 4
+— Annex B.8.)*
 
 *What the two confirmation rounds returned, since a confirmation that returns
 nothing is a signature and not a check.* **Sixteen filed items** — four
@@ -2902,6 +3925,31 @@ They are named so the debt is countable; none is applied in this edition.
    absence was argued about in the confirmation round: two receiving-seat checks
    have fired and neither is the sampling duty. A control that has a partial
    substitute is the kind most likely to be quietly written off.
+7. **Binding the constitution's own amendment clause to this document** — the
+   rule §2.7 now states for the specification lead (an amendment altering
+   enforcement semantics obliges a re-edition of the process description or a
+   logged waiver) belongs in `PROTOCOL` §11, where it would bind every seat and
+   not only this document's author. Amendment candidate; joins the same batch as
+   items 1 and 2. **Filed in this edition, applied nowhere:** enacting it here
+   would be a document declaring a constitutional duty for seats that never
+   agreed to it, which is §3.7's checklist-amending-the-constitution defect run
+   from the other end.
+8. **The re-measurement of the posture list against the grown document.** The
+   list measured 1,445 lines; the document is now nearly three times that, and the
+   preamble says so in terms. The re-measurement — new rows for every claim
+   added since, and a re-execution of the existing ones against the current
+   machinery — is the **auditor's**, in the auditor's own artifact and scope.
+   Named here because this document cites that artifact on every stamp and a
+   debt is only enforceable where a later reader is obliged to see it (§5.5).
+   Not performed here, and **not touched**: an author who edits the measurement
+   that grades its own document is §5.7's root class in one act.
+9. **The doc–shell drift check** (§6.0) is owed by **this document's own seat**,
+   not by an adopter — the reassignment is made in this edition and the
+   instrument still does not exist. Closing event: a test that reads this
+   document's §2.6 table and the shell's rule set and fails on disagreement,
+   landing in whichever of the two repositories can run it. Until it exists,
+   every `FACSIMILE` block in this document is an unverified claim about another
+   repository.
 
 **B.3 — Instruments named in the text and not in force.** `ADR-0021` is
 **PROPOSED** at `287b5ee` and its route completes per subject. Subject 1
@@ -2938,11 +3986,28 @@ records the resolution rather than performing it.**
 
 **B.6 — Debts this document still owes its own process.** It has never been
 through the packet lifecycle it describes: the first edition landed with no work
-order and no countersignature (`C-20`), and this revision was commissioned
-dispatch-only (`C-70`) — an instance of the class it names in §3. The
-countersignature round of B.1 is the first half of the repair; a review verdict
-recorded as a packet would be the second. And the drift check between this
-document's §2.6 table and the shell's rule set (§6.0) does not exist.
+order and no countersignature (`C-20`), and every revision since — including
+this one — was commissioned dispatch-only (`C-70`), an instance of the class it
+names in §3. The countersignature round of B.1 is the first half of the repair;
+a review verdict recorded as a packet would be the second. And the drift check
+between this document's §2.6 table and the shell's rule set (§6.0) does not
+exist.
+
+*What changed in this edition, and what did not.* The document acquired its
+**first two external anchors**, which is the thing §1.4(e) demands of anything
+that grades and which this document had never had: a **council** — eight
+independent readers, hostile and cold, none of whom wrote it, adjudicated into
+one verdict with conditions — and an **executed adoption run** by a seat that
+did not author it, in a clean world, whose eighteen halts are this revision's
+work order. Both are the evidence form this document teaches: *an attempt that
+bounced, cited by identifier.* **The anchor moved on first contact both times.**
+What did not change: no packet, no lifecycle, no countersignature on this
+revision; the confirmations of B.1 remain the only signatures this text has ever
+carried, and they are confirmations of *description*, by seats describing their
+own disciplines. **A document about independence whose only reviewers are the
+parties it describes is still, at this edition, its own weakest exhibit** — and
+the correct reading of the two anchors is that they raise the floor and close
+nothing.
 
 **B.7 — The correction round, item by item.** Every item the two confirmations
 filed, where it landed, and its disposition. It is here rather than in the
@@ -2969,5 +4034,109 @@ was refused; where a repair went further than the item asked, the row says so.
 | Exhibit 3's second ground | dv_lead | §3.9 exhibit 3 | Applied. The stop was also **mechanically** refused, which is a different exhibit from a chosen refusal. |
 | `C-109` precision | dv_lead | §4.3 | Applied. The owed instrument stays owed; two receiving-seat checks have fired; different control, different failure mode. |
 | Three referents the auditor would have carried | auditor | §3.9 bullets | Applied. Which grounds turn on the seal's disclosure; what *survived its own campaign* means; the rehabilitation asymmetry under the frozen-kill limb. Filed as carried-forward observations rather than findings, and cheap enough that declining them would have been an economy against the reader. |
+
+**B.8 — The third edition, item by item.** The sources are a **council** — eight
+independent reviewers of the second edition, adjudicated into one verdict of
+*pass with conditions* in four tiers — and the **adoption run** those conditions
+demanded be performed first: one cold adopter, one day, this document alone in
+an empty repository, executing §6.2 literally and logging a halt at every
+under-determination. Eighteen halts, three of them stops. Its log is committed
+at `docs/reports/process-council/round-2/adoption-run-halt-log.md`, beside the
+verdict and the eight reports.
+
+*The rule this table obeys, which is the same one B.7 obeyed:* every applied
+change lands as a repair of a **running line**, with the superseded text
+preserved beside it, and every change carries the condition or the halt that
+produced it. **Nothing below was applied because it seemed better.**
+
+| # | Item and source | Landed at | Disposition |
+|---|---|---|---|
+| 1 | **Tier 1** · the false limb about the amendment machinery — *"owed test cases still unapplied"*, refuted by execution against the suite that counts them | §2.7 | **Applied.** Limb deleted, surviving limb (constitutional diffs unapplied) stated alone, the false half preserved in the margin with what refuted it. |
+| 2 | **Tier 1** · the sponsor's fifth standing power, and *"completely enumerated"* over an incomplete list | §4.7, §3.10 | **Applied at both sites.** The power is added, the harvest section acquires the sponsor it had omitted entirely, and the quantifier becomes *complete as of this edition, closed by amendment*. |
+| 3 | **Tier 1** · *"the taxonomy is closed, and this is it"* | §3 | **Applied.** Replaced by the closure **rule** — who may mint a type, by what route. Practiced extensions (transit, adjudication companion, reading note, campaign packet) and practiced states (executed, closed, re-issued, unsealed, letter-split) named as unrouted, per §3.2's own ghost-nouns instruction. |
+| 4 | **Tier 1** · §4.3's protected classes omit sealed predictions, which §3's table marks Verbatim | §4.3 | **Applied**, with the extra rule the reconciliation needs: before unsealing, a seal is not relayed at all. |
+| 5 | **Tier 1** · *"kept deliberately frozen"* against a shell found thirty-one commits ahead; the federation transit missing from the chapter about exporting | §6.0 | **Applied.** The freeze claim was never a property of the shell but a rule for this program's writes into it. The transit is described in four steps, including *no privileged lane for the origin*. |
+| 6 | **Tier 1** · the stamp-coverage claims — *"the one place"*, *"exactly two"* | *Read this first* | **Applied**, as the boundary block: the stamps measured 1,445 lines, the document is now nearly three times that, well over half is unmeasured, and there is no visible seam. This is the council's sharpest catch and the one no auditor made. |
+| 7 | **Tier 2**, **HALT-01** · the shell is never named | §6.0 | **Applied.** Named, with its repository and location, as a deliberate program noun. The run's most expensive halt: this omission converted Steps 0, 2, 4 and half of 5 from *adopt and verify* into *reconstruct from prose*. |
+| 8 | **Tier 2** · the posture list has no path, no kit row; the fifth enforcement script is named nowhere | §6.0, *Read this first*, §2.2 | **Applied.** Three kit rows added — the chain verifier, the posture list with its path, the anonymized auditor charter. |
+| 9 | **Tier 2** · no edition anchor | document head | **Applied.** Edition, date and commit-bearing line, with the explicit statement that no stamp in this edition has been re-measured. |
+| 10 | **Tier 2**, **HALT-05** · §6.2's order contradicts §1.7 and the founding record, and manufactured ungated founding history when executed | §6.2 | **Applied.** Machinery first, adversarial review second, platform third. The founding-commit paradox (the commit that introduces the gate cannot pass it) is stated with its honest handling, so no literal executor needs the baseline exemption the source forbids. |
+| 11 | **Tier 2**, council · the platform sequencing facts dropped in export | §6.2 Step 3, Annex A.5 | **Applied at both.** Rulesets rather than classic protection; the required-check picker is empty until the check has run once — which is *why* the step moved. |
+| 12 | **Tier 2**, **HALT-10** · the DoD's uncomputable case-count equation | §6.2 | **Applied by replacement.** *Runs green from a clean clone, at least one case per numbered rule, verified by reading the suite* — with the counting rule stated (thirteen rows, eleven numbers, cases ≠ rows). |
+| 13 | **Tier 3**, **HALT-06** · not one literal grammar in a document promising mechanism | §2.1, §2.2, §2.3, §2.6, §3, §3.1, §3.3, §3.9, §6.2 | **Applied** as the placement rule plus nine marked facsimiles: trailer block and protected keys, volume header, scope-table row, rule-id column, packet skeleton and id/path templates, entry header and spawn token, seal state line, marked-reference prefix, residue row. Each labelled *instance, not norm*; the shell remains the normative source. |
+| 14 | **Tier 3**, **HALT-07** · a threshold the text calls *stated* and never states | §2.6, Annex A.7 | **Applied.** 1,000,000 bytes, journals carved out, with its anchor. |
+| 15 | **Tier 3**, **HALT-10** · rules *"numbered and cited by number"*, no numbering printed | §2.6 | **Applied.** Id column, with the three things it makes visible — the row/number mismatch, cases-are-not-rows, and the one rule no self-test case can exist for. |
+| 16 | **Tier 3** · the doc–shell drift check assigned to the adopter | §6.0, B.2 item 9 | **Applied by reassignment.** Named as the owed instrument binding the two halves, `[PLANNED]`, owed by **this document's seat**: the exporter holds both halves and the adopter holds one. |
+| 17 | **Tier 3** · the DV-escape ledger absent | §1.5 item 5, §3.8 | **Applied at both.** A fifth structural distinction of the auditor, and the sign-off's necessary companion. |
+| 18 | **Tier 3** · model-tier allocation absent | §1.2, Annex A.8 | **Applied.** The invariant — *the reviewing tier is at least the producing tier* — in §1.2; the tiers and their price as a substrate parameter in the annex. |
+| 19 | **Tier 3** · the contingent-seat and mid-life onboarding patterns absent | §1.2, §2.2 | **Applied.** Chartered-and-dormant with a named activation trigger; and onboarding as one act — charter, scope row, launcher, seed — landing together. |
+| 20 | **Tier 3** · an auditor-charter skeleton for the kit | §1.5, §6.0 | **Applied in the split form, and the split is a judgement — see the refusals below.** The *mechanisms* in prose here; the *skeleton* as a kit row. |
+| 21 | **Tier 3** · errata occupying the structural position of the plain rule | §1.1, §1.4, §3.9 exhibit 2, §5.5 | **Applied.** Rule first, archaeology behind it, at all four named sites. §5.5's count additionally acquires the boundary it needed — *labelled* declarations — since a count is only as good as its definition. |
+| 22 | **Tier 3** · four undefined terms of this edition's own coinage | *The dialect* | **Applied.** council, census, surface, margin — with the reason they existed: cold-readability is a per-edition measurement that was run once and treated as a fixture. |
+| 23 | **Tier 3** · the fork contract | §6.1 | **Applied** as a per-mark table: strip or re-anchor, one act per stamp class, with the rule underneath — *a fork inherits the rules and the reasons, and inherits no measurement.* |
+| 24 | **Tier 4** · bind this document into the amendment procedure | §2.7 | **Applied for this seat; routed for the constitution** (B.2 item 7). An amendment altering enforcement semantics now obliges a re-edition or a logged waiver, owned by the specification lead. The waiver limb is deliberate: a duty dischargeable only by editing three thousand lines is discharged by not invoking it. |
+| 25 | **Tier 4** · a per-edition cold-reader row | B.1 | **Applied**, standing rather than one-off, with edition 2 recorded as **NOT RUN** and edition 3 as owed. |
+| 26 | **Tier 4** · §6.2 stamped performed, dated, by whom | §6.2 | **Applied.** `[P1 · 2026-08-11/12]`, no posture row, citing the halt log — and every step now carries the halts it was rewritten from. |
+| 27 | **HALT-18** · the `C-09`/`C-67` posture contradiction met at the adopter's trace | §1.1 | **Applied by limb split, re-executed rather than quoted.** Merge triviality and octopus refusal are machine-held on the pushed-history surface; one-branch, no-rebase and no-force-push are held by the platform and by no script anywhere — verified this round by reading every enforcement script. §2.6's row was the true side; §1.1's compound sentence was the wrong one. |
+| 28 | **HALT-14/15/16** · the definition of done is formally unsatisfiable for a solo adopter, and the document was silent | §6.2 Step 5 | **Applied.** What a solo adopter *can* do — found self-signed, gate rows open, limitation declared — stated in the adopter's own framing: the open gate is the honest result. Both evasions (self-signing as sponsor; staging a fictional independent seat) are foreclosed by name. |
+| 29 | **HALT-02** · the residue list is demanded before it can exist, with no form and no cadence values | §6.2 DoD | **Applied.** A residue-row facsimile, opened at Step 0 with routing columns empty and filled at Step 2. |
+| 30 | **HALT-03** · the sponsor has no journal, while every gate signature must reference one | §4.7 | **Applied.** The practised form — the act happens outside, the orchestrator transcribes, the authority is the transcriber's own entry — with its residue named. |
+| 31 | **HALT-04** · three independent lenses with one actor | §6.2 Step 2 | **Applied** as the declared-fiction pattern: write all three, declare the non-independence inside the artifact, file it as a critical finding against your own founding. |
+| 32 | **HALT-08/09** · no platform, no continuous integration, in the adopter's world | Annex A.6b | **Applied** as a new substrate parameter, including what a local stand-in does and does not buy, in the adopter's own terms. |
+| 33 | **HALT-11** · a self-test case for a rule with no script | §6.2 Step 4 | **Applied.** Do not invent an instrument to satisfy a count; record the case as discharged by the live-fire bounce and say so in the suite. |
+| 34 | **HALT-12** · no step of the order authors the constitution the later steps quote | §6.2 Steps 4–5 | **Applied minimally** — the constitution template is added to Step 4's kit line, where the amendment binding first needs it. *This is the thinnest repair in the table and it is named as such:* the order still assumes the template rather than scheduling its authorship, and an adopter without the kit will still write a constitution backwards from the checklist that quotes it. Carried as owed. |
+| 35 | council precision · *"the one that survived"* against §1.4(b)'s *"one of the claims"* | §1.5 item 1 | **Applied.** The singular is withdrawn rather than replaced with an unmeasured count. |
+| 36 | council · *"the entire pushed history"* undelimited over the reference population | §2.5 | **Applied.** The re-check adjudicates the lineage and not the marked references; the gate binds what passes through it. The reconciliation the council had to assemble is now in the text. |
+| 37 | council (F9) · the chain claim *"re-verified on every commit and again over pushed history"* | §2.2 | **Applied by limb split**, re-executed against the scripts this round. Headers at rotation plus chain-wide ids locally; the full walk in the re-check and the standalone verifier. |
+
+**Refusals and deferrals, with grounds — because a revision that records only
+what it did is a revision nobody can audit.**
+
+1. **The constitution's own amendment binding: ROUTED, not performed.** Enacting
+   in this document a duty binding every seat would be §3.7's
+   checklist-amending-the-constitution defect run from the other end. Amendment
+   candidate, B.2 item 7.
+2. **Re-measuring the posture list against the grown document: REFUSED as this
+   seat's act.** It is the auditor's artifact and the auditor's scope, and an
+   author who edits the measurement grading its own document is §5.7's root
+   class in one act. The preamble states the coverage boundary instead; the
+   re-measurement is rowed at B.2 item 8. **No line of that file was touched in
+   this round.**
+3. **The auditor-charter skeleton in-document: DECLINED in favour of a kit row
+   plus mechanisms in prose.** Copying a normative artifact into the explaining
+   half creates a second copy that drifts — the hazard §2.4 names one level up,
+   and the same hazard that produced this edition's whole mechanism-placement
+   rule. The mechanisms are exported because this document's own review-enforced
+   postures rest on them; the artifact is exported once, where it runs.
+4. **A subsection index for the Contents: DECLINED this round, with the ground
+   stated rather than the omission left silent.** The defect is real — six
+   entries over three thousand lines, with the sponsor's obligations, the gate
+   rules and the adoption checklist all unreachable from the top. But a
+   hand-maintained derived index is precisely the artifact §1.6 convicts: *an
+   aid refreshed at boundaries decays exactly as fast as boundaries are rare,
+   and a stale aid is worse than a missing one.* The right repair is an index
+   derived mechanically at read time, or one carrying the date it was last true.
+   That is a round of its own and it is named here so the debt is countable.
+5. **The worker-role enumeration and the roster/program-state file formats
+   (HALT-03's remaining half): ROUTED to the kit, not written here.** Role
+   *names* are a program's own decomposition — enumerating this program's four
+   would export a domain, and enumerating none is why the adopter invented four.
+   The honest placement is a kit template with the roles left as slots. Named as
+   owed; not applied in either direction this round.
+6. **The adopter's own discovered gap — that their re-check does not re-verify
+   the journal chain over pushed history: NOT ADOPTED as a defect of this
+   document.** It is a finding against the adopter's machinery, and a true one
+   of exactly the class §2.4's corollary names. What is applied is the general
+   form, in the DoD: expect the trace to convict your machinery as well as this
+   text, and leave what it finds open and declared rather than silently patched.
+7. **Everything the council filed that the verdict did not make a condition, and
+   this table does not list: NOT APPLIED.** The chairman's four tiers plus the
+   halt log were the work order. Items outside them — the spawn-side mechanics
+   of the loop, the countersignature's physical form, the canary's collision
+   with the append-only gate, the self-acceptance edge when the orchestrator
+   proposes its own instrument, an escalation threshold nobody states — are
+   real, are named in the council's committed reports, and are **owed a
+   round**. **A revision that quietly widens its own scope is a revision whose
+   scope nobody can check.**
 
 
