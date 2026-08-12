@@ -112,7 +112,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   text-transform:uppercase; color:var(--ink-2); }
 .rgroup.human { border-color:color-mix(in srgb, var(--human) 55%, var(--line)); }
 .rgroup.human > .glab { color:var(--human); }
-.rboxes { display:flex; flex-wrap:wrap; gap:.36rem; }
+.rboxes { display:flex; flex-wrap:wrap; gap:.36rem; align-items:flex-start; }
 .rbox { border:1.4px solid var(--line); border-radius:7px; background:var(--chip);
   padding:.2rem .46rem .22rem; font:600 .71rem 'Plex Sans',sans-serif; cursor:pointer;
   position:relative; color:inherit; font-family:inherit;
@@ -125,12 +125,19 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   letter-spacing:.05em; border-radius:5px; padding:.03rem .28rem;
   background:var(--goodbg); color:var(--good); border:1px solid var(--good);
   transition:opacity .25s; }
+.rbox .st.warn { background:color-mix(in srgb, var(--bad) 15%, var(--panel));
+  color:var(--bad); border-color:var(--bad); }
 .rbox .st.gold { background:color-mix(in srgb, var(--human) 16%, var(--panel));
   color:var(--human); border-color:var(--human); }
 .seatbox { border:1.4px solid var(--line); border-radius:8px; padding:.4rem .38rem .36rem;
   position:relative; flex:1 1 30%; min-width:112px; transition:opacity .3s; }
 .seatbox > .sn { font:600 .66rem 'Plex Sans',sans-serif; display:block; margin:0 0 .26rem .06rem; }
 .chips { display:flex; gap:.26rem; flex-wrap:wrap; }
+.wsub { display:flex; gap:.24rem; flex-wrap:wrap; align-items:center; margin-top:.3rem;
+  padding-top:.28rem; border-top:1px dotted var(--line); }
+.wsub .wl { font:500 .52rem 'Plex Mono',monospace; letter-spacing:.05em; color:var(--ink-2);
+  text-transform:uppercase; margin-right:.08rem; }
+.chip.wc { font-size:.55rem; padding:.05rem .3rem; }
 .chip { border:1.2px solid var(--line); border-radius:5px; padding:.06rem .34rem;
   font:500 .58rem 'Plex Mono',monospace; color:var(--ink-2); background:var(--panel);
   cursor:pointer; font-family:'Plex Mono',monospace; transition:all .2s; }
@@ -257,8 +264,8 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
                   <span class="nm">Specification</span><span class="rl">lead</span>
                 </button>
                 <div class="wkrs">
-                  <button class="agnode ghost wk" id="ag-ws1" data-i="worker"><span class="nm">worker</span></button>
-                  <button class="agnode ghost wk" id="ag-ws2" data-i="worker"><span class="nm">worker</span></button>
+                  <button class="agnode ghost wk" id="ag-ws1" data-i="worker"><span class="nm">worker A</span></button>
+                  <button class="agnode ghost wk" id="ag-ws2" data-i="worker"><span class="nm">worker B</span></button>
                 </div>
               </div>
               <div class="leadrow">
@@ -266,8 +273,8 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
                   <span class="nm">Implementation</span><span class="rl">lead</span>
                 </button>
                 <div class="wkrs">
-                  <button class="agnode ghost wk" id="ag-wi1" data-i="worker"><span class="nm">worker</span></button>
-                  <button class="agnode ghost wk" id="ag-wi2" data-i="worker"><span class="nm">worker</span></button>
+                  <button class="agnode ghost wk" id="ag-wi1" data-i="worker"><span class="nm">worker A</span></button>
+                  <button class="agnode ghost wk" id="ag-wi2" data-i="worker"><span class="nm">worker B</span></button>
                 </div>
               </div>
               <div class="leadrow">
@@ -275,7 +282,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
                   <span class="nm">Verification</span><span class="rl">lead</span>
                 </button>
                 <div class="wkrs">
-                  <button class="agnode ghost wk" id="ag-wv1" data-i="worker"><span class="nm">worker</span></button>
+                  <button class="agnode ghost wk" id="ag-wv1" data-i="worker"><span class="nm">worker A</span></button>
                 </div>
               </div>
               <div class="leadrow">
@@ -325,19 +332,24 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
                     <button class="chip" id="jr-orch" data-i="journal" data-base="journal">journal</button></div></div>
                 <div class="seatbox" id="rp-seat-spec"><span class="sn">Specification</span>
                   <div class="chips"><button class="chip" data-i="charter-spec">charter</button>
-                    <button class="chip" id="jr-spec" data-i="journal" data-base="journal">journal</button></div></div>
+                    <button class="chip" id="jr-spec" data-i="journal" data-base="journal">journal</button></div>
+                  <div class="wsub"><span class="wl">its workers</span>
+                    <button class="chip wc" id="jr-ws1" data-i="journal" data-base="worker A">worker A</button>
+                    <button class="chip wc" id="jr-ws2" data-i="journal" data-base="worker B">worker B</button></div></div>
                 <div class="seatbox" id="rp-seat-impl"><span class="sn">Implementation</span>
                   <div class="chips"><button class="chip" data-i="charter-impl">charter</button>
-                    <button class="chip" id="jr-impl" data-i="journal" data-base="journal">journal</button></div></div>
+                    <button class="chip" id="jr-impl" data-i="journal" data-base="journal">journal</button></div>
+                  <div class="wsub"><span class="wl">its workers</span>
+                    <button class="chip wc" id="jr-wi1" data-i="journal" data-base="worker A">worker A</button>
+                    <button class="chip wc" id="jr-wi2" data-i="journal" data-base="worker B">worker B</button></div></div>
                 <div class="seatbox" id="rp-seat-verif"><span class="sn">Verification</span>
                   <div class="chips"><button class="chip" data-i="charter-verif">charter</button>
-                    <button class="chip" id="jr-verif" data-i="journal" data-base="journal">journal</button></div></div>
+                    <button class="chip" id="jr-verif" data-i="journal" data-base="journal">journal</button></div>
+                  <div class="wsub"><span class="wl">its worker</span>
+                    <button class="chip wc" id="jr-wv1" data-i="journal" data-base="worker A">worker A</button></div></div>
                 <div class="seatbox" id="rp-seat-audit"><span class="sn">Auditor</span>
                   <div class="chips"><button class="chip" data-i="charter-audit">charter</button>
                     <button class="chip" id="jr-audit" data-i="journal" data-base="journal">journal</button></div></div>
-                <div class="seatbox" id="rp-seat-workers"><span class="sn">Workers</span>
-                  <div class="chips"><button class="chip" data-i="charter-workers">charters</button>
-                    <button class="chip" id="jr-workers" data-i="journal" data-base="journals">journals</button></div></div>
               </div>
             </div>
 
@@ -359,7 +371,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
             <div class="rgroup" id="g-trail" style="grid-column:1/3">
               <span class="glab">the paper trail &#8212; work travels as files, never as messages</span>
               <div class="rboxes">
-                <button class="rbox" id="rp-wo" data-i="wo">Work orders</button>
+                <button class="rbox" id="rp-wo" data-i="wo">Work orders<span class="st" id="st-wo">ISSUED</span></button>
                 <button class="rbox" id="rp-dr" data-i="dr">Decision records</button>
                 <button class="rbox" id="rp-find" data-i="find">Findings</button>
                 <button class="rbox" id="rp-aud" data-i="audrep">Audit reports</button>
@@ -507,17 +519,20 @@ const BEATS = [
         {k:'tok',f:'ag-orch',to:'ag-sponsor',kind:'direct',s:.36,e:.62},
         {k:'tok',f:'ag-sponsor',to:'rp-spec',kind:'gold',s:.68,e:.9},
         {k:'stamp',w:'st-spec',s:.93}]},
- {ph:'BUILD & VERIFY', t:63, d:6, bt:'Work orders',
-  ax:'The orchestrator decided that this part of the spec would be built by implementation and tested by verification, wrote the work orders, and passed them on. They are versioned files with an ID, an author, an addressee and a status — not messages that vanish. A packet can be issued, returned, accepted, or bounced, and every one of those states stays on the record.',
-  acts:[{k:'born',w:'g-trail',s:.3},
-        {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.1,e:.5,
-         ent:'WO-001 issued to implementation and WO-002 to verification, both scoped to spec §4'},
-        {k:'born',w:'rp-wo',s:.45},{k:'flash',w:'rp-wo',s:.5,e:.8}]},
- {ph:'BUILD & VERIFY', t:69, d:6, bt:'Two leads, one wall between them',
-  ax:'Implementation and verification are seated separately, and that separation is the point: the seat that builds a thing never writes the tests that grade it. Both read the same work orders and the same specification, and neither reads the other’s output to decide what to do.',
-  acts:[{k:'spawn',w:'ag-impl',s:.1},{k:'spawn',w:'ag-verif',s:.18},
-        {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.35,e:.65},
-        {k:'tok',f:'rp-wo',to:'ag-verif',kind:'read',s:.45,e:.75}]},
+ {ph:'BUILD & VERIFY', t:63, d:6, bt:'The orchestrator writes the work orders',
+  ax:'Only the orchestrator routes work. It reads the signed specification, decides that this part of it will be built by implementation and tested by verification, and writes one packet for each — at the same moment, because they are independent. A work order is a versioned file with an ID, an author, an addressee and a status, so "who was asked to do what, and when" is a question the repository can answer later.',
+  acts:[{k:'born',w:'g-trail',s:.25},
+        {k:'tok',f:'rp-spec',to:'ag-orch',kind:'read',s:.02,e:.3},
+        {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.34,e:.78,
+         ent:'WO-001 issued to implementation: build spec §4'},
+        {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.4,e:.84,
+         ent:'WO-002 issued to verification: test spec §4 against its requirements'},
+        {k:'born',w:'rp-wo',s:.7},{k:'flash',w:'rp-wo',s:.76,e:1}]},
+ {ph:'BUILD & VERIFY', t:69, d:6, bt:'Both leads pick up their packet',
+  ax:'The orchestrator does not hand the work over in conversation — it lands the packets in the repository and the leads read them from there. Both are seated and both read at once, and neither reads the other\u2019s output to decide what to do. That separation is the point: the seat that builds a thing never writes the tests that grade it.',
+  acts:[{k:'spawn',w:'ag-impl',s:.08},{k:'spawn',w:'ag-verif',s:.12},
+        {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.3,e:.72},
+        {k:'tok',f:'rp-wo',to:'ag-verif',kind:'read',s:.3,e:.72}]},
  {ph:'BUILD & VERIFY', t:75, d:7, bt:'Tests come from the promise',
   ax:'The verification lead derives its tests and its independent reference models from the specification — never from the implementation. That is what makes a passing test mean something: it checks what was promised, not what happened to get built. A test written by reading the code would agree with the code by construction.',
   acts:[{k:'tok',f:'rp-spec',to:'ag-verif',kind:'read',s:.03,e:.3},
@@ -552,12 +567,20 @@ const BEATS = [
          ent:'WO-001 return BOUNCED with a six-item numbered defect list; grounds recorded per item'},
         {k:'tok',f:'rp-wo',to:'ag-wi2',kind:'read',s:.78,e:.95},
         {k:'flash',w:'rp-wo',s:.5,e:.9}]},
- {ph:'BUILD & VERIFY', t:102, d:5, bt:'A fork in the design',
+ {ph:'BUILD & VERIFY', t:102, d:5, bt:'Accepted, and the packet closes',
+  ax:'The second round answers the defect list item by item. The lead accepts it, and the work order moves to its final state — the whole trail from issue through bounce to acceptance stays readable, because a packet that could be quietly reopened or tidied would not be evidence of anything.',
+  acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.35,
+         ent:'Second return for WO-001; all six defect items answered'},
+        {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.38,e:.6},
+        {k:'tok',f:'ag-impl',to:'rp-wo',kind:'write',s:.62,e:.9,
+         ent:'WO-001 ACCEPTED; the bounce and its answer both stay on the record'},
+        {k:'flash',w:'rp-wo',s:.85,e:1}]},
+ {ph:'BUILD & VERIFY', t:107, d:5, bt:'A fork in the design',
   ax:'A non-obvious choice comes up — two approaches, neither clearly better. A decision record captures the decision, the alternatives considered, and why each one lost, so that a rejected idea cannot come back six months later looking fresh. One seat proposes it; a different seat accepts it.',
   acts:[{k:'tok',f:'ag-spec',to:'rp-dr',kind:'write',s:.15,e:.6,
          ent:'Decision record: interface framing, three alternatives weighed, grounds for each rejection'},
         {k:'born',w:'rp-dr',s:.55}]},
- {ph:'BUILD & VERIFY', t:107, d:6, bt:'A finding',
+ {ph:'BUILD & VERIFY', t:112, d:6, bt:'A finding',
   ax:'Verification files a finding against the build, graded critical, major, minor or note. Any seat may file one, even against itself. It closes only when repaired, or ruled on with written grounds by whoever owns the thing it is about — and “whoever owns it” is exactly the seat that can fix it. Being ignored is not one of the exits.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-find',kind:'write',s:.05,e:.35,
          ent:'Finding filed: MAJOR, edge-case handling contradicts requirement R19'},
@@ -566,7 +589,7 @@ const BEATS = [
         {k:'tok',f:'ag-impl',to:'rp-rtl',kind:'write',s:.65,e:.9,
          ent:'Finding repaired; the failing case now passes, evidence attached'},
         {k:'flash',w:'rp-find',s:.85,e:1}]},
- {ph:'AUDIT', t:113, d:7, bt:'The auditor re-runs the record',
+ {ph:'AUDIT', t:118, d:7, bt:'The auditor re-runs the record',
   ax:'The auditor audits the agents, not the electrons. It reads what other seats recorded as evidence and re-executes those commands to check the results actually come out as claimed. It audits every seat — including the orchestrator that spawned it — and it may write only its own reports, so it cannot fix anything it finds. That restriction is deliberate: an auditor that repairs things has an incentive to find only what it can repair.',
   acts:[{k:'spawn',w:'ag-audit',s:.05},
         {k:'tok',f:'jr-impl',to:'ag-audit',kind:'read',s:.2,e:.45},
@@ -574,35 +597,35 @@ const BEATS = [
         {k:'tok',f:'ag-audit',to:'rp-aud',kind:'alert',s:.65,e:.9,
          ent:'Audit report: twelve recorded commands re-executed, two did not reproduce as claimed'},
         {k:'born',w:'rp-aud',s:.85}]},
- {ph:'AUDIT', t:120, d:5, bt:'The seal',
+ {ph:'AUDIT', t:125, d:5, bt:'The seal',
   ax:'A passing test suite is not trusted here — it is tested. Before any planted bug exists, the verification lead writes down and freezes which kinds of defect its tests will catch and which they will miss. Predicting the misses matters as much as predicting the catches: the seal is a claim about the suite’s real shape, and freezing it first is what stops success from being redefined afterwards.',
   acts:[{k:'born',w:'g-mem',s:.3},
         {k:'tok',f:'ag-verif',to:'rp-camp',kind:'write',s:.1,e:.6,
          ent:'Campaign predictions SEALED before any defect exists: nine classes, six predicted caught, three predicted missed'},
         {k:'born',w:'rp-camp',s:.55},{k:'stamp',w:'st-seal',s:.7},
         {k:'flash',w:'rp-camp',s:.6,e:1}]},
- {ph:'AUDIT', t:125, d:8, bt:'Bugs, planted blind',
+ {ph:'AUDIT', t:130, d:8, bt:'Bugs, planted blind',
   ax:'Only now does the auditor plant known defects — secretly, and in an isolated copy of the work, never in the real product. It plants them without seeing what the seal predicts, and the seal was frozen before these bugs existed. Neither side can have tuned itself to the other.',
   acts:[{k:'born',w:'x-iso',s:.15},
         {k:'tok',f:'ag-audit',to:'x-iso',kind:'bug',s:.3,e:.55},{k:'bug',w:'bug1',s:.55},
         {k:'tok',f:'ag-audit',to:'x-iso',kind:'bug',s:.5,e:.72},{k:'bug',w:'bug2',s:.72},
         {k:'tok',f:'ag-audit',to:'x-iso',kind:'bug',s:.68,e:.9},{k:'bug',w:'bug3',s:.9}]},
- {ph:'AUDIT', t:133, d:7, bt:'Scored against the frozen record',
+ {ph:'AUDIT', t:138, d:7, bt:'Scored against the frozen record',
   ax:'The suite runs against every planted defect and each outcome is graded against the sealed prediction — caught where a catch was predicted, missed where a miss was predicted. A missed bug that the seal called is not a failure of the campaign; an unpredicted miss is. Then the copy is discarded. It never merges back, because it was only ever a target.',
   acts:[{k:'flash',w:'x-iso',s:.05,e:.4},
         {k:'tok',f:'x-iso',to:'rp-camp',kind:'read',s:.45,e:.7},
         {k:'flash',w:'rp-camp',s:.7,e:.95},
         {k:'gone',w:'x-iso',s:.97}]},
- {ph:'AUDIT', t:140, d:5, bt:'Straight to the human',
+ {ph:'AUDIT', t:145, d:5, bt:'Straight to the human',
   ax:'One finding is critical. It reaches the sponsor unedited — no seat sits between the auditor and the human, not even the orchestrator that spawned it and that relays everything else. The escalation ladder decides which classes of problem travel this way, so it is a rule rather than a judgement call made in the moment.',
   acts:[{k:'tok',f:'ag-audit',to:'ag-sponsor',kind:'alert',s:.15,e:.75}]},
- {ph:'GATE', t:145, d:5, bt:'Sign-off',
+ {ph:'GATE', t:150, d:5, bt:'Sign-off',
   ax:'The verification lead issues its verdict on the finished work, with the exact commands to reproduce it — a claim anyone can re-run rather than a statement anyone must believe. Failing verdicts are not deleted when they are fixed; they stay on the record beside the fix.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-so',kind:'write',s:.1,e:.55,
          ent:'Sign-off issued: PASS on all rows, with reproduction commands and the campaign score attached'},
         {k:'born',w:'rp-so',s:.5},{k:'stamp',w:'st-so',s:.7},
         {k:'flash',w:'rp-so',s:.55,e:1}]},
- {ph:'GATE', t:150, d:7, bt:'The harvest',
+ {ph:'GATE', t:155, d:7, bt:'The harvest',
   ax:'Before the gate can close, every seat re-reads its own journal and mines it for lessons — and the lessons are rewritten to hold in any project, not just this one, or they are worth nothing to the next adopter. “Found nothing” is an acceptable answer, but it must be said explicitly and recorded; it can never be skipped silently.',
   acts:[{k:'tok',f:'jr-spec',to:'ag-spec',kind:'read',s:.05,e:.3},
         {k:'tok',f:'jr-impl',to:'ag-impl',kind:'read',s:.15,e:.4},
@@ -610,7 +633,7 @@ const BEATS = [
         {k:'tok',f:'ag-impl',to:'rp-museum',kind:'write',s:.55,e:.8,
          ent:'Harvest: two lessons generalized to the failure museum; one seat reported “found nothing”'},
         {k:'born',w:'rp-museum',s:.75},{k:'flash',w:'rp-museum',s:.8,e:1}]},
- {ph:'GATE', t:157, d:7, bt:'The gate',
+ {ph:'GATE', t:162, d:7, bt:'The gate',
   ax:'A stage closes on a committed checklist that must be fully signed before the project advances. Every signature points at an entry in the signer’s own journal saying it signs — a claim you can follow to its evidence, not a checkbox someone ticked. The auditor countersigns, and the sponsor signs last.',
   acts:[{k:'tok',f:'ag-impl',to:'rp-gates',kind:'write',s:.05,e:.3,
          ent:'Gate row signed: implementation, citing the sign-off and the repaired finding'},
@@ -620,7 +643,7 @@ const BEATS = [
          ent:'Gate countersigned by the auditor; one caveat recorded rather than waived'},
         {k:'tok',f:'ag-sponsor',to:'rp-gates',kind:'gold',s:.6,e:.85},
         {k:'stamp',w:'st-gate',s:.9},{k:'flash',w:'rp-gates',s:.85,e:1}]},
- {ph:'GATE', t:164, d:7, bt:'The agents leave; the record stays',
+ {ph:'GATE', t:169, d:7, bt:'The agents leave; the record stays',
   ax:'Sessions end and their memory dies with them — but nothing lived only in a session. Every decision, every bounce, every refuted claim and every lesson is a file on the right, and a brand-new agent could reconstruct the entire program state from those files alone. Scrub back to the start and watch it build: that accumulation is the framework’s only real output.',
   acts:[{k:'off',w:'ag-wi1',s:.15},{k:'off',w:'ag-wi2',s:.2},{k:'off',w:'ag-wv1',s:.25},
         {k:'off',w:'ag-spec',s:.35},{k:'off',w:'ag-impl',s:.4},{k:'off',w:'ag-verif',s:.45},
@@ -628,20 +651,20 @@ const BEATS = [
         {k:'sweep',s:.7,e:1}]},
 ];
 const TOTAL = BEATS[BEATS.length-1].t + BEATS[BEATS.length-1].d;
-const LOAD_AT = 145;
+const LOAD_AT = 150;
 
 const JMAP = { 'ag-orch':'jr-orch','ag-spec':'jr-spec','ag-impl':'jr-impl',
-  'ag-verif':'jr-verif','ag-audit':'jr-audit','ag-ws1':'jr-workers',
-  'ag-ws2':'jr-workers','ag-wi1':'jr-workers','ag-wi2':'jr-workers','ag-wv1':'jr-workers' };
-const WHO = { 'ag-ws1':'spec worker','ag-ws2':'spec worker','ag-wi1':'build worker',
-  'ag-wi2':'build worker','ag-wv1':'test worker' };
+  'ag-verif':'jr-verif','ag-audit':'jr-audit','ag-ws1':'jr-ws1',
+  'ag-ws2':'jr-ws2','ag-wi1':'jr-wi1','ag-wi2':'jr-wi2','ag-wv1':'jr-wv1' };
+const WHO = {};
 
+const LABELSKEY = new Set(['st-wo']);
 const births = {}, gones = {}, stamps = [], occ = {}, bugs = {}, jentries = {};
 for (const b of BEATS) for (const a of b.acts) {
   const at = b.t + (a.s ?? .5) * b.d;
   if (a.k === 'born') births[a.w] = at;
   if (a.k === 'gone') gones[a.w] = at;
-  if (a.k === 'stamp') stamps.push([a.w, at]);
+  if (a.k === 'stamp' && !LABELSKEY.has(a.w)) stamps.push([a.w, at]);
   if (a.k === 'bug') bugs[a.w] = at;
   if (a.k === 'spawn') (occ[a.w] ??= []).push([at, Infinity]);
   if (a.k === 'off') { const iv = occ[a.w]; if (iv) iv[iv.length-1][1] = at; }
@@ -652,6 +675,7 @@ for (const b of BEATS) for (const a of b.acts) {
 }
 for (const j in jentries) jentries[j].sort((x,y) => x.t - y.t);
 const SLOT_BORN = births['g-seats'] ?? 0;
+const LABELS = { 'st-wo': [[67.2,'ISSUED'], [100.3,'BOUNCED'], [106.5,'ACCEPTED']] };
 
 const KINDS = {
   write:  {c:'var(--rx)',    shape:'pair', gate:true},
@@ -735,34 +759,34 @@ function drawWires() {
              cx:r.left-pr.left+r.width/2, cy:r.top-pr.top+r.height/2 }; };
   const live = id => $(id) && $(id).classList.contains('live');
   const out = [`<defs>
-    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,1.5 L9,5 L0,8.5 z" fill="var(--ink-2)"/></marker>
     <marker id="ahl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,1.5 L9,5 L0,8.5 z" fill="var(--rx)"/></marker></defs>`];
-  const P = (d, hot, head=true) => out.push(
-    `<path d="${d}" fill="none" stroke="${hot?'var(--rx)':'var(--line)'}" stroke-width="${hot?1.8:1.3}"`
-    + `${hot?'':' stroke-dasharray="3 3"'}${head?` marker-end="url(#${hot?'ahl':'ah'})"`:''} opacity="${hot?.95:.6}"/>`);
+      <path d="M0,1.5 L9,5 L0,8.5 z" fill="var(--rx)"/></marker>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,1.5 L9,5 L0,8.5 z" fill="var(--ink-2)" opacity=".75"/></marker></defs>`];
+  const P = (d, hot, head) => out.push(
+    `<path d="${d}" fill="none" stroke="${hot?'var(--rx)':'var(--line)'}" stroke-width="${hot?1.9:1.5}"`
+    + `${head?` marker-end="url(#${hot?'ahl':'ah'})"`:''} opacity="${hot?1:.75}" stroke-linecap="round"/>`);
 
   const sp = R($('ag-sponsor')), or = R($('ag-orch'));
-  P(`M${or.cx} ${or.t-2} V${sp.b+4}`, live('ag-orch'));           // orchestrator → the human
+  P(`M${or.cx} ${or.t-3} V${sp.b+5}`, live('ag-orch'), true);        // up to the human
 
-  const first = $(CREW[0][0]); if (!first) { svg.innerHTML = out.join(''); return; }
-  const spineX = R(first).l - 15, collectY = or.b + 11;
-  let lastCy = collectY;
-  for (const [lid] of CREW) { const el = $(lid); if (el) lastCy = Math.max(lastCy, R(el).cy); }
-  P(`M${spineX} ${collectY} V${lastCy}`, false, false);            // the shared spine
-  P(`M${spineX} ${collectY+2} V${collectY-2} H${or.cx} V${or.b+3}`,
-    CREW.some(([l]) => live(l)));                                  // spine → orchestrator
-  for (const [lid, ...wids] of CREW) {
-    const el = $(lid); if (!el) continue;
-    const L = R(el), hot = live(lid);
-    P(`M${L.l-4} ${L.cy} H${spineX}`, hot, false);                 // lead → spine
+  const rows = CREW.map(([lid]) => $(lid)).filter(Boolean).map(R);
+  if (!rows.length) { svg.innerHTML = out.join(''); return; }
+  const spineX = rows[0].l - 16;
+  const top = or.b + 4, bottom = rows[rows.length-1].cy;
+  const anyLive = CREW.some(([l]) => live(l));
+  // one continuous bracket: down the spine from the orchestrator, out to each lead
+  P(`M${or.cx} ${top} V${top+7} H${spineX} V${bottom}`, anyLive, false);
+  CREW.forEach(([lid, ...wids], i) => {
+    const el = $(lid); if (!el) return;
+    const L = rows[i], hot = live(lid);
+    P(`M${spineX} ${L.cy} H${L.l-4}`, hot, true);                    // branch into the lead
     for (const wid of wids) {
       if (!live(wid)) continue;
       const W = R($(wid));
-      P(`M${W.l-3} ${W.cy} H${L.r+4}`, true);                      // worker → its lead
+      P(`M${W.l-4} ${W.cy} H${L.r+5}`, true, true);                  // worker reports to lead
     }
-  }
+  });
   svg.innerHTML = out.join('');
 }
 
@@ -776,6 +800,13 @@ function render() {
     el.classList.toggle('unborn', T < births[w] || dead);
   }
   for (const [w, at] of stamps) { const el = $(w); if (el) el.style.opacity = T >= at ? 1 : 0; }
+  for (const id in LABELS) {                      // a work order's state, over time
+    const el = $(id); if (!el) continue;
+    let cur = null;
+    for (const [at, txt] of LABELS[id]) if (T >= at) cur = txt;
+    el.textContent = cur || ''; el.style.opacity = cur ? 1 : 0;
+    el.classList.toggle('warn', cur === 'BOUNCED');
+  }
   for (const w in bugs) { const el = $(w); if (el) el.style.opacity = T >= bugs[w] ? 1 : 0; }
 
   document.querySelectorAll('.agnode').forEach(el => {
@@ -861,7 +892,7 @@ window.seek = t => { T = Math.max(0, Math.min(TOTAL, t)); render(); };
 function frame(ts) {
   if (playing) {
     const dt = Math.min(.1, (ts - lastFrame) / 1000);
-    T += dt * speed;
+    T += dt * speed * BASE_RATE;
     if (T >= TOTAL) { T = TOTAL; setPlay(false); }
     render();
   }
@@ -875,7 +906,7 @@ function setPlay(p) {
 }
 $('play').addEventListener('click', () => setPlay(!playing));
 $('spd').addEventListener('click', () => {
-  speed = speed === 1 ? 2 : speed === 2 ? 0.5 : 1;
+  speed = speed === 1 ? 2 : speed === 2 ? 4 : speed === 4 ? 0.5 : 1;
   $('spd').textContent = (speed === 0.5 ? '½' : speed) + '×';
 });
 $('scrub').addEventListener('input', e => { T = +e.target.value; render(); });
@@ -892,7 +923,10 @@ for (const b of BEATS) if (!seen.has(b.ph)) {
 
 /* ---- click descriptions ---- */
 const SEATNAME = { 'jr-orch':'Orchestrator','jr-spec':'Specification lead','jr-impl':'Implementation lead',
-  'jr-verif':'Verification lead','jr-audit':'Auditor','jr-workers':'Workers' };
+  'jr-verif':'Verification lead','jr-audit':'Auditor',
+  'jr-ws1':'Specification · worker A','jr-ws2':'Specification · worker B',
+  'jr-wi1':'Implementation · worker A','jr-wi2':'Implementation · worker B',
+  'jr-wv1':'Verification · worker A' };
 const DATA = {
 "sponsor": [
 "Sponsor",

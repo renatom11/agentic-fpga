@@ -1448,3 +1448,57 @@ formal_dv, and agents/journals/workers/ carries their volumes — tb_writer at
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0295] 2026-08-12T18:16Z | task:none | Each worker gets its own journal instead of one box pooling five agents' entries, the work order becomes a packet you can watch change state, and the org tree is redrawn as one bracket after the sponsor called it horrible
+
+### Trigger
+
+Sponsor review, four items. One was a real modelling error I had shipped: a
+single "Workers" seat box with a single journal, into which a specification
+worker and an implementation worker both wrote — so the card listed five
+agents' entries as though they were one agent's. The sponsor caught it exactly:
+"they both get journal entries listed here? you can see how that can be
+confusing." Also: the work order's relationship to the orchestrator and the
+leads was not legible; the org tree looked horrible; and even half speed was
+too fast.
+
+### Per-worker journals
+
+The pooled box is gone. Every worker now has its own journal, nested inside its
+LEAD's seat box under an "its workers" sub-row — so the file-side hierarchy
+mirrors the session-side one, and clicking "worker A" under Implementation
+shows only that worker's entries. The left-panel nodes were renamed to match
+(worker A / worker B, scoped per lead) so a node and its journal are the same
+name. This is also truer to the record: workers really do hold their own
+charters and journals in agents/journals/workers/.
+
+### The work order as a packet, not a box
+
+Two beats replaced by three, and the traffic made concurrent rather than
+sequential — the earlier version only ever moved one token at a time, which
+made independent things look ordered. The orchestrator now reads the signed
+spec and writes BOTH packets at once; both leads are seated and read their
+packet simultaneously; and a new closing beat carries the second return through
+to acceptance. The box itself gained a state stamp driven off the timeline —
+ISSUED, then BOUNCED in red, then ACCEPTED — so the lifecycle the prose
+describes is something you watch happen rather than something you are told.
+
+### The tree, and the clock
+
+The wires were the ugly part: floating stubs beside each lead and a stray
+arrowhead entering the orchestrator sideways. Redrawn as one continuous
+bracket — down from the orchestrator, along a spine, out to each lead — with
+arrowheads only where they carry meaning, and live branches in accent while
+dormant ones stay quiet. Base playback rate cut to 0.42 timeline-seconds per
+real second, with a fourth speed stop added, so 1x is now well under half the
+old speed and the eye can follow a single token.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
