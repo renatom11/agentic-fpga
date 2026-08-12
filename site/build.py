@@ -567,7 +567,7 @@ def _slug(text):
 def _inline(text):
     t = html.escape(text, quote=False)
     t = re.sub(r'`([^`]+)`', r'<code>\1</code>', t)
-    t = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', t)
+    t = re.sub(r'\*\*((?:[^*]|\*(?!\*))+)\*\*', r'<b>\1</b>', t)
     t = re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)', r'<i>\1</i>', t)
     t = re.sub(r'\[([^\]]*)\]\((#[^)]*)\)', r'<a href="\2">\1</a>', t)
     t = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', t)
@@ -575,9 +575,20 @@ def _inline(text):
 
 def md_to_html(md):
     out, para, lst, tbl, li_buf = [], [], None, [], []
+    fence, fence_buf, bq = False, [], []
     def flush_para():
         if para:
             out.append('<p>' + _inline(' '.join(para)) + '</p>'); para.clear()
+    def flush_bq():
+        if bq:
+            paras, cur = [], []
+            for l in bq:
+                if l.strip(): cur.append(l)
+                elif cur: paras.append(cur); cur = []
+            if cur: paras.append(cur)
+            out.append('<blockquote>' + ''.join(
+                '<p>' + _inline(' '.join(p)) + '</p>' for p in paras) + '</blockquote>')
+            bq.clear()
     def flush_li():
         if li_buf:
             out.append(f'<li>{_inline(" ".join(li_buf))}</li>'); li_buf.clear()
@@ -595,6 +606,24 @@ def md_to_html(md):
                                '</tr>' for r in body) + '</table></div>')
             tbl.clear()
     for line in md.split('\n'):
+        if line.startswith('```'):
+            if fence:
+                out.append('<pre class="fence"><code>' +
+                           html.escape('\n'.join(fence_buf)) + '</code></pre>')
+                fence_buf.clear(); fence = False
+            else:
+                flush_para(); flush_list(); flush_bq(); fence = True
+            continue
+        if fence:
+            fence_buf.append(line); continue
+        if line.startswith('>'):
+            flush_para(); flush_list()
+            bq.append(line[2:] if line.startswith('> ') else line[1:])
+            continue
+        elif bq and not line.strip():
+            flush_bq()
+        elif bq:
+            flush_bq()
         if tbl and not line.startswith('|'): flush_table()
         m = re.match(r'^(#{1,4}) (.*)$', line)
         if m:
@@ -622,7 +651,10 @@ def md_to_html(md):
                 li_buf.append(line.strip())
             else:
                 para.append(line.strip())
-    flush_para(); flush_list(); flush_table()
+    if fence and fence_buf:
+        out.append('<pre class="fence"><code>' +
+                   html.escape('\n'.join(fence_buf)) + '</code></pre>')
+    flush_para(); flush_list(); flush_bq(); flush_table()
     return '\n'.join(out)
 
 PROCESS_CSS = """
@@ -634,6 +666,12 @@ PROCESS_CSS = """
 .doc p, .doc li { max-width:76ch; }
 .doc li { margin:.3rem 0; }
 .doc hr { border:0; border-top:1px solid var(--line); margin:2rem 0; }
+.doc pre.fence { font-family:'Plex Mono',monospace; font-size:.82em; background:var(--chip);
+  border:1px solid var(--line); border-radius:6px; padding:.8rem 1rem; margin:1rem 0;
+  overflow-x:auto; max-width:86ch; line-height:1.5; }
+.doc pre.fence code { background:none; padding:0; font-size:1em; }
+.doc blockquote { border-left:3px solid var(--line); margin:1rem 0; padding:.2rem 0 .2rem 1rem;
+  color:var(--ink-2); max-width:74ch; }
 .doc code { font-family:'Plex Mono',monospace; font-size:.86em; background:var(--chip);
   border:1px solid var(--line); border-radius:5px; padding:.06em .35em; }
 .doc .mtable { overflow-x:auto; margin:.8rem 0 1.4rem; }
