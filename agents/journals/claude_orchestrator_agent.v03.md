@@ -944,3 +944,38 @@ act itself so the acceptance commit carries only the instrument it amends.
 - site/public/process.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0287] 2026-08-12T12:29Z | task:none | The site is rebuilt to the sponsor's request against the current HEAD, folding its own prior commit into the counts — and incident fifteen is absorbed at zero loss, the container restored behind but cured by one fetch
+
+### Trigger
+
+Two things at once. **Incident fifteen**: a fallback heartbeat arrived to find
+the container restored from a stale snapshot — local behind, the ff-only merge
+fast-forwarded it back to `d026170` at zero loss on all committed work (the
+cure is now a standing preamble, not an event). And the two in-flight Wave-2
+agents did not survive the restore (`ListAgents` → none reachable, working tree
+clean), so their work — the architect amendment batch and dv's WO-0083 stage-2
+revision — is lost and re-dispatched, no committed state harmed. **Sponsor
+request**: update the website with the most up-to-date everything.
+
+### The rebuild
+
+`python3 site/build.py` against HEAD `d026170`: 651 commits, 596 entries, 83
+WOs, 224 attack rows, 7/20 RTL. The diff from the prior build is the site's
+self-referential counter catching up — the `d026170` build ran before its own
+commit existed, so it counted 650; this build counts 651 and folds
+`J-orchestrator-0286` into the entry total. The pages now render the current
+core (7th edition, ADR-0022 in force), the companion memoir, and the milestone
+board through this commit. `check_process_doc.sh` OK. One inherent lag remains
+(this commit will not appear in the counts until the next build) — the site is
+always current as of the prior commit, which is the counter's nature, not a
+staleness to chase.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/memoir.html
+- site/public/org-chart.html
+- site/public/process.html
+- site/public/spec-atlas.html
