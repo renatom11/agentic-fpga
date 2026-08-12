@@ -277,7 +277,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
          let octet =
            mux2
              is_payload
-             (select held_data ((8 * j) + 7) (8 * j))
+             (select held_data ((8 * (7 - j)) + 7) (8 * (7 - j)))
              (mux2
                 is_pad
                 (zero 8)
