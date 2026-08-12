@@ -150,3 +150,88 @@ passage FROM THE RECORD — one session's work, the answer in the repository.
 - docs/reports/process-council/round-3/outsider.md
 - docs/reports/process-council/round-3/sal-framework.md
 - docs/reports/process-council/round-3/verdict.md
+
+## [J-orchestrator-0271] 2026-08-12T02:32Z | task:none | The commission closes with the claim converted to a measurement: two cold readers reconstruct the seal flow identically, the second cold boot runs the whole order with zero stops - and the record's own answer to the independence question stands disclosed in the document it convicted
+
+### Trigger
+
+Adoption run two returned, the last of the three condition agents. This entry
+lands all three condition artifacts verbatim at
+docs/reports/process-council/round-3/, carries the closing board flip and the
+held site render, and closes the sponsor's three-round commission.
+
+### The conditions, executed
+
+**Acceptance test (round-3 blocking item 1): PASSED.** Cold readers A and B —
+separate worlds, the fourth edition alone, no other file — reconstructed the
+identical seal flow, both matching the record: author = the scored seat;
+freeze = before any defect diff exists; blind = one-way against the seeder;
+scorer = the same seat that froze; the arrangement disclosed self-scoring
+under four stranger-checkable constraints, never claimed independence. Both
+readers explicitly avoided the backwards-blind reconstruction a round-3
+reviewer actually produced. Their reports landed verbatim (cold-reader-A.md,
+cold-reader-B.md — extracted mechanically from the task transcripts, not
+retyped). New residues they surfaced, for the fifth edition's ledger: §3.3's
+opening line still carries the withdrawn weaker phrase (:2251); "seeded seat"
+for seeding seat at B.1:4543; duplicate R9/R10 rows explained only after the
+table; program nouns appearing before Annex C defines them. Readability
+(B.0.1's row, twice skipped, now run twice over): B-minus and "accurate,
+navigable, not yet hospitable," convergent on the same three repair passages.
+
+**Adoption run two (B.0.2): 17 halts, ZERO STOPPED — against run one's 18
+with 3 stops.** The composition is the measurement: every interface
+transferred via the facsimiles (trailer keys, entry grammar, rule numbers,
+thresholds); what remained to invent was implementation (~850 lines of
+enforcement scripting). The runner executed the whole order: step-0 fallback
+demoting all 34 [MC] rows to [RE] in its hands, acts 1a-1d, 18 commits (16
+through its reconstructed gate under three seat identities), a three-lens
+review with declared non-independence, three real live-fire bounces cited in
+its gate, self-test 19/19 from a clean clone, and a founding gate honestly
+left OPEN on the rows a solo adopter cannot sign — no work order issued,
+which the document names as the design working. Its most expensive halts:
+the kit's implementations live in the unreachable shell (HALT-02); the
+founding-range/re-check contradiction survives the reordering (HALT-06 —
+routed to the fifth edition's ledger); its own machinery broke at first live
+fire and was repaired through its own just-authored amendment procedure
+(HALT-12), a cost class the order never budgets. Halt log landed verbatim.
+
+### Run-record notes (mine, carried per standing law)
+
+78d33f9's push fired no CI runs — the errored-then-retried push dropped the
+event; no enforcement gap (the whole-history journal-check ran green at the
+next commit, whose tree contained all of 78d33f9's changes); transient, no
+action owed. A guessed stamp on my own 0269 entry was caught against date -u
+and corrected pre-commit. An invented run id 404'd one CI check before the
+proper listing corrected it; harmless, but the habit is the hazard.
+
+### The commission, closed
+
+Three rounds, four editions, every artifact committed: round 1 (nine files),
+round 2 (ten + halt log), round 3 (ten + two reader reports + halt log 2).
+The document's grade by its own council: description-grade alone,
+replication-grade only as the export unit — with the shell pinned, the drift
+check a named owned debt, and the halt trend now the standing empirical form
+of the claim. Final delivery to the sponsor accompanies this landing.
+
+### Next
+
+Engineering resumes at the head of the queue: my ADR-0021 implementation
+round with every countersignature condition riding; the amendment batch (C-40,
+C-93, F-0022-2, ADR21-1, B.2 items 7/10/11/12); the auditor reconciliation
+round (F-0024-A/C, its own artifact cures, the posture re-measurement vs
+edition 4, the cold-reader residues relayed); dv's stage-2 packet revision
+then issuance; the M04 stage-1 mutation campaign WO. Watching, not acting:
+shell PR #3; the P1-module-ready signature and the shell-side cold-boot offer
+remain the sponsor's.
+
+### Files-in-this-commit
+- docs/reports/process-council/round-3/adoption-run-2-halt-log.md
+- docs/reports/process-council/round-3/cold-reader-A.md
+- docs/reports/process-council/round-3/cold-reader-B.md
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/process.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
