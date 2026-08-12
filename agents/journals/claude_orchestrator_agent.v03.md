@@ -2035,3 +2035,105 @@ earned.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0304] 2026-08-12T21:34Z | task:none | Two adversarial rounds convict the page of animating the implementation lead reviewing verification's own bench - and of keeping every worker alive for two minutes while telling the reader they are short-lived
+
+### Trigger
+
+Continuation of J-orchestrator-0303. Four review lenses had filed 45 findings
+against the newly authored content, 28 blocking. This entry lands the repairs and
+a second review round on top of them.
+
+### Round one: 51 patches, 9 findings rejected
+
+An editor turned each finding into a precise patch against a ruling set I fixed
+in advance, so the judgement calls were mine and the text was its. The rejections
+are the part worth recording, because three of them protect something real:
+
+- Two lenses wanted the founding CRITICAL rewritten from the protocol
+  contradiction to the determinism comparator. Rejected on my ruling: audit0 is
+  where the ORGANIZATION is put on trial before any design work, so its CRITICAL
+  has to be a finding about the organization. §3 requires a RETURNED entry
+  appended to the packet's Return log while §6 puts agents/handoffs/** outside
+  the auditor's write scope, so the auditor cannot execute the lifecycle it is
+  assigned. The two audit-report rows were rewritten to match the beat, not the
+  other way round.
+- One lens wanted the founding CRITICAL closed at audit0 p:0.94, to sit before
+  the gate signature. Rejected with better grounds than I had: the sessions log
+  one position later says the auditor's session ENDED with the finding still
+  open, and that "the finding stays open across the end of the session that
+  raised it - that is the point of writing it to a file." Closing it early would
+  destroy the demonstration. The gate signature moved instead.
+- Three lenses re-reported the work-order renumbering I had already done.
+
+The editor also found a defect in its own addressing scheme: three rows in the
+CI ledger are all literally named "bench lane", so it wrote ordered sequential
+renames and told me to apply them in order. I checked the authored order matched
+its assumption before applying, and it did.
+
+### Round two: two defects in the ANIMATION, both mine
+
+Neither could have been found by reading the content, because both live in the
+beat script.
+
+1. THE BENCH PACKET WAS ROUTED THROUGH THE IMPLEMENTATION LINE. The bounce and
+   accept beats animate the bench return arriving from ag-wi2 - an IMPLEMENTATION
+   worker - and being bounced and then accepted by ag-impl, the implementation
+   lead. WO-0014 is verification's packet. So the page was animating the
+   implementation lead reviewing and grading the testbench that grades its own
+   module, which is the single thing the page tells the reader can never happen,
+   and the separation the whole framework exists to enforce.
+   This is inherited from the NIC version, where the same beats were about the
+   implementation packet, and my blanket work-order renumbering preserved it.
+   Rerouted to ag-wv1 and ag-verif. The journal entries follow the sender, so the
+   fix also moved four entries out of the implementation journals and into
+   verification's, where they were written.
+
+2. EVERY WORKER STAYED ALIVE FOR TWO MINUTES. Only the specification workers were
+   short-lived. The implementation workers were spawned at build (t=102) and the
+   bench worker at blindbench (t=96), and all three stayed lit until the final
+   beat at t=218 - while the page's own worker card says a worker is "spawned for
+   one task packet, given only that packet's context, returning only what the
+   packet asks, then gone."
+   Every worker session now opens and closes where the sessions log says it does:
+   the implementation pair closes at the end of build, and the bench worker runs
+   three separate sessions - blindbench to bounce1, inside accept, and inside
+   gapclose - which is what a packet-per-session actually looks like.
+
+### A defect the screenshot found that no reviewer could
+
+Rerouting the bench packet emptied the implementation lead's journal: at t=124 its
+two workers showed entries and the lead showed none, while the page says every
+commit pairs work with its author's entry. The lead's review of WO-0013 had never
+been animated at all - the bounce beats had been masking the gap by crediting it
+with verification's entries. Added the review act. All five persistent seats now
+accumulate entries across the timeline: 5, 4, 4, 13, 3 at the end.
+
+### Fifteen more content repairs
+
+Among them: ten bench units green rather than twelve, because U09 and U12 assert
+on signals only the elaborated design produces and the receiver has not been run
+yet; U09 driving 0x00, 0x55 and 0xFF, because three failure tables reported the
+fingerprint in 0x55 while the row said it drove only 0x00 and 0xFF; the FIFO at
+the warm-up restated as the stub it must be, since WO-0015 commissions its
+attack plan and bench at the last beat; L-0009 restated on the ordering the page
+actually shows, where A-08 is written fifteen beats AFTER the ruling it failed to
+cite rather than three weeks before it; and the sponsor question no longer shown
+as pending two hundredths of a beat after its answer is committed.
+
+### Verification
+
+Harness clean at three viewports: play advances, no off-stage marks, no JS
+errors, all 68 targets open, nothing overflows its card, the body never scrolls
+sideways. Residue sweep for the abandoned example: zero hits across nineteen
+terms. 367 ledger rows.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html

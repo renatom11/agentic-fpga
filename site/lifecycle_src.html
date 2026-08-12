@@ -635,7 +635,11 @@ const BEATS = [
         {k:'tok',f:'ag-wi2',to:'rp-rtl',kind:'write',s:.4,e:.68,
          ent:'Sample grid at 216 + 432n implemented; every constant read from uart_params.ml, none declared locally'},
         {k:'tok',f:'ag-wi1',to:'rp-rtl',kind:'write',s:.62,e:.9,
-         ent:'Framing check at cycle 4104 and 168-tick break counter: rx_valid and frame_error mutually exclusive'}]},
+         ent:'Framing check at cycle 4104 and 168-tick break counter: rx_valid and frame_error mutually exclusive'},
+        {k:'tok',f:'rp-rtl',to:'ag-impl',kind:'read',s:.74,e:.9},
+        {k:'tok',f:'ag-impl',to:'rp-rtl',kind:'write',s:.88,e:1,
+         ent:'Worker returns read line by line against the frozen contract and the module landed; WO-0013 stays in review until the tolerance sweep has run'},
+        {k:'off',w:'ag-wi1',s:.97},{k:'off',w:'ag-wi2',s:.99}]},
  {id:'refused', ph:'BUILD & VERIFY', t:109, d:5, bt:'The commit script refuses the orchestrator\'s own commit.',
   ax:'Coming out of the contract review the tick generator is renamed, and the orchestrator runs git mv on uart_baud.ml to uart_tick_gen.ml. Its journal entry declares one changed path. The declared-file-list check compares the declaration against the staged set as sets, and a rename stages two paths, the deletion and the addition. One declared, two staged, refused. The seat with the widest write scope in the organisation is blocked by a check that never reads its identity.',
   acts:[{k:'tok',f:'ag-orch',to:'rp-gate',kind:'refused',s:.15,e:.85}]},
@@ -647,21 +651,23 @@ const BEATS = [
         {k:'sweep',s:.62,e:.98}]},
  {id:'bounce1', ph:'BUILD & VERIFY', t:120, d:6, bt:'The first bench return is bounced.',
   ax:'WO-0014 comes back with twelve bench units and is refused with five numbered defects. D1: the tolerance bench reads DIV_OS out of uart_tick_gen.ml instead of uart_params.ml, a bench taking a constant from the RTL it is grading. D2: an unread field in the stimulus record, which fails the build under OCaml warning 69 promoted to an error. D4: U08 asserts break_detect at cycle 4535 where the requirement says 4536.',
-  acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.3,wo:{id:'WO-0013',st:'RETURNED',note:'Return submitted for review: twelve bench units against the fourteen attack rows'},
+  acts:[{k:'tok',f:'ag-wv1',to:'rp-wo',kind:'write',s:.05,e:.3,wo:{id:'WO-0014',st:'RETURNED',note:'Return submitted for review: twelve bench units against the fourteen attack rows'},
          ent:'Return submitted: twelve bench units against the fourteen attack rows, U09 sweeping the plan\'s window'},
-        {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.32,e:.52},
-        {k:'tok',f:'ag-impl',to:'rp-wo',kind:'write',s:.55,e:.75,wo:{id:'WO-0013',st:'BOUNCED',note:'Bounced: D1 constant read out of the RTL, D2 warning-69 build failure, D4 break asserted at cycle 4535'},
+        {k:'tok',f:'rp-wo',to:'ag-verif',kind:'read',s:.32,e:.52},
+        {k:'tok',f:'ag-verif',to:'rp-wo',kind:'write',s:.55,e:.75,wo:{id:'WO-0014',st:'BOUNCED',note:'Bounced: D1 constant read out of the RTL, D2 warning-69 build failure, D4 break asserted at cycle 4535'},
          ent:'BOUNCED: five numbered defects, each with the file, the line and the clause it violates'},
-        {k:'tok',f:'rp-wo',to:'ag-wi2',kind:'read',s:.78,e:.95},
-        {k:'flash',w:'rp-wo',s:.5,e:.9}]},
+        {k:'tok',f:'rp-wo',to:'ag-wv1',kind:'read',s:.78,e:.95},
+        {k:'flash',w:'rp-wo',s:.5,e:.9},
+        {k:'off',w:'ag-wv1',s:.98}]},
  {id:'accept', ph:'BUILD & VERIFY', t:126, d:5, bt:'The fourth round closes the work order.',
   ax:'D5 is answered, and U11 now checks that level still reads 16 after the discarded byte. D3 is not. The reviewer records that U09 sweeps P = 420 to 444 where frozen REQ-011 says 422 to 447, and disposes of it as \'matches the attack plan\', treating the plan as the authority for what to drive. The packet reaches ACCEPTED at round four with all four rounds readable inside it, that disposition included.',
-  acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.35,wo:{id:'WO-0013',st:'RETURNED',note:'Second return: four of five defects answered with evidence; D3 dispositioned against the attack plan'},
+  acts:[{k:'spawn',w:'ag-wv1',s:.02},{k:'tok',f:'ag-wv1',to:'rp-wo',kind:'write',s:.05,e:.35,wo:{id:'WO-0014',st:'RETURNED',note:'Second return: four of five defects answered with evidence; D3 dispositioned against the attack plan'},
          ent:'Second return: D1, D2, D4 and D5 answered with the diff and the re-run output for each'},
-        {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.38,e:.6},
-        {k:'tok',f:'ag-impl',to:'rp-wo',kind:'write',s:.62,e:.9,wo:{id:'WO-0013',st:'ACCEPTED',note:'Accepted at round four; every bounce and every answer preserved in the packet'},
+        {k:'tok',f:'rp-wo',to:'ag-verif',kind:'read',s:.38,e:.6},
+        {k:'tok',f:'ag-verif',to:'rp-wo',kind:'write',s:.62,e:.9,wo:{id:'WO-0014',st:'ACCEPTED',note:'Accepted at round four; every bounce and every answer preserved in the packet'},
          ent:'ACCEPTED at round four; D3 closed as matching the attack plan, and that disposition stays in the packet'},
-        {k:'flash',w:'rp-wo',s:.85,e:1}]},
+        {k:'flash',w:'rp-wo',s:.85,e:1},
+        {k:'off',w:'ag-wv1',s:.95}]},
  {id:'dr', ph:'BUILD & VERIFY', t:131, d:6, bt:'An interface question is settled by decision record.',
   ax:'ADR-0003. uart_rx emits rx_valid as a one-cycle strobe with no ready, and the FIFO downstream can be full. The two leads read the seam differently and neither reading is excluded by the frozen text. The ruling: the strobe stays unqualified, uart_fifo drops a write while full and raises no flag of its own, and uart_lite latches rx_overrun as rx_valid AND full until rx_ovr_clr. No module contract is amended; the ruling is placement only.',
   acts:[{k:'tok',f:'ag-impl',to:'ag-spec',kind:'direct',s:.05,e:.28},
@@ -670,7 +676,7 @@ const BEATS = [
          ent:'ADR-0003 recorded: strobe stays unqualified, overrun latch sits in uart_lite, both rejected alternatives kept with their grounds'},
         {k:'born',w:'rp-dr',s:.75},{k:'flash',w:'rp-dr',s:.8,e:1}]},
  {id:'sweep', ph:'BUILD & VERIFY', t:137, d:6, bt:'A tolerance sweep convicts the receiver.',
-  ax:'Isolated frames from the bench model, two bytes at each sender bit period. At P = 421, 422 and 423 the byte comes back OR\'d with 0x80: 0x55 reads 0xD5, 0x00 reads 0x80, 0xFF is untouched. From 424 up it is clean, and frame_error is low on every wrong row. The loopback soak had stayed green throughout, as arithmetic rather than luck: the broken receiver decodes 426 through 472, and the transmitter emits 434.',
+  ax:'Isolated frames from the bench model, three bytes at each sender bit period. U09 reddens from P = 420 through 423. At P = 421, 422 and 423 the byte comes back OR\'d with 0x80: 0x55 reads 0xD5, 0x00 reads 0x80, 0xFF is untouched. At P = 420 a second sample crosses a boundary as well, so bit 6 reads d7 and 0x55 comes back 0x95. From 424 up it is clean on isolated frames, and frame_error is low on every wrong row. The loopback soak had stayed green throughout, as arithmetic rather than luck: the broken receiver decodes 426 through 472, and the transmitter emits 434.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-find',kind:'write',s:.05,e:.35,
          ent:'BUG-0001 filed CRITICAL: tick counter compares against DIV_OS instead of DIV_OS-1, 28-cycle tick, 448-cycle bit period'},
         {k:'tok',f:'rp-find',to:'ag-impl',kind:'read',s:.4,e:.6},
@@ -716,12 +722,13 @@ const BEATS = [
         {k:'tok',f:'x-iso',to:'ag-verif',kind:'read',s:.55,e:.85}]},
  {id:'gapclose', ph:'PROVE', t:180, d:6, bt:'The gap is closed and proved by replay.',
   ax:'A-08 is re-derived to 422 through 447, twenty-six values. A-15 drives the frozen edges P = 422 and P = 447 for all 256 bytes. A-16 adds negative controls at 421 and 448 that assert only non-hang and re-arm, because the requirement claims nothing outside its window. The two rows become U13 and U09 is regenerated. The unmodified S-c4 diff is replayed: red, two of thirteen units fail, and the branch never merges.',
-  acts:[{k:'tok',f:'ag-verif',to:'rp-ap',kind:'write',s:.05,e:.32,
+  acts:[{k:'spawn',w:'ag-wv1',s:.12},{k:'tok',f:'ag-verif',to:'rp-ap',kind:'write',s:.05,e:.32,
          ent:'A-08 re-derived to 422..447; A-15 and A-16 added, each carrying the clause its bound comes from'},
         {k:'tok',f:'ag-wv1',to:'rp-tb',kind:'write',s:.35,e:.62,
          ent:'U13 added, U09 regenerated; S-c4 replayed and killed, U09 at P = 445 to 447 and U13 at P = 447'},
         {k:'flash',w:'rp-tb',s:.6,e:.85},
-        {k:'gone',w:'x-iso',s:.9}]},
+        {k:'gone',w:'x-iso',s:.9},
+        {k:'off',w:'ag-wv1',s:.95}]},
  {id:'critical', ph:'PROVE', t:186, d:5, bt:'A CRITICAL finding routes to the sponsor unedited.',
   ax:'AUD-0007. The sign-off draft claims co-simulation discharges REQ-011 because reference and design agree at every swept period. They agree because they share the constant the requirement exists to test: both bit periods are 432 cycles. The draft\'s stated tightest case, agreement at P = 448 where both reject the frame, cannot exist, because the harness configuration masks frame_error on both sides. The run named as refutation is written and comes back red.',
   acts:[{k:'tok',f:'ag-audit',to:'ag-sponsor',kind:'alert',s:.15,e:.75}]},
@@ -744,13 +751,13 @@ const BEATS = [
          ent:'L-0009 and L-0010 banked with the artefacts that produced them; all five journals harvested'},
         {k:'born',w:'rp-museum',s:.75},{k:'flash',w:'rp-museum',s:.8,e:1}]},
  {id:'gate', ph:'GATE', t:207, d:6, bt:'The gate is signed, countersigned, and signed again.',
-  ax:'A signature is a reference to the signing seat\'s own journal entry, transcribed by the orchestrator, and no box is checked by its author. The implementation and verification leads sign, the orchestrator countersigns, the sponsor signs. One caveat is recorded and not waived: the sponsor\'s disposition of AUD-0007 struck co-simulation from REQ-011\'s evidence, leaving it discharged by directed sweep alone, and the vendoring note now records what the anchor cannot cover.',
+  ax:'A signature is a reference to the signing seat\'s own journal entry, transcribed by the orchestrator, and no box is checked by its author. The three leads sign, the auditor countersigns, the sponsor signs last. One caveat is recorded and not waived: the sponsor\'s disposition of AUD-0007 struck co-simulation from REQ-011\'s evidence, leaving it discharged by directed sweep alone, and the vendoring note now records what the anchor cannot cover.',
   acts:[{k:'tok',f:'ag-impl',to:'rp-gates',kind:'write',s:.05,e:.28,
          ent:'Gate signed: implementation, citing the round-four sign-off and the BUG-0001 fix SHA'},
         {k:'tok',f:'ag-verif',to:'rp-gates',kind:'write',s:.2,e:.42,
          ent:'Gate signed: verification, citing the campaign score against the seal and U13\'s kill of S-c4'},
         {k:'tok',f:'ag-audit',to:'rp-gates',kind:'alert',s:.35,e:.58,
-         ent:'Gate countersigned; the AUD-0007 caveat recorded against REQ-011\'s evidence, not waived'},
+         ent:'Gate countersigned by the auditor; the AUD-0007 caveat recorded against REQ-011\'s evidence, not waived'},
         {k:'tok',f:'ag-sponsor',to:'rp-gates',kind:'gold',s:.62,e:.85},
         {k:'flash',w:'rp-gates',s:.85,e:1}]},
  {id:'next', ph:'GATE', t:213, d:5, bt:'That was one module of five.',
@@ -760,7 +767,7 @@ const BEATS = [
         {k:'flash',w:'rp-board',s:.55,e:.9},{k:'flash',w:'rp-wo',s:.6,e:.95}]},
  {id:'end', ph:'GATE', t:218, d:7, bt:'The sessions end; the repository remains.',
   ax:'Every session that did this work has ended and its context is gone. The repository holds 187 commits, each paired with the journal entry its author wrote for it, with every refusal, bounce, wrongly dispositioned defect, seeded class and signature still readable. A new team, human or agent, can reconstruct the state of the project from the files, including the parts that went wrong and how long they stayed wrong.',
-  acts:[{k:'off',w:'ag-wi1',s:.15},{k:'off',w:'ag-wi2',s:.2},{k:'off',w:'ag-wv1',s:.25},
+  acts:[
         {k:'off',w:'ag-spec',s:.35},{k:'off',w:'ag-impl',s:.4},{k:'off',w:'ag-verif',s:.45},
         {k:'off',w:'ag-audit',s:.5},{k:'off',w:'ag-orch',s:.65},
         {k:'sweep',s:.7,e:1}]},
@@ -1317,7 +1324,7 @@ const LEDGER = {
 {
 "b": "build",
 "n": "workers · impl A, impl B",
-"d": "Two short-lived seats spawned under WO-0013 to build uart_rx to its frozen contract. Write scope libs/uart/src/ only; test/** is outside their read scope, so neither can see what will grade the module.",
+"d": "Two short-lived seats spawned under WO-0013 to build uart_rx to its frozen contract, one taking the synchroniser and edge detect, the other the sample grid. Write scope libs/uart/src/ only; test/** is outside the read scope of both, so neither can see what will grade the module.",
 "p": 0.12
 }
 ],
@@ -1345,7 +1352,7 @@ const LEDGER = {
 "b": "ask",
 "n": "SQ-001 with the sponsor",
 "d": "Milestone: specify. Open packets: the specification draft and the five module contracts. Gate: spec-freeze gate not yet opened. With the sponsor: SQ-001 — how deep the receive FIFO is and which byte survives when it fills — with both depths costed in the question. Specification work continues on everything not downstream of the answer.",
-"p": 0.92,
+"p": 0.3,
 "g": "PENDING"
 },
 {
@@ -1364,7 +1371,7 @@ const LEDGER = {
 {
 "b": "bounce1",
 "n": "WO-0014 bounced",
-"d": "Milestone: build and verify uart_rx. Open packets: WO-0014 bounced at round 1 with five numbered defects, D1 through D5; WO-0013 in review. Gate: unsigned. With the sponsor: nothing.",
+"d": "Milestone: build and verify uart_rx. Open packets: WO-0014 bounced at round 2, its first return, with five numbered defects, D1 through D5; WO-0013 in review. Gate: unsigned. With the sponsor: nothing.",
 "p": 0.9,
 "g": "BOUNCED"
 },
@@ -1407,6 +1414,19 @@ const LEDGER = {
 "n": "no session running",
 "d": "Milestone: uart_fifo, in flight. Open packets: WO-0015. Gate: none open. With the sponsor: nothing. Every session that wrote the rows above has ended; 187 commits carry the work, each paired with the journal entry its author wrote for it, and this file is where the next session starts reading.",
 "p": 0.9
+},
+{
+"b": "paths",
+"n": "two lines, disjoint scopes",
+"d": "Milestone: build and verify uart_rx. Open packets: WO-0013, writing libs/uart/src/ only; WO-0014, writing test/uart/ only. The two run in parallel against one frozen contract and share nothing else. Gate: the uart_rx module-ready gate is open and unsigned. With the sponsor: nothing. No commit from any seat may carry libs/** and test/** together.",
+"p": 0.9
+},
+{
+"b": "speclead",
+"n": "founding gate closed",
+"d": "Milestone: specify. Open packets: the specification draft. Gate: founding gate SIGNED — AUD-0001 dispositioned by decision record and re-verified by the auditor at the repaired SHA. With the sponsor: nothing. The specification lead is spawned and briefed from files only.",
+"p": 0.5,
+"g": "SIGNED"
 }
 ],
 "rp-gates": [
@@ -1431,10 +1451,10 @@ const LEDGER = {
 "g": "BLOCKED"
 },
 {
-"b": "audit0",
+"b": "speclead",
 "n": "founding gate · signed",
 "d": "The finding is dispositioned by decision record and re-verified by the auditor in a second pass; only then does the auditor sign the item it blocked. The finding, the disposition and the re-verification all stay in the gate record beneath the signature.",
-"p": 0.96,
+"p": 0.2,
 "g": "SIGNED"
 },
 {
@@ -1464,6 +1484,13 @@ const LEDGER = {
 "d": "Implementation signs citing the accepted work order and the BUG-0001 repair; verification signs citing the campaign scored against the seal; specification signs the contract items. The auditor countersigns and records AUD-0007's disposition as a caveat rather than a waiver. The sponsor signs last, and the file's first line states one of five modules signed off.",
 "p": 0.9,
 "g": "SIGNED"
+},
+{
+"b": "pair",
+"n": "uart_rx gate · open",
+"d": "Items: WO-0013 accepted by the implementation lead; WO-0014 accepted by the verification lead; a PASS sign-off packet at a stated SHA; the seeded-defect campaign scored against its committed seal; the auditor's countersignature on the packet; the sponsor's signature last. Written before any of the evidence it asks for exists, like every other checklist here.",
+"p": 0.95,
+"g": "OPEN"
 }
 ],
 "rp-ladder": [
@@ -1574,7 +1601,7 @@ const LEDGER = {
 {
 "b": "refs",
 "n": "cable scope capture",
-"d": "The sponsor's own scope measurement of the USB-serial cable on their desk: bit period 8.72 us against the 8.680556 us nominal for 115200 baud, so the far end runs +0.4544% slow. At 50 MHz that is exactly 436 clock cycles against the ideal 434.028. One cable on one bench — not a datasheet figure and not a standard, and no page text may attribute it to FTDI.",
+"d": "The sponsor's own scope measurement of the USB-serial cable on their desk: bit period 8.72 us against the 8.680556 us nominal for 115200 baud, so the far end runs +0.4544% slow. At 50 MHz that is exactly 436 clock cycles against the ideal 434.028. One cable on one bench — a measurement, not a datasheet figure and not a standard; the specification cites it as the sponsor's own and takes no tolerance number from any vendor's part.",
 "p": 0.15
 },
 {
@@ -1620,7 +1647,7 @@ const LEDGER = {
 {
 "b": "refs",
 "n": "baud & frame format",
-"d": "Fixed 115200 baud, 8N1: one start bit 0, eight data bits LSB first, no parity, one stop bit 1, line idles high. The rate is not runtime-programmable — no prescale port, no configuration register. DIV_TX = 434, DIV_OS = 27, OS = 16, FIFO_DEPTH = 16 and BREAK_TICKS = 168 are elaboration-time constants and live in exactly one file, libs/uart/src/uart_params.ml.",
+"d": "Fixed 115200 baud, 8N1: one start bit 0, eight data bits LSB first, no parity, one stop bit 1, line idles high. The rate is not runtime-programmable — no prescale port, no configuration register. DIV_TX = 434, DIV_OS = 27, OS = 16 and BREAK_TICKS = 168 are elaboration-time constants and live in exactly one file, libs/uart/src/uart_params.ml. The receive depth is not among them: the brief asks for a small FIFO and names no number.",
 "p": 0.22
 },
 {
@@ -1632,13 +1659,13 @@ const LEDGER = {
 {
 "b": "refs",
 "n": "part & area budget",
-"d": "Exactly one part family is named: Xilinx Artix-7 XC7A35T-1CPG236C, speed grade -1. Budget for the whole of uart_lite — at most 120 LUTs, at most 110 flip-flops, 0 block RAM, 0 DSP, 0 inferred latches. The FIFO's 16 x 8 = 128 storage bits must be distributed LUT RAM, roughly 8 LUTs and 0 flip-flops, and never a BRAM primitive. These are budgets a synthesis report discharges, never measurements: nothing in this project has been synthesised, and no LUT or flip-flop count may be printed as an outcome.",
+"d": "Exactly one part family is named: Xilinx Artix-7 XC7A35T-1CPG236C, speed grade -1. Budget for the whole of uart_lite — at most 120 LUTs, at most 110 flip-flops, 0 block RAM, 0 DSP, 0 inferred latches. The receive FIFO's storage must be distributed LUT RAM, never a BRAM primitive - at the depth the sponsor settles, 8 bytes is about 4 LUTs and 16 about 8. These are budgets a synthesis report discharges, never measurements: nothing in this project has been synthesised, and no LUT or flip-flop count in it is a measured outcome.",
 "p": 0.46
 },
 {
 "b": "refs",
 "n": "timing",
-"d": "Must close at 50 MHz with worst negative slack ≥ 0 ns and worst hold slack ≥ 0 ns in the vendor report, from the single 20.000 ns period constraint alone. No multi-cycle paths, no false paths, no timing exceptions of any kind in the constraint file. No pin locations are named anywhere in this package and a downstream agent may not invent one.",
+"d": "Must close at 50 MHz with worst negative slack ≥ 0 ns and worst hold slack ≥ 0 ns in the vendor report, from the single 20.000 ns period constraint alone. No multi-cycle paths, no false paths, no timing exceptions of any kind in the constraint file. No pin locations are named anywhere in this constraint set and a downstream agent may not invent one.",
 "p": 0.58
 },
 {
@@ -1981,7 +2008,7 @@ const LEDGER = {
 {
 "b": "contracts",
 "n": "§6.1 uart_tick_gen",
-"d": "Ports: clk, rst, restart in; tick out, 1 bit. Parameter N ≥ 2, an elaboration-time constant. A free-running counter runs 0..N-1; tick is high for exactly one cycle in every N — the cycle in which the counter holds N-1 — and is never high in two consecutive cycles. The first tick after reset release falls on cycle N-1, and the comparison is against N-1, never against N. restart high forces the counter to 0 on that cycle and suppresses tick; uart_rx drives it on the start-bit falling edge to re-centre, uart_tx ties it low.",
+"d": "Ports: clk, rst, restart in; tick out, 1 bit. Parameter N ≥ 2, an elaboration-time constant. A free-running counter runs 0..N-1; tick is high for exactly one cycle in every N — the cycle in which the counter holds N-1 — and is never high in two consecutive cycles. Counting the reset-release or restart cycle as cycle 0, the first tick falls N cycles later and the k-th tick at cycle Nk — 27, 54, 81 for N = 27 — and the counter comparison is against N-1, never against N. restart high forces the counter to 0 on that cycle and suppresses tick; uart_rx drives it on the start-bit falling edge to re-centre, uart_tx ties it low.",
 "p": 0.25
 },
 {
@@ -2042,7 +2069,7 @@ const LEDGER = {
 },
 {
 "b": "freeze",
-"n": "docs/spec/uart_lite.md",
+"n": "docs/specs/uart_lite.md",
 "d": "Nine sections and seventeen numbered requirements, signed by the sponsor at the spec-freeze gate. From here the text changes only by amendment. A decision record may place a term of logic and settle a seam between two modules, but it may not move a number this document owns.",
 "g": "FROZEN"
 },
@@ -2201,7 +2228,7 @@ const LEDGER = {
 },
 {
 "b": "freeze",
-"n": "docs/spec/requirements.md",
+"n": "docs/specs/requirements.md",
 "d": "Seventeen requirements frozen at the sponsor's signature: batch A 7 rows on framing and errors, batch B 7 on timing and back-pressure, batch C 3 written by the lead. Six were sent back by the testability review and rewritten — REQ-004, REQ-006, REQ-011 and the whole of batch C. Methods: 10 directed sim, 3 sweep, 1 directed sweep, 2 inspection, 1 synthesis report. REQ-009, REQ-016 and REQ-017 have no bench unit and by their stated methods can never have one.",
 "g": "FROZEN"
 },
@@ -2214,39 +2241,39 @@ const LEDGER = {
 ],
 "rp-rtl": [
 {
-"b": "build",
+"b": "pair",
 "n": "libs/uart/src/uart_params.ml",
 "d": "The only file in the library that holds a number: clk_hz = 50_000_000, baud = 115_200, div_tx = 434, div_os = 27, os = 16, fifo_depth = 16, break_ticks = 168, plus the values derived from them — the tolerance window (422, 447), the break threshold of 4536 clock cycles and the sample offsets 216 + 432n. Every module and every bench reads its constants from here.",
 "p": 0.06
 },
 {
-"b": "build",
-"n": "libs/uart/src/uart_tick_gen.ml",
-"d": "Divide-by-N tick with a restart input: a free-running counter and one comparison, and nothing else. tick is high for exactly one cycle in every N and never in two consecutive cycles; restart forces the counter to 0 on that cycle and suppresses the tick. Instantiated at N = 434 for the transmitter and N = 27 for the receiver's oversample clock.",
+"b": "pair",
+"n": "libs/uart/src/uart_baud.ml",
+"d": "Divide-by-N tick with a restart input: a free-running counter and one comparison, and nothing else. tick is high for exactly one cycle in every N and never in two consecutive cycles; restart forces the counter to 0 on that cycle and suppresses the tick. Instantiated at N = 434 for the transmitter and N = 27 for the receiver's oversample clock. Still named for the baud rate: the module-contract review has already ruled the name out, but the rename is a commit that has not been offered yet - and when it is, the script refuses it.",
 "p": 0.12
 },
 {
-"b": "build",
+"b": "pair",
 "n": "libs/uart/src/uart_tx.ml",
-"d": "8N1 transmitter: a 10-bit shift register loaded with {1, d7..d0, 0}, a 4-bit bit counter, a registered output that idles high, and busy. Each of the ten bit intervals is DIV_TX = 434 clock cycles; wr_ready is high in IDLE and in the last cycle of the stop bit and nowhere else. Built in the warm-up phase, before the paired work orders begin.",
+"d": "8N1 transmitter: a 10-bit shift register loaded with {1, d7..d0, 0}, a 4-bit bit counter, a registered output that idles high, and busy. Each of the ten bit intervals is DIV_TX = 434 clock cycles; wr_ready is high in IDLE and in the last cycle of the stop bit and nowhere else. Built in the warm-up phase after the freeze, before the uart_rx work orders go out.",
 "p": 0.18
 },
 {
-"b": "build",
+"b": "pair",
 "n": "libs/uart/src/uart_fifo.ml",
-"d": "16 x 8 first-word-fall-through FIFO: 128 storage bits in distributed LUT RAM, read and write pointers of 5 bits each (a 4-bit address plus a wrap bit), level as their difference. Whenever empty is 0, rd_data shows the oldest byte in the same cycle and rd_en pops it. A write while full is dropped silently and the module raises no flag of its own.",
+"d": "The FIFO as the warm-up left it: storage, pointers and level, written to the contract so uart_lite can be wired end to end. It has had no work-order pair, no attack plan and no bench of its own — WO-0015 commissions all three at the last beat, which is the point: this module has not been through anything uart_rx has been through.",
 "p": 0.24
 },
 {
-"b": "build",
+"b": "pair",
 "n": "libs/uart/src/uart_lite.ml",
-"d": "Top level: two uart_tick_gen instances at N = 434 and N = 27, uart_tx, uart_rx, uart_fifo, and the wiring between them. rx_avail is the inverse of FIFO empty and rx_ack pops; frame_error and break_detect pass straight through as one-cycle strobes and never enter the FIFO. What happens when rx_valid meets a full FIFO is still an open seam in the wiring.",
+"d": "Top level as it stands in the warm-up: two divide-by-N tick instances at N = 434 and N = 27, uart_tx and uart_fifo wired to the host-side byte port, and a hole where uart_rx will be instantiated when WO-0013 returns. What happens when rx_valid meets a full FIFO is still an open seam in the wiring.",
 "p": 0.3
 },
 {
 "b": "build",
 "n": "libs/uart/src/uart_rx.ml",
-"d": "The WO-0013 deliverable, written from the frozen contract by a worker whose read scope excludes test/** entirely: a two-flop synchroniser on rx_line, a falling-edge detector that drives restart on the N = 27 tick generator, an 8-bit oversample-tick counter placing samples at ticks 8, 24, ... 152 (clock cycles 216 + 432n), an 8-bit shift register, an rx_data holding register, the stop-bit check at cycle 4104, and an 8-bit break counter at 168 ticks.",
+"d": "The WO-0013 deliverable, written from the frozen contract by a worker whose read scope excludes test/** entirely: a two-flop synchroniser on rx_line, a falling-edge detector that drives restart on the N = 27 tick generator, an 8-bit oversample-tick counter placing samples at ticks 8, 24, ... 152 — nominally clock cycles 216 + 432n — an 8-bit shift register, an rx_data holding register, the stop-bit check at the tick-152 sample, and an 8-bit break counter at 168 ticks.",
 "p": 0.7
 },
 {
@@ -2268,6 +2295,18 @@ const LEDGER = {
 "d": "BUG-0001 fix, one line: the tick counter compared count == DIV_OS instead of count == DIV_OS - 1, giving a 28-cycle oversample period and a 448-cycle receive bit period. With the comparison against N - 1 the k-th tick falls at cycle 27k and the sample grid returns to 216 + 432n, stop at 4104. The bench's expected-value table is a separate commit from a separate seat.",
 "p": 0.85,
 "g": "REPAIRED"
+},
+{
+"b": "refused",
+"n": "libs/uart/src/uart_tick_gen.ml",
+"d": "Renamed from uart_baud.ml on the second attempt, both staged paths declared. The module-contract review had ruled that a module which emits a divide-by-N strobe and knows nothing about baud must not be named for baud.",
+"p": 0.9
+},
+{
+"b": "build",
+"n": "libs/uart/src/uart_lite.ml",
+"d": "uart_rx is instantiated for the first time: the delivered receiver drops into the hole the warm-up left, and rx_valid is wired straight to the FIFO's write port. The seam is wired, not yet decided - the overrun term does not exist until ADR-0003 rules on where it lives.",
+"p": 0.75
 }
 ],
 "rp-dr": [
@@ -2313,9 +2352,16 @@ const LEDGER = {
 {
 "b": "harvest",
 "n": "ADR-0002 — disposition rule",
-"d": "Amendment carried by L-0009: a decision record's disposition list is a search, not a memory. ADR-0002 named the specification and the requirements file and stopped there; attack row A-08 still carried 420..444 and nobody re-derived it. From here, before a record that changes a number is signed, the old number is grepped for and every hit is entered as a disposition item, including artefacts that only derive it.",
+"d": "Amendment carried by L-0009: a decision record's disposition list is a search, not a memory. ADR-0002 named the specification and the requirements file as the artefacts to update and stopped there, so nothing told the attack plan written after it which number it had to cite..444 and nobody re-derived it. From here, before a record that changes a number is signed, the old number is grepped for and every hit is entered as a disposition item, including artefacts that only derive it.",
 "p": 0.6,
 "g": "AMENDED"
+},
+{
+"b": "speclead",
+"n": "ADR-0001",
+"d": "The auditor cannot execute the work-order lifecycle assigned to it: PROTOCOL.md §3 requires a RETURNED entry appended to the packet's Return log, and §6 puts agents/handoffs/** outside the auditor's write scope. Ruling: the orchestrator transcribes the auditor's RETURNED entry into the packet under the auditor's name, and §3 is amended to say so. Rejected: widen the auditor's write scope to cover agents/handoffs/**. Rejected on the ground the narrow scope exists for - a seat that can write outside its own reports can repair what it finds, and an auditor that can repair has a reason to report only what it can repair. Proposed by the auditor, accepted by the specification lead, countersigned by the orchestrator, whose duties the amendment widens.",
+"p": 0.12,
+"g": "ACCEPTED"
 }
 ],
 "rp-find": [
@@ -2400,7 +2446,7 @@ const LEDGER = {
 "b": "so2",
 "n": "loopback soak figure — repaired",
 "d": "A separate work order against the verification seat corrects the journal entry and the sign-off packet to 19 554 304 cycles, 391.086 ms at 50 MHz. The auditor's write scope covers only its own reports, so it could file the finding and not fix it. No verdict moves: the mismatch count is zero either way.",
-"p": 0.1,
+"p": 0.5,
 "g": "REPAIRED"
 }
 ],
@@ -2408,14 +2454,14 @@ const LEDGER = {
 {
 "b": "audit0",
 "n": "AUD-0001",
-"d": "The founding is audited before any design work: constitution, charters, write scopes, the commit script and the CI lanes. One CRITICAL — the determinism job elaborates twice and compares the trees, but nothing in the pipeline shows that the comparison is capable of failing, so a broken comparator and a deterministic elaboration produce the same green. The commission gate is blocked on it.",
+"d": "The founding is audited before any design work: constitution, charters, write scopes, the commit script and the CI lanes. One CRITICAL — §3 of agents/PROTOCOL.md requires a RETURNED entry appended to the packet's Return log, and §6 of the same file puts agents/handoffs/** outside the auditor's write scope, so the auditor cannot execute the work-order lifecycle it has been assigned. The founding gate is blocked on it.",
 "p": 0.5,
 "g": "CRITICAL"
 },
 {
 "b": "speclead",
 "n": "AUD-0001 — closed",
-"d": "Disposition: the determinism job now appends one byte to a copy of the elaborated tree and requires the comparison step to redden on it. The job passes only if both the byte-for-byte match and the tamper case behave as stated. The gate opens.",
+"d": "Disposition: §6 is amended by decision record so the orchestrator transcribes the auditor's RETURNED entry into the packet under the auditor's name. The auditor's write scope is left untouched — the seat that reports a defect still cannot write outside its own reports. The auditor re-verifies at the repaired SHA and only then signs the item it blocked. The gate opens.",
 "p": 0.15,
 "g": "CLOSED"
 },
@@ -2469,10 +2515,10 @@ const LEDGER = {
 "g": "FAIL"
 },
 {
-"b": "so1",
+"b": "so2",
 "n": "round 3",
 "d": "FAIL, ten of eleven met. Criterion 2 is met after the leads' rewording, with the three non-bench artefacts cited by path and SHA; criterion 11 is met, all five seats harvested. NOT MET, criterion 9 — in round 2 the co-simulation evidence command aborted before the soak step, so the soak's recorded cycle count was never re-run; in round 3 the command completes, the soak runs, and 17 776 640 does not reproduce.",
-"p": 0.9,
+"p": 0.3,
 "g": "FAIL"
 },
 {
@@ -2485,7 +2531,7 @@ const LEDGER = {
 {
 "b": "gate",
 "n": "packet as signed",
-"d": "Signed by the three leads, countersigned by the orchestrator, signed by the sponsor. Rounds 2 and 3 stay in the packet beneath the passing round, unedited, including criterion 2's original wording and the ground it failed on.",
+"d": "Signed by the three leads, countersigned by the auditor with AUD-0007's disposition recorded as a caveat, signed by the sponsor. Rounds 2 and 3 stay in the packet beneath the passing round, unedited, including criterion 2's original wording and the ground it failed on.",
 "p": 0.4,
 "g": "SIGNED"
 }
@@ -2614,22 +2660,22 @@ const LEDGER = {
 },
 {
 "b": "bounce1",
-"n": "bench lane",
+"n": "bench lane — build failure",
 "d": "RED on defect D2: an unread field in the stimulus record, which warning 69 promoted to an error turns into a build failure. Nothing in the packet executes; the defect list goes back with it.",
 "p": 0.5,
 "g": "RED"
 },
 {
 "b": "accept",
-"n": "bench lane",
-"d": "Green at round 4 of WO-0014: the twelve units build and run against the bench model, with D1 fixed (the tolerance bench had been reading DIV_OS out of uart_tick_gen.ml instead of uart_params.ml) and D4 fixed (U08 asserted break_detect at cycle 4535, not 4536). They have not yet been run against the elaborated receiver.",
+"n": "bench lane — bench model",
+"d": "Green at round 4 of WO-0014: ten of the twelve units build and run against the bench model. U09 and U12 are held, because both assert on signals only the elaborated design produces. Nothing here has yet touched uart_rx.",
 "p": 0.8,
 "g": "GREEN"
 },
 {
 "b": "sweep",
-"n": "bench lane",
-"d": "RED, the first full run against the elaborated receiver. U09 fails at P = 420 through 423 with received = sent OR 0x80 on isolated frames and frame_error low on every wrong row; U12 counts 357 tick cycles in 10000 where 370 were required, with the k-th tick at 28k. Two units, one cause.",
+"n": "bench lane — elaborated receiver",
+"d": "RED, the first full run against the elaborated receiver. U09 fails on isolated frames from P = 420 through 423: at P = 421, 422 and 423 received = sent OR 0x80, and at P = 420 bit 6 additionally reads d7, so 0x55 comes back 0x95. frame_error is low on every wrong row. U12 counts 357 tick cycles in 10000 where 370 were required, with the k-th tick at 28k. Two units, one cause.",
 "p": 0.4,
 "g": "RED"
 },
@@ -2708,7 +2754,7 @@ const LEDGER = {
 {
 "b": "attack",
 "n": "A-08 [REQ-011]",
-"d": "Stimulus: sweep the sender bit period P across the tolerance window, driving bytes 0x00 and 0xFF at each P with 2 bit times of idle between frames. The window is +/-3% of the receiver's 432-cycle nominal bit period: 3% of 432 = 12.96, so 419.04 to 444.96, rounded inward to P = 420 through 444, twenty-five values. Observation: any rx_data not equal to the byte sent; any missing or duplicated rx_valid; any frame_error.",
+"d": "Stimulus: sweep the sender bit period P across the tolerance window, driving bytes 0x00, 0x55 and 0xFF at each P with 2 bit times of idle between frames. The window is +/-3% of the receiver's 432-cycle nominal bit period: 3% of 432 = 12.96, so 419.04 to 444.96, rounded inward to P = 420 through 444, twenty-five values. Observation: any rx_data not equal to the byte sent; any missing or duplicated rx_valid; any frame_error.",
 "p": 0.57
 },
 {
@@ -2824,7 +2870,7 @@ const LEDGER = {
 {
 "b": "blindbench",
 "n": "U09 rx_period_tolerance",
-"d": "[REQ-011] For each swept sender bit period and for bytes 0x00 and 0xFF, rx_data equals the byte, exactly one rx_valid fires and frame_error stays low. Built from attack row A-08, so it sweeps P = 420..444: 25 periods, 50 frames. Stimulus comes from the bench-model transmitter, never from uart_tx.",
+"d": "[REQ-011] For each swept sender bit period and for bytes 0x00, 0x55 and 0xFF, rx_data equals the byte, exactly one rx_valid fires and frame_error stays low. Built from attack row A-08, so it sweeps P = 420..444: 25 periods, 50 frames. Stimulus comes from the bench-model transmitter, never from uart_tx.",
 "p": 0.85
 },
 {
@@ -2855,7 +2901,7 @@ const LEDGER = {
 {
 "b": "bounce1",
 "n": "D4 against U08",
-"d": "U08 asserts break_detect at cycle 4535. REQ-006 says cycle 4536 — 168 oversample ticks x 27, which is 10.5 receive bit periods of 432 cycles. Off by one tick's worth of nothing, and it would have passed a receiver that fired a cycle early.",
+"d": "U08 asserts break_detect at cycle 4535. REQ-006 says cycle 4536 — 168 oversample ticks x 27, which is 10.5 receive bit periods of 432 cycles. Off by one clock cycle, and it would have passed a receiver that fired a cycle early.",
 "p": 0.7,
 "g": "BOUNCED"
 },
@@ -2876,13 +2922,13 @@ const LEDGER = {
 {
 "b": "accept",
 "n": "WO-0014 round 4",
-"d": "Accepted. D2 fixed — the unused field in the stimulus record was failing the build under OCaml warning 69 promoted to error. Twelve units green against the delivered uart_rx. U09 is green over 420..444.",
+"d": "Accepted. D2 fixed — the unused field in the stimulus record was failing the build under OCaml warning 69 promoted to error. Ten units green against the bench model. U09 and U12 are held: both assert on signals only the elaborated design produces, and the receiver has not been run yet.",
 "g": "ACCEPTED"
 },
 {
 "b": "sweep",
 "n": "U09 run against uart_rx",
-"d": "Red. Isolated frames, two bytes per period: P = 421, 422, 423 return sent OR 0x80 — 0x55 comes back 0xD5, 0x00 comes back 0x80, 0xFF is unaffected. P = 420 additionally reads d7 into bit 6, so 0x55 comes back 0x95. P = 424 and above are clean. frame_error is low on every failing row.",
+"d": "Red. Isolated frames, three bytes per period: P = 421, 422, 423 return sent OR 0x80 — 0x55 comes back 0xD5, 0x00 comes back 0x80, 0xFF is unaffected. P = 420 additionally reads d7 into bit 6, so 0x55 comes back 0x95. P = 424 and above are clean. frame_error is low on every failing row.",
 "p": 0.5,
 "g": "FAIL"
 },
@@ -2896,7 +2942,7 @@ const LEDGER = {
 {
 "b": "gapclose",
 "n": "U09 regenerated",
-"d": "Regenerated from the corrected A-08: P = 422..447, 26 periods, 52 frames. Two periods dropped off the fast edge, three added at the slow edge.",
+"d": "Regenerated from the corrected A-08: P = 422..447, 26 periods, 78 frames. Two periods dropped off the fast edge, three added at the slow edge.",
 "p": 0.85
 },
 {
@@ -2956,7 +3002,7 @@ const LEDGER = {
 {
 "b": "harvest",
 "n": "L-0009",
-"d": "A ruling that fixes a number must name every artefact that carries the old one. ADR-0002 fixed the tolerance window at 422..447 clock cycles, derived from the ideal 434.0278; attack row A-08 had derived 420..444 from the receiver's own 432 three weeks earlier, and nobody re-derived it, because the record's disposition list named the specification and the requirements file and stopped there. Every bench unit written from that row was internally correct — correct against the wrong window.",
+"d": "A ruling that fixes a number must name every artefact that carries the old one. ADR-0002 fixed the tolerance window at 422..447 clock cycles, derived from the ideal 434.0278; attack row A-08 was written fifteen beats later and re-derived the window from the receiver's own 432 rather than citing the clause ADR-0002 had already frozen..444 from the receiver's own 432, and nobody re-derived it, because the record's disposition list named the specification and the requirements file and stopped there. Every bench unit written from that row was internally correct — correct against the wrong window.",
 "p": 0.2
 },
 {
@@ -3126,13 +3172,13 @@ const LEDGER = {
 {
 "b": "seed",
 "n": "branch",
-"d": "A throwaway branch cut from the sign-off SHA, in the auditor's own working copy. Nothing on it is ever reachable from main, and no seeded diff is ever a parent of anything that is.",
+"d": "A throwaway branch cut from the SHA the predictions were sealed at, in the auditor's own working copy. Nothing on it is ever reachable from main, and no seeded diff is ever a parent of anything that is.",
 "p": 0.1
 },
 {
 "b": "seed",
 "n": "protocol",
-"d": "The auditor authors one diff per class from the frozen uart_rx contract, without reading the sealed prediction file. One line changed per class, no two classes on the same branch state, and the suite is run unmodified against each.",
+"d": "The auditor authors one diff per class from the frozen module contracts, without reading the sealed prediction file. One line changed per class, no two classes on the same branch state, and the suite is run unmodified against each.",
 "p": 0.3
 },
 {
@@ -3268,7 +3314,7 @@ const LEDGER = {
 },
 {
 "b": "freeze",
-"n": "31 commits",
+"n": "specification frozen",
 "d": "The specification freezes. The freeze SHA is what every later requirement citation points at, and it is what the module contracts, the attack plan and both work orders are cut from.",
 "g": "FROZEN"
 },
@@ -3279,7 +3325,7 @@ const LEDGER = {
 },
 {
 "b": "accept",
-"n": "96 commits",
+"n": "paired work orders closed",
 "d": "Both lines of the paired work order are in. libs/** and test/** do not appear together in any commit in the history, from any seat, including the two the implementation lead tried to combine."
 },
 {
@@ -3290,8 +3336,8 @@ const LEDGER = {
 },
 {
 "b": "gate",
-"n": "184 commits",
-"d": "The gate is signed by the three leads, countersigned by the orchestrator and signed by the sponsor. Both failing sign-off rounds are still in the packet, beneath the passing one, unedited.",
+"n": "uart_rx gate signed",
+"d": "The gate is signed by the three leads, countersigned by the auditor with AUD-0007's disposition recorded as a caveat, and signed by the sponsor. Both failing sign-off rounds are still in the packet, beneath the passing one, unedited.",
 "g": "SIGNED"
 },
 {
@@ -3322,15 +3368,15 @@ const LEDGER = {
 },
 {
 "b": "audit0",
-"n": "auditor",
+"n": "auditor · founding audit",
 "d": "Spawned to audit the founding itself. Write scope: its own reports. It may not edit a document it is auditing, and it does not report to the seats it audits.",
 "p": 0.2,
 "g": "ISSUED"
 },
 {
 "b": "audit0",
-"n": "auditor",
-"d": "Ended, with one CRITICAL open against the founding and the commission gate blocked by it. The finding stays open across the end of the session that raised it — that is the point of writing it to a file.",
+"n": "auditor · founding audit",
+"d": "Ended, with one CRITICAL open against the founding and the founding gate blocked by it. The finding stays open across the end of the session that raised it — that is the point of writing it to a file.",
 "g": "CLOSED"
 },
 {
@@ -3395,15 +3441,15 @@ const LEDGER = {
 },
 {
 "b": "build",
-"n": "implementation worker (WO-0013)",
+"n": "implementation workers A and B · WO-0013",
 "d": "Spawned against the same frozen contract, from the other side. Write scope libs/**; test/** is not readable, so it cannot fit the design to the bench.",
 "p": 0.3,
 "g": "ISSUED"
 },
 {
 "b": "build",
-"n": "implementation worker (WO-0013)",
-"d": "Ended on delivery of uart_rx.ml. The one line that compares against DIV_OS instead of DIV_OS-1 goes into the repository with it, and the agent that wrote it is gone before anyone runs the tolerance sweep.",
+"n": "implementation workers A and B · WO-0013",
+"d": "Ended on delivery of uart_rx.ml. The receiver it delivered counts its samples off a tick generator whose comparison is against DIV_OS instead of DIV_OS - 1, and the agent that assembled it is gone before anyone runs the tolerance sweep.",
 "g": "CLOSED"
 },
 {
@@ -3463,6 +3509,34 @@ const LEDGER = {
 "b": "end",
 "n": "what carried",
 "d": "Everything one seat knew that the next seat needed is in a file: the constitution, the frozen specification, seventeen requirements, sixteen attack rows, thirteen bench units, three decision records, the findings, the campaign seal and score, and two lessons. Nothing carried in an agent's head, because there are no heads."
+},
+{
+"b": "speclead",
+"n": "auditor - re-verification",
+"d": "Spawned for one item only: re-check AUD-0001 at the repaired SHA. Write scope its own reports, as always. It reads the amending decision record and the repaired protocol, confirms the auditor can now execute the lifecycle it is assigned, and signs the gate item it blocked.",
+"p": 0.1,
+"g": "ISSUED"
+},
+{
+"b": "speclead",
+"n": "auditor - re-verification",
+"d": "Ended. The founding gate is signed behind it. The session that raised the finding and the session that cleared it share nothing but the files - the second one read the first one's report to know what it was checking.",
+"p": 0.25,
+"g": "CLOSED"
+},
+{
+"b": "gapclose",
+"n": "bench worker (gap closure)",
+"d": "Spawned to write the two rows the survivor exposed. Its packet carries the corrected A-08, the frozen REQ-011 clause the window comes from, and no RTL — the same read scope the first bench packet had.",
+"p": 0.15,
+"g": "ISSUED"
+},
+{
+"b": "gapclose",
+"n": "bench worker (gap closure)",
+"d": "Ended on delivery of U13. The session that wrote the row which kills S-c4 never saw S-c4.",
+"p": 0.9,
+"g": "CLOSED"
 }
 ]
 };
@@ -3585,7 +3659,7 @@ const DATA = {
 ],
 "cons": [
 "Target constraints",
-"Eight limits fixed before anything was specified. One 50.000 MHz clock domain and one synchronous active-high reset: no PLL, no MMCM, no gated or derived clocks. Fixed 115200 baud 8N1, not runtime-programmable — there is no prescale port. DIV_TX = 434 and DIV_OS = 27 are elaboration-time constants living in one file. Artix-7 XC7A35T-1CPG236C at speed grade -1, at most 120 LUTs and 110 flip-flops, 0 block RAM, 0 DSP, the FIFO's 128 bits in distributed LUT RAM. Those are budgets a synthesis report discharges, not measurements."
+"Eight limits fixed before anything was specified. One 50.000 MHz clock domain and one synchronous active-high reset: no PLL, no MMCM, no gated or derived clocks. Fixed 115200 baud 8N1, not runtime-programmable — there is no prescale port. DIV_TX = 434 and DIV_OS = 27 are elaboration-time constants living in one file. Artix-7 XC7A35T-1CPG236C at speed grade -1, at most 120 LUTs and 110 flip-flops, 0 block RAM, 0 DSP, the receive FIFO in distributed LUT RAM, never block RAM. Those are budgets a synthesis report discharges, not measurements."
 ],
 "charter-orch": [
 "Orchestrator · charter",
@@ -3689,7 +3763,7 @@ const DATA = {
 ],
 "g-prod": [
 "The product",
-"Everything that ships, which here is six OCaml source files and the elaborated Verilog snapshot beside them. It is the smallest group in the repository and the most constrained: the seat that owns it writes none of the tests that grade it, and libs/** and test/** may never appear in the same commit from any seat. That rule cost the implementation lead a refused commit when it staged the BUG-0001 fix together with the updated expected-value table — which is exactly how a test gets quietly fitted to a bug."
+"Everything that would ship, which here is six OCaml source files and the elaborated Verilog snapshot beside them. It is the smallest group in the repository and the most constrained: the seat that owns it writes none of the tests that grade it, and libs/** and test/** may never appear in the same commit from any seat. That rule cost the implementation lead a refused commit when it staged the BUG-0001 fix together with the updated expected-value table — which is exactly how a test gets quietly fitted to a bug."
 ],
 "g-trail": [
 "The paper trail",
