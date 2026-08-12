@@ -74,12 +74,18 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   text-transform:uppercase; color:var(--ink-2); cursor:pointer; border:0; }
 .tree { margin-top:.15rem; }
 /* one indented rail: an elbow per lead row, verticals stack into a spine */
-.leadrow { position:relative; padding-left:26px; margin-top:.5rem;
-  display:flex; align-items:center; gap:.42rem; }
-.leadrow .lead { flex:0 0 auto; min-width:132px; }
-.wkrs { display:flex; gap:.34rem; flex-wrap:wrap; }
-.agnode.wk { padding:.24rem .42rem .26rem; }
-.agnode.wk .nm { font:500 .64rem 'Plex Mono',monospace; letter-spacing:.02em; }
+.orchrow { display:grid; grid-template-columns:1fr auto auto; align-items:center;
+  gap:.5rem; margin-top:.2rem; }
+.orchrow .agnode { min-width:0; }
+#ag-orch { grid-column:2; min-width:184px; }
+#ag-audit { grid-column:3; justify-self:end; }
+.leadrow3 { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; margin-top:2.3rem; }
+.col { display:flex; flex-direction:column; }
+.kids { display:flex; flex-direction:column; gap:.4rem; margin-top:1.5rem; }
+.agnode.lead .nm { font-size:.72rem; }
+.agnode.lead { padding:.34rem .22rem .36rem; }
+.agnode.wk { padding:.24rem .3rem .26rem; }
+.agnode.wk .nm { font:500 .6rem 'Plex Mono',monospace; letter-spacing:.01em; }
 
 /* ---------- the repository ---------- */
 .repo { position:relative; border:2px solid var(--rx); border-radius:16px;
@@ -245,6 +251,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
         <div class="panelbox">
           <p class="ptitle">The agents</p>
           <svg id="wires"></svg>
+          <svg id="wires"></svg>
           <div class="tierc">
             <button class="agnode human" id="ag-sponsor" data-i="sponsor">
               <span class="nm">Sponsor</span><span class="rl">the one human</span>
@@ -253,42 +260,41 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
           <div class="link"></div>
           <div class="sessions" id="sessions">
             <button class="slab" data-i="sessions">agent sessions</button>
-            <div class="tierc">
-              <button class="agnode ghost" id="ag-orch" data-i="orch" style="min-width:210px">
+            <div class="orchrow">
+              <span></span>
+              <button class="agnode ghost" id="ag-orch" data-i="orch">
                 <span class="nm">Orchestrator</span><span class="rl">spawns &#183; relays &#183; commits</span>
               </button>
+              <button class="agnode ghost aud" id="ag-audit" data-i="audit">
+                <span class="nm">Auditor</span><span class="rl">independent</span>
+              </button>
             </div>
-            <div class="tree">
-              <div class="leadrow">
+            <div class="leadrow3">
+              <div class="col">
                 <button class="agnode ghost lead" id="ag-spec" data-i="spec">
                   <span class="nm">Specification</span><span class="rl">lead</span>
                 </button>
-                <div class="wkrs">
+                <div class="kids">
                   <button class="agnode ghost wk" id="ag-ws1" data-i="worker"><span class="nm">worker A</span></button>
                   <button class="agnode ghost wk" id="ag-ws2" data-i="worker"><span class="nm">worker B</span></button>
                 </div>
               </div>
-              <div class="leadrow">
+              <div class="col">
                 <button class="agnode ghost lead" id="ag-impl" data-i="impl">
                   <span class="nm">Implementation</span><span class="rl">lead</span>
                 </button>
-                <div class="wkrs">
+                <div class="kids">
                   <button class="agnode ghost wk" id="ag-wi1" data-i="worker"><span class="nm">worker A</span></button>
                   <button class="agnode ghost wk" id="ag-wi2" data-i="worker"><span class="nm">worker B</span></button>
                 </div>
               </div>
-              <div class="leadrow">
+              <div class="col">
                 <button class="agnode ghost lead" id="ag-verif" data-i="verif">
                   <span class="nm">Verification</span><span class="rl">lead</span>
                 </button>
-                <div class="wkrs">
+                <div class="kids">
                   <button class="agnode ghost wk" id="ag-wv1" data-i="worker"><span class="nm">worker A</span></button>
                 </div>
-              </div>
-              <div class="leadrow">
-                <button class="agnode ghost lead aud" id="ag-audit" data-i="audit">
-                  <span class="nm">Auditor</span><span class="rl">independent</span>
-                </button>
               </div>
             </div>
           </div>
@@ -747,49 +753,59 @@ function pulse(at, colour) {              // a write landing is an event you can
 
 /* ---- reporting lines: leads feed a spine up to the orchestrator, the
    orchestrator reports to the human, live workers point at their lead ---- */
-const CREW = [['ag-spec','ag-ws1','ag-ws2'],['ag-impl','ag-wi1','ag-wi2'],
-              ['ag-verif','ag-wv1'],['ag-audit']];
 function drawWires() {
   const svg = $('wires'); if (!svg) return;
   const panel = svg.parentElement, pr = panel.getBoundingClientRect();
   svg.setAttribute('width', pr.width); svg.setAttribute('height', pr.height);
   svg.setAttribute('viewBox', `0 0 ${pr.width} ${pr.height}`);
-  const R = el => { const r = el.getBoundingClientRect();
+  const R = id => { const el = $(id); if (!el) return null;
+    const r = el.getBoundingClientRect();
     return { l:r.left-pr.left, r:r.right-pr.left, t:r.top-pr.top, b:r.bottom-pr.top,
              cx:r.left-pr.left+r.width/2, cy:r.top-pr.top+r.height/2 }; };
   const live = id => $(id) && $(id).classList.contains('live');
   const out = [`<defs>
-    <marker id="ahl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <marker id="ahl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
       <path d="M0,1.5 L9,5 L0,8.5 z" fill="var(--rx)"/></marker>
-    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,1.5 L9,5 L0,8.5 z" fill="var(--ink-2)" opacity=".75"/></marker></defs>`];
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M0,1.5 L9,5 L0,8.5 z" fill="var(--ink-2)" opacity=".7"/></marker>
+    <marker id="ahv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,1.5 L9,5 L0,8.5 z" fill="var(--tx)"/></marker></defs>`];
   const P = (d, hot, head) => out.push(
     `<path d="${d}" fill="none" stroke="${hot?'var(--rx)':'var(--line)'}" stroke-width="${hot?1.9:1.5}"`
-    + `${head?` marker-end="url(#${hot?'ahl':'ah'})"`:''} opacity="${hot?1:.75}" stroke-linecap="round"/>`);
+    + `${head?` marker-end="url(#${hot?'ahl':'ah'})"`:''}`
+    + ` opacity="${hot?1:.8}" stroke-linecap="round" stroke-linejoin="round"/>`);
 
-  const sp = R($('ag-sponsor')), or = R($('ag-orch'));
-  P(`M${or.cx} ${or.t-3} V${sp.b+5}`, live('ag-orch'), true);        // up to the human
+  const sp = R('ag-sponsor'), or = R('ag-orch'), au = R('ag-audit');
+  if (!sp || !or) { svg.innerHTML = out.join(''); return; }
+  P(`M${or.cx} ${or.t-3} V${sp.b+5}`, live('ag-orch'), true);          // up to the human
 
-  const rows = CREW.map(([lid]) => $(lid)).filter(Boolean).map(R);
-  if (!rows.length) { svg.innerHTML = out.join(''); return; }
-  const spineX = rows[0].l - 16;
-  const top = or.b + 4, bottom = rows[rows.length-1].cy;
-  const anyLive = CREW.some(([l]) => live(l));
-  // one continuous bracket: down the spine from the orchestrator, out to each lead
-  P(`M${or.cx} ${top} V${top+7} H${spineX} V${bottom}`, anyLive, false);
-  CREW.forEach(([lid, ...wids], i) => {
-    const el = $(lid); if (!el) return;
-    const L = rows[i], hot = live(lid);
-    P(`M${spineX} ${L.cy} H${L.l-4}`, hot, true);                    // branch into the lead
-    for (const wid of wids) {
-      if (!live(wid)) continue;
-      const W = R($(wid));
-      P(`M${W.l-4} ${W.cy} H${L.r+5}`, true, true);                  // worker reports to lead
-    }
-  });
+  const LEADS = [['ag-spec','ag-ws1','ag-ws2'], ['ag-impl','ag-wi1','ag-wi2'],
+                 ['ag-verif','ag-wv1']];
+  const cols = LEADS.map(([lid]) => R(lid));
+  if (cols[0]) {
+    const busY = (or.b + cols[0].t) / 2;                               // the sibling bus
+    const anyLead = LEADS.some(([l]) => live(l));
+    P(`M${cols[0].cx} ${busY} H${cols[cols.length-1].cx}`, anyLead, false);
+    P(`M${or.cx} ${busY} V${or.b+3}`, anyLead, true);                  // bus up into the parent
+    LEADS.forEach(([lid, ...wids], i) => {
+      const L = cols[i]; if (!L) return;
+      P(`M${L.cx} ${L.t-3} V${busY}`, live(lid), false);               // child drop
+      for (const wid of wids) {
+        if (!live(wid)) continue;
+        const W = R(wid); if (!W) continue;
+        P(`M${W.cx} ${W.t-3} V${L.b+4}`, true, true);                  // worker up to its lead
+      }
+    });
+  }
+  if (au) {                                                             // audits from the side
+    out.push(`<path d="M${au.l-4} ${au.cy} H${or.r+4}" fill="none" stroke="var(--tx)"`
+      + ` stroke-width="${live('ag-audit')?1.8:1.4}" stroke-dasharray="2 4"`
+      + ` marker-end="url(#ahv)" opacity="${live('ag-audit')?.95:.45}"/>`);
+  }
   svg.innerHTML = out.join('');
 }
 
+const BASE_RATE = 0.42;   // timeline-seconds advanced per real second at 1x
 let T = LOAD_AT, playing = false, speed = 1, lastFrame = 0, openCard = null;
 const liveToks = new Map();
 

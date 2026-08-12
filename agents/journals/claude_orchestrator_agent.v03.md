@@ -1502,3 +1502,50 @@ old speed and the eye can follow a single token.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0296] 2026-08-12T18:29Z | task:none | The org panel becomes an actual family tree - parent centred, siblings on a bus, children hanging beneath - and a runtime defect I shipped one commit earlier is caught by finally pressing play
+
+### Trigger
+
+Sponsor, on the indented rail I built last round: "This still looks bad. it
+should look like a family tree." Correct. An indented list with a left-hand
+spine is a file browser, not an org chart, and no amount of tidying the stubs
+was going to make it read as descent.
+
+### The tree
+
+Rebuilt as a real hierarchy: the sponsor at the top, the orchestrator centred
+below it, a horizontal sibling bus, and three lead columns dropping from that
+bus with their workers stacked directly beneath them. Arrows point the way
+authority is answered — worker up to its lead, lead up through the bus to the
+orchestrator, orchestrator up to the human. The auditor is deliberately NOT a
+fourth column: it sits beside the orchestrator on a dashed violet line,
+because it is independent of the work chain and putting it in the sibling row
+said the opposite. Removing it also bought the three remaining columns enough
+width that "Implementation" stopped clipping, which is what forced the
+indented layout in the first place.
+
+### The defect, and why it survived two checks
+
+`const BASE_RATE = 0.42;` was declared on the line immediately before
+`let T = LOAD_AT`, and a later edit that spliced the drawWires block used
+`let T = LOAD_AT` as its right-hand anchor — silently deleting the declaration
+while leaving `T += dt * speed * BASE_RATE` in the play loop. The published
+page would therefore throw a ReferenceError the moment anyone pressed play.
+It passed `node --check` because that validates syntax and not undefined
+identifiers, and it passed the screenshot pass because that pass only ever
+called seek() and never pressed the button. Both checks were real and both
+were blind to it. The harness now clicks play, runs it for two and a half
+seconds, and asserts the scrubber actually advanced — the failure mode is now
+covered by a check that would have caught it. Shipped in d2641fc, live for
+about ten minutes, mine.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
