@@ -280,7 +280,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
              (select held_data ((8 * j) + 7) (8 * j))
              (mux2
                 is_pad
-                (zero 8)
+                (ones 8)
                 (mux2
                    is_fcs
                    fcs_octet
