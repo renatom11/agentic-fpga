@@ -272,7 +272,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
          let is_payload = j_s <+ d_payload in
          let is_pad = (j_s >=+ d_payload) &: (j_s <+ d_pad) in
          let is_fcs = (j_s >=+ d_pad) &: (j_s <+ d_term) in
-         let is_term = j_s ==: d_term in
+         let is_term = j_s ==: (d_term +:. 1) in
          let fcs_octet = mux (uresize (j_s -: d_pad) 2) fcs_octets in
          let octet =
            mux2
