@@ -1,0 +1,438 @@
+# Journal: claude_dv_lead_agent — volume 12
+
+- **Agent**: dv_lead (Opus 5 lead)
+- **Charter**: agents/charters/dv_lead.md
+- **Format**: v1 — entry grammar in agents/PROTOCOL.md §4
+- **Volume**: 12
+- **Continues-from**: J-dv_lead-0193
+- **Previous-volume**: agents/journals/claude_dv_lead_agent.v11.md
+- **Previous-volume-sha256**: 13690a0443063b9b5b48e91467c0c50e48756b6f63b28f79fcb61ed3b2382af5
+- **Previous-volume-bytes**: 239311
+
+This file is APPEND-ONLY. Content may only ever be added after the last line;
+nothing above it is ever edited. Enforced by scripts/agent_commit.sh and CI.
+Volume 11 is FROZEN: it is never appended to again, and any change to it breaks
+this file's Previous-volume-sha256.
+
+---
+
+## [J-dv_lead-0194] 2026-08-12T04:22Z | task:WO-0083 | RV-0083 ACCEPT on twenty-two bars — the abort law survives its first execution with zero disagreements from two independent seats, the round's own class-D2 exposure closed by measurement, and all three worker flags ruled against my own artifacts rather than against the seat that raised them
+
+### Trigger
+
+Orchestrator dispatch, **one round, one seat, review**: `RV-0083` on tb_writer's
+execution of `WO-0083` (`J-tb_writer-0046`, landed `91f005d`). The dispatch
+stated the expected head `91f005d` on
+`claude/fpga-hardcaml-agent-orchestration-37ceyf` and declared
+`docs/PROCESS.md` — plus possibly `docs/PROCESS-MEMOIR.md`, `docs/SPONSOR.md`,
+`docs/adr/ADR-0022*` — as sibling dirty paths from architect_docs_lead's
+concurrent sixth-edition round, not my subject.
+
+**Abort-first head check, before reading anything.**
+
+    git status --short   #  M docs/PROCESS.md   (one line)
+    git rev-parse HEAD   # 91f005d370f7bd05cdc00ddd5cda5cb27ea86835
+    git branch --show-current
+                         # claude/fpga-hardcaml-agent-orchestration-37ceyf
+
+**Byte-equal to the dispatched expectation, and the dirty set is a subset of the
+declared one** — one of the four declared paths is dirty, none of the others,
+and **no undeclared path is dirty**. Neither branch of the abort procedure was
+reached. HEAD did not move across the round; I re-checked at the end and it is
+still `91f005d`.
+
+The dispatch also carried, for adjudication: the worker's three flags; the four
+grounds architect_docs_lead routed from its independent §4 read; and my own
+standing flag that this journal volume was about to cross ADR-0017's soft
+threshold.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md` — both in full, both
+  first, per my launcher's mandatory order.
+- `agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md` —
+  **in full, all 2,615 lines, before opening the diff**, including §4's eight
+  facts and the tail-frame law, §5.3's fixed design, §6's per-unit constant
+  tables, §12's twenty-two bars with their base figures, §13's twenty-one bounce
+  conditions, §15's disposition classes, §17's allow-list, and the worker's
+  Return log entire. This is my standing rule and it is the rule this round most
+  needed: three of the adjudications below turn on text I would not have re-read
+  if I had trusted my own memory of a packet my own seat drafted eight hours ago.
+- The diff at the landing, read hunk by hunk: `git diff 7b749f0 91f005d` over
+  `test/xgmii_tx_64/{bench.mli,bench.ml,dune,test_m04_g.ml,test_m04_f.ml,test_m04_a.ml}`,
+  plus `git diff --name-status 22c60fb 91f005d` to separate this round's hunks
+  from the three sibling commits in the range.
+- The standing instruments' contracts, read to check the new call sites against
+  them rather than to trust them: `test/monitors/strobe_monitor.mli`,
+  `test/monitors/stream_word.mli`, `test/xgmii/tx_decoder.mli`,
+  `test/xgmii/xgmii_word.mli`, `test/xgmii/frame.mli`.
+- `test/attack_plans/AP-xgmii_tx_64.md` — §7's `T-3` and `T-7` cells, §9's change
+  log and its absorption-row convention, and the family A/F/G row tables for this
+  round's census. Edited this round (the absorption), which the packet names as
+  mine at the `RV-` and not before.
+- `agents/journals/workers/claude_tb_writer_agent.v03.md`, entry
+  `J-tb_writer-0046` in full — Trigger, Inputs, Evidence, Open-questions,
+  Files-in-this-commit.
+- `agents/journals/claude_architect_docs_lead_agent.v05.md` entry
+  `J-architect_docs_lead-0055`, **read at its committed text at `8ceb973`** via
+  `git show`, not at the working tree — the dispatch said to and the working tree
+  carries a sibling's uncommitted round.
+- `docs/adr/ADR-0017-a-journal-is-a-chain-not-a-file.md` §4.3, §4.4, §5.1 — the
+  rotation header, the rotation commit, and the thresholds.
+- CI at the landing, **read at source**: workflow runs `31562137959` (`build`,
+  with the `cosim` job) and `31562137932` (`journal-check`), and the `build`
+  run's per-step name/status list via the jobs API.
+- My own last entry, `J-dv_lead-0193` (the drafting entry for this packet), for
+  the ID to increment and for the harvest-span boundary.
+
+**Not read**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+`test/third_party/**`. **No RTL reached this round's context.** My charter §6
+criterion 7 makes the worker's independence mine to verify and not the worker's
+to assert, so I read `J-tb_writer-0046`'s `Inputs` myself: it names no forbidden
+path and carries an explicit *"Not read, confirmed"* line naming the module
+source by path. That check is the one I would not delegate.
+
+### Reasoning
+
+**The question this round actually asks.** Every M04 round before this one
+presented every word the transmitter asked for — twenty-eight runs, thirty-one
+discharged rows, not one underflow. `AP-M04` §7's `T-3` was the *measurement* of
+that absence, and it split the missing machinery into a placement primitive that
+already existed and an oracle that did not. `WO-0083` §4 was my attempt at the
+oracle: eight facts derived by hand from SPEC-M04 §9 and §6.1, fixed in the
+packet before the round precisely so a worker could not invent them, and — as I
+wrote in §15 — **never executed against anything**. The review's real subject is
+therefore not "did the worker follow instructions" but **"was my derivation
+right, and does the diff measure what it claims to measure."**
+
+**Why I re-executed the worker-seat bars instead of reading the return's
+figures.** A bar whose only evidence is the report of the seat it measures is
+not a bar. `M-10`, `M-11`, `M-13`, `M-17`, `M-18`, `M-19`, `M-21` and `M-22` are
+all cheap at my seat and I ran every one; all eight agreed with the return to the
+raw number. That agreement is itself evidence — about the return's reliability —
+that I would not have had if I had read the figures off the page. It also caught
+nothing, and I record the nil result rather than only the method, because a
+verification whose yield is never stated reads as ceremony.
+
+**The bars, and what they were actually protecting.** The tree-quantified ones
+are the ones that fail silently on a moved base, which is `FINDING K-3`'s whole
+subject and why §12's base column was re-measured at `22c60fb` rather than
+carried from `WO-0082`. Two of them earned their keep this round: `M-5c`'s
+zero-deletion rule over the three appended files is what keeps the **21 landed
+units** a regression witness for §5.3(6)'s re-expression — and since the
+re-expression rewrites a function with 21 consumers, "the tests still pass" is
+only evidence if the tests were not edited in the same commit. `git diff
+--numstat` returns `180/0`, `136/0`, `698/0`: zero deletions on all three, so the
+witness holds. And `M-7`, the id sweep, is the one **no script in this tree
+enforces**: 39 distinct ids in 205 occurrences, the base 31 plus this round's 8,
+zero others. `BM8`'s hardest limb is a hand count and stays one until `DVC-1a`
+lands.
+
+**The re-expression, checked as behaviour rather than as text.** §5.2 defines
+"observable behaviour unchanged" as *the firing conditions and their order, not
+the message text*, and names exactly two messages permitted to move. I checked
+`assert_instruments_clean_n` at the empty-set argument pair predicate by
+predicate: decoder-clean first and unchanged; `List.iter [] expect` a no-op;
+`high <> expected_high` at zero rendering the **byte-identical** string *"…
+cycles, expected 0"* — so the strobe message did not in fact move at the special
+case, which is better than the licence allowed; the frame-count message
+untouched; and only the underflowed-frame message moved, from a per-frame
+`List.iteri` failure to a whole-list comparison whose firing condition at
+`underflowed = []` is *"any decoded frame has `underflowed = true`"* — the same
+condition, in the same position. The generalisation is also **strictly stronger**
+where it matters: a list compared whole cannot pass a run in which the wrong
+frame aborted, which at U27's three frames is a live possibility and is why
+`~underflowed:[1]` and not `[0]` is the assertion that carries that unit.
+
+**What I checked that no bar asked for, and why each.** A bar list is a floor,
+and this round's stimulus is the first of its kind, so I read the driver as
+carefully as the units. Four things: (i) the cursor reaches `(frame, word)` on the
+cycle after word `word − 1` is accepted, and within a frame body the acceptances
+are contiguous, so the cursor arrives exactly at `R = S_j + w − 1` — which is what
+makes §4.2 fact 1 **a derivation the unit checks rather than an assumption the
+bench made**, the entire point of §5.3(2')'s cursor design; (ii) the out-of-range
+paths cannot throw, because `in_range` short-circuits before indexing and an
+out-of-range cursor offers idle whose `tvalid` is false, so the acceptance-advance
+is unreachable there — U22 drives that path for 29 of its 32 cycles; (iii)
+`check_schedule` checks the frame-range rule and `failwith`s **before**
+`List.nth_exn` reaches for that index, so an illegal schedule yields the named
+rule rather than an opaque exception; (iv) every new call site type-checks against
+the standing `.mli` files by inspection, since a compile error is `class D4a` and
+a bounce and I would rather find one by reading than by reading a red.
+
+**The disposition, read off §15's own table rather than summarised.** Class D1
+none, D2 none, D3a/b/c none, D4a–d none, class P closed and stayed closed. The
+**class D2 negative is the one worth stating in full**, because §15 deliberately
+wrote that class first among the non-bounce classes: the standing decoder had
+never measured a gap beginning at an **aborted** frame's terminate character —
+its own unit-suite trace ends in idle, so `gaps` is empty in it, and stage 1's
+`t = 1` sweep measured the lane-1 arithmetic only from a **normally** terminated
+frame. `M04-F6`'s **15**, `M04-A4`'s **`[16; 15]`** and `M04-G3`'s **23** all
+landed green, so the abort path hands the gap counter the same terminate lane the
+clean path does, and `underflowed` reads correctly off **live** output for the
+first time. The exposure named before the run is closed **by measurement**, not by
+absence of evidence — and I wrote §15's ordering expecting the opposite.
+
+**Class D5's nil yield is the round's most surprising result and I record it as
+one.** §15 said in terms: *"§4 is the largest single block of hand derivation this
+chain has issued and it has never been executed against anything, so I expect this
+class and I would rather have it than not."* It did not arrive. The worker
+independently re-derived §4's facts at U22 and U27 and §6's cells at every unit
+and found **zero** disagreements; architect_docs_lead independently read §4
+against the specification and disputed **no fact and no expected value**. Two
+independent seats, from two directions — one from the spec, one from the
+arithmetic — is why I record this as a result rather than as luck. It is also why
+the architect's four routed grounds are **citation upgrades and not corrections**:
+every one of them makes a true fact rest on a stronger clause, and none moves a
+number. I checked that explicitly before accepting, because a "no expected value
+moves" claim that turned out to move one would have invalidated the units built
+on it.
+
+**The three flags, and the pattern in them.** All three are defects in **my own
+artifacts** — my dispatch's invented SHA character, my packet's paragraph-shaped
+`State` field, my allow-list's boundary stated at one item and not the others —
+and all three were found by the seat with the least authority and the most to
+lose by raising them. I ruled each on its merits at §4 of the verdict; what I
+want recorded here is the shape. `RV-0080-VERDICT` §6 ruled that *a rule that
+forces a violation and then convicts it is worse than the violation*, and
+`J-dv_lead-0189` disposed of a whole round as packet-defective and
+worker-blameless. This round is the third instance of the same class, and the
+third instance means the class is structural rather than incidental: **the
+artifacts a lead writes to constrain a worker are the artifacts least likely to
+be re-read by the lead who wrote them.** The worker's re-read is the only one that
+happens under adversarial conditions, which is exactly why its flags are worth
+more than my own review of my own text.
+
+**On the instrument disclosures specifically, and why I did not take the literal
+reading.** `BM17` was armed — the worker measured its arming condition honestly
+and reported it **against its own interest** — so a literal reading makes each
+composition a bounce on its own, disclosed or not. I declined that reading, and
+the ground is my own packet's rather than mercy: Revision B's item 3 does not
+merely list carve-outs, it states the **boundary** they instance, with a test —
+*plumbing around a sanctioned invocation* versus *an instrument that reads the
+tree*, the test being whether the addition observes anything the sanctioned
+invocation did not itself produce. `&&` sequencing two mandated commands, an
+`echo` of a constant the worker supplied, and `$?` of `date -u` all fail that test
+in the safe direction: none observes anything about this repository. They read as
+outside the list only because **the clause was written once and attached to item
+3**, and Revision B's own *"inherited verbatim"* instruction is what propagated
+the asymmetry. `BM17` changes the consequence of a violation; it cannot convert a
+packet defect into one, and the antecedent question is answered by the list's own
+principle. **I note the alternative I rejected**: ruling the letter and bouncing,
+then repairing §17.1 for next round. I rejected it because it would convict a seat
+for the one behaviour six rounds of this chain were spent buying — the worker did
+**not** derive a permission from the shape of the carve-outs, which §17.1's closing
+rule forbids; it ran the plumbing, disclosed it in two places, said in terms that
+it could find no textual basis to resolve the question itself, and asked. A bounce
+there teaches the next seat to normalise silently, which is the failure mode the
+whole allow-list exists to prevent.
+
+**On the second self-caught defect, which is better than the first.** §1.4 names
+the `M04-` sweep as the drafting instrument and the worker ran it — that is the
+round working as designed. The `not_before`/`not_after` catch is different in kind:
+**no note told the worker to look there.** It generalised the *method* of one bar's
+drafting instrument to another bar's search term and found a `bench.mli` docstring
+that would have made `M-21` read four occurrences instead of two. And that exposes
+a defect of mine the worker paid for: `M-21` is phrased as an occurrence count, so
+it would have failed **on prose**, while its actual subject is whether any unit
+*computes* a window. `M-17` already carries the fix for exactly that hazard
+(*"stated as an expression bar and not as a count, because all six base hits are
+legitimate"*); `M-21` did not get it. The worker rewrote correct documentation to
+satisfy a miscounted bar, and the bar is what needs changing.
+
+**One design item I found that is mine and not the execution's.** `ST-2` as
+specified at §5.3(2') and as implemented compares the bench's intention record
+against `offered.tvalid` — but both are computed from the same expression in the
+same branch of the driver, so **`ST-2` cannot fire against the driver as written.**
+It is a regression tripwire, not a live check, and §5.3(5)'s stated purpose —
+catching *"a driver that quietly failed to withhold"* — is not actually served by
+it. The worker implemented the design §5.3 fixed and told it not to re-open, so
+this is charged nowhere near the execution. The stronger form for stage 3 is a
+count-and-position check: the number of withheld cycles equals `hold` and the
+first of them is the cycle the cursor reached the target. I record it now because
+a design flaw noticed at a green round and not written down is a design flaw
+rediscovered at a red one.
+
+**Why the absorption happened here rather than being carried.** `WO-0083` §19.2
+item 4 names *the `RV-`* as the carrier for the `AP-M04` absorption acts. I have
+the write scope and this is that carrier. At `J-dv_lead-0187` I convicted my own
+seat for three debts carried across rounds because the permissions had not reached
+the artifacts; here they do reach, and a debt named with a carrier and skipped at
+the carrier is the same failure with a better excuse. The counts are stated with
+their **method** rather than recalled (§9.1): the three prior absorption rows'
+own declared counts, 13 + 12 + 6 = 31, plus this round's 8 = **39 discharged**,
+cross-checked against a row total of **82** re-measured at this commit by a
+status-cell pass (58 ASSERT, 12 NO-ASSERT, 6 NO-STIMULUS, 5 STRUCTURAL, 1 GAP) —
+so **43 outstanding**. **Family A completes**, and that claim I ran as a census
+over the family's five rows rather than asserting it, which is precisely the claim
+`WO-0083` §1.4 forbade itself from making in advance and reserved for this seat at
+this moment.
+
+**The rotation.** ADR-0017 §5.1 sets the soft threshold at 256 KiB. Volume 11
+stood at **239,311** bytes, leaving **22,833**. My last seven entries measure
+29,343 / 28,301 / 56,341 / 39,623 / 22,302 / 29,396 / 33,290 bytes — mean 34,085,
+**minimum 22,302**, and that minimum is `J-dv_lead-0191`, the `RV-0082` ACCEPT,
+which carried fewer subjects than this entry does. An entry covering twenty-two
+bars, three flag adjudications, two self-caught defects, eleven routed revision
+items and an absorption was never going to fit under 22,833. I ran the arithmetic
+before writing rather than after, rotated first, and verified the chain header's
+`Previous-volume-sha256` **on both sides** — `sha256sum` on the working-tree file
+and `git show HEAD:` piped to `sha256sum` — which agree at
+`13690a04…82af5`, with `git status` confirming volume 11 is unmodified in the
+working tree. Verifying one side only would have chained to whichever copy I
+happened to read.
+
+### Actions
+
+1. Read the charter and PROTOCOL in full; ran the abort-first head check; read
+   `WO-0083` in full including the worker's Return log, before opening the diff.
+2. Executed **all 22 bars of §12** at the landing `91f005d` — the ten dv-seat
+   bars myself, and the twelve worker-seat bars **re-executed independently**
+   rather than read off the return.
+3. Read the six-file diff hunk by hunk against §5.3's fixed design and §6's
+   per-unit constant tables, cell by cell, against the computing expressions.
+4. Read the CI runs at the landing **at source**, by job and by step name and
+   status.
+5. Verified `BM17`'s arming condition and the worker's report of it; adjudicated
+   the three flags and the two self-caught defects.
+6. Absorbed the round into `test/attack_plans/AP-xgmii_tx_64.md`: appended §9's
+   change-log row (eight rows discharged, the counts with their method, the
+   negative space) and moved `T-3`'s state cell to **discharged in both halves**,
+   leaving `T-7`'s and `M04-G10`'s cells exactly as `J-dv_lead-0192` left them.
+7. Flipped `WO-0083`'s `State` field to `ACCEPTED` with the full lifecycle,
+   striking the DRAFT paragraph in place rather than deleting it, and appended
+   `RV-0083-VERDICT` to the packet's verdict log.
+8. Rotated this journal to volume 12 per ADR-0017 §4.4 and appended this entry.
+
+**Not done, deliberately**: no `git commit`, no `git push`, no staging — the
+orchestrator is the sole committer (PROTOCOL §2). No `SO-` packet opened. No
+`BUG-` opened, there being no class-D1 finding. No mutation campaign scheduled —
+that is the orchestrator's act. No edit to `docs/**`, `libs/**` or
+`docs/reports/audit/**`, and none to the sibling's dirty `docs/PROCESS.md`.
+
+### Evidence
+
+**All commands run from a repo checkout at `91f005d`; all CI references are run
+ids with their conclusions, per PROTOCOL §4.1(b).**
+
+Head check and clock:
+
+    git rev-parse HEAD    # 91f005d370f7bd05cdc00ddd5cda5cb27ea86835
+    git status --short    #  M docs/PROCESS.md
+    date -u               # Wed Aug 12 04:22:16 UTC 2026
+
+CI at the landing, read at source (not a badge):
+
+    run 31562137959  build         completed / success
+      step "Build"                                                    success
+      step "Run tests (expect tests, waveform snapshots)"              success
+      step "Verify nothing was left unpromoted or non-deterministic"   success
+      step "DV mechanical checks (C-9 record-vs-appendix, X-9 …)"      success
+      step "Abort-bit availability quantifier (C-37/ADR-0012)"         success
+      job  cosim                                                       success
+    run 31562137932  journal-check completed / success
+
+Tree-quantified bars:
+
+    git diff --name-status 7b749f0 91f005d          # 8 paths, §11.2's six + log + journal
+    git diff --numstat 7b749f0 91f005d -- test/xgmii_tx_64/test_m04_a.ml   # 180  0
+                                            …test_m04_f.ml                 # 136  0
+                                            …test_m04_g.ml                 # 698  0
+    git diff --numstat 22c60fb 91f005d -- <the five untouched files>       # (empty)
+    git diff --stat    22c60fb 91f005d -- test/xgmii_rx_64/                # (empty)
+    git ls-files test/xgmii_tx_64/ | wc -l                                 # 11
+    grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .            # 167
+    grep -c '^val ' test/xgmii_tx_64/bench.mli                             # 19
+    grep -roE 'not_before|not_after' test/xgmii_tx_64/ | wc -l             # 2
+    grep -rhoE 'M04-[A-Z][0-9]+' --include=*.ml test/ | sort -u | wc -l    # 39
+    grep -rhoE 'M04-[A-Z][0-9]+' --include=*.ml test/ | wc -l              # 205
+    grep -cE '^\| \*\*M04-[A-Z][0-9]+\*\*' test/attack_plans/AP-xgmii_tx_64.md  # 82
+
+Per-file `let%expect_test` and `[%expect` counts in `test/xgmii_tx_64/`
+(identical lists, 27 each): scaffold 1, a 3, b 4, c 5, d 3, e 2, f 3, g 6.
+
+`M04-` distinct-id set at the landing, in full, so a later seat can diff it
+rather than recount: `A1 A2 A3 A4 A5 B1 B2 B3 B4 B5 C1 C2 C3 C4 C5 C6 D1 D2 D3
+D4 D5 D6 E1 E2 E3 E4 E5 F1 F2 F5 F6 G1 G2 G3 G5 G6 G8 G9 G10` — 39, plus the two
+bare `M04-` tokens at `test_m04_scaffold.ml:1` and `:65`. **No `G4`, no `G7`, no
+`F3`, no `F4`, and no family-H/I/J/K/L/M id anywhere.**
+
+Journal-rotation chain, verified both sides:
+
+    sha256sum agents/journals/claude_dv_lead_agent.v11.md
+      13690a0443063b9b5b48e91467c0c50e48756b6f63b28f79fcb61ed3b2382af5
+    git show HEAD:agents/journals/claude_dv_lead_agent.v11.md | sha256sum
+      13690a0443063b9b5b48e91467c0c50e48756b6f63b28f79fcb61ed3b2382af5
+    wc -c < agents/journals/claude_dv_lead_agent.v11.md          # 239311
+    git show HEAD:… | wc -c                                      # 239311
+    git status --short agents/journals/claude_dv_lead_agent.v11.md   # (empty)
+
+Cost recomputed independently from `cycles_for_scheduled_run` at each schedule:
+32 + 224 + 229 + 47 + 47 + 59 = **638** driven cycles, **6** elaborations,
+against the pre-committed ceiling of 700 and 8 (`BM13`).
+
+**What is NOT reproducible from a checkout, stated as such**: nothing in this
+entry. Every figure above is either a command runnable at `91f005d` or a CI run
+id with its conclusion.
+
+### Outcome
+
+**DoD vs the dispatch: met.**
+
+- [x] `WO-0083` re-read **in full**, Return log included, before the diff.
+- [x] Line-by-line review of the diff at `91f005d` against the packet: the
+      `Stall` driver against §5.3's fixed design; each unit against its §6
+      constants, cell by cell; **all 22 bars** re-measured at the landing; the
+      two new instruments against §20.7 and §5.3(6); `BM17`'s arming report
+      (§18 item 9) verified from the worker's own report.
+- [x] Three flags adjudicated and the two self-caught defects dispositioned.
+- [x] Verdict written where my practice puts it — `RV-0083-VERDICT` in the
+      packet's own verdict log, with the `State` field flipped in the same
+      commit. **`ACCEPT`.**
+- [x] Absorption performed at its named carrier: `AP-M04` §9's change-log row and
+      `T-3`'s state cell.
+- [x] Journal rotated to volume 12 with the chain header verified both sides;
+      honest stamp from `date -u`; `Files-in-this-commit` exact.
+- [x] No `git commit`, no `git push`, no staging.
+
+**Harvest**: **none due**, declared rather than omitted. ADR-0018 and PROTOCOL §7
+attach the harvest to every `SO-` and every phase gate; this round is neither. My
+next `SO-` mines the interval from my last harvest through this entry, and this
+declaration is what keeps the span tiling so a skipped harvest stays visible.
+
+**Handoff**: `RV-0083-VERDICT` (`ACCEPT`) to tb_writer via the orchestrator,
+with **nothing routed to it**; eleven revision items routed to my own next
+revision of this packet; the mutation campaign over these eight rows declared
+**commissionable at `91f005d`** and left to the orchestrator to schedule.
+
+### Open-questions
+
+1. **My countersignature is owed on a spec defect I did not find and cannot
+   fix.** SPEC-M04 §6.2's `Preamble` row (*"keeps `tx_tready` = 1"*,
+   unconditionally) contradicts §7's C-16 consequence 4, and has since the C-16
+   diff. Reachability this round is **nil** — §4.4's `word ≥ 2` legality rule
+   forbids the only stimulus that would reach it, which is why the rule written
+   to avoid the hazard is what surfaced the defect. It is filed as a
+   carry-forward in architect_docs_lead's own document; when the spec diff is
+   written, the countersignature is mine, and I record it here as owed so it is a
+   debt with a carrier rather than an item that falls between two seats.
+2. **`ST-2` is weaker than its own specification reads**, per Reasoning. Mine, a
+   §5.3 design item for stage 3, charged nowhere near this execution.
+3. **`DVC-1a` is now wanted by four documents.** Every M04 count in this verdict
+   — 39 discharged, 43 outstanding, 82 rows, 39 distinct ids — is a **hand count
+   with its method stated**, for the third round running. `tools/dv_checks.sh`
+   contains zero occurrences of `M04`, `xgmii_tx_64` or `AP-xgmii_tx`. It should
+   land before any `SO-` quotes an M04 coverage fraction. Mine, `tools/**`.
+4. **`M04-G4` is still the cheapest outstanding row at this module and still
+   needs nothing built.** I held it back for one round and said so; this is the
+   end of that round. It should ride the next M04 packet whatever that packet's
+   axis is.
+5. **No escalation.** No E2 (no scope narrowed), no E3 (`BAR T1` unchanged and no
+   licensing question), no E5 (no lead dispute — the architect's read confirmed
+   rather than contested), no E6. No CRITICAL finding against any seat. The three
+   findings this round records (`WO-0083-1`, `-2`, `-3`) are all MINOR and all
+   against my own artifacts.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_tx_64.md
+- agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md

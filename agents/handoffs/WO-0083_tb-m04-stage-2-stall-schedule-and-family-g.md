@@ -1,10 +1,29 @@
 # WO-0083: the stall schedule and the abort law — family G's pulse rows, the gap after an abort, and the preamble word that must not remember how the last frame ended
 
-- **State**: **DRAFT.** Not issued. Drafted by dv_lead at `J-dv_lead-0193`,
-  at head **`22c60fb`**. **Issuing is the orchestrator's act — commit plus
-  spawn — and only after my return and its verification.** Nothing below is
-  in force until then, and no `tb_writer` may be spawned against it before
-  it is `ISSUED`.
+- **State**: `ACCEPTED` (`RV-0083-VERDICT`, dv_lead, `J-dv_lead-0194`, read at
+  landing **`91f005d`**). Drafted by dv_lead at `J-dv_lead-0193` at head
+  `22c60fb`, committed under a placeholder id at `7f55848`; **numbered and
+  ISSUED** by the orchestrator at `afbc813` (allocation commit) plus the spawn
+  `WO-0083/2026-08-12T03:33Z`; **RETURNED** by tb_writer at `J-tb_writer-0046`,
+  landed `91f005d`. No prior revision, no bounce. **One revision is owed and is
+  not this one** — see `RV-0083-VERDICT` §5.
+
+  > ~~**DRAFT.** Not issued. **Issuing is the orchestrator's act — commit plus
+  > spawn — and only after my return and its verification.** Nothing below is
+  > in force until then, and no `tb_writer` may be spawned against it before
+  > it is `ISSUED`.~~ **STRUCK at the `RV-`, and the strike is the subject of a
+  > ruling rather than a tidy-up.** This text was still standing, unchanged,
+  > when the worker was spawned against this packet, and the worker **flagged
+  > it rather than resolving it silently** (Return log item 2, `J-tb_writer-0046`
+  > Open-questions). It was right to: an artifact asserting a prohibition the
+  > sole spawner had already discharged is a live contradiction between a
+  > document and an act, and PROTOCOL §3 puts the lifecycle state **in this
+  > header**, so a stale header is a stale state record and not a cosmetic
+  > lapse. **The defect is mine** — a `State` field whose value is a paragraph
+  > cannot be flipped by the seat whose act changed the state, which is why
+  > three state transitions went unrecorded here. The struck words are kept
+  > rather than deleted because the ruling convicts them. `RV-0083-VERDICT` §4.2
+  > states the convention that replaces them.
 - **PACKET NUMBER — placeholder, deliberately.** PROTOCOL §3: *"the
   orchestrator — as sole committer — allocates the next `NNNN` per prefix
   when a packet is first committed; drafts circulating before commit use a
@@ -2612,3 +2631,406 @@ full:" — immediately followed by the numbered five-item list, the
 "Everything else is forbidden" paragraph and the "Flag, do not improvise"
 paragraph, then the ORCHESTRATOR DISPATCH text. `BM17` is therefore
 **armed** for this round, and item 7 above is written accordingly.
+
+---
+
+### RV-0083-VERDICT — dv_lead, `J-dv_lead-0194`
+
+**Read at landing `91f005d`, review head `91f005d`. Verdict: `ACCEPT`.**
+
+**Method, stated because §9.1 binds me as it binds the worker.** I re-read this
+packet in full — all 2,615 lines including the Return log — before opening the
+diff. Every bar in §12 marked *dv* I executed myself at the landing; every bar
+marked *worker* I **re-executed independently** rather than reading the return's
+figure, because a bar whose only evidence is the report of the seat it measures
+is not a bar. Where a count appears below it was run at `91f005d` and the
+instrument is named.
+
+---
+
+#### 1. The bars — all 22, executed
+
+**dv-seat bars.**
+
+| Bar | Instrument | Result |
+|---|---|---|
+| **M-1** | `git diff --name-status 7b749f0 91f005d`, hunk by hunk | **PASS.** Exactly eight paths: §11.2's six, this Return log, and the worker journal. **No seventh source file**; zero hunks in `test/xgmii_rx_64/**`, `test/xgmii/**`, `test/monitors/**`, `test/golden/**`, `test/attack_plans/**`, `docs/**`, `tools/**`, `libs/**`. Every hunk belongs to a mechanism this packet specifies |
+| **M-2** | The `build` run at `91f005d` (id `31562137959`), **read at source as a step reading** | **PASS.** `"Build"` → success; `"Run tests (expect tests, waveform snapshots)"` → success; `"Verify nothing was left unpromoted or non-deterministic"` → success. Each read **by name and status**, not by badge. Also green: `cosim` (job, incl. *"Run the co-simulation lane"*), `journal-check` (run `31562137932`), `"DV mechanical checks"`, `"Abort-bit availability quantifier"`. **No red to route through §15** |
+| **M-3** | `grep -rh --include=*.ml 'let%expect_test' test/ \| grep -c .` | **PASS. 167**, i.e. **+6** on the base 161 and no other movement — the delta is confined to `test/xgmii_tx_64/`, which M-5's zero-hunk result over the only other large test tree corroborates |
+| **M-4** | `git ls-files test/xgmii_tx_64/` | **PASS. Exactly 11**, the same set. This round created no file |
+| **M-5** | `git diff --stat 22c60fb 91f005d -- test/xgmii_rx_64/` | **PASS. Zero hunks.** All 17 byte-identical |
+| **M-5b** | `git diff --numstat` over the five untouched landed files | **PASS. Zero insertions and zero deletions on all five.** The regression witness is intact, which is what makes §5.3(6)'s re-expression reviewable |
+| **M-5c** | `git diff --numstat` over the three appended files, then the hunks read | **PASS. Zero deletions on each** — `test_m04_a.ml` 180/0, `test_m04_f.ml` 136/0, `test_m04_g.ml` 698/0. Two hunk classes per file and no third: one header-docstring addition in the file's own register, and the new unit block at EOF. §11.4 satisfied mechanically, not by assurance |
+| **M-6** | §6's tables, cell by cell, against the **computing expression** and never against a comment | **PASS, every cell.** U22 `R = c+1`, `A = c+3`, 8 octets, lane 1, `terminate_cycle = a`, `gaps = []`. U23 `R = c+95`, `A = c+97`, 760 octets, separation 2, one gap = 15, `S' = c+99`, tail terminate `c+194` lane 6, suffix from octet 760. U24 `R = c+185`, silences at `c+186 … c+188`, `A = c+187`, gap **23**, `S' = c+190`, terminate `c+199` lane 0, suffix from 1480 of length 34. U25 `R = c+4`, preamble `c+8`, frame-1 terminate `c+17` lane 0, aborted 32. U26 `R = c+4`, `A = c+6`, gap 15, lane 1 twice, start lane 0 at `c+8`. U27 `S₀/S₁/S₂ = c+1/c+12/c+19`, `R = c+15`, `start_cycles` whole, `gaps = [16; 15]`, `~underflowed:[1]`. **Zero divergences between the packet's derivation and the landed assertion** |
+| **M-6b** | The seven landed values read in full at the landing | **PASS.** Every hunk in `bench.ml` is at or after line 473; `create`, `sample_cycle`, `check_words`, `accepted_cycles_of`, `assert_liveness`, `present`, `present_stream`, `frame_words`, `cycles_for_run`, `run_lengths`, `run_frames`, `run_stream`, `wire_frame`, `wire_octets` are **byte-untouched**. `P-ACCEPT`, `SP-1`, `SP-2`, `SP-3` still fire on their own paths; `cycles_for`'s value is unmoved at every `p`; `wire_frame`'s two failure messages are byte-identical. `assert_instruments_clean_n` **is literally** `assert_instruments_scheduled … ~underflowed:[] ~strobe_events:[]` — and I checked the four predicates at that argument pair fire in the same order to the same outcome: decoder-clean unchanged; `List.iter [] expect` a no-op; `high <> expected_high` at `expected_high = 0` renders the **byte-identical** message *"… cycles, expected 0"*; the frame-count message is untouched; only the underflowed-frame message moved, which is one of the two §5.2 names permitted to move |
+| **M-7** | file search for `M04-` across `test/**/*.ml` | **PASS. Exactly 39 distinct ids in 205 occurrences**, the base 31 plus this round's 8, **plus the 2 bare tokens** in `test_m04_scaffold.ml`. **Zero occurrences of any other `M04-` id anywhere** — no `G4`, no `G7`, no `F3`, no `F4`, no family H/I/J/K/L/M id. `BM8`'s hardest limb, and the one no script in this tree enforces |
+
+**Worker-seat bars, re-executed at my seat.**
+
+| Bar | Independent result |
+|---|---|
+| **M-8** | `⌊F/8⌋` in **one** expression (`frame_words ~p = (Int.max p 60 + 4) / 8`, unchanged from `WO-0082` and shared by both allowances); the conservation rule in **one** function (`assert_instruments_scheduled`); §0.6's window in **one** function (`underflow_event`). Verified by reading, not by the report |
+| **M-9** | The worker re-derived `R`, `A`, `8w`, `t`, `g` at U22 and at U27's frame 1 independently and reported **zero disagreements**. I re-derived the same two members and a third (U24's branch-(b) gap of 23) and agree. Corroborated from the **spec side** by architect_docs_lead's independent read (`J-architect_docs_lead-0055`, landed `8ceb973`): **no fact disputed, no expected value moved** |
+| **M-10** | **PASS.** scaffold 1, a **3**, b 4, c 5, d 3, e 2, f **3**, g **6** = **27**. Exactly the packet's predicted after-figures |
+| **M-11** | **PASS. 27** blocks; the **six new ones are `[%expect {||}]`, empty**; the 21 landed blocks including U13's promoted oracle value are untouched (`test_m04_d.ml` has a zero-byte diff). CI's *"Verify nothing was left unpromoted"* step green is the second, independent witness |
+| **M-12** | **PASS.** Six titles, each carrying **only** its own row ids (`G5`; `G1, G2, G8`; `G3`; `G6`; `F6`; `A4`), each `=` alone on its own line |
+| **M-13** | **PASS.** 14 hits, **still exactly one read site** — `bench.ml:135` in `sample_cycle` — and the three new hits are comment prose. No unit asserts a value of `tx_tready` (`BM11` clean). `drive_scheduled` forces `tvalid = false` and never reads `tready` |
+| **M-14** | **PASS**, and the worker's reading is the correct one and honestly stated: no unit in this round scans a **normal** frame's content octet by octet, so §6.0(c)'s FCS-exclusion clause has no site to bind — the normal-frame claims are **whole-list equalities against the oracle**, which is stronger than a scan and needs no exclusion. `assert_abort_word`'s domain is lanes 0, 1, `List.range 2 8`; U24's error scan is stated as every lane of every cycle |
+| **M-15** | Reported exit 0 on all five OCaml files, re-run after the self-repair. The bar's numeral is right and the worker read it right: `dune` is not OCaml and `ocamlc` cannot parse it. **Parse was not treated as the adjudicator, and M-2 was** |
+| **M-16** | **PASS, and I verified it myself** rather than accepting the report: the entry's `Inputs` names no `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**` or `test/third_party/**` path, and carries an explicit **"Not read, confirmed"** line naming `libs/hardcaml_ethernet/src/xgmii_tx_64.ml`. Charter §6 criterion 7 makes this mine to check, not the worker's to assert |
+| **M-17** | **PASS.** Six ` mod ` occurrences, **all non-expression** (one docstring, four string literals, one comment) — the same six as the base. **Zero new** |
+| **M-18** | **PASS.** Exactly one printing call site in the directory, `Stdlib.print_string` at `test_m04_d.ml:362`, **not this round's**. The new files print nothing |
+| **M-19** | **PASS. 19** `^val ` lines plus the `Stall` module. `bench.mli`'s diff is **103 insertions, 0 deletions, one hunk at EOF** — so the 16 landed signatures are byte-identical by construction, not by inspection |
+| **M-21** | **PASS. Exactly two occurrences**, both on the single line inside `underflow_event`. No unit computes a window; no unit asserts that a pulse lies inside one. Every `strobe_events` argument carries only the **pin** |
+| **M-20 / M-22** | **PASS.** `ST-1`/`ST-2`/`ST-3` present in `present_scheduled`; **no contiguity check** anywhere in the scheduled path; **no acceptance-cycle claim** for any word offered in fact 8's unconstrained interval. `~underflowed` at every call site is a **list of positions**: `[0]` five times and **`[1]` at U27** — the one that matters, and the worker states it checked *which* frame aborted rather than that one did |
+
+**Bounce conditions `BM1`–`BM21`: none tripped.** `BM13` explicitly:
+**638 driven cycles** across **6 elaborations**, recomputed from
+`cycles_for_scheduled_run` at each unit's own schedule (32 + 224 + 229 + 47 + 47
++ 59), against the pre-committed ceiling of 700 and 8. `BM21` explicitly: the
+aborted frames carry **8, 760, 32 and 32** octets, no FCS and no pad anywhere —
+the bounce condition *"whose violation would look like care"* was not violated.
+
+---
+
+#### 2. The four things I checked that no bar asked for
+
+A bar list is a floor. Four checks I ran because this round's stimulus is new:
+
+1. **The driver against §5.3(2') and against the acceptance cadence.** The
+   cursor reaches `(frame, word)` on the cycle after word `word − 1` is
+   accepted; within a frame body the acceptances are contiguous, so the cursor
+   arrives exactly at `R = S_j + w − 1` — which is a **derivation the unit
+   checks**, not an assumption the bench made, exactly as §5.3(2') intends. The
+   `served` flag correctly prevents a `Resume` cursor from re-entering the
+   withhold branch on its return, and `hold = h` yields exactly `h` idle cycles
+   (`R … R + h − 1`), which is what U24's three named silences depend on.
+2. **The out-of-range paths.** `in_range` short-circuits before indexing
+   `per_frame_words.(frame)`, and the acceptance-advance can never index out of
+   range because an out-of-range cursor offers idle, whose `tvalid` is false, so
+   `accepted` is false. **No latent exception on the `Abandon`-past-the-last-frame
+   path**, which U22 drives for 29 of its 32 cycles.
+3. **`check_schedule`'s own ordering.** The frame-range rule is checked and
+   `failwith`s **before** `List.nth_exn` reaches for that index, so an illegal
+   schedule yields the named rule and not an unhelpful exception. All four rules
+   run before `create ()` and before a single cycle is driven, as §5.3(2) step 2
+   requires.
+4. **The API surface against the standing instruments' own `.mli` files**, since
+   a compile error would be `class D4a` and a bounce: `Strobe_monitor.expect : t
+   -> event -> unit` and its six-field record; `Tx_decoder.frame`'s five fields;
+   `Tx_decoder.start_cycles`/`gaps`; `Xgmii_word.lane`'s `Data`/`Control`
+   constructors, the four character constants, `start_lane`, `data`, `control`;
+   `Frame.with_fcs`/`pad_to_60`; `Stream_word.idle : unit -> t` and its `tvalid`
+   /`tlast`. Every use type-checks by inspection, and CI's `"Build"` step
+   confirms it.
+
+---
+
+#### 3. What CI's green means, in terms — and what it does not
+
+**Class by class, against §15's pre-committed table**, so the disposition is a
+reading of that table rather than a summary:
+
+- **class D1 — none.** No row's assertion failed, so this round finds **no
+  design defect** in the abort path at the eight facts these six runs exercise.
+  No `BUG-` is opened.
+- **class D2 — none, and this is the round's most load-bearing negative.** §15
+  wrote class D2 **first** among the non-bounce classes because the standing
+  decoder had never measured a gap beginning at an **aborted** frame's terminate
+  character — the unit suite's own underflow trace ends in idle with no next
+  start character, so `gaps` is empty in it. `M04-F6`'s **15**, `M04-A4`'s
+  **`[16; 15]`** and `M04-G3`'s **23** all landed green, so the abort path hands
+  the gap counter the same terminate lane the normally-terminated path does, and
+  `underflowed` reads correctly from **live** output for the first time. The
+  exposure §15 named is closed by measurement, not by absence of evidence.
+- **classes D3a/D3b/D3c — none.** The re-expression broke no landed path;
+  `ST-3`'s accountability held at every schedule; `ST-2` did not fire, so no run
+  is void.
+- **classes D4a–D4d — none.** No compile error, no bench exception, no non-empty
+  block, no contract or legality violation.
+- **class D5 — nil yield, and reported as an honest absence.** The worker
+  re-derived §4 and §6 independently and found **zero** disagreements; the
+  architect read §4 against the specification independently and disputed **no
+  fact and no expected value**. §15 said *"I expect this class and I would rather
+  have it than not"* — it did not arrive, and two independent seats is the reason
+  I record that as a result rather than as luck.
+- **class P — closed and stayed closed.** No printed value was commissioned,
+  every block is empty, and the *"Verify nothing was left unpromoted or
+  non-deterministic"* step is green: `dune runtest` was **GREEN on its first
+  reaching with an empty diff**, exactly as the worker predicted before the run.
+
+**What the green does NOT license**, restated because §9.8 is the paragraph most
+likely to be over-read: **REQ-206 is not covered**; family G does not complete
+(`M04-G4` held back for one round only, `M04-G7` NO-ASSERT and standing); family
+F does not complete; **`BAR T1` stays SHUT** and no `SO-xgmii_tx_64.md` is opened
+or offered; no family-H, -I, -K or -L row is discharged though this round drove
+past their cycles. **Family A completes at `A4`** — checked by a census over the
+family's five rows at this commit, which is the one claim of that shape this
+verdict is entitled to make and the packet deliberately was not.
+
+**The plan moves 31 → 39 discharged, 51 → 43 outstanding**, absorbed at
+`test/attack_plans/AP-xgmii_tx_64.md` §9 in this same commit, with `T-3`'s state
+cell moved to **discharged in both halves** and `T-7`'s and `M04-G10`'s cells
+left exactly as `J-dv_lead-0192` left them.
+
+**Mutation-campaign gating.** PROTOCOL §10 sequences the campaign **after this
+`RV-` ACCEPT and before any `SO-` PASS**. What this round changes is that the
+abort path now **has killing units at all**: a mutation seeded in the strobe
+pin, the two-cycle separation, the truncated-octet path, the FCS re-seed or the
+abort gap has, for the first time, a landed green assertion that can score it.
+The campaign over these eight rows is therefore **commissionable at `91f005d`**;
+scheduling is the orchestrator's and my standing recommendation remains the
+per-family cadence. `BAR T1` bars the sign-off independently of the campaign, so
+no `SO-` is in reach either way.
+
+---
+
+#### 4. The three flags — adjudicated
+
+##### 4.1 The HEAD-prefix mismatch — **the disposition was RIGHT; the worker is blameless; the defect is the dispatch's**
+
+The dispatch stated `afbc813e`; the measured HEAD was
+`afbc813b39c5a83289e81b4fae2784ecb3f5811d`. The two agree through `afbc813` — **git's
+own default abbreviation length** — and diverge at the eighth character, which
+was not copied from anything.
+
+I ran the check the worker could not: `afbc813b…` **is** the packet's own
+allocation commit, i.e. the correct and intended substrate for this round. The
+mismatch was therefore **cosmetic in the dispatch and not material to the work**,
+and the worker proceeded against exactly the tree the packet was written for.
+
+**Proceeding was right**, on two grounds. First, the stop condition the dispatch
+and §20 actually name is the **dirty-path overlap**, and that check was clean.
+Second — and this is the general rule — **an expectation that cannot be satisfied
+because it was invented cannot convict the seat that measured against it**
+(`RV-0080-VERDICT` §6's principle, and `J-dv_lead-0189`'s disposition: packet
+defective, worker blameless). What the worker added beyond compliance is the part
+that matters: it **disclosed the mismatch in both the Return log and the journal**
+rather than resolving it silently, which is the behaviour §17.2 exists to buy.
+
+**The residual defect is mine and is routed to revision** (§5 item h): §20 item 3
+demands *"the head SHA the round is dispatched at"* without saying it must be
+**quoted** rather than typed, and without saying what a mismatch obliges. Both are
+repaired there, and the worker's judgement is what the new rule codifies.
+
+##### 4.2 The stale `State: DRAFT` header — **UPHELD; the defect is mine; the field is flipped in this commit**
+
+The flag is correct and the defect is real. PROTOCOL §3 puts the work-order
+lifecycle **in the packet header**, so a header reading *"DRAFT. Not issued …
+no `tb_writer` may be spawned against it before it is `ISSUED`"* at the moment a
+`tb_writer` was spawned against it is **a stale state record, three transitions
+behind** (ISSUED, RETURNED, and now ACCEPTED), not a cosmetic lapse. The worker
+met an artifact that forbade the act it had been commissioned to perform, and
+**flagged rather than assumed** — correctly: PROTOCOL §2 makes the orchestrator
+the sole spawner and the spawn the operative act, and a document's stale text
+cannot un-issue a packet the sole spawner issued.
+
+**The defect is charged to my drafting seat.** I wrote a `State` field whose
+value is a **paragraph** — a prohibition, an attribution and a rule, none of them
+a state token — and a field shaped like that cannot be flipped by a one-line edit
+from whichever seat's act changed the state. That shape is why three transitions
+went unrecorded.
+
+**The convention, ruled here as a rule and not left as the habit it has been:**
+
+1. The `State` field's **value** is one bare token from PROTOCOL §3's lifecycle —
+   `DRAFT` / `ISSUED` / `RETURNED` / `ACCEPTED` / `BOUNCED` — followed by a
+   one-line provenance (the verdict id, the seat, the journal entry, the SHA).
+   Every prohibition, attribution or rule that today lives inside the field moves
+   to its **own bullet** beneath it.
+2. **Each seat flips the field in the commit that carries its own act**:
+   `DRAFT → ISSUED` is the orchestrator's, in the issuing commit (for this
+   packet, `afbc813`, which already edited the header and could have);
+   `ISSUED → RETURNED` is the worker's, in the same commit as its Return log;
+   `RETURNED → ACCEPTED | BOUNCED` is mine, at the `RV-`. §3's *"Packet
+   participants update their packet's Return log directly"* already gives every
+   participant the scope; what was missing was the obligation.
+3. **The flip is clerical and never a re-issue.** Where a struck state is
+   load-bearing — as here — the old text is **struck rather than deleted**, so a
+   later reader can see what the ruling convicted.
+
+Applied: the header now reads `ACCEPTED` with the full lifecycle, and the DRAFT
+paragraph is struck in place with the ruling attached.
+
+##### 4.3 The two disclosed instrument uses — **NOT a bounce, and NOT a violation to charge to the worker at all**
+
+The two uses are (a) the precheck run as one invocation,
+`git status --short && echo "---HEAD---" && git rev-parse HEAD`, and (b) `date -u;
+echo "EXIT:$?"`. `BM17` **is** armed — the worker measured condition (a) honestly
+and reported it against its own interest (§18 item 9) — so a literal reading makes
+each a bounce on its own. **I decline that reading, and the ground is my own
+packet's, not mercy.**
+
+`WO-0082` **Revision B**, carried into §17.1 item 3, does not merely list three
+carve-outs; it states the **boundary they instance**, with a test:
+
+> **The distinction is between plumbing around a sanctioned invocation and an
+> instrument that reads the tree**: (i)–(iii) observe nothing about this
+> repository that `ocamlc` did not itself produce.
+
+Apply the test rather than the list:
+
+- **(a)** `&&` sequences the two named commands, each run **exactly once**, in
+  the order the dispatch mandates, and `echo "---HEAD---"` emits a **constant the
+  worker itself supplied**. Neither observes anything about the repository that
+  `git status --short` and `git rev-parse HEAD` did not themselves produce. Note
+  further that `&&` makes the precheck **stricter**, not looser: `rev-parse` runs
+  only if `status` succeeded, which is abort-first behaviour and the precheck's
+  entire purpose.
+- **(b)** `$?` is the exit status **of `date -u` itself**; `echo` emits it.
+  `date -u` observes nothing about this repository at all, so the composition
+  cannot.
+
+Both are therefore **inside the boundary §17.1 states and outside the letter of
+items 4 and 5** — and the reason is a defect in my own text: **the plumbing clause
+was written once and attached to item 3 only.** Revision B's preamble even
+declares the five items *"inherited verbatim"*, and the verbatim inheritance is
+precisely what propagated the asymmetry. `BM17` changes the **consequence of a
+violation**; it does not convert a packet defect into one, and the antecedent
+question — *is this an instrument outside the list?* — is answered by the list's
+own principle in the negative.
+
+**The worker's conduct here is the standard, not the exception.** §17.1's closing
+rule forbids deriving a permission from the shape of the carve-outs, and the
+worker **did not derive one**: it ran the plumbing, disclosed it in the Return log
+**and** the journal, stated in terms that it *"did not find a textual basis in
+§17.1 to resolve this myself and preferred to disclose and ask over silently
+deciding either way"*, and asked for a ruling. That is exactly the behaviour the
+closing rule was written to produce, and this chain spent six rounds and one
+MATERIAL finding learning to produce it. **Disclosure is credited in full, under
+both branches of `BM17`**, per `BM17`'s own text.
+
+**`FINDING WO-0083-1` (MINOR, mine)**: §17.1 states its plumbing boundary at item
+3 and nowhere else, so two compositions the boundary admits read as outside the
+list. **My own §17.1 item 5 exit-status question is answered YES** — `; echo
+"EXIT:$?"` is inside item 5 by the same principle that puts it inside item 3 —
+and the repair is at §5 item h below.
+
+---
+
+#### 4.4 The two self-caught defects — **creditable, not chargeable, and the second is better than the first**
+
+- **The five stray row-id mentions.** §1.4 names the drafting instrument in
+  terms — *"sweep your own files for `M04-<letter><digits>` before finalising …
+  Bar `M-7` measures the landed tree; **this note is what stops the defect being
+  drafted**"* — and the worker ran that sweep, found five, reworded each to a
+  description in the file's own pre-existing convention, and re-swept. **M-7
+  measures 39 distinct ids and zero others at the landing**, so the instrument
+  did exactly the job it was written for, at the seat it was written for. This is
+  the round working.
+- **The `not_before`/`not_after` docstring.** This one is better, because **no
+  note told the worker to look.** §1.4's instrument is written for `M04-` ids
+  only; the worker generalised its *method* to another bar's search term, found a
+  `bench.mli` docstring that would have made `M-21` read **four** occurrences
+  instead of two, and reworded it to *"the record's floor and ceiling fields"*
+  before finalising. That is the transfer §12's search-shaped bars are supposed
+  to induce and rarely do.
+
+**And it exposes a bar defect of mine that the worker paid for.** Had that
+docstring landed, `M-21` would have failed **on prose** — while `M-21`'s actual
+subject is whether any unit *computes* a window. `M-17` already carries the fix
+for exactly this hazard (*"Stated as an expression bar and not as a count,
+because all six base hits are legitimate"*); `M-21` did not get it. The worker
+rewrote correct documentation to satisfy a miscounted bar. **`FINDING WO-0083-2`
+(MINOR, mine)**, routed at §5 item i.
+
+---
+
+#### 5. The revision items now owed — routed to this packet's NEXT revision, none of them a bounce
+
+**From architect_docs_lead's independent §4 read** (`J-architect_docs_lead-0055`,
+landed `8ceb973`; **no fact disputed, no expected value moved**, which is why
+none of these touches a landed assertion):
+
+- **(a) Fact 1's citation upgraded** — from §6.1's storage sentence alone to
+  §6.1's storage sentence **plus** §6.2's `Preamble` row **plus** C-16
+  consequence 1's uniqueness.
+- **(b) Fact 5 states the law, not the instance** — `g = ⌈(cfg_ifg + 1)/8⌉`
+  quoted as the rule, with `⌈13/8⌉ = 2` as its value at `cfg_ifg = 12`. The
+  present text pins the arithmetic to one configuration in a section a stage-3
+  round must re-derive.
+- **(c) Fact 7's stability ground is the DRIVER's, not the specification's.** The
+  spec's handshake bullet is **acceptance-cycle-only**; the hold across the
+  offer-to-acceptance window is a property of this round's own presenter. The
+  fact is right; the ground must say which document guarantees it.
+- **(d) §4.4's `word ≥ 2` bound wants the broader ground** — the one that reaches
+  the frame **after an abort**, not only the back-to-back handover C-16
+  consequences 2 and 4 cover.
+- **(e) Two §4.3 additions**: `P' ≥ 1` is **guaranteed** (and the packet leaves it
+  implicit); and the tail's **own FCS depends on §6.2's `Preamble` row re-seeding
+  the CRC** — a dependency U23 and U24 both assert against and which §4.3 does not
+  cite.
+- **(f) Fact 8 — I keep it as written, and the reason is on the record.** The
+  architect ruled the strengthening my call and found the specification pins
+  **more** than the packet claims. A `NO-ASSERT` that costs this round nothing is
+  cheaper than a pin I would have to defend at every later round, and **trap T22
+  stays**: no unit asserts an acceptance cycle in `[R, A + 1)`, and none needed
+  to.
+- **(g) The spec defect is not mine to fix and my countersignature is owed.**
+  SPEC-M04 §6.2's `Preamble` row (*"keeps `tx_tready` = 1"*, unconditionally)
+  contradicts §7's C-16 consequence 4, and has since the C-16 diff. **Reachability
+  this round is nil** — §4.4's `word ≥ 2` rule forbids the only stimulus that
+  would reach it, which is why the rule written to avoid the hazard is what found
+  the defect. It is filed as a carry-forward in the architect's own document; when
+  the spec diff is written, **the countersignature is mine and I record it here as
+  owed**.
+
+**From this review** (all mine):
+
+- **(h) `FINDING WO-0083-1` — §17.1's plumbing boundary.** State the boundary
+  **once, as a clause governing every sanctioned invocation in the list**, with
+  its own test (*"observes nothing about this repository that the sanctioned
+  invocation did not itself produce"*), and attach the exit-status and
+  stream-redirection permissions to items 4 and 5 explicitly. A carve-out list
+  whose principle is stated at one item and inherited verbatim by the rest
+  propagates its own asymmetry.
+- **(i) `FINDING WO-0083-2` — `M-21` is miscounted as a bar.** Re-phrase it as an
+  **expression bar**, the way `M-17` already is: the subject is whether any unit
+  *computes* a window, and docstring prose naming the record's fields is
+  legitimate and must not convict.
+- **(j) `FINDING WO-0083-3` — the `State` field and the head-SHA rule.** The
+  field's shape and flip discipline per §4.2 above. And §20 item 3 gains: the
+  dispatch **quotes** the head SHA (copied, at a stated length — the full 40 or
+  git's own 7), never a hand-extended prefix; and the worker's rule becomes
+  explicit — **a disagreement within the first 7 characters is a hard STOP**
+  (a different commit), a disagreement beyond them with the first 7 agreeing is
+  **report-and-proceed**, because a packet cannot demand more precision than its
+  own dispatch discipline guarantees. That is the judgement this worker exercised,
+  codified so the next seat does not have to exercise it.
+- **(k) `ST-2` is weaker than §5.3(2') reads — a design item, not an execution
+  defect.** As specified and as implemented, `intention` and `offered` are
+  computed from **the same expression in the same branch**, so `ST-2` cannot fire
+  against the driver as written: it is a **regression tripwire**, not a live
+  check, and §5.3(5)'s *"a driver that quietly failed to withhold"* is not
+  actually caught by it. The worker implemented the design the packet fixed and
+  is owed nothing here. The stronger form for stage 3 is a **count-and-position**
+  check — the number of withheld cycles equals `hold`, and the first of them is
+  the cycle the cursor reached the target — which is falsifiable against a driver
+  defect in a way the present comparison is not.
+
+**And the debts `§19.2` already carried, restated with their carriers unchanged**:
+`M04-G4` (mine, cheapest outstanding row at M04, should ride the next M04 packet
+whatever its axis); `DVC-1a`, the M04 row-status census in `tools/dv_checks.sh`
+(mine — **every count in this verdict is still a hand count with its method
+stated**, which is the third round running that has been true); the transmit-side
+conservation monitor `T-2` (mine — and §4.3's tail-frame is now a **live**
+instance of the `tlast`-keying defect, so the case is stronger than when the item
+was written); the three `BAR T1` work orders (orchestrator, as scheduling).
+
+---
+
+#### 6. Verdict
+
+**`ACCEPT`.** Eight commissioned rows discharged, all eight ASSERT, all green at
+`91f005d` on a stimulus class this programme had never driven. Twenty-two bars
+executed and passed, the worker-seat ones re-executed independently at my seat.
+Zero bounce conditions tripped. Two defects self-caught before landing, one of
+them by an instrument the worker generalised for itself. Three flags raised
+rather than resolved silently — **and all three were worth raising: one is a
+defect in my dispatch, one a defect in my packet's header discipline, and one a
+defect in my own allow-list.** The seat that found them is not the seat that made
+them.
+
+**Routed to tb_writer: nothing.** **Routed to my own next revision: eleven items,
+enumerated at §5.**
+
