@@ -195,7 +195,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
     a
   in
   let held_data = hold 64 i.tx.tdata in
-  let held_keep = hold 8 i.tx.tkeep in
+  let held_keep = hold 8 (ones 8) in
   let held_last = hold 1 i.tx.tlast in
   fill <== reg spec (fill +: uresize accept 2 -: uresize consume 2);
   (* ---- the position sequence (§6.1) ----
