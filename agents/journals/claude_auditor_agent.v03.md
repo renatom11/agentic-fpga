@@ -1916,3 +1916,112 @@ Handoff: return to the orchestrator for verification and commit under `Agent: au
 ### Files-in-this-commit
 - docs/reports/audit/WO-0084-mutations/README.md
 - docs/reports/audit/WO-0084-mutations/class-03-tkeep-ignored.v2.diff
+
+## [J-auditor-0029] 2026-08-12T11:28Z | task:ADR-0022 | Row 2 countersigned ACCEPT — the split loses nothing against d96a5b1 (47=47 preserved claims, all fourteen sixth-edition losses restored verbatim) and every core stamp resolves; the sixth edition AS EXECUTED did lose, and that it is disclosed rather than smoothed is why I accept the artefact as it now stands
+
+### Trigger
+
+Orchestrator dispatch (WO for ADR-0022 countersignature, row 2). ADR-0022 is
+PROPOSED and owes three §7 countersignatures; row 2 is mine, on **Decision 2, the
+core/memoir split**. The two things asked (§7 row 2): (a) the split as executed
+loses nothing, verified against the fifth edition's committed text; (b) the core's
+remaining stamp apparatus is not weakened by the move of its archaeology to the
+companion. The WO required a re-executed check, not a read-through, and named
+refusal a first-class outcome.
+
+### Inputs
+
+- `agents/charters/auditor.md`, `agents/PROTOCOL.md` (§3 relay, §4 grammar, §6 scope, §10).
+- `docs/adr/ADR-0022-the-warranty-and-the-split.md` (whole; §3 Decision 2, §3.1 the three load-bearing properties, §3.3 failure modes incl. "the split can hide a deletion", §4 the §5-kept judgement, §7 the row I owe).
+- Fifth edition baseline: `d96a5b1:docs/PROCESS.md` (5,446 / 384,659).
+- Split commit `592926e` (6th ed); restoration commit `2ed029d` (7th ed); current committed state HEAD `21e7332` — both PROCESS files byte-identical `2ed029d..HEAD`.
+- `docs/PROCESS.md` (5,538 / 366,906) and `docs/PROCESS-MEMOIR.md` (2,028 / 198,269) at HEAD.
+- `scripts/check_process_doc.sh`; `docs/reports/audit/PROCESS-claims-posture.md` (the file every `C-nn` stamp cites).
+
+### Reasoning
+
+I read "loses nothing" as: every substantive fifth-edition passage must (i)
+survive as current law in the core, (ii) be preserved in the companion as a
+superseded claim under its anchoring section, or (iii) be edition-scaffolding
+legitimately regenerated (anchor, TOC, per-edition census, "this edition"
+narrative). A substantive rule/claim/facsimile in neither volume is a loss.
+
+The decisive instrument is **falsifier 4** — `git diff d96a5b1 HEAD -- docs/PROCESS.md`
+with the *committed fifth edition itself* as the yardstick — because the sixth
+edition's fatal error was pointing that diff at its own manifest, making the claim
+and the standard the same artefact (the "no self-check may use a list the same
+edition wrote" class). A passing sentinel search (falsifier 1) is necessary, not
+sufficient; line counts (falsifier 3) prove nothing about deletion. So I ran the
+diff and accounted for all 1,494 removed content lines, then reconciled the
+**preserved-claim set exactly**: the sentinel census of `d96a5b1` is 47 uses
+(50 tokens − 3 mentions); the current companion is 47 uses (52 − 5); the sixth
+edition was 33 (38 − 5). 47 = 47, and the 33→47 movement is exactly the fourteen
+restorations. Count-match is not identity-match, so I matched the 50 fifth-edition
+token sites into the companion one at a time; the 6 that missed exact substring
+all resolve (5 preserved with relocation-appropriate wording; 1 is a benign census
+mention). The one that looked like a drop — the §2.6 large-file-gate margin — is
+the split working correctly: its correction-history is in the companion, its
+1,000,000-byte rule statement is current law in the core (core:2178–2180, 5453).
+
+Why ACCEPT and not REFUSE. Strictly against `592926e` alone, row 2 REFUSES: the
+sixth edition dropped fourteen preserved margins and orphaned fourteen stamps
+(C-33/C-82/C-114 "pointed at preservation that did not exist"), and its falsifier
+could not see it. But the instrument I countersign is the artefact as it now
+stands — the split plus its disclosed repair — and that artefact loses nothing and
+orphans no stamp. The loss is not hidden; it is recorded with rigor (companion
+§0.1 S4-was-false, §0.2a restoration table, §0.4 repaired falsifier, §0.5 census
+movement, B.11–B.12), caught by an independent diff against `d96a5b1`, and cured
+verbatim. That is ADR §3.3's compensating control firing exactly as written, which
+is evidence FOR the split's verifiability, not against it. Refusing an artefact
+that currently loses nothing because an earlier draft did would ignore the ADR's
+own §3.6 proposed-but-operating frame, whose whole purpose is to make lateness
+measurable rather than disqualifying. I record the sixth-edition loss as the
+standing qualification so it is not smoothed away.
+
+On (b): the posture apparatus is current law and stayed in the core; the
+`[CORRECTED · C-nn]` legend was *updated* (core:292) to send readers across the
+seam to the companion by section — apparatus adapted, not weakened. Every core
+`C-nn` stamp resolves; the four with no companion margin (C-77/80/97/123) were
+margin-less in `d96a5b1` too, so the split lost nothing for them. WARN-STAMP was
+only ever an Annex B.3 ledger row (in `d96a5b1:4961` too) and correctly moved with
+Annex B; its posture declaration ([PLANNED] stamps, §2.4b/§5.1) stayed in the core.
+
+### Actions
+
+- Re-ran falsifier 1 and `scripts/check_process_doc.sh` against the live tree.
+- Ran `git diff d96a5b1 HEAD -- docs/PROCESS.md`; classified the 1,494 removed content lines by normalised-substring then 6-gram coverage against both volumes; inspected the 199 low-coverage residual lines.
+- Enumerated the fifth edition's 50 sentinel sites; matched each into the companion; ran down the 6 exceptions individually.
+- Spot-checked the fourteen restorations at C-33 / C-82 / C-114 (fifth-edition line → companion margin → core stamp), verbatim.
+- Enumerated all 12 core `[CORRECTED · C-nn]` ids; resolved each (C-32 companion:478, C-93 companion:729; C-77/80/97/123 margin-less in `d96a5b1`).
+- Located the posture legend/grades/boundary block/§5.5 and the WARN-STAMP instrument in the current core; confirmed the posture-list audit file present.
+- Authored the verification artefact under my write scope.
+
+### Evidence
+
+- `grep -c 'SUPERSEDED — historical record' docs/PROCESS.md` → **0**; `bash scripts/check_process_doc.sh` → **`OK: process document invariants hold`** (exit 0).
+- Sentinel census (`grep -c` of the full token): `d96a5b1` → 50; `592926e:docs/PROCESS-MEMOIR.md` → 38; current companion → 52; current core → 0. Preserved-claim uses: **47 / 33 / 47** — 33 + 14 = 47.
+- `git diff --numstat d96a5b1 HEAD -- docs/PROCESS.md` → **1588 / 1496**. Line accounting: 118 trivial, 1,025 found verbatim in companion, 79 in core, 272 exact-miss → 199 low-coverage → all benign (edition scaffolding / reworded current-law / preserved-with-rewording).
+- Restorations verbatim: C-33 `d96a5b1:1276` → companion:503, core stamps 910 & 1518; C-82 `d96a5b1:2629` → companion:705, core:2942; C-114 `d96a5b1:3651` → companion:812, core:4136.
+- Posture grades present in core: `[MC]`46 `[RE]`60 `[P1]`33 `[SF]`8 `[PLANNED]`21 `[UNANCHORED]`5 `[CORRECTED]`20. Legend updated at core:292; boundary block core:129/310/344/640; §5.5 core:4296; WARN-STAMP only at companion:1319 (Annex B.3), instrument declared at core:913/1970/4208.
+- `git diff 2ed029d HEAD -- docs/PROCESS.md docs/PROCESS-MEMOIR.md` empty (files stable since the 7th edition). `git show HEAD:docs/PROCESS.md | cmp -` against my working snapshot → identical.
+- Report written: `docs/reports/audit/ADR-0022-split-verification/README.md`.
+
+### Outcome
+
+DoD **met**. **VERDICT: ACCEPT**, both sub-answers, one standing qualification.
+- **(a)** the split as it now stands (HEAD `21e7332`; stable since `2ed029d`) loses nothing against `d96a5b1` — verified by falsifier 4 and the exact 47 = 47 preserved-claim reconciliation. Qualification: the split *as first executed in `592926e`* did lose fourteen margins; disclosed, not smoothed, and cured verbatim by the 7th edition — which is why I accept the current artefact rather than refuse on the sixth edition's account.
+- **(b)** the core stamp apparatus is not weakened — it was adapted (legend crosses the seam) and every core stamp resolves; the sixth edition's transient orphaning of fourteen stamps was cured.
+
+Handoff: return to the orchestrator for commit under `Agent: auditor`, and for the
+ADR §8 acceptance act (the §7 row-2 status flip and table edit), which cites this
+entry id. I edited neither the ADR nor any packet, and staged nothing outside
+`docs/reports/audit/**`.
+
+### Open-questions
+
+- The status flip and §7 table edit are the orchestrator's act (ADR §8), not mine; row 3 (orchestrator, the acceptance itself) remains OWED. Row 1 (dv_lead) landed ACCEPT at `21e7332`.
+- A residue the companion itself names: one fifth-edition margin (`d96a5b1:4825`) sits in B.1 rather than under its Part I anchor (companion:195). It is in the volume — nothing lost — only mis-filed; recorded, not a finding that blocks.
+- **Harvest**: none due — a countersignature round is neither an `SO-` nor a phase gate (charter §8, PROTOCOL §7). Span since my last harvest declared open across `J-auditor-0028 .. J-auditor-0029` with nil yield, so the tiling shows no skipped boundary; the next harvest falls at the next `SO-`/gate I sign.
+
+### Files-in-this-commit
+- docs/reports/audit/ADR-0022-split-verification/README.md
