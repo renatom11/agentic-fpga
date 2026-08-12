@@ -119,7 +119,9 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   position:relative; background:var(--panel); transition:opacity .3s; }
 .rgroup > .glab { position:absolute; top:-.54rem; left:.5rem; background:var(--panel);
   padding:0 .32rem; font:600 .56rem 'Plex Mono',monospace; letter-spacing:.08em;
-  text-transform:uppercase; color:var(--ink-2); }
+  text-transform:uppercase; color:var(--ink-2); border:0; cursor:pointer;
+  border-radius:4px; transition:color .2s; }
+.rgroup > .glab:hover { color:var(--rx); }
 .rgroup.human { border-color:color-mix(in srgb, var(--human) 55%, var(--line)); }
 .rgroup.human > .glab { color:var(--human); }
 .rboxes { display:flex; flex-wrap:wrap; gap:.36rem; align-items:flex-start; }
@@ -141,7 +143,10 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   color:var(--human); border-color:var(--human); }
 .seatbox { border:1.4px solid var(--line); border-radius:8px; padding:.4rem .38rem .36rem;
   position:relative; flex:1 1 30%; min-width:112px; transition:opacity .3s; }
-.seatbox > .sn { font:600 .66rem 'Plex Sans',sans-serif; display:block; margin:0 0 .26rem .06rem; }
+.seatbox > .sn { font:600 .66rem 'Plex Sans',sans-serif; display:block; margin:0 0 .26rem .06rem;
+  border:0; background:none; padding:0; cursor:pointer; color:inherit; text-align:left;
+  font-family:'Plex Sans',sans-serif; transition:color .2s; }
+.seatbox > .sn:hover { color:var(--rx); }
 .chips { display:flex; gap:.26rem; flex-wrap:wrap; }
 .wsub { display:flex; gap:.24rem; flex-wrap:wrap; align-items:center; margin-top:.3rem;
   padding-top:.28rem; border-top:1px dotted var(--line); }
@@ -197,6 +202,30 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
 .wst-ISSUED, .wst-RETURNED { border-color:var(--tx); color:var(--tx);
   background:color-mix(in srgb, var(--tx) 12%, var(--panel)); }
 .jempty { font-size:.76rem; color:var(--ink-2); font-style:italic; }
+/* a box's contents at time T: rows land exactly when the beat that wrote them lands */
+.jbox { max-height:min(50vh,620px); overflow-y:auto; }
+.lent { padding:.34rem 0; border-bottom:1px dotted var(--line); }
+.lent:last-child { border-bottom:0; }
+.lhead { display:flex; gap:.4rem; align-items:baseline; flex-wrap:wrap; }
+.ln { font:700 .69rem 'Plex Mono',monospace; color:var(--rx); }
+.lde { font-size:.76rem; line-height:1.5; color:var(--ink-2); margin-top:.1rem;
+  white-space:pre-wrap; }
+.lsrc { font:500 .52rem 'Plex Mono',monospace; color:var(--ink-2); opacity:.7;
+  letter-spacing:.05em; text-transform:uppercase; margin-left:auto; }
+.pill { font:700 .55rem 'Plex Mono',monospace; letter-spacing:.07em; padding:.02rem .3rem;
+  border-radius:4px; border:1px solid var(--good); color:var(--good);
+  background:var(--goodbg); white-space:nowrap; }
+.pill.bad  { border-color:var(--bad);   color:var(--bad);
+  background:color-mix(in srgb, var(--bad) 12%, var(--panel)); }
+.pill.wait { border-color:var(--tx);    color:var(--tx);
+  background:color-mix(in srgb, var(--tx) 12%, var(--panel)); }
+.pill.gold { border-color:var(--human); color:var(--human);
+  background:color-mix(in srgb, var(--human) 14%, var(--panel)); }
+.lstat { font:600 .6rem 'Plex Mono',monospace; letter-spacing:.06em; text-transform:uppercase;
+  margin-top:.5rem; display:flex; align-items:center; gap:.35rem; color:var(--ink-2); }
+.lstat i { width:7px; height:7px; border-radius:50%; background:var(--ink-2); display:inline-block; }
+.lstat.on { color:var(--rx); } .lstat.on i { background:var(--rx); }
+.rbox b.cnt, .chip b.cnt { color:var(--rx); font-weight:700; margin-left:.12rem; }
 .detail .hint { font:500 .6rem 'Plex Mono',monospace; letter-spacing:.06em;
   color:var(--ink-2); text-transform:uppercase; }
 
@@ -243,20 +272,6 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   .agnode, .rbox, .rgroup, .chip, .seatbox, .rgate, .rci, .orbit, .buggy { transition:none; }
 }
 </style>
-<!-- site-chrome-start -->
-<style>
-.tabbar { display:flex; flex-wrap:wrap; gap:.45rem; padding:14px 16px 4px;
-  font-family:'Plex Mono',monospace; }
-.tabbar a { display:inline-block; font-size:.78rem; font-weight:600;
-  letter-spacing:.08em; text-decoration:none; color:var(--ink-2,#5c6663);
-  background:var(--panel,#ffffff); border:1.5px solid var(--line,#d3dad7);
-  border-radius:999px; padding:.45rem 1rem; }
-.tabbar a:hover { border-color:var(--rx,#0f766e); color:var(--rx,#0f766e); }
-.tabbar a.here { background:var(--rx,#0f766e); border-color:var(--rx,#0f766e);
-  color:var(--panel,#ffffff); }
-</style>
-<nav class="tabbar"><a href="index.html">OVERVIEW</a><a href="block-diagram.html">BLOCK DIAGRAM</a><a href="spec-atlas.html">SPEC ATLAS</a><a href="org-chart.html">ORG CHART</a><a href="framework.html">FRAMEWORK</a><a href="lifecycle.html" class="here">LIFECYCLE</a><a href="backlog.html">BACKLOG</a><a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">GITHUB ↗</a></nav>
-<!-- site-chrome-end -->
 </head>
 <body>
 <div class="wrap">
@@ -278,13 +293,13 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
           <p class="ptitle">The agents</p>
           <svg id="wires"></svg>
           <div class="tierc">
-            <button class="agnode human" id="ag-sponsor" data-i="sponsor">
+            <button class="agnode human" id="ag-sponsor" data-i="sponsor" data-led="sp-acts">
               <span class="nm">Sponsor</span><span class="rl">the one human</span>
             </button>
           </div>
           <div class="link"></div>
           <div class="sessions" id="sessions">
-            <button class="slab" data-i="sessions">agent sessions</button>
+            <button class="slab" data-i="sessions" data-led="sessions-log">agent sessions</button>
             <div class="orchrow">
               <button class="agnode ghost" id="ag-orch" data-i="orch">
                 <span class="nm">Orchestrator</span><span class="rl">spawns &#183; relays &#183; commits</span>
@@ -326,7 +341,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
 
         <!-- ==================== the repository ==================== -->
         <div class="repo" id="repo">
-          <button class="rlab" data-i="repo">The repository</button>
+          <button class="rlab" data-i="repo" data-led="repo-log">The repository</button>
           <button class="rgate" id="rp-gate" data-i="gate">GATE</button>
           <button class="rci" id="rp-ci" data-i="ci">CI</button>
           <div class="sweep" id="sweep"></div>
@@ -334,7 +349,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
           <div class="rgrid">
 
             <div class="rgroup" id="g-shell" style="grid-column:1/3">
-              <span class="glab">the shell &#8212; adopted, not written here</span>
+              <button class="glab" data-i="g-shell" data-grp="g-shell">the shell</button>
               <div class="rboxes">
                 <button class="rbox" id="rp-const" data-i="const">Constitution<span class="st gold" id="st-rat">RATIFIED</span></button>
                 <button class="rbox" id="rp-scripts" data-i="scripts">Enforcement scripts</button>
@@ -347,7 +362,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
             </div>
 
             <div class="rgroup human" id="g-inputs" style="grid-column:1/3">
-              <span class="glab">what the sponsor brings</span>
+              <button class="glab" data-i="g-inputs" data-grp="g-inputs">sponsor artifacts</button>
               <div class="rboxes">
                 <button class="rbox hu" id="rp-brief" data-i="brief">Braindump</button>
                 <button class="rbox hu" id="rp-refs" data-i="refs">Reference material</button>
@@ -356,36 +371,41 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
             </div>
 
             <div class="rgroup" id="g-seats" style="grid-column:1/3">
-              <span class="glab">the seats &#8212; a seat is its files</span>
+              <button class="glab" data-i="g-seats" data-grp="g-seats">the seats</button>
               <div class="rboxes">
-                <div class="seatbox" id="rp-seat-orch"><span class="sn">Orchestrator</span>
-                  <div class="chips"><button class="chip" data-i="charter-orch">charter</button>
+                <div class="seatbox" id="rp-seat-orch">
+                  <button class="sn" data-i="orch" data-jr="jr-orch" data-led="ch-orch">Orchestrator</button>
+                  <div class="chips"><button class="chip" id="ch-orch" data-i="charter-orch">charter</button>
                     <button class="chip" id="jr-orch" data-i="journal" data-base="journal">journal</button></div></div>
-                <div class="seatbox" id="rp-seat-spec"><span class="sn">Specification</span>
-                  <div class="chips"><button class="chip" data-i="charter-spec">charter</button>
+                <div class="seatbox" id="rp-seat-spec">
+                  <button class="sn" data-i="spec" data-jr="jr-spec" data-led="ch-spec">Specification</button>
+                  <div class="chips"><button class="chip" id="ch-spec" data-i="charter-spec">charter</button>
                     <button class="chip" id="jr-spec" data-i="journal" data-base="journal">journal</button></div>
-                  <div class="wsub"><span class="wl">its workers</span><button class="chip wc" data-i="charter-workers">charter</button>
+                  <div class="wsub"><span class="wl">its workers</span><button class="chip wc" data-i="charter-workers" data-led="ch-workers">charter</button>
                     <button class="chip wc" id="jr-ws1" data-i="journal" data-base="worker A">worker A</button>
                     <button class="chip wc" id="jr-ws2" data-i="journal" data-base="worker B">worker B</button></div></div>
-                <div class="seatbox" id="rp-seat-impl"><span class="sn">Implementation</span>
-                  <div class="chips"><button class="chip" data-i="charter-impl">charter</button>
+                <div class="seatbox" id="rp-seat-impl">
+                  <button class="sn" data-i="impl" data-jr="jr-impl" data-led="ch-impl">Implementation</button>
+                  <div class="chips"><button class="chip" id="ch-impl" data-i="charter-impl">charter</button>
                     <button class="chip" id="jr-impl" data-i="journal" data-base="journal">journal</button></div>
-                  <div class="wsub"><span class="wl">its workers</span><button class="chip wc" data-i="charter-workers">charter</button>
+                  <div class="wsub"><span class="wl">its workers</span><button class="chip wc" data-i="charter-workers" data-led="ch-workers">charter</button>
                     <button class="chip wc" id="jr-wi1" data-i="journal" data-base="worker A">worker A</button>
                     <button class="chip wc" id="jr-wi2" data-i="journal" data-base="worker B">worker B</button></div></div>
-                <div class="seatbox" id="rp-seat-verif"><span class="sn">Verification</span>
-                  <div class="chips"><button class="chip" data-i="charter-verif">charter</button>
+                <div class="seatbox" id="rp-seat-verif">
+                  <button class="sn" data-i="verif" data-jr="jr-verif" data-led="ch-verif">Verification</button>
+                  <div class="chips"><button class="chip" id="ch-verif" data-i="charter-verif">charter</button>
                     <button class="chip" id="jr-verif" data-i="journal" data-base="journal">journal</button></div>
-                  <div class="wsub"><span class="wl">its worker</span><button class="chip wc" data-i="charter-workers">charter</button>
+                  <div class="wsub"><span class="wl">its worker</span><button class="chip wc" data-i="charter-workers" data-led="ch-workers">charter</button>
                     <button class="chip wc" id="jr-wv1" data-i="journal" data-base="worker A">worker A</button></div></div>
-                <div class="seatbox" id="rp-seat-audit"><span class="sn">Auditor</span>
-                  <div class="chips"><button class="chip" data-i="charter-audit">charter</button>
+                <div class="seatbox" id="rp-seat-audit">
+                  <button class="sn" data-i="audit" data-jr="jr-audit" data-led="ch-audit">Auditor</button>
+                  <div class="chips"><button class="chip" id="ch-audit" data-i="charter-audit">charter</button>
                     <button class="chip" id="jr-audit" data-i="journal" data-base="journal">journal</button></div></div>
               </div>
             </div>
 
             <div class="rgroup" id="g-spec">
-              <span class="glab">specification</span>
+              <button class="glab" data-i="g-spec" data-grp="g-spec">specification</button>
               <div class="rboxes">
                 <button class="rbox" id="rp-spec" data-i="specdoc">Spec<span class="st gold" id="st-spec">SIGNED</span></button>
                 <button class="rbox" id="rp-reqs" data-i="reqs">Numbered requirements</button>
@@ -393,14 +413,14 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
             </div>
 
             <div class="rgroup" id="g-prod">
-              <span class="glab">the product</span>
+              <button class="glab" data-i="g-prod" data-grp="g-prod">the product</button>
               <div class="rboxes">
                 <button class="rbox big" id="rp-rtl" data-i="rtl">RTL source</button>
               </div>
             </div>
 
             <div class="rgroup" id="g-trail" style="grid-column:1/3">
-              <span class="glab">the paper trail &#8212; work travels as files, never as messages</span>
+              <button class="glab" data-i="g-trail" data-grp="g-trail">the paper trail</button>
               <div class="rboxes">
                 <button class="rbox" id="rp-wo" data-i="wo" data-wo="Work orders">Work orders<span class="st" id="st-wo">ISSUED</span></button>
                 <button class="rbox" id="rp-dr" data-i="dr">Decision records</button>
@@ -411,7 +431,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
             </div>
 
             <div class="rgroup" id="g-ver">
-              <span class="glab">verification</span>
+              <button class="glab" data-i="g-ver" data-grp="g-ver">verification</button>
               <div class="rboxes">
                 <button class="rbox" id="rp-ap" data-i="ap">Attack plans</button>
                 <button class="rbox" id="rp-tb" data-i="tb">Testbenches</button>
@@ -420,7 +440,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
             </div>
 
             <div class="rgroup" id="g-mem">
-              <span class="glab">institutional memory</span>
+              <button class="glab" data-i="g-mem" data-grp="g-mem">institutional memory</button>
               <div class="rboxes">
                 <button class="rbox" id="rp-museum" data-i="museum">Failure museum</button>
                 <button class="rbox" id="rp-camp" data-i="camp">Campaign seals<span class="st" id="st-seal">&#128274;</span></button>
@@ -485,10 +505,10 @@ const $ = id => document.getElementById(id);
 const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 const BEATS = [
- {ph:'ADOPT', t:0, d:5, bt:'A 10G Ethernet subsystem built by agents',
+ {id:'target', ph:'ADOPT', t:0, d:5, bt:'A 10G Ethernet subsystem built by agents',
   ax:'The design target is a 10 Gigabit Ethernet subsystem: an XGMII MAC with ARP, IPv4 and UDP paths, specified, implemented and verified by AI agents under one human sponsor. The agents keep no state between sessions, so no design context survives in an agent\'s memory. The organization has to exist as files in the repository before any RTL is written.',
   acts:[]},
- {ph:'ADOPT', t:5, d:7, bt:'The framework is adopted before project detail',
+ {id:'shell', ph:'ADOPT', t:5, d:7, bt:'The framework is adopted before project detail',
   ax:'The framework arrives whole: a commit script that refuses rule-breaking changes, a CI job that re-verifies the full commit history on every push, a self-test that constructs a violating commit for each rule, and empty templates for everything else. None of it is written for this project. It is adopted rather than rebuilt, so the enforcement cannot drift from the version that was tested.',
   acts:[{k:'tok',f:'@left',to:'rp-scripts',kind:'kit',s:.05,e:.5},
         {k:'born',w:'g-shell',s:.3},
@@ -498,7 +518,7 @@ const BEATS = [
         {k:'born',w:'rp-gate',s:.7},{k:'born',w:'rp-ci',s:.74},
         {k:'born',w:'g-seats',s:.78},
         {k:'sweep',s:.8,e:1}]},
- {ph:'ADOPT', t:12, d:6, bt:'The founding agent fills in the constitution',
+ {id:'found', ph:'ADOPT', t:12, d:6, bt:'The founding agent fills in the constitution',
   ax:'One session opens the template and completes it: which seats exist, the write scope of each, and the thresholds at which a problem goes to the sponsor. That session becomes the orchestrator seat. The rules it wrote bind it too, and from its next commit onward the commit script it configured checks its work like any other seat\'s.',
   acts:[{k:'spawn',w:'ag-orch',s:.05},
         {k:'tok',f:'ag-orch',to:'rp-const',kind:'write',s:.2,e:.6,
@@ -506,23 +526,23 @@ const BEATS = [
         {k:'flash',w:'rp-const',s:.6,e:.85},
         {k:'tok',f:'ag-orch',to:'rp-seat-spec',kind:'write',s:.55,e:.92,
          ent:'Charters written for every seat; journals opened empty'}]},
- {ph:'ADOPT', t:18, d:5, bt:'The sponsor ratifies the constitution',
+ {id:'ratify', ph:'ADOPT', t:18, d:5, bt:'The sponsor ratifies the constitution',
   ax:'The founding agent wrote its own permissions into the constitution, so the organization that produced it cannot accept it. The sponsor reads the rules, the seats and the write scopes, and signs. No work that follows is valid without that signature.',
   acts:[{k:'tok',f:'rp-const',to:'ag-sponsor',kind:'read',s:.05,e:.4},
         {k:'tok',f:'ag-sponsor',to:'rp-const',kind:'gold',s:.5,e:.82},
         {k:'stamp',w:'st-rat',s:.85},{k:'flash',w:'rp-const',s:.85,e:1}]},
- {ph:'COMMISSION', t:23, d:6, bt:'The sponsor\'s brief lands in the repository',
+ {id:'brief', ph:'COMMISSION', t:23, d:6, bt:'The sponsor\'s brief lands in the repository',
   ax:'The sponsor states the intent in their own words: a UDP receive path fast enough to sit under a market-data feed handler, latency prioritised over area, and the standards the design must obey. The text is committed as written. When someone later asks why REQ-004 fixes 10 000 consecutive minimum-length frames as the stress case, the answer is a sentence in this file.',
   acts:[{k:'born',w:'g-inputs',s:.3},
         {k:'tok',f:'ag-sponsor',to:'rp-brief',kind:'gold',s:.1,e:.55},
         {k:'born',w:'rp-brief',s:.5},{k:'flash',w:'rp-brief',s:.55,e:.9}]},
- {ph:'COMMISSION', t:29, d:5, bt:'Standards, a reference design and the binding limits',
+ {id:'refs', ph:'COMMISSION', t:29, d:5, bt:'Standards, a reference design and the binding limits',
   ax:'The brief arrives with the material the project must build against: the IEEE 802.3 clauses that govern the MAC, and an open-source Verilog receive module vendored at a pinned upstream commit. The limits in force in Phase 1 are architectural: one 64-bit XGMII word per cycle, a pinned latency constant per module, and no PMA, PCS, serdes or 64b/66b logic. The FPGA part is deliberately not chosen yet.',
   acts:[{k:'tok',f:'ag-sponsor',to:'rp-refs',kind:'gold',s:.05,e:.4},
         {k:'born',w:'rp-refs',s:.35},
         {k:'tok',f:'ag-sponsor',to:'rp-cons',kind:'gold',s:.4,e:.72},
         {k:'born',w:'rp-cons',s:.68}]},
- {ph:'COMMISSION', t:34, d:7, bt:'The organization is audited before any RTL',
+ {id:'audit0', ph:'COMMISSION', t:34, d:7, bt:'The organization is audited before any RTL',
   ax:'The auditor puts the founding commits on trial and files a CRITICAL finding: the protocol\'s §3 contradicts its §6, so the auditor cannot execute the work-order lifecycle it is assigned. The finding blocks the founding gate. It is dispositioned by decision record, re-verified by the auditor, and the gate closes only then.',
   acts:[{k:'spawn',w:'ag-audit',s:.05},
         {k:'tok',f:'rp-const',to:'ag-audit',kind:'read',s:.15,e:.38},
@@ -532,23 +552,23 @@ const BEATS = [
          ent:'Audit of the founding itself: one CRITICAL, gate blocked until re-verified'},
         {k:'flash',w:'rp-gates',s:.8,e:1},
         {k:'off',w:'ag-audit',s:.95}]},
- {ph:'SPECIFY', t:41, d:4, bt:'The specification lead is spawned and briefed',
+ {id:'speclead', ph:'SPECIFY', t:41, d:4, bt:'The specification lead is spawned and briefed',
   ax:'The orchestrator spawns the specification lead; it is the only seat that may spawn another. The new session has no memory of any previous one, so its briefing is entirely files: its own charter, the sponsor\'s brief, the reference material, and the protocol that will grade every commit it makes.',
   acts:[{k:'spawn',w:'ag-spec',s:.15},
         {k:'tok',f:'rp-seat-spec',to:'ag-spec',kind:'read',s:.35,e:.8}]},
- {ph:'SPECIFY', t:45, d:6, bt:'Ambiguities go back to the sponsor',
+ {id:'ask', ph:'SPECIFY', t:45, d:6, bt:'Ambiguities go back to the sponsor',
   ax:'Where the brief is ambiguous the lead asks instead of assuming. The receive latency budget is one such question: the sponsor delegates the number, and the specification pins the measurement points — the XGMII word carrying the start character to the first word of that frame\'s UDP payload, at most 24 cycles. The answer is committed beside the question that prompted it.',
   acts:[{k:'tok',f:'rp-brief',to:'ag-spec',kind:'read',s:.03,e:.28},
         {k:'tok',f:'rp-refs',to:'ag-spec',kind:'read',s:.12,e:.36},
         {k:'tok',f:'ag-spec',to:'ag-sponsor',kind:'direct',s:.4,e:.6},
         {k:'tok',f:'ag-sponsor',to:'ag-spec',kind:'direct',s:.62,e:.82}]},
- {ph:'SPECIFY', t:51, d:6, bt:'Twenty module contracts define the decomposition',
+ {id:'contracts', ph:'SPECIFY', t:51, d:6, bt:'Twenty module contracts define the decomposition',
   ax:'The design is partitioned into twenty modules — XGMII receive and transmit, CRC-32, the ARP, IPv4 and UDP paths, arbitration, the top level — and each gets a written interface contract that a neighbouring module can be built against without reading its internals. The partition is a document like any other, so it is reviewed before anything is implemented.',
   acts:[{k:'born',w:'g-spec',s:.55},
         {k:'tok',f:'ag-spec',to:'rp-spec',kind:'write',s:.2,e:.7,
          ent:'Architecture: twenty module contracts, every interface named'},
         {k:'born',w:'rp-spec',s:.65},{k:'flash',w:'rp-spec',s:.7,e:1}]},
- {ph:'SPECIFY', t:57, d:6, bt:'Requirements are numbered so tests can cite them',
+ {id:'reqs', ph:'SPECIFY', t:57, d:6, bt:'Requirements are numbered so tests can cite them',
   ax:'The lead writes the requirements in batches, a hundred and ten of them, each carrying a permanent number. The number is an address: REQ-004 is the line-rate invariant, 10 000 consecutive 64-octet frames at start-to-start spacings alternating 10 and 11 cycles. A test cites REQ-004, and the verdict on that test traces through the requirement to the sentence in the brief that asked for it.',
   acts:[{k:'spawn',w:'ag-ws1',s:.05},{k:'spawn',w:'ag-ws2',s:.1},
         {k:'tok',f:'ag-ws1',to:'rp-reqs',kind:'write',s:.25,e:.55,
@@ -558,7 +578,7 @@ const BEATS = [
         {k:'born',w:'rp-reqs',s:.5},
         {k:'tok',f:'rp-reqs',to:'ag-spec',kind:'read',s:.66,e:.86},
         {k:'off',w:'ag-ws1',s:.9},{k:'off',w:'ag-ws2',s:.94}]},
- {ph:'SPECIFY', t:63, d:6, bt:'Every requirement is checked for testability',
+ {id:'testability', ph:'SPECIFY', t:63, d:6, bt:'Every requirement is checked for testability',
   ax:'The verification lead is seated before any implementation exists and asks one question of every row: can a test fail this as written. The review returns sixteen diffs; a second work order applies them and a re-review closes all sixteen. Rows no test can fail are repaired while the cost of repair is a document edit.',
   acts:[{k:'spawn',w:'ag-verif',s:.05},
         {k:'tok',f:'rp-reqs',to:'ag-verif',kind:'read',s:.2,e:.45},
@@ -569,7 +589,7 @@ const BEATS = [
         {k:'tok',f:'ag-spec',to:'rp-reqs',kind:'write',s:.86,e:1,
          ent:'Untestable requirements rewritten in place; each disposition answered'},
         {k:'flash',w:'rp-reqs',s:.9,e:1}]},
- {ph:'SPECIFY', t:69, d:6, bt:'Batches are bounced before they freeze',
+ {id:'specbounce', ph:'SPECIFY', t:69, d:6, bt:'Batches are bounced before they freeze',
   ax:'A specification freezes only with a green interface-check run at the freeze SHA and the verification lead\'s testability countersignature. Batch D does not get one on first reading — it is withheld, and issued only after a re-review — and batch F freezes only after a defect is repaired in a follow-up work order. Both rounds stay in the gate record.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-spec',kind:'write',s:.05,e:.35,
          ent:'Spec batch refused: sixteen defects, each with the text that must change'},
@@ -577,13 +597,13 @@ const BEATS = [
         {k:'tok',f:'rp-spec',to:'ag-spec',kind:'read',s:.4,e:.6},
         {k:'tok',f:'ag-spec',to:'rp-spec',kind:'write',s:.65,e:.92,
          ent:'All sixteen applied; the refused clauses re-reviewed one by one'}]},
- {ph:'SPECIFY', t:75, d:5, bt:'The specification is frozen at a sponsor gate',
+ {id:'freeze', ph:'SPECIFY', t:75, d:5, bt:'The specification is frozen at a sponsor gate',
   ax:'The sponsor signs the spec-freeze gate with twenty of twenty specifications FROZEN and every countersignature in place. A frozen contract can then change only by amendment carried by a decision record. From this point every implementation and every test cites a frozen requirement line.',
   acts:[{k:'tok',f:'rp-spec',to:'ag-orch',kind:'read',s:.05,e:.3},
         {k:'tok',f:'ag-orch',to:'ag-sponsor',kind:'direct',s:.34,e:.58},
         {k:'tok',f:'ag-sponsor',to:'rp-spec',kind:'gold',s:.62,e:.85},
         {k:'stamp',w:'st-spec',s:.9}]},
- {ph:'BUILD & VERIFY', t:80, d:5, bt:'One module, two independent work orders',
+ {id:'pair', ph:'BUILD & VERIFY', t:80, d:5, bt:'One module, two independent work orders',
   ax:'The orchestrator issues the receive module\'s work as a pair: one order to implement it, one to verify it. Each order names its spec sections, its deliverables and its boundaries. The two assignees do not coordinate, and the frozen specification is their only shared reference.',
   acts:[{k:'tok',f:'rp-spec',to:'ag-orch',kind:'read',s:.02,e:.25},
         {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.3,e:.7,wo:{id:'WO-001',to:'implementation',st:'ISSUED',note:'Implement the receive module to its frozen contract'},
@@ -591,19 +611,19 @@ const BEATS = [
         {k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.38,e:.78,wo:{id:'WO-002',to:'verification',st:'ISSUED',note:'Attack the receive module\u2019s contract, independently'},
          ent:'WO-002 issued: attack the receiver’s contract, independently'},
         {k:'born',w:'rp-wo',s:.65},{k:'flash',w:'rp-wo',s:.7,e:1}]},
- {ph:'BUILD & VERIFY', t:85, d:5, bt:'Implementation and verification hold different paths',
+ {id:'paths', ph:'BUILD & VERIFY', t:85, d:5, bt:'Implementation and verification hold different paths',
   ax:'The two lines share the frozen specification and nothing else. The implementation lead\'s write scope is libs/**; the verification lead\'s is test/**, and the commit script\'s path-isolation check refuses any staged path outside the committing seat\'s scope. The seat that implements a module cannot write the tests that grade it.',
   acts:[{k:'spawn',w:'ag-impl',s:.08},
         {k:'tok',f:'rp-wo',to:'ag-impl',kind:'read',s:.3,e:.68},
         {k:'tok',f:'rp-wo',to:'ag-verif',kind:'read',s:.3,e:.68}]},
- {ph:'BUILD & VERIFY', t:90, d:6, bt:'The attack plan enumerates ways to be wrong',
+ {id:'attack', ph:'BUILD & VERIFY', t:90, d:6, bt:'The attack plan enumerates ways to be wrong',
   ax:'Before any testbench is written, verification enumerates the ways the receive module could be wrong: a terminate character in each of the eight lanes, a start in lane 4 while the previous frame is still draining, an error character inside a frame, a corrupted frame whose FCS still checks. Each row names the observation that would expose the fault. No code or functional coverage is collected; the measure is rows discharged.',
   acts:[{k:'born',w:'g-ver',s:.35},
         {k:'tok',f:'rp-spec',to:'ag-verif',kind:'read',s:.05,e:.3},
         {k:'tok',f:'ag-verif',to:'rp-ap',kind:'write',s:.35,e:.75,
          ent:'Attack plan opened: rows for framing, corruption, timing, backpressure'},
         {k:'born',w:'rp-ap',s:.7},{k:'flash',w:'rp-ap',s:.75,e:1}]},
- {ph:'BUILD & VERIFY', t:96, d:6, bt:'The testbench worker is not given the RTL',
+ {id:'blindbench', ph:'BUILD & VERIFY', t:96, d:6, bt:'The testbench worker is not given the RTL',
   ax:'A worker writes the bench from the specification and the attack plan. Its packet omits the RTL by design, so the tests cannot be written to agree with the implementation. The verification lead builds its reference model from the same frozen text, and the protocol requires that model to agree with an external anchor before it may judge RTL.',
   acts:[{k:'spawn',w:'ag-wv1',s:.05},
         {k:'tok',f:'ag-verif',to:'rp-model',kind:'write',s:.2,e:.5,
@@ -612,7 +632,7 @@ const BEATS = [
         {k:'tok',f:'ag-wv1',to:'rp-tb',kind:'write',s:.45,e:.8,
          ent:'Benches derived from attack rows; the packet contains no RTL'},
         {k:'born',w:'rp-tb',s:.75}]},
- {ph:'BUILD & VERIFY', t:102, d:7, bt:'The receive module is implemented',
+ {id:'build', ph:'BUILD & VERIFY', t:102, d:7, bt:'The receive module is implemented',
   ax:'The module is implemented as a 64-bit datapath, with frame delineation from the XGMII start and terminate characters at both start lanes and CRC-32 across the frame. The FCS is removed by where tkeep and tlast fall in a fixed-delay cut-through pipeline, never by holding octets back to the end of a frame. That is what makes the pinned latency constant and frame extraction compatible. Every commit carries its author\'s journal entry, and the commit script refuses one without it.',
   acts:[{k:'spawn',w:'ag-wi1',s:.03},{k:'spawn',w:'ag-wi2',s:.08},
         {k:'born',w:'g-prod',s:.3},
@@ -623,16 +643,16 @@ const BEATS = [
          ent:'Checksum verification at line rate; every cited requirement quoted'},
         {k:'tok',f:'ag-wi1',to:'rp-rtl',kind:'write',s:.62,e:.9,
          ent:'Error propagation: corrupt frames marked, never silently dropped'}]},
- {ph:'BUILD & VERIFY', t:109, d:5, bt:'The commit script refuses the orchestrator',
+ {id:'refused', ph:'BUILD & VERIFY', t:109, d:5, bt:'The commit script refuses the orchestrator',
   ax:'A commit is refused, and it is the orchestrator\'s own. It staged a rename while its journal entry declared a single path; the set-equality check compares the declared file list against the staged set, and a rename stages two. The seat with the widest write scope is blocked by the script it configured, because the check reads the staged diff and the seat\'s identity does not enter it.',
   acts:[{k:'tok',f:'ag-orch',to:'rp-gate',kind:'refused',s:.15,e:.85}]},
- {ph:'BUILD & VERIFY', t:114, d:6, bt:'CI checks determinism and the full history',
+ {id:'ci', ph:'BUILD & VERIFY', t:114, d:6, bt:'CI checks determinism and the full history',
   ax:'The RTL is Hardcaml elaborated to Verilog, so CI generates it twice — the second run in a separate process from a scratch working directory — and requires the two trees to match byte for byte. The same step then appends one byte to a copy and confirms the comparator reddens, so an inert check cannot pass for a green one. A second workflow re-runs every protocol rule across the entire commit history, because an append-only guarantee cannot be re-checked incrementally.',
   acts:[{k:'flash',w:'rp-ci',s:.1,e:.5},
         {k:'sweep',s:.15,e:.6},
         {k:'flash',w:'rp-rtl',s:.55,e:.85},
         {k:'sweep',s:.62,e:.98}]},
- {ph:'BUILD & VERIFY', t:120, d:6, bt:'The first bench packet is bounced',
+ {id:'bounce1', ph:'BUILD & VERIFY', t:120, d:6, bt:'The first bench packet is bounced',
   ax:'The first receive-module bench returns with its eleven rows accepted on substance and three defects listed: an unread record field that will fail the build under warning 69, a second mechanical defect, and one coverage gap. Revision two is accepted, and that acceptance is then withdrawn — the lead re-reads what it had cleared on a hand scan and puts the packet back to BOUNCED.',
   acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.3,wo:{id:'WO-001',st:'RETURNED',note:'Worker return submitted for review'},
          ent:'Return submitted for the checksum unit'},
@@ -641,7 +661,7 @@ const BEATS = [
          ent:'BOUNCED: six defects, each with the line and the spec clause it violates'},
         {k:'tok',f:'rp-wo',to:'ag-wi2',kind:'read',s:.78,e:.95},
         {k:'flash',w:'rp-wo',s:.5,e:.9}]},
- {ph:'BUILD & VERIFY', t:126, d:5, bt:'The sixth round closes the work order',
+ {id:'accept', ph:'BUILD & VERIFY', t:126, d:5, bt:'The sixth round closes the work order',
   ax:'Later rounds find a bench driving every schedule backwards, then four more bench defects with zero convictions of the RTL. Round six adjudicates the outstanding experiment: the prediction is falsified, the defect is confirmed, and BUG-0001 is opened against the module. The packet reaches ACCEPT at round six with every round still readable inside it.',
   acts:[{k:'tok',f:'ag-wi2',to:'rp-wo',kind:'write',s:.05,e:.35,wo:{id:'WO-001',st:'RETURNED',note:'Second return: all six defect items answered'},
          ent:'Second return: all six defect items answered with evidence'},
@@ -649,14 +669,14 @@ const BEATS = [
         {k:'tok',f:'ag-impl',to:'rp-wo',kind:'write',s:.62,e:.9,wo:{id:'WO-001',st:'ACCEPTED',note:'Accepted; the bounce and its answers stay in the packet'},
          ent:'ACCEPTED; the bounce and its answers preserved in the packet'},
         {k:'flash',w:'rp-wo',s:.85,e:1}]},
- {ph:'BUILD & VERIFY', t:131, d:6, bt:'An interface question is settled by decision record',
+ {id:'dr', ph:'BUILD & VERIFY', t:131, d:6, bt:'An interface question is settled by decision record',
   ax:'A frozen interface leaves a question open: the header records carry valid and no ready, so a transmit-path module that must be able to refuse a frame has no acceptance event. The specification lead rules in writing — the header and the first payload word are offered together and held until that word is accepted — and the record keeps both rejected alternatives with the grounds they lost on.',
   acts:[{k:'tok',f:'ag-impl',to:'ag-spec',kind:'direct',s:.05,e:.28},
         {k:'tok',f:'ag-verif',to:'ag-spec',kind:'direct',s:.12,e:.35},
         {k:'tok',f:'ag-spec',to:'rp-dr',kind:'write',s:.45,e:.8,
          ent:'Decision record: stall semantics at the seam; two readings, one ruling, grounds preserved'},
         {k:'born',w:'rp-dr',s:.75},{k:'flash',w:'rp-dr',s:.8,e:1}]},
- {ph:'BUILD & VERIFY', t:137, d:6, bt:'A length sweep convicts the receive module',
+ {id:'sweep', ph:'BUILD & VERIFY', t:137, d:6, bt:'A length sweep convicts the receive module',
   ax:'A directed bench sweeps frame lengths 64 through 71 at both start lanes and prints delivered octets against expected. Lengths 65 to 68 over-deliver — 62 against 61, 64 against 62, 66 against 63, 68 against 64 — and 69 to 71 are clean: the module emits k − 4 extra octets whenever a final word carries more than four delivered octets. It is filed as BUG-0001 at CRITICAL, and the fix is confirmed at a named CI run.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-find',kind:'write',s:.05,e:.35,
          ent:'MAJOR: state persists across abort; the next frame inherits it'},
@@ -664,44 +684,44 @@ const BEATS = [
         {k:'tok',f:'ag-impl',to:'rp-rtl',kind:'write',s:.65,e:.9,
          ent:'Abort path cleared; the failing case now a permanent regression test'},
         {k:'flash',w:'rp-find',s:.85,e:1}]},
- {ph:'BUILD & VERIFY', t:143, d:7, bt:'Co-simulation against a vendored reference',
+ {id:'cosim', ph:'BUILD & VERIFY', t:143, d:7, bt:'Co-simulation against a vendored reference',
   ax:'The receive module is co-simulated against axis_xgmii_rx_64 from verilog-ethernet, vendored at a pinned upstream commit and written by no agent here. Two frames have been compared end to end, word by word — tkeep, tlast, tuser and octets — under Icarus Verilog in its own CI job, with no divergence. Widening the stimulus is an open item. The reference implements no frame-length logic, so the runt and oversize requirements rest on directed tests.',
   acts:[{k:'tok',f:'rp-refs',to:'rp-model',kind:'read',s:.05,e:.3},
         {k:'flash',w:'rp-model',s:.3,e:.6},{k:'flash',w:'rp-rtl',s:.35,e:.65},
         {k:'tok',f:'ag-verif',to:'rp-tb',kind:'write',s:.55,e:.85,
          ent:'Co-simulation green: frame-for-frame agreement with the reference implementation'},
         {k:'sweep',s:.7,e:1}]},
- {ph:'PROVE', t:150, d:6, bt:'The auditor re-runs the recorded evidence',
+ {id:'replay', ph:'PROVE', t:150, d:6, bt:'The auditor re-runs the recorded evidence',
   ax:'The auditor re-runs commands other seats recorded as evidence and compares the result against the claim. One figure does not reproduce: the claim that the same 8,505 lines of bench movement sit under all 61 kills measures five different figures at the five campaign bases, and 41 lines in one file at the last four. The auditor\'s write scope covers its own reports, so it files the finding and cannot repair it.',
   acts:[{k:'spawn',w:'ag-audit',s:.05},
         {k:'tok',f:'jr-impl',to:'ag-audit',kind:'read',s:.2,e:.45},
         {k:'tok',f:'jr-verif',to:'ag-audit',kind:'read',s:.35,e:.6},
         {k:'tok',f:'ag-audit',to:'rp-aud',kind:'alert',s:.65,e:.9,
          ent:'Evidence replay: two recorded commands failed to reproduce; finding filed'}]},
- {ph:'PROVE', t:156, d:5, bt:'Predictions are sealed before any defect exists',
+ {id:'seal', ph:'PROVE', t:156, d:5, bt:'Predictions are sealed before any defect exists',
   ax:'Before a campaign runs, the verification lead commits its predictions as a file: which bench unit reddens for each seeded class, frozen against the SHA a green control run executed, and frozen before any diff exists. A withheld result that is not a committed artefact counts as a claim and not a seal. Scoring against a prediction made in advance keeps the pass criterion from being set after the result is known.',
   acts:[{k:'born',w:'g-mem',s:.3},
         {k:'tok',f:'ag-verif',to:'rp-camp',kind:'write',s:.1,e:.6,
          ent:'SEALED: thirteen defect classes predicted, including two expected misses'},
         {k:'born',w:'rp-camp',s:.55},{k:'stamp',w:'st-seal',s:.7},
         {k:'flash',w:'rp-camp',s:.6,e:1}]},
- {ph:'PROVE', t:161, d:7, bt:'Seeded defects are authored blind',
+ {id:'seed', ph:'PROVE', t:161, d:7, bt:'Seeded defects are authored blind',
   ax:'The auditor authors one defect per class against a pinned base SHA: the oversize threshold off by one, error_bad_fcs pulsed for a truncated frame, an oversize frame truncated correctly and never reported. It works from the specification and the RTL and opens no file under test/, so it does not know how many bench units exist or what they assert. Each diff sits on its own never-merge branch, marked at its own site.',
   acts:[{k:'born',w:'x-iso',s:.15},
         {k:'tok',f:'ag-audit',to:'x-iso',kind:'bug',s:.3,e:.55},{k:'bug',w:'bug1',s:.55},
         {k:'tok',f:'ag-audit',to:'x-iso',kind:'bug',s:.5,e:.72},{k:'bug',w:'bug2',s:.72},
         {k:'tok',f:'ag-audit',to:'x-iso',kind:'bug',s:.68,e:.9},{k:'bug',w:'bug3',s:.9}]},
- {ph:'PROVE', t:168, d:6, bt:'Ten campaigns, scored in five columns',
+ {id:'score', ph:'PROVE', t:168, d:6, bt:'Ten campaigns, scored in five columns',
   ax:'Each seeded class is run against the full regression and scored against the seal. The class-based era closes at 63 sealed, 61 killed, 1 survived, 0 green-by-blindness, 1 void, and the columns sum to 63; four earlier campaigns killed 15 of 15. The tally is never folded into a ratio, because a rate erases the two columns that say the test was not a real test.',
   acts:[{k:'flash',w:'x-iso',s:.05,e:.45},
         {k:'tok',f:'x-iso',to:'rp-camp',kind:'read',s:.5,e:.75},
         {k:'flash',w:'rp-camp',s:.75,e:1}]},
- {ph:'PROVE', t:174, d:6, bt:'One class survives every unit in the suite',
+ {id:'survivor', ph:'PROVE', t:174, d:6, bt:'One class survives every unit in the suite',
   ax:'G-c4 seeds an ungated Discard state and survives all twenty-five bench units. The cause sits in the attack plan\'s own numbers: its rows place the injected character 100 octets past the truncation point, while the epoch it had to land in is 82 octets wide, so it overshoots by nineteen. The gap was in the plan the tests were written from, and the mutation is what exposed it.',
   acts:[{k:'flash',w:'x-iso',s:.05,e:.5},
         {k:'flash',w:'rp-camp',s:.3,e:.7},
         {k:'tok',f:'x-iso',to:'ag-verif',kind:'read',s:.55,e:.85}]},
- {ph:'PROVE', t:180, d:6, bt:'The gap is closed and proved by replay',
+ {id:'gapclose', ph:'PROVE', t:180, d:6, bt:'The gap is closed and proved by replay',
   ax:'Two new rows drive the epoch the old ones missed. The unmodified G-c4 diff is then replayed against the extended suite on a throwaway branch: CI run 30852220315, red, with M03-G8 the only failing unit of twenty-seven. The branch never merges. The campaign\'s survived column stays at one, because a score is what that campaign measured and is never retro-edited.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-ap',kind:'write',s:.05,e:.32,
          ent:'New attack row: the gap-timing axis the survivor exposed'},
@@ -709,20 +729,20 @@ const BEATS = [
          ent:'Bench extended along the missed axis; survivor re-run and killed'},
         {k:'flash',w:'rp-tb',s:.6,e:.85},
         {k:'gone',w:'x-iso',s:.9}]},
- {ph:'PROVE', t:186, d:5, bt:'A critical finding routes straight to the sponsor',
+ {id:'critical', ph:'PROVE', t:186, d:5, bt:'A critical finding routes straight to the sponsor',
   ax:'The auditor grades one finding CRITICAL and files it against the verification lead\'s reasoning: an equivalence proof whose stated tightest case cannot exist. That class reaches the sponsor verbatim, and the orchestrator that spawned the auditor may not summarise it. The finding names in advance the one run that would refute it, and is withdrawn in full when that run comes back green.',
   acts:[{k:'tok',f:'ag-audit',to:'ag-sponsor',kind:'alert',s:.15,e:.75}]},
- {ph:'GATE', t:191, d:5, bt:'Fourteen criteria stand between the module and done',
+ {id:'so1', ph:'GATE', t:191, d:5, bt:'Fourteen criteria stand between the module and done',
   ax:'The sign-off packet lists fourteen criteria: the attack plan preceding the first test, every requirement hook mapped, the suite green at the sign-off SHA on a named run id, the line-rate stress at 10 000 frames, the mutation tally in five columns, the evidence reproducible. Round two scores twelve met and two not met, and the verdict is one token: FAIL.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-so',kind:'write',s:.15,e:.6,
          ent:'Sign-off round one: FAIL — two of fourteen criteria unmet, named'},
         {k:'born',w:'rp-so',s:.55},{k:'flash',w:'rp-so',s:.6,e:1}]},
- {ph:'GATE', t:196, d:5, bt:'Round three fails on a new ground',
+ {id:'so2', ph:'GATE', t:196, d:5, bt:'Round three fails on a new ground',
   ax:'Round three clears one of the two criteria and fails again on the other, on a ground the previous round could not reach. Round four passes all fourteen at a stated SHA, each criterion carrying the commands that produce its result. Both failing rounds are preserved beneath the passing one, unedited, and no superseded statement is rewritten into its own outcome.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-so',kind:'write',s:.15,e:.6,
          ent:'Sign-off round two: PASS, fourteen of fourteen, reproduction commands attached'},
         {k:'flash',w:'rp-so',s:.6,e:1}]},
- {ph:'GATE', t:201, d:6, bt:'The lessons harvest blocks the sign-off',
+ {id:'harvest', ph:'GATE', t:201, d:6, bt:'The lessons harvest blocks the sign-off',
   ax:'A gate is not passed while any box of the lessons-harvest block is unchecked. The verification lead walks its own journal from the first entry to the 165th: 98 bankings, 95 distinct candidates, nine war stories, each recorded with the criterion it failed. Four of the five persistent-journal seats had not harvested at all, and that is the criterion that stayed NOT MET across two rounds.',
   acts:[{k:'tok',f:'jr-spec',to:'ag-spec',kind:'read',s:.05,e:.3},
         {k:'tok',f:'jr-impl',to:'ag-impl',kind:'read',s:.15,e:.4},
@@ -730,7 +750,7 @@ const BEATS = [
         {k:'tok',f:'ag-impl',to:'rp-museum',kind:'write',s:.55,e:.8,
          ent:'Harvest: the abort-state class generalized into a lesson any project can use'},
         {k:'born',w:'rp-museum',s:.75},{k:'flash',w:'rp-museum',s:.8,e:1}]},
- {ph:'GATE', t:207, d:6, bt:'The gate file is open and says so',
+ {id:'gate', ph:'GATE', t:207, d:6, bt:'The gate file is open and says so',
   ax:'A signature on a gate checklist is a reference to the signing seat\'s own journal entry, transcribed by the orchestrator, and no box is checked by its author. The module-ready gate is open: one Phase-1 module carries a PASS sign-off and nineteen do not, stated in the file\'s first line. The checklist was written before its evidence arrived.',
   acts:[{k:'tok',f:'ag-impl',to:'rp-gates',kind:'write',s:.05,e:.28,
          ent:'Gate signed: implementation, citing the sign-off and the repaired finding'},
@@ -740,12 +760,12 @@ const BEATS = [
          ent:'Gate countersigned; one caveat recorded, not waived'},
         {k:'tok',f:'ag-sponsor',to:'rp-gates',kind:'gold',s:.62,e:.85},
         {k:'flash',w:'rp-gates',s:.85,e:1}]},
- {ph:'GATE', t:213, d:5, bt:'That was one module of twenty',
+ {id:'next', ph:'GATE', t:213, d:5, bt:'That was one module of twenty',
   ax:'The paired work orders, the blind bench, the ten mutation campaigns and the sign-off that failed twice all covered the receive module. Seven of the twenty modules have RTL, and one carries a PASS sign-off. The transmit module\'s campaign is manifested — thirteen classes, one diff each — with no branch cut and no run scored.',
   acts:[{k:'tok',f:'ag-orch',to:'rp-wo',kind:'write',s:.2,e:.6,wo:{id:'WO-003',to:'implementation',st:'ISSUED',note:'The transmit module \u2014 the loop begins again'},
          ent:'Next pair issued: the transmitter — the loop begins again'},
         {k:'flash',w:'rp-board',s:.55,e:.9},{k:'flash',w:'rp-wo',s:.6,e:.95}]},
- {ph:'GATE', t:218, d:7, bt:'The sessions end; the repository remains',
+ {id:'end', ph:'GATE', t:218, d:7, bt:'The sessions end; the repository remains',
   ax:'Every session that did this work has ended and its context is gone. The repository holds more than six hundred commits, each paired with the journal entry its author wrote for it, with every refusal, bounce, seeded class, withdrawn finding and signature still readable. A new team, human or agent, can reconstruct the state of the project from the files.',
   acts:[{k:'off',w:'ag-wi1',s:.15},{k:'off',w:'ag-wi2',s:.2},{k:'off',w:'ag-wv1',s:.25},
         {k:'off',w:'ag-spec',s:.35},{k:'off',w:'ag-impl',s:.4},{k:'off',w:'ag-verif',s:.45},
@@ -934,6 +954,19 @@ const BASE_RATE = 0.42;   // timeline-seconds advanced per real second at 1x
 let T = LOAD_AT, playing = false, speed = 1, lastFrame = 0, openCard = null;
 const liveToks = new Map();
 
+/* a box carries a live count of what is inside it, so the repository visibly
+   fills without anything having to be clicked */
+const COUNTED = [];
+function initCounts() {
+  for (const id of new Set([...Object.keys(LEDGER), 'rp-wo'])) {
+    const el = $(id); if (!el || !el.classList.contains('rbox')) continue;
+    const tn = [...el.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+    if (!tn) continue;
+    const tag = document.createElement('b'); tag.className = 'cnt';
+    COUNTED.push({ id, el, tn, base: tn.textContent.trim(), tag });
+  }
+}
+
 function render() {
   for (const w in births) {
     const el = $(w); if (!el) continue;
@@ -962,16 +995,11 @@ function render() {
   const shellAt = births['g-shell'] ?? 0;
   $('rempty').style.display = T < shellAt ? 'flex' : 'none';
 
-  {                                   // work orders: how many packets exist so far
-    const el = $('rp-wo');
-    if (el) {
-      const n = Object.values(worders).filter(v => v.some(e => T >= e.t)).length;
-      el.childNodes[0].nodeValue = 'Work orders' + (n ? ' ' : '');
-      let tag = el.querySelector('b');
-      if (n) { if (!tag) { tag = document.createElement('b'); el.insertBefore(tag, el.firstChild.nextSibling); }
-               tag.textContent = '\u00d7' + n; }
-      else if (tag) tag.remove();
-    }
+  for (const c of COUNTED) {          // every box says how much it holds right now
+    const n = countAt(c.id);
+    c.tn.nodeValue = c.base + (n ? ' ' : '');
+    if (n) { if (!c.tag.isConnected) c.el.appendChild(c.tag); c.tag.textContent = '\u00d7' + n; }
+    else if (c.tag.isConnected) c.tag.remove();
   }
   /* journals visibly fill up: the count is the number of entries written so far */
   document.querySelectorAll('[data-base]').forEach(el => {
@@ -1040,8 +1068,7 @@ function render() {
   } else { sw.style.opacity = 0; $('rp-ci').classList.remove('hot'); }
 
   drawWires();
-  if (openCard && openCard.kind === 'journal') paintJournal(openCard.id);
-  if (openCard && openCard.kind === 'wo') paintWO();
+  if (openCard) paintCard();          // an open card is live: it tracks T like everything else
   $('scrub').value = T;
 }
 window.seek = t => { T = Math.max(0, Math.min(TOTAL, t)); render(); };
@@ -1084,6 +1111,54 @@ const SEATNAME = { 'jr-orch':'Orchestrator','jr-spec':'Specification lead','jr-i
   'jr-ws1':'Specification · worker A','jr-ws2':'Specification · worker B',
   'jr-wi1':'Implementation · worker A','jr-wi2':'Implementation · worker B',
   'jr-wv1':'Verification · worker A' };
+/* ============================================================================
+   LEDGERS — what is inside each box, and when it got there.
+   A row cites the beat that wrote it (b) and where in that beat it lands (p),
+   so contents are a function of T exactly like every other visual state:
+   scrub back and the file un-writes itself.
+     n  the row's name — a path, an ID, a heading
+     d  what it says
+     g  optional state pill
+============================================================================ */
+const BEATAT = {}; for (const b of BEATS) BEATAT[b.id] = b;
+/* LEDGER-BEGIN */
+const LEDGER = {};
+/* LEDGER-END */
+for (const id in LEDGER) {
+  for (const r of LEDGER[id]) {
+    const b = BEATAT[r.b];
+    r.at = b ? b.t + (r.p ?? 1) * b.d : 0;
+  }
+  LEDGER[id].sort((x, y) => x.at - y.at);
+}
+const PILL_BAD = new Set(['FAIL','BOUNCED','REFUSED','CRITICAL','MAJOR','OPEN','RED','SURVIVED',
+  'VOID','BLOCKED','DROPPED','NOT MET','WITHHELD','UNTESTABLE','ESCALATED','MISSING','ABORTED']);
+const PILL_WAIT = new Set(['ISSUED','RETURNED','DRAFT','SEALED','PENDING','PROPOSED','MINOR',
+  'NOTE','REVISED','AMENDED','PLANNED','IN REVIEW','SUPERSEDED','RE-RUN','ADOPTED']);
+const PILL_GOLD = new Set(['SIGNED','RATIFIED','APPROVED','SPONSOR','COUNTERSIGNED']);
+const pillCls = t => !t ? '' : PILL_BAD.has(t) ? ' bad'
+  : PILL_WAIT.has(t) ? ' wait' : PILL_GOLD.has(t) ? ' gold' : '';
+
+const rowsAt = id => (LEDGER[id] || []).filter(r => T >= r.at);
+function countAt(id) {
+  if (id === 'rp-wo') return Object.values(worders).filter(v => v.some(e => T >= e.t)).length;
+  return rowsAt(id).length;
+}
+const SRCNAME = {     // where a row came from, shown when a group card aggregates
+  'rp-const':'constitution', 'rp-scripts':'enforcement', 'rp-selftest':'self-test',
+  'rp-roster':'roster', 'rp-board':'board', 'rp-gates':'gates', 'rp-ladder':'ladder',
+  'rp-brief':'braindump', 'rp-refs':'references', 'rp-cons':'constraints',
+  'rp-spec':'spec', 'rp-reqs':'requirements', 'rp-rtl':'source',
+  'rp-wo':'work orders', 'rp-dr':'decisions', 'rp-find':'findings',
+  'rp-aud':'audit', 'rp-so':'sign-offs', 'rp-ap':'attack plan', 'rp-tb':'benches',
+  'rp-model':'model', 'rp-museum':'museum', 'rp-camp':'seals',
+  'ch-orch':'orchestrator', 'ch-spec':'specification', 'ch-impl':'implementation',
+  'ch-verif':'verification', 'ch-audit':'auditor', 'ch-workers':'workers',
+  'jr-orch':'orchestrator', 'jr-spec':'specification', 'jr-impl':'implementation',
+  'jr-verif':'verification', 'jr-audit':'auditor',
+};
+
+/* DATA-BEGIN */
 const DATA = {
 "sponsor": [
 "Sponsor",
@@ -1254,47 +1329,120 @@ const DATA = {
 "Where seeded defects are exercised. The manifest is applied in an uncommitted working tree or a throwaway branch, the suite runs against it, and the tree is reverted; mutated RTL never enters the mainline history. No worker is spawned while a manifest is applied."
 ]
 };
+/* DATA-END */
 
-function paintJournal(jid) {
-  const list = (jentries[jid] || []).filter(e => T >= e.t);
-  let h = `<div class="dx">${DATA.journal[1]}</div>`;
-  h += `<div class="jbox"><div class="jhead">${SEATNAME[jid]} &#183; ${
-    list.length ? list.length + (list.length === 1 ? ' entry' : ' entries') + ' so far' : 'no entries yet'}</div>`;
-  if (!list.length) h += `<div class="jempty">This seat has committed nothing at this point in the project. An empty journal is a true statement about it, not a missing one.</div>`;
-  list.forEach((e, i) => {
-    h += `<div class="jent"><span class="jn">#${i+1}</span><span>${esc(e.title)}${
-      e.by ? `<em> — ${esc(e.by)}</em>` : ''}</span></div>`;
-  });
-  h += `</div>`;
-  $('dett').textContent = SEATNAME[jid] + ' journal';
-  $('detx').innerHTML = h;
-  $('dhint').textContent = 'live — scrub and watch it fill';
+/* ---- one card: what the thing is, then what it holds at this instant ---- */
+/* NOUN-BEGIN */
+const NOUN = {};
+const EMPTY = {};
+/* NOUN-END */
+const nounOf = (id, n) => { const p = NOUN[id] || ['item','items'];
+  return n + ' ' + (n === 1 ? p[0] : p[1]); };
+const plural = (n, s, p) => n + ' ' + (n === 1 ? s : p);
+
+function ledgerRows(rows, showSrc) {
+  let h = '';
+  for (const r of rows) h += `<div class="lent"><div class="lhead">` +
+    `<span class="ln">${esc(r.n)}</span>` +
+    (r.g ? `<b class="pill${pillCls(r.g)}">${esc(r.g)}</b>` : '') +
+    (showSrc && r.src ? `<span class="lsrc">${esc(SRCNAME[r.src] || r.src)}</span>` : '') +
+    `</div>` + (r.d ? `<div class="lde">${esc(r.d)}</div>` : '') + `</div>`;
+  return h;
 }
-function paintWO() {
-  const live = Object.entries(worders)
-    .map(([id, hist]) => [id, hist.filter(e => T >= e.t)])
-    .filter(([, h]) => h.length);
-  let h = `<div class="dx">${DATA.wo[1]}</div><div class="jbox"><div class="jhead">${
-    live.length ? live.length + (live.length === 1 ? ' packet' : ' packets') + ' so far' : 'none issued yet'}</div>`;
-  if (!live.length) h += `<div class="jempty">No work has been commissioned at this point in the project.</div>`;
-  for (const [id, hist] of live) {
-    const cur = hist[hist.length - 1], first = hist[0];
-    h += `<div class="jent"><span class="jn">${id}</span><span><b class="wst wst-${cur.st}">${cur.st}</b>` +
-         `${first.to ? ` &#183; to ${esc(first.to)}` : ''}<br>${esc(cur.note)}` +
-         (hist.length > 1 ? `<em>${hist.map(e => e.st).join(' &#8594; ')}</em>` : '') + `</span></div>`;
+const holder = (head, body, empty) => `<div class="jbox"><div class="jhead">${head}</div>` +
+  (body || `<div class="jempty">${empty}</div>`) + `</div>`;
+
+let lastCardHtml = '';
+function paintCard() {
+  const c = openCard; if (!c) return;
+  const d = DATA[c.key];
+  $('dett').textContent = c.title || (d ? d[0] : c.key);
+  let h = d ? esc(d[1]) : '', anyLive = false;
+
+  if (c.occ) {                       // an agent: is one of its sessions running right now
+    const iv = occ[c.occ] || [];
+    const on = iv.some(([a, b]) => T >= a && T < b);
+    const ran = iv.filter(([a]) => T >= a).length;
+    h += `<div class="lstat${on ? ' on' : ''}"><i></i>${on ? 'session running'
+      : ran ? 'no session running · ' + plural(ran, 'session', 'sessions') + ' so far'
+            : 'never spawned yet'}</div>`;
+    anyLive = true;
   }
-  $('dett').textContent = 'Work orders'; $('detx').innerHTML = h + '</div>';
-  $('dhint').textContent = 'live \u2014 scrub and watch the packets move';
+  if (c.led && LEDGER[c.led]) {
+    const rows = rowsAt(c.led);
+    h += holder(rows.length ? nounOf(c.led, rows.length) + ' so far' : 'empty so far',
+      ledgerRows(rows, false),
+      EMPTY[c.led] || 'Nothing has been written here at this point in the project.');
+    anyLive = true;
+  }
+  if (c.grp) {                       // a group card aggregates everything inside it
+    const rows = [];
+    $(c.grp).querySelectorAll('[id]').forEach(el =>
+      rowsAt(el.id).forEach(r => rows.push({ ...r, src: el.id })));
+    rows.sort((a, b) => a.at - b.at);
+    h += holder(rows.length ? plural(rows.length, 'file', 'files') + ' in this group so far'
+                            : 'this group is empty so far',
+      ledgerRows(rows, true),
+      EMPTY[c.grp] || 'Nothing in this group exists at this point in the project.');
+    anyLive = true;
+  }
+  if (c.wo) {                        // work orders carry a state history, not one state
+    const live = Object.entries(worders)
+      .map(([id, hist]) => [id, hist.filter(e => T >= e.t)]).filter(([, x]) => x.length);
+    let body = '';
+    for (const [id, hist] of live) {
+      const cur = hist[hist.length - 1], first = hist[0];
+      body += `<div class="lent"><div class="lhead"><span class="ln">${id}</span>` +
+        `<b class="pill${pillCls(cur.st)}">${cur.st}</b>` +
+        (first.to ? `<span class="lsrc">to ${esc(first.to)}</span>` : '') + `</div>` +
+        `<div class="lde">${esc(cur.note)}${hist.length > 1
+          ? '\n' + hist.map(e => e.st).join(' → ') : ''}</div></div>`;
+    }
+    h += holder(live.length ? plural(live.length, 'packet', 'packets') + ' so far'
+                            : 'none issued yet', body,
+      'No work has been commissioned at this point in the project.');
+    anyLive = true;
+  }
+  if (c.jr) {                        // a journal: one entry per commit, append-only
+    const list = (jentries[c.jr] || []).filter(e => T >= e.t);
+    let body = '';
+    list.forEach((e, i) => { body += `<div class="lent"><div class="lhead">` +
+      `<span class="ln">#${i + 1}</span></div><div class="lde">${esc(e.title)}</div></div>`; });
+    h += holder((SEATNAME[c.jr] || 'Seat') + ' journal · ' + (list.length
+        ? plural(list.length, 'entry', 'entries') + ' so far' : 'no entries yet'), body,
+      'This seat has committed nothing at this point in the project. An empty journal is a true statement about it, not a missing one.');
+    anyLive = true;
+  }
+  // the card is repainted every frame, so only touch the DOM when it actually
+  // changed: otherwise a scrolled list would snap back to the top sixty times a second
+  if (h !== lastCardHtml) {
+    const boxes = $('detx').querySelectorAll('.jbox');
+    const keep = [...boxes].map(b => b.scrollTop);
+    const grew = h.split('class="lent"').length > lastCardHtml.split('class="lent"').length;
+    $('detx').innerHTML = h; lastCardHtml = h;
+    $('detx').querySelectorAll('.jbox').forEach((b, i) => {
+      b.scrollTop = grew && playing ? b.scrollHeight : (keep[i] ?? 0);
+    });
+  }
+  $('dhint').textContent = anyLive ? 'live — scrub and watch it fill' : '';
 }
+
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-i]');
   if (!el || el.classList.contains('unborn')) return;
-  if (el.dataset.i === 'wo') { openCard = { kind:'wo' }; paintWO(); return; }
-  if (el.dataset.i === 'journal' && el.id) { openCard = { kind:'journal', id: el.id }; paintJournal(el.id); return; }
-  const d = DATA[el.dataset.i]; if (!d) return;
-  openCard = { kind:'static' };
-  $('dett').textContent = d[0]; $('detx').textContent = d[1];
-  $('dhint').textContent = '';
+  const key = el.dataset.i;
+  openCard = {
+    key,
+    led: el.dataset.led || (LEDGER[el.id] ? el.id : null),
+    jr:  el.dataset.jr || (key === 'journal' ? el.id : JMAP[el.id]) || null,
+    grp: el.dataset.grp || null,
+    occ: (el.id || '').startsWith('ag-') && el.id !== 'ag-sponsor' ? el.id : null,
+    wo:  key === 'wo',
+    title: key === 'journal' ? (SEATNAME[el.id] || 'Seat') + ' journal' : null,
+  };
+  if (!DATA[key] && !openCard.led && !openCard.grp && !openCard.jr && !openCard.wo) return;
+  lastCardHtml = '';
+  paintCard();
 });
 
 function sizeFx() {
@@ -1305,6 +1453,7 @@ function sizeFx() {
 addEventListener('resize', () => { sizeFx(); render(); });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { sizeFx(); render(); });
 sizeFx();
+initCounts();
 $('scrub').max = TOTAL;
 render();
 requestAnimationFrame(frame);

@@ -1797,3 +1797,90 @@ message that disappears.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0301] 2026-08-12T20:02Z | task:none | Every box on the lifecycle page becomes a container with contents that fill as the project runs - one card painter replaces three - and the group labels lose their editorial suffixes
+
+### Trigger
+
+Sponsor, five items. The load-bearing one: "Every single box in the repo when
+clicked should open not only a description box, but under it, data that is
+shown as the process goes along. Just like we added in work orders that
+populate as the project goes along, it will be like this for every single box
+in the repo. every agent, journal, paper trail, verification institutional
+memory, the shell, etc." Plus: drop the 10G Ethernet project for something far
+smaller and invented for the page; three label edits; and real spec text in
+Spec and real numbered requirements in Numbered requirements.
+
+This entry lands the machinery only. The contents themselves, and the new
+example project, are still being authored.
+
+### What the work orders proved, generalized
+
+Last landing gave one box a live list. The sponsor's read is correct: that is
+what every box should be. A box on that page is drawn as a container, so a
+reader is entitled to ask what is in it, and until now the answer was a
+paragraph about what such a container is FOR. That is the same defect the
+framework itself is against — describing an artifact instead of showing it.
+
+So: LEDGER, keyed by element id, each row citing the beat slug that wrote it
+and where inside that beat it lands. Row times resolve from the beat table, so
+contents are a function of master time T exactly like artifact existence,
+seat occupancy, stamps and journal entries. Scrub back and a file un-writes
+itself. I gave all 39 beats stable slugs first, so rows cite an event rather
+than a timestamp and nothing drifts if a beat moves.
+
+### One painter, not three
+
+paintJournal, paintWO and the static-description branch of the click handler
+are gone, replaced by paintCard, which composes whatever the clicked thing
+actually has: description, session status, its own ledger, a group aggregate,
+work-order packets, journal entries. The click handler now derives all of that
+from data attributes and the JMAP table rather than special-casing by kind.
+
+Reach went from 42 describable things to 68 clickable targets. New this round:
+every group label (the shell, sponsor artifacts, the seats, the paper trail,
+specification, the product, verification, institutional memory), every seat
+name, and every agent node — an agent card now states whether one of its
+sessions is running at this instant and how many have run so far, which is the
+no-agent-outlives-its-session claim made visible rather than asserted.
+
+Each repository box also carries a live count badge, so the repository fills
+in front of the reader without anything being clicked.
+
+### Two defects found while building it
+
+1. The card repaints every frame. Any list long enough to scroll would have had
+   its scroll position reset sixty times a second. paintCard now diffs the
+   rendered HTML and only touches the DOM on a real change, preserving scroll
+   per container — and auto-scrolls to the newest row only while playing, when
+   that is what the reader wants.
+2. Group aggregation had to skip elements with no ledger rather than emit empty
+   sections, or a group card early in the timeline would read as a list of
+   headings with nothing under them.
+
+### Labels
+
+"the shell - adopted, not written here" is now "the shell". "what the sponsor
+brings" is now "sponsor artifacts". "the seats - a seat is its files" is now
+"the seats". I also trimmed "the paper trail - work travels as files, never as
+messages" to "the paper trail": it was the last label carrying that em-dash
+editorial suffix, and the sponsor has now cut four of them. Flagged to the
+sponsor as my call, not theirs, so it can be reversed.
+
+### Verification
+
+A harness, not a spot check. Three viewports, the full 225-second timeline at
+0.2s resolution: play advances the scrubber, no token or arrival pulse leaves
+the stage, no JS error, and all 68 targets open a card with a non-empty title
+and body. It also enumerates every target that has NO live data yet, which is
+how I know the remaining worklist is exactly 34 boxes rather than roughly that.
+
+The content applier is written and proven on a synthetic payload end to end:
+beat copy by slug, journal entries and work-order notes by slug and index,
+description cards by key, ledger rows into a marker-delimited block. The test
+payload rendered with correct pills, count badge and noun pluralization, and
+was then reverted.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/lifecycle.html
