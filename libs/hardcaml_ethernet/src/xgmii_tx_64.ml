@@ -347,7 +347,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
     &: ~:starved
     &: ((can_start &: i.cfg_tx_enable) |: (in_body &: need_payload))
   in
-  let underflow = tready &: ~:(i.tx.tvalid) &: frame_active &: ~:last_accepted in
+  let underflow = tready &: ~:(i.tx.tvalid) &: frame_active in
   accept <== (tready &: i.tx.tvalid);
   (* [last_accepted] answers one question — has *this* frame's `tlast` word been
      accepted? — and the answer is not always accumulated from [start_now]
