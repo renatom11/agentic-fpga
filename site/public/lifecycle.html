@@ -39,7 +39,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
 .mono { font-family:'Plex Mono',monospace; }
 
 .app { display:grid; grid-template-columns: minmax(0,1fr) 318px; gap:1rem; align-items:start; }
-.stage { position:relative; display:grid; grid-template-columns: 400px minmax(0,1fr); gap:1.1rem;
+.stage { position:relative; display:grid; grid-template-columns: 448px minmax(0,1fr); gap:1.1rem;
   padding-bottom:3.6rem; }
 #fx { position:absolute; inset:0; pointer-events:none; z-index:6; overflow:visible; }
 
@@ -76,11 +76,10 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   text-transform:uppercase; color:var(--ink-2); cursor:pointer; border:0; }
 .tree { margin-top:.15rem; }
 /* one indented rail: an elbow per lead row, verticals stack into a spine */
-.orchrow { display:grid; grid-template-columns:1fr auto auto; align-items:center;
-  gap:.5rem; margin-top:.2rem; }
-.orchrow .agnode { min-width:0; }
-#ag-orch { grid-column:2; min-width:184px; }
-#ag-audit { grid-column:3; justify-self:end; }
+.orchrow { position:relative; display:flex; justify-content:center; margin-top:.2rem; }
+#ag-orch { width:186px; }
+#ag-audit { position:absolute; right:0; top:50%; transform:translateY(-50%); }
+#ag-audit .rl { display:none; }
 .leadrow3 { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; margin-top:2.3rem; }
 .col { display:flex; flex-direction:column; }
 .kids { display:flex; flex-direction:column; gap:.4rem; margin-top:1.5rem; }
@@ -113,7 +112,10 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   background:linear-gradient(90deg, transparent, color-mix(in srgb, var(--tx) 18%, transparent), transparent);
   opacity:0; z-index:3; }
 .rgrid { display:grid; grid-template-columns:1fr 1fr; gap:.55rem; }
-.rgroup { border:1.3px solid var(--line); border-radius:10px; padding:.6rem .5rem .48rem;
+.rempty { position:absolute; inset:0; display:flex; align-items:center;
+  justify-content:center; font:600 .72rem 'Plex Mono',monospace; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-2); opacity:.55; pointer-events:none; }
+.rgroup { border:1.3px solid var(--line); border-radius:10px; padding:.74rem .5rem .48rem;
   position:relative; background:var(--panel); transition:opacity .3s; }
 .rgroup > .glab { position:absolute; top:-.54rem; left:.5rem; background:var(--panel);
   padding:0 .32rem; font:600 .56rem 'Plex Mono',monospace; letter-spacing:.08em;
@@ -129,7 +131,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   background:color-mix(in srgb, var(--human) 9%, var(--panel)); }
 .rbox:hover, .agnode:not(.unborn):hover, .chip:hover { border-color:var(--rx); }
 .rbox.big { flex:1 1 100%; text-align:center; padding:.3rem .5rem; }
-.rbox .st { position:absolute; top:-.52rem; right:-.35rem; font:700 .5rem 'Plex Mono',monospace;
+.rbox .st { position:absolute; top:-.78rem; right:-.35rem; font:700 .5rem 'Plex Mono',monospace;
   letter-spacing:.05em; border-radius:5px; padding:.03rem .28rem;
   background:var(--goodbg); color:var(--good); border:1px solid var(--good);
   transition:opacity .25s; }
@@ -153,6 +155,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
   background:color-mix(in srgb, var(--rx) 15%, var(--panel)); }
 .chip b { color:var(--rx); font-weight:700; }
 .unborn { opacity:0 !important; pointer-events:none !important; }
+.rbox.unborn, .seatbox.unborn, .orbit.unborn, .rgroup.unborn { display:none !important; }
 .flashy { border-color:var(--rx) !important;
   box-shadow:0 0 0 2px color-mix(in srgb, var(--rx) 42%, transparent); }
 .orbit { position:absolute; border:1.6px dashed var(--bad); border-radius:10px;
@@ -200,7 +203,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
 .tbtn:focus-visible, .rbox:focus-visible, .agnode:focus-visible, .chip:focus-visible,
 .rgate:focus-visible, .rci:focus-visible, .orbit:focus-visible { outline:2px solid var(--rx); outline-offset:2px; }
 #scrub { flex:1; accent-color:var(--rx); height:1.2rem; cursor:pointer; min-width:0; }
-.phlabels { position:relative; height:2.05rem; margin:.15rem 3.4rem 0 8.2rem; }
+.phlabels { position:relative; height:2.05rem; margin:.15rem 3.75rem 0 8.6rem; }
 .phlabels span { position:absolute; top:0; font:600 .56rem 'Plex Mono',monospace;
   letter-spacing:.07em; color:var(--ink-2); text-transform:uppercase; cursor:pointer;
   border-left:1px solid var(--line); padding-left:.26rem; white-space:nowrap; }
@@ -267,7 +270,6 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
         <div class="panelbox">
           <p class="ptitle">The agents</p>
           <svg id="wires"></svg>
-          <svg id="wires"></svg>
           <div class="tierc">
             <button class="agnode human" id="ag-sponsor" data-i="sponsor">
               <span class="nm">Sponsor</span><span class="rl">the one human</span>
@@ -277,7 +279,6 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
           <div class="sessions" id="sessions">
             <button class="slab" data-i="sessions">agent sessions</button>
             <div class="orchrow">
-              <span></span>
               <button class="agnode ghost" id="ag-orch" data-i="orch">
                 <span class="nm">Orchestrator</span><span class="rl">spawns &#183; relays &#183; commits</span>
               </button>
@@ -322,6 +323,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
           <button class="rgate" id="rp-gate" data-i="gate">GATE</button>
           <button class="rci" id="rp-ci" data-i="ci">CI</button>
           <div class="sweep" id="sweep"></div>
+          <div class="rempty" id="rempty">nothing committed yet</div>
           <div class="rgrid">
 
             <div class="rgroup" id="g-shell" style="grid-column:1/3">
@@ -355,19 +357,19 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
                 <div class="seatbox" id="rp-seat-spec"><span class="sn">Specification</span>
                   <div class="chips"><button class="chip" data-i="charter-spec">charter</button>
                     <button class="chip" id="jr-spec" data-i="journal" data-base="journal">journal</button></div>
-                  <div class="wsub"><span class="wl">its workers</span>
+                  <div class="wsub"><span class="wl">its workers</span><button class="chip wc" data-i="charter-workers">charter</button>
                     <button class="chip wc" id="jr-ws1" data-i="journal" data-base="worker A">worker A</button>
                     <button class="chip wc" id="jr-ws2" data-i="journal" data-base="worker B">worker B</button></div></div>
                 <div class="seatbox" id="rp-seat-impl"><span class="sn">Implementation</span>
                   <div class="chips"><button class="chip" data-i="charter-impl">charter</button>
                     <button class="chip" id="jr-impl" data-i="journal" data-base="journal">journal</button></div>
-                  <div class="wsub"><span class="wl">its workers</span>
+                  <div class="wsub"><span class="wl">its workers</span><button class="chip wc" data-i="charter-workers">charter</button>
                     <button class="chip wc" id="jr-wi1" data-i="journal" data-base="worker A">worker A</button>
                     <button class="chip wc" id="jr-wi2" data-i="journal" data-base="worker B">worker B</button></div></div>
                 <div class="seatbox" id="rp-seat-verif"><span class="sn">Verification</span>
                   <div class="chips"><button class="chip" data-i="charter-verif">charter</button>
                     <button class="chip" id="jr-verif" data-i="journal" data-base="journal">journal</button></div>
-                  <div class="wsub"><span class="wl">its worker</span>
+                  <div class="wsub"><span class="wl">its worker</span><button class="chip wc" data-i="charter-workers">charter</button>
                     <button class="chip wc" id="jr-wv1" data-i="journal" data-base="worker A">worker A</button></div></div>
                 <div class="seatbox" id="rp-seat-audit"><span class="sn">Auditor</span>
                   <div class="chips"><button class="chip" data-i="charter-audit">charter</button>
@@ -435,7 +437,7 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
         <div class="legend">
           <span class="lg"><i class="tk"></i> write (work + journal)</span>
           <span class="lg"><i class="tr"></i> read</span>
-          <span class="lg"><i class="td"></i> review &#183; question &#183; answer</span>
+          <span class="lg"><i class="td"></i> message, relayed by the orchestrator</span>
           <span class="lg"><i class="tb"></i> refused / defect</span>
           <span class="lg"><i class="ta"></i> audit</span>
         </div>
@@ -553,9 +555,13 @@ const BEATS = [
   ax:'The verification lead is seated early, before anything is built, to put one question to every requirement: could a test fail this as written? A hundred-plus rows get a verdict each. The ones that cannot fail — aspirations, vagueness — are rewritten now, while rewriting is cheap.',
   acts:[{k:'spawn',w:'ag-verif',s:.05},
         {k:'tok',f:'rp-reqs',to:'ag-verif',kind:'read',s:.2,e:.45},
-        {k:'tok',f:'ag-verif',to:'rp-reqs',kind:'write',s:.55,e:.85,
-         ent:'Testability review: every requirement dispositioned; the untestable rewritten'},
-        {k:'flash',w:'rp-reqs',s:.85,e:1}]},
+        {k:'born',w:'g-trail',s:.5},{k:'born',w:'rp-find',s:.52},
+        {k:'tok',f:'ag-verif',to:'rp-find',kind:'write',s:.5,e:.75,
+         ent:'Testability review filed: every requirement dispositioned, the untestable ones named'},
+        {k:'tok',f:'rp-find',to:'ag-spec',kind:'read',s:.72,e:.88},
+        {k:'tok',f:'ag-spec',to:'rp-reqs',kind:'write',s:.86,e:1,
+         ent:'Untestable requirements rewritten in place; each disposition answered'},
+        {k:'flash',w:'rp-reqs',s:.9,e:1}]},
  {ph:'SPECIFY', t:69, d:6, bt:'The spec is refused. Twice.',
   ax:'Draft batches come back with defect lists — an ambiguous edge case here, a contradiction between two clauses there — and the refusals are recorded, not smoothed over. A specification that has survived attack is worth freezing. One that has only been read is not.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-spec',kind:'write',s:.05,e:.35,
@@ -647,7 +653,6 @@ const BEATS = [
   ax:'A bench catches the receiver holding stale state after an aborted frame — the next frame inherits garbage. Filed as a MAJOR finding against a named requirement, repaired, and the failing case pinned into the suite permanently. The bug can never return unnoticed; the test that caught it outlives it.',
   acts:[{k:'tok',f:'ag-verif',to:'rp-find',kind:'write',s:.05,e:.35,
          ent:'MAJOR: state persists across abort; the next frame inherits it'},
-        {k:'born',w:'rp-find',s:.3},
         {k:'tok',f:'rp-find',to:'ag-impl',kind:'read',s:.4,e:.6},
         {k:'tok',f:'ag-impl',to:'rp-rtl',kind:'write',s:.65,e:.9,
          ent:'Abort path cleared; the failing case now a permanent regression test'},
@@ -788,7 +793,7 @@ function center(id) {
     return { x: -46, y: s.height * 0.42 }; }
   const el = $(id); if (!el) return null;
   const r = el.getBoundingClientRect(), s = stage.getBoundingClientRect();
-  return { x: r.left - s.left + r.width/2, y: r.top - s.top + r.height/2 };
+  return { id, x: r.left - s.left + r.width/2, y: r.top - s.top + r.height/2 };
 }
 const lerp = (a,b,p) => a+(b-a)*p;
 const ease = p => p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
@@ -796,11 +801,24 @@ function arcPos(A,B,p){
   const lift = Math.min(44, Math.hypot(B.x-A.x, B.y-A.y)*.17);
   return { x:lerp(A.x,B.x,p), y:lerp(A.y,B.y,p) - Math.sin(p*Math.PI)*lift };
 }
+function edge(A, B) {            // stop at the target's border, never on its label
+  const el = $(B.id); if (!el) return B;
+  const r = el.getBoundingClientRect();
+  const hw = r.width/2 + 9, hh = r.height/2 + 9;
+  const dx = B.x - A.x, dy = B.y - A.y, m = Math.hypot(dx, dy) || 1;
+  const t = Math.min(hw / (Math.abs(dx)/m || 1e-6), hh / (Math.abs(dy)/m || 1e-6));
+  return { x: B.x - dx/m * Math.min(t, m*0.42), y: B.y - dy/m * Math.min(t, m*0.42) };
+}
 function tokPos(a, p) {
-  const A = center(a.f), B = center(a.to); if (!A||!B) return null;
+  const A = center(a.f), B0 = center(a.to); if (!A||!B0) return null;
+  const B = edge(A, B0);
   if (a.kind === 'refused') {
     const G = center('rp-gate'); if (!G) return null;
     return p < .5 ? arcPos(A, G, ease(p*2)) : arcPos(G, A, ease((p-.5)*2));
+  }
+  if (a.kind === 'direct' && a.f !== 'ag-orch' && a.to !== 'ag-orch') {
+    const O = center('ag-orch');            // no seat talks to another directly
+    if (O) return p < .5 ? arcPos(A, O, ease(p*2)) : arcPos(O, B, ease((p-.5)*2));
   }
   if (KINDS[a.kind].gate && a.f.startsWith('ag-') && (a.to.startsWith('rp-')||a.to.startsWith('jr-'))) {
     const G = center('rp-gate'); if (!G) return null;
@@ -851,6 +869,8 @@ function drawWires() {
     return { l:r.left-pr.left, r:r.right-pr.left, t:r.top-pr.top, b:r.bottom-pr.top,
              cx:r.left-pr.left+r.width/2, cy:r.top-pr.top+r.height/2 }; };
   const live = id => $(id) && $(id).classList.contains('live');
+  const shown = id => { const e = $(id);          // nothing is wired to a node that is not there
+    return e && !e.classList.contains('unborn') && e.offsetParent !== null; };
   const out = [`<defs>
     <marker id="ahl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
       <path d="M0,1.5 L9,5 L0,8.5 z" fill="var(--rx)"/></marker>
@@ -864,7 +884,7 @@ function drawWires() {
     + ` opacity="${hot?1:.8}" stroke-linecap="round" stroke-linejoin="round"/>`);
 
   const sp = R('ag-sponsor'), or = R('ag-orch'), au = R('ag-audit');
-  if (!sp || !or) { svg.innerHTML = out.join(''); return; }
+  if (!sp || !or || !shown('ag-orch')) { svg.innerHTML = out.join(''); return; }
   P(`M${or.cx} ${or.t-3} V${sp.b+5}`, live('ag-orch'), true);          // up to the human
 
   const LEADS = [['ag-spec','ag-ws1','ag-ws2'], ['ag-impl','ag-wi1','ag-wi2'],
@@ -873,10 +893,11 @@ function drawWires() {
   if (cols[0]) {
     const busY = (or.b + cols[0].t) / 2;                               // the sibling bus
     const anyLead = LEADS.some(([l]) => live(l));
+    if (!LEADS.some(([l]) => shown(l))) { svg.innerHTML = out.join(''); return; }
     P(`M${cols[0].cx} ${busY} H${cols[cols.length-1].cx}`, anyLead, false);
     P(`M${or.cx} ${busY} V${or.b+3}`, anyLead, true);                  // bus up into the parent
     LEADS.forEach(([lid, ...wids], i) => {
-      const L = cols[i]; if (!L) return;
+      const L = cols[i]; if (!L || !shown(lid)) return;
       P(`M${L.cx} ${L.t-3} V${busY}`, live(lid), false);               // child drop
       for (const wid of wids) {
         if (!live(wid)) continue;
@@ -885,8 +906,8 @@ function drawWires() {
       }
     });
   }
-  if (au) {                                                             // audits from the side
-    out.push(`<path d="M${au.l-4} ${au.cy} H${or.r+4}" fill="none" stroke="var(--tx)"`
+  if (au && shown('ag-audit') && au.l - or.r > 14) {                    // audits from the side
+    out.push(`<path d="M${au.l-5} ${au.cy} H${or.r+5}" fill="none" stroke="var(--tx)"`
       + ` stroke-width="${live('ag-audit')?1.8:1.4}" stroke-dasharray="2 4"`
       + ` marker-end="url(#ahv)" opacity="${live('ag-audit')?.95:.45}"/>`);
   }
@@ -922,6 +943,8 @@ function render() {
     el.classList.toggle('unborn', T < SLOT_BORN && !on);
   });
   $('sessions').style.opacity = T < SLOT_BORN ? .3 : 1;
+  const shellAt = births['g-shell'] ?? 0;
+  $('rempty').style.display = T < shellAt ? 'flex' : 'none';
 
   /* journals visibly fill up: the count is the number of entries written so far */
   document.querySelectorAll('[data-base]').forEach(el => {
@@ -1175,6 +1198,10 @@ const DATA = {
 "rtl": [
 "The product",
 "What actually ships — for an FPGA project, the hardware description and the code around it. Owned by the implementation line, and graded only by tests that line never wrote."
+],
+"ap": [
+"Attack plans",
+"Written before any testbench: a list of specific ways the design could be wrong, each row naming the stimulus and the observation that would expose it. Tests exist to discharge rows, so coverage is measured in rows discharged rather than lines executed. When an injected fault survives the regression, the first question is which row was missing."
 ],
 "tb": [
 "Testbenches",

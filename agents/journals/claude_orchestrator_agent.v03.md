@@ -1614,3 +1614,73 @@ sequences (ISSUED-BOUNCED-ACCEPTED-ISSUED, FAIL-PASS) besides pressing play.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0298] 2026-08-12T18:59Z | task:none | A seven-agent sweep convicts the lifecycle page of animating the two things it tells the reader never happen - seats talking directly, and a seat committing into another seat's files past the gate
+
+### Trigger
+
+Eighty-two raw defects from five viewport sweeps and two content audits
+against docs/FRAMEWORK.md, deduplicated to a ranked list. Three of its
+mechanical claims I verified by hand before acting, and all three held: the
+"ap" click card did not exist (my insert anchor never matched the JSON
+formatting, so the assert I never wrote would have caught it), there were TWO
+elements with id="wires" (my tree rewrite left the old one), and the
+charter-workers card was unreachable because no element carried its data-i.
+A page that says "click anything" had a dead click on the artifact carrying
+its coverage argument.
+
+### The two that mattered
+
+1. **Seats were animated talking to each other.** kind:'direct' tokens flew
+   node-to-node between the spec lead and the sponsor, and from both build
+   leads to the spec lead, bypassing the orchestrator entirely and leaving no
+   file behind — while the page's own text says every message is relayed word
+   for word and nothing travels as a message that vanishes. The animation
+   demonstrated the exact failure the framework exists to prevent. Direct
+   tokens now route through the orchestrator the same way writes route through
+   the gate, and the legend says so.
+2. **The verification lead was committing into the specification lead's
+   files** — twice, in the testability review and the spec refusal — and
+   because both were kind:'write', the drawing showed them sailing through the
+   commit gate. Write scopes are the framework's flagship mechanical control
+   and the page showed it silently failing in the two beats whose whole subject
+   is rigor. Both now route through a finding: verification files it, the spec
+   lead reads it and makes the edit in its own scope, which is the channel the
+   framework actually provides.
+
+### The rest of this pass
+
+Wires no longer paint over nodes that do not exist (the opening frame was
+arrows pointing into an empty lane at every viewport); tokens now stop at the
+target's border instead of its centre, which was covering label glyphs in
+about twenty-seven places a scrubbing reader can land on; unborn boxes leave
+the layout instead of holding an invisible slot, which had left empty labelled
+group frames and one chip stranded 110px from its group edge for 37 seconds of
+the run; the orchestrator is centred over the lead bus so its two connectors
+land; the auditor's connector is suppressed rather than drawn as a zero-length
+path that rendered only its arrowhead; status pills clear the chip they stamp;
+the scrubber's phase ticks are measured against the slider track; and the empty
+repository says "nothing committed yet" rather than reading as a failed load.
+Verified after: no page errors, no horizontal overflow, and zero dead clicks
+across all fifty-four clickable elements.
+
+### Not accepted, with grounds
+
+Three findings are artifacts of the audit's own frame — it was given
+docs/FRAMEWORK.md as the sole standard, while the sponsor's latest direction is
+that the page represent what this program ACTUALLY did. The co-simulation
+against an independent implementation, the sponsor's gate signatures, and the
+files-list rule that refused the orchestrator are all real here and stay.
+What the audit did surface, and what I owe the sponsor, is that FRAMEWORK.md
+omits all three: the document is a narrower description than the program it
+describes.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
