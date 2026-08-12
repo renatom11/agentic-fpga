@@ -3638,3 +3638,301 @@ the sponsor via the orchestrator, due before any sixth edition.
 
 ### Files-in-this-commit
 - docs/PROCESS.md
+
+## [J-architect_docs_lead-0055] 2026-08-12T03:45:15Z | task:WO-0083 | Eight facts read against the spec that owns them: six confirmed outright, one confirmed on a ground the specification does not contain, one right for a reason weaker than the one available — and a §6.2 row that has contradicted §7 since the C-16 diff, found by the rule written to avoid it
+
+### Trigger
+
+Orchestrator dispatch, **one round, journal-only, non-blocking**, at dv_lead's own
+recommendation: an independent reading of `WO-0083` §4's abort law against
+SPEC-M04, dv naming **facts 4 and 6** as the two it most wanted read by this
+seat. Stage 2 issues in parallel and does not block on me; a red found later by
+the worker is a first-class return under dv's §18. My authority here is the one
+my charter §3 gives — adjudication over the specification's text — and the
+dispatch scoped it explicitly: read the packet against the **spec**, never
+against the RTL.
+
+### Inputs
+
+- `agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md` §4 in
+  full (§4.1 inherited identity, §4.2 facts 1–8, §4.3 tail-frame law, §4.4
+  legality rules, §4.5 notation gloss), plus §6.0's round-wide rules, §6.1's
+  master frame table and §6.2's U22 for reachability of what I found.
+- `docs/specs/modules/xgmii_tx_64.md` (SPEC-M04) — §4.1/§4.2/§4.3, §6.1, §6.2,
+  §6.3, §7 (latency, throughput incl. C-14.1 and C-16's four consequences,
+  handshake, reset), §9, §11.3, §13.
+- `docs/specs/requirements.md` §0.3, §0.6 (all four reference-word clauses),
+  REQ-201 … REQ-210.
+- `docs/specs/modules/axi64.md` (SPEC-M01) §4.2's `tkeep` row, §6.1's octet
+  order / `tkeep` / `tlast` paragraphs, §7's handshake clause.
+- `test/attack_plans/AP-xgmii_tx_64.md` §4's identity block and row `M04-F2`,
+  read only to check the packet's quotation of AP §4 and to corroborate the
+  `t = 1` gap figure from dv's own document. No implementation source opened.
+
+### Reasoning
+
+**Method.** Each fact is a derivation with cited premises. I checked three
+things per fact and kept them separate, because they fail differently: (a) does
+the cited clause say what the fact says it says; (b) is the arithmetic sound;
+(c) is the cited clause the **strongest** ground available, or is there a
+sharper one in the same specification. (c) is where an adjudicator earns the
+round — a true fact resting on the weakest of three available clauses is a fact
+a design author can argue with, and a bench row built on it inherits the
+argument.
+
+**Facts 1, 2, 3 — CONFIRMED, with one citation upgrade owed at fact 1.**
+`R = S_j + m − 1` inverts §6.1's storage sentence through §4.1's transmit
+identity and checks against §6.1's own table at the first frame (`R = C + m`).
+Fact 2 is §9's *Strobe cycle, pinned* paragraph verbatim plus §0.6's
+one-cycle rule. Fact 3's `A = R + 2` is §9's *"two cycles later"* and,
+independently, the transmit slot `S_j + 1 + w` the missing word would have
+filled — the packet derives it both ways and they agree, which is the right
+shape. The abort word's eight lanes are §9's and §6.2's `Abort` row's; the
+control-character **values** are §6.3 item 2's normative list; `xgmii_txc` =
+0xFF follows from §4.2's port row (*"bit k marks lane k as a control
+character"*) with all eight lanes control.
+
+The upgrade is at the boundary row. `M04-G5` puts `R` at `C + 1` — the
+**preamble cycle** — and §4.4's ground for admitting `word = 1` is REQ-206's
+opening clause, *"on any cycle after the transmitter has emitted a frame's start
+character"*. That clause is ambiguous at exactly the cycle the row lives on: the
+start character is emitted **on** `C + 1`, and "after … has emitted" does not
+say whether the emitting cycle is inside. It is the weakest of three grounds and
+the only ambiguous one. Three unambiguous ones sit in SPEC-M04: §6.1's storage
+sentence — *"M04 requires a word on every cycle it asserts `tx_tready` during a
+frame, and a missing one is an underflow on that cycle"*, carrying no
+after-the-start-character qualifier at all, with `Preamble` unarguably *during a
+frame* since §6.2 enters it on the first word's acceptance; §6.2's `Preamble`
+row pinning `tx_tready` = 1 there; and, decisively, §7's C-16 consequence 1,
+which calls `C + 8` *"the one cycle in a frame's life where `tx_tready` = 1 with
+`tx_tvalid` = 0 means nothing at all"* — a **uniqueness** claim that is false if
+the preamble cycle is a second such cycle. I rule the inclusive reading
+compelled, so U22's expectation stands; the recommendation is that §4.4 cite the
+storage sentence and the uniqueness claim rather than REQ-206's opening clause,
+because a design author reading REQ-206 alone can reach the other answer and
+then U22's red is arguable rather than dispositive.
+
+**Fact 4 — CONFIRMED on every limb** (dv's first named fact). The limb worth
+independent reading is *"every one of them is a full eight-octet word"*, and its
+authority is not in the packet: SPEC-M01 §4.2's `tkeep` row and §6.1's `tkeep`
+paragraph — *"`0xFF` on every word except the one carrying `tlast`, 1 to 8 ones
+there, never 0 while `tvalid` = 1"*. With §4.4's `w ≤ W_j − 1`, accepted indices
+are `≤ W_j − 2`, so no accepted word is the short one and `8w` is exact. The
+no-pad/no-FCS half is confirmed three times over: §6.2's `Frame` row makes
+`Pad`, `Fcs` and `Abort` peer exits with `Abort` entered directly; §9 says *"no
+FCS is appended"*; and REQ-206's own remedy text is *"an error character
+followed by a terminate character"* — no pad, no FCS, in the requirement itself.
+REQ-203 cannot reach an aborted frame because its pad decision is keyed on the
+octet count **at `tlast`**, an event the frame never has. `8w` far below 60 is
+conformant, and T21 is the right trap.
+
+**Fact 5 — CONFIRMED, and independently corroborated, with one defect of form.**
+`t = 1` is not merely inferred from *"`/T/` in lane 1"*: §9's stream-effect row
+says in its own words *"the gap is then served from that terminate
+character"*, which is the clause that fixes **which** character in the abort
+word starts the count, and the packet cites §6.1 and §0.3 for the convention but
+not that sentence. `g = 2`, gap = 15, 15 ≥ 12 — and dv's own `AP-M04` row
+`M04-F2` tabulates the full sweep as 16, 15, 14, 13, 12, 19, 18, 17 for
+`t = 0 … 7`, so the 15 is already in dv's document at `t = 1`. The defect: fact 5
+substitutes `cfg_ifg` = 12 into the formula without naming the substitution.
+§4's own preamble says the law is *"written to be quotable"* by later rounds;
+`g = ⌈(cfg_ifg + 1)/8⌉` **evaluated at 12** is a law, *"15"* is a value, and a
+later round at another `cfg_ifg` quoting the value quotes a falsehood. §6.0(g)
+holds it for this round, so nothing here is exposed.
+
+**Fact 6 — CONFIRMED, and it is the sharpest thing in §4** (dv's second named
+fact). Every limb is §0.6's fourth clause in its own words: the reference word
+is *"the cycle on which the word was required and not presented"*; the floor is
+the decidability rule and §0.6 says the two *"become the same event"*; the
+ceiling adds §0.5's **ΔC** and *"never an event delay a module spec may also
+pin"*, with ΔC = 2 pinned in SPEC-M04 §7's table. So the window is `[R, R + 2]`,
+the pin is at the floor, and the packet's own derived step — `R + 2` **is** the
+`/E/` word's cycle — is correct and load-bearing: it turns §0.6's abstract
+warning (*"a monitor built on the window alone cannot convict a report the pin
+forbids"*) into the concrete design `M04-G2` exists to kill, one that strobes
+where the wire consequence appears. Note what the fact depends on: at a ceiling
+of `R + 1` — which is what taking REQ-210's event delay would give — the
+`/E/`-cycle strobe would fall **outside** the window and the window would
+convict it. §0.6 anticipates that reader by name (*"a reader who took the other
+would compute a ceiling one cycle short"*). Fact 6's *"never REQ-210's event
+delay"* is therefore not an aside; it is what makes the fact true.
+
+**Fact 7 — CONFIRMED in both branches, on a ground the specification does not
+contain.** The arithmetic is right: the gap's last cycle is terminate + `g` − 1,
+which is `A + 1` here and `C + 11` in §6.1's table where §7 pins it; branch (a)
+gives `A + 2 = S_j + w + 3`; branch (b) is §6.2's `Idle` row plus Preamble entry
+plus REQ-210's 1-cycle delay. But the packet writes *"§7's handshake bullet
+holds the source's word stable until acceptance"*, and §7's handshake bullet
+says something narrower and different: *"Field stability is the source's for the
+cycle of acceptance **only**; M04 registers what it accepts."* The
+hold-until-acceptance rule appears **once** in this specification, in §7's
+**reset** bullet, in a parenthetical that attributes it to the handshake bullet
+— and SPEC-M01 §7 explicitly delegates field stability to *"the specification
+declaring [the port]"*, which is M04 §7. So no document in this programme
+obliges a source at M04's source port to keep offering until accepted. Branch
+(a)'s *"accepted no later than `A + 1`"* is therefore true of **this round's
+driver**, which holds by construction, and is not a consequence of the spec. The
+conclusion survives; the ground should be restated as the driver's. The spec gap
+is mine, and it is a real one — a bullet asserting a rule and citing a bullet
+that does not state it.
+
+**Fact 8 — CONFIRMED as a rule, DISPUTED as a ground, at no cost.** The
+operational content (assert nothing about acceptance at `R`, `R + 1`, `A`) can
+never fail a conformant design, so it is safe and I would not move it. But
+*"unconstrained"* **understates** the specification. REQ-204 and §6.2 together
+pin non-acceptance there: §6.2's `Idle` row enters `Preamble` *"on the cycle a
+first source word is accepted"*, so an acceptance at any of those three cycles
+puts the start character no later than `A + 1`, leaving at most 7 octets of gap
+from the `/T/` at lane 1 — which REQ-204's 12-octet minimum refuses. The one
+carve-out that lets a word be accepted **without** entering `Preamble` is C-16's
+post-`tlast` early acceptance, and fact 8 itself correctly observes that an
+aborted frame never reaches that cycle. The honest ground is
+"under-determined between §6.3 item 3's `tready` freedom and §6.2's acceptance
+restriction, and pinned shut through the start character by REQ-204". The cost
+of the weaker ground is nil: the observable that would catch an early
+acceptance is the start character at `A + 2`, which fact 7(a) asserts anyway.
+Editorial: *"the closed interval `[R, A + 1)`"* is half-open in its own
+brackets; the enumeration that follows disambiguates it.
+
+**§4.1, §4.3, §4.4.** §4.1's two forms both check against §6.1's table at
+`P = 60` at all four points the packet lists, its quotation of `AP-M04` §4 is
+faithful, and its honesty note (*"the whole of the cross-check available from
+the specification"*) is accurate — that table is SPEC-M04's only cycle-by-cycle
+statement. Preferring the start-anchored form is right, because the C-anchored
+form assumes word `m` is accepted at `C + m`, which C-16 makes false for a
+back-to-back frame's words 0 and 1.
+
+§4.3 is confirmed on every limb, with two additions I would make. Its premise —
+§7's *"`tx_tlast` ends the frame — M04 needs no declared length"* — is quoted
+correctly and the inference from it is right; the tail is a legal `Axi64` frame
+by SPEC-M01 §6.1 and is word-aligned at position 0 by that section's alignment
+paragraph, so it needs no realignment. **(i)** `P' ≥ 1` is guaranteed rather
+than hoped: `w ≤ W_j − 1` gives `P' = P_j − 8w ≥ P_j − 8(W_j − 1) ≥ 1`, so
+§0.7's zero-octet class never arises and the tail always has an encoding — worth
+stating, because "could `P'` be 0" is the first question a reader asks.
+**(ii)** The tail's FCS is its own **because §6.2's `Preamble` row re-seeds the
+CRC register to 0x00000000 on entry**; that clause is what makes *"its FCS is
+the REQ-305 oracle over its own padded content"* true rather than hopeful, and a
+design carrying the aborted frame's running CRC into the tail fails exactly
+there. T23's arithmetic checks (`760 mod 127 = 125`, `1480 mod 127 = 83`) and
+both members reconcile with §6.1's master table (`1514 − 760 = 754`,
+`1514 − 1480 = 34`).
+
+§4.4's two inherited rules are confirmed — the handover rule quotes C-16
+consequence 1 verbatim and correctly. `word ≤ W_j − 1` reads exactly as REQ-206's
+closing clause gives it, and a corollary the packet does not state falls out
+cleanly: at `W_j = 1` the two bounds are empty (`1 ≤ w ≤ 0`), which is the right
+answer and is BUG-0004's territory. The lower bound at a non-first frame is
+right but **under-grounded**: §7's C-16 consequence 4 has two branches and the
+packet quotes only the continuous-source one. In the other branch word 0 is
+accepted at the gap's last cycle and word 1 at the preamble cycle, where §7 says
+`tx_tready` **may** be 1 — a permission, not a pin — so at a non-first frame
+word 1's required-ness is **design-dependent**, which is a second, independent
+and broader reason to exclude it. Broader matters here: it reaches the frame
+following an **abort**, where the continuous-source premise fails outright
+because the tail is issued into an idle transmitter. For a section written to be
+quoted, that is the ground to state.
+
+**What the reading found that nobody was looking for.** SPEC-M04 §6.2's
+`Preamble` row says the state *"keeps `tx_tready` = 1"*, unconditionally, and
+§7's C-16 consequence 4 says `tx_tready` is **0** on the preamble cycle of a
+back-to-back frame whose word 0 was accepted at the post-`tlast` cycle; §7's
+throughput bullet independently downgrades it to *"may also be 1 during the
+preamble word"*. The row's *"Entered when: a first source word is accepted"* is
+incomplete against C-16 for the same reason. This is C-14.2's defect class
+exactly — a §6.2 row stating a value §7 later qualified — and it is an omission
+from the **C-16 diff**, which amended the `Idle` row and left the `Preamble` row
+as it was. Reachability for this round is **nil**: §4.4's `word ≥ 2` rule
+excludes the only stimulus that touches it, and §6.2's U22 asserts nothing about
+`tx_tready` on any cycle. But the row is exactly what a reader would use to
+conclude that word 1 of **any** frame is required at its preamble cycle — the
+stimulus §4.4 forbids — which is why the rule that avoids it is what found it. I
+file it as a carry-forward for a spec diff, not as a bounce against this round.
+
+**What I did not do.** I did not verify §4.4's CI claim (`M04-G10` green at
+`65ba148`) — it is dv's measurement and outside a spec reading — and I did not
+open any implementation source. No fact's verdict depends on either.
+
+### Actions
+
+Read-only adjudication. No file staged, no packet edited, no spec diff written
+this round: my write scope permits the SPEC-M04 repair I identified, but the
+dispatch was for a reading, the round is non-blocking, and a §6.2 diff landing
+mid-flight under a lane already executing against §4 would change the document
+the worker is quoting. The repair is routed, not performed.
+
+### Evidence
+
+All verdicts are re-derivable from the committed text at HEAD `afbc813` by
+reading, and each names its clause above. The four independent checks whose
+result is not merely a quotation:
+
+1. `grep -n "on every word except the one carrying" docs/specs/modules/axi64.md`
+   → **284**, SPEC-M01 §4.2's `tkeep` row: the authority for fact 4's full-word
+   limb, which the packet does not cite.
+2. `grep -n "stability is the source" docs/specs/modules/xgmii_tx_64.md` →
+   **502**, §7's handshake bullet, *"for the cycle of acceptance only"*; and
+   `grep -n "until acceptance" docs/specs/modules/xgmii_tx_64.md` → **521**, the
+   reset bullet, the only place the hold rule appears and the place that
+   attributes it to line 502.
+3. `grep -n "keeps .tx_tready. = 1" docs/specs/modules/xgmii_tx_64.md` → **300**,
+   §6.2's `Preamble` row, read against §7's C-16 consequence 4 in the same file
+   (*"`tx_tready` is 0 on the preamble cycle C+12"*) — the contradiction, both
+   sentences in one specification.
+4. `grep -n "16, 15, 14, 13, 12, 19, 18, 17" test/attack_plans/AP-xgmii_tx_64.md`
+   → **429** (dv's `M04-F2` row) and **1012** (dv's own absorption of the landed
+   sweep): fact 5's 15 at `t = 1` corroborated from dv's document and from a
+   green run, not from mine.
+
+Journal arithmetic (ADR-0017 §5.1): volume 05 stood at 231,871 bytes; this entry
+is well under the 30,273 that `S` = 262,144 leaves, so no rotation is due and
+volume 05 continues.
+
+### Outcome
+
+DoD for a reading round: **met**. Eight facts dispositioned, plus §4.1, §4.3 and
+§4.4: **six CONFIRMED outright** (1, 2, 3, 4, 5, 6, of which 4 and 6 are the two
+dv named), **fact 7 CONFIRMED with its ground disputed** (the hold rule is the
+driver's, not the specification's), **fact 8 CONFIRMED as a rule with its ground
+disputed in the safe direction** (the spec pins more than the packet claims, and
+the packet loses nothing by not claiming it). **No fact is DISPUTED in its
+conclusion, and nothing I found changes a single expected value in §6.** Stage 2
+is not blocked by this reading and was never waiting on it.
+
+Four items routed to the orchestrator, none of them a bounce: (1) fact 1's
+citation upgrade; (2) fact 5's parameterisation of `cfg_ifg`; (3) fact 7's
+ground; (4) §4.4's broader ground for the non-first-frame lower bound. Two
+additions offered for §4.3 (`P' ≥ 1`; the CRC re-seed). One spec defect is
+**mine**: SPEC-M04 §6.2's `Preamble` row versus §7's C-16 consequence 4.
+
+No harvest note is owed — this round is neither an `SO-` nor a phase gate
+(PROTOCOL §7, charter §8).
+
+Handoff: this journal entry to the orchestrator for verification and commit.
+Nothing staged; I ran no git command and refuse any demand to.
+
+### Open-questions
+
+1. **The `Preamble`-row contradiction needs a work order, and its shape is not
+   obvious.** The narrow repair mirrors C-14.2 (state the exception in the row
+   and name §7 as the winner). The wider question is whether §6.2's rows should
+   carry `tx_tready` values at all now that §7 pins them in four places — a
+   value stated twice is a value that can disagree with itself, and this is the
+   second time it has. Not decided in-role this round; it is a spec-diff round
+   with a dv countersignature attached, not a paragraph.
+2. **The hold-until-acceptance rule has no home in the programme.** SPEC-M01 §7
+   delegates field stability to each declaring specification; SPEC-M04 §7
+   declares only stability *on the acceptance cycle* and then relies on a hold
+   rule in its reset bullet. Whether the rule belongs at M04 §7 (source
+   obligation at this port) or is a programme convention that ADR-0008's
+   header-handshake discipline should be widened to state for frame streams is
+   an adjudication I should take with dv, not alone — every transmit-path source
+   in the chain relies on it implicitly.
+3. **Whether fact 8 should be strengthened is dv's call, not mine.** I ruled the
+   spec pins non-acceptance in `[R, A + 1)`; the packet declines to assert it and
+   loses nothing observable. If a later round wants the acceptance-cycle
+   observable, the ground exists — but it converts a NO-ASSERT into an ASSERT
+   and that is a plan decision.
+
+### Files-in-this-commit
+- (none)
