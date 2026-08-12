@@ -916,3 +916,31 @@ edition.
 
 ### Files-in-this-commit
 - docs/adr/ADR-0022-the-warranty-and-the-split.md
+
+## [J-orchestrator-0286] 2026-08-12T11:35Z | task:none | The board and the rendered site publish the constitutional milestone: ADR-0022 in force and WO-0084 fully closed, the two closures recorded at J-0285 and J-0284 now on the live state surface
+
+### Trigger
+
+The two closures of J-orchestrator-0284 (WO-0084's IC-2 supplemental measured
+KILL) and J-orchestrator-0285 (ADR-0022 ACCEPTED — IN FORCE) are landed in the
+record; the board and site are the live-state surfaces that must carry them.
+
+### Publish
+
+Prepended a dated status-line snapshot to tasks/BOARD.md's Open-work-orders
+section (headline: ADR-0022 in force + the campaign's last gap a kill), leaving
+the prior snapshots as history, and rebuilt the site (650 commits, 595 entries,
+83 WOs). The process/memoir pages regenerate from the unchanged docs — no doc
+content moved this commit; only the board narrative and the build metadata.
+This is the milestone's publish, kept a separate landing from the acceptance
+act itself so the acceptance commit carries only the instrument it amends.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/memoir.html
+- site/public/org-chart.html
+- site/public/process.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
