@@ -100,3 +100,53 @@ signature and the cold-boot diagnostic offer remain the sponsor's.
 - site/public/process.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0270] 2026-08-12T01:24Z | task:none | Council round three returns: description-grade for the document alone, six blocking revisions with acceptance tests attached - and the one thing is a single confirmed silent divergence at an independence boundary, whose answer sits in the repository
+
+### Trigger
+
+Round 3 completed (workflow wf_dff0c289-a23, ten agents, zero errors, same
+Sal-first topology). All ten artifacts landed VERBATIM at
+docs/reports/process-council/round-3/ (same file set as round 2). This entry
+records the landing and the relay; the final revision round dispatches on it.
+
+### The verdict, compressed (the file is the record)
+
+**The headline claim is re-graded honestly: the document ALONE is
+description-grade — "an unusually honest, rationale-rich description" — and
+the replication claim attaches only to the export unit, presently ungradeable
+because its executable half is unpinned and the drift instrument does not
+exist.** Six agreements, chair-reverified against the file and the record
+before counting: (1) the campaign-seal passage is the one CONFIRMED
+independence-touching silent divergence — §3's table, §3.3's facsimile and
+§3.9 give incompatible answers on author/freeze/blind/scorer, and the record
+(WO-0039-SEALED, RV-0039-VERDICT) contradicts §3.3's scoring rule outright;
+(2) the shell is unpinned (no SHA/tag) while the doc anchors its own edition;
+(3) §6.0's own text is a formal retraction of "sufficient for a blank AI";
+(4) the §3 minting blockquote is INVENTED LAW — no such rule in PROTOCOL,
+violating §2.7's "a document proposes it; it does not enact it by writing it
+down"; (5) the escape ledger and recovery artifacts are present-tense ghosts
+(dv_escapes.md has never existed); (6) the cold reader is failed at the door
+and B.1's cold-reader row was skipped twice running. Four clashes recorded,
+each resolved by structure not compromise; the council sides with the
+Contrarian that a named debt is not a discharged one, while crediting the
+honesty in the grade. Six BLOCKING revisions with acceptance tests attached;
+cheap non-blocking batch in the same round; the core/memoir separation
+endorsed as the FIFTH edition's act, deliberately sequenced behind the
+line-level blockers; Annex B converted from ledger to schedule with two dated
+conditions (execute the cold-reader row; cold adoption run number two, halt
+log trending toward zero STOPPED, "the only empirical form the replication
+claim can honestly take"). **The One Thing**: rewrite the campaign-seal
+passage FROM THE RECORD — one session's work, the answer in the repository.
+
+### Files-in-this-commit
+- docs/reports/process-council/round-3/bill.md
+- docs/reports/process-council/round-3/bob.md
+- docs/reports/process-council/round-3/charlie.md
+- docs/reports/process-council/round-3/contrarian.md
+- docs/reports/process-council/round-3/executor.md
+- docs/reports/process-council/round-3/expansionist.md
+- docs/reports/process-council/round-3/first-principles.md
+- docs/reports/process-council/round-3/outsider.md
+- docs/reports/process-council/round-3/sal-framework.md
+- docs/reports/process-council/round-3/verdict.md
