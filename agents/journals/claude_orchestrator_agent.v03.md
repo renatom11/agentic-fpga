@@ -1929,3 +1929,109 @@ cheaper fix is to stop hand-publishing a page the builder owns.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0303] 2026-08-12T20:52Z | task:none | The 10G Ethernet example is replaced by uart_lite - a design three FPGA engineers independently converged on - and all 34 remaining boxes get contents that fill as the project runs
+
+### Trigger
+
+Sponsor: drop the 10G Ethernet project for "a more basic and lower in scope project
+than that... im talking a super basic fpga project", with a mock spec and basic
+requirements; and every box in the repository gets live data underneath its
+description, the way work orders now do.
+
+### Choosing the project, and checking it rather than trusting it
+
+Three FPGA engineers proposed a complete package each, from three different
+angles — smallest possible, richest verification story, most instantly
+recognisable. All three independently chose a UART. Three judges scored them on
+simplicity, realism, narrative fit and teachability: 100, 87, 85. A synthesiser
+merged the winner with the grafts the judges named and fixed what they caught.
+
+uart_lite: 115200 baud 8N1 on a 50 MHz board, five modules, seventeen numbered
+requirements, a 16-deep receive FIFO, no PLL, no block RAM, no vendor IP.
+
+I recomputed every load-bearing number myself before adopting it. They hold:
+50e6/115200 = 434.0278 so DIV_TX = 434 at +0.0064%; 50e6/(115200*16) = 27.1267
+so DIV_OS = 27 and the receive bit period is 432 at +0.4694%, which is inside a
+0.5% ceiling with 0.031 points to spare. The seeded bug makes the tick period 28
+instead of 27, so the bit period is 448, and the free-running receive rate is
+111607.14, -3.1188%.
+
+What makes it worth a whole page is that the central lesson is arithmetic rather
+than assertion. The broken receiver's correct-decode window is sender periods
+426 through 472, derived from its stop sample at cycle 4256: 9P <= 4256 gives 472
+and 4256 < 10P gives 426. The transmitter emits 434. So the loopback soak stayed
+green through every review round as a COMPUTED FACT, not as luck — and that is
+the page's argument for why the bench had to be independent, checkable by a
+reader with a calculator. The convicting sweep's boundary names its own cause:
+the bit-7 sample sits at 3808, inside data bit 7 only while 3808 < 9P, i.e.
+P > 423.111 — and 3808 is 224 + 448 x 8, the broken 448 written on the face of
+the boundary.
+
+The surviving mutant is a plan defect, not a test defect: attack row A-08 derived
+its sweep bounds from 3% of 432, the receiver's OWN nominal period, where the
+frozen requirement derives from 3% of the ideal 434.0278. Twenty-five values sat
+next to twenty-six and looked right. The plan never drives 445, 446, 447 — which
+is exactly where the seeded diff lives.
+
+### The citation was verified, not quoted
+
+The co-simulation anchor is a real external implementation, so I cloned it rather
+than trusting the package: github.com/alexforencich/verilog-uart at
+af479b1cd12d5f3339ba71c3649b2a789ba4713d exists, rtl/uart_rx.v exists at that
+SHA, the MIT header is present, and the port list matches what the package
+claims character for character, down to "parameter DATA_WIDTH = 8".
+
+That anchor is also what produces the page's sharpest audit finding: at prescale
+54 its bit period is 54 x 8 = 432 clock cycles, IDENTICAL to our 16 x 27, so
+co-simulation agreement is a statement about a shared constant and not evidence
+about either implementation's tolerance. And 434/8 = 54.25 is not an integer, so
+the transmit lane has no anchor and never did.
+
+One arithmetic error in 76,000 characters: the cable margin was given as 14
+counts where 447 - 436 = 11. Corrected before anything was built on it.
+
+### The contents
+
+Six authors wrote 357 rows across all 34 remaining boxes; one retold all 39
+beats, 37 journal entries and 7 work-order notes; one rewrote the description
+cards including eight new ones for the group labels. Four adversarial lenses then
+audited the result and filed 45 findings, 28 blocking.
+
+The load-bearing thing is that the spec box now holds real specification clauses
+and the requirements box holds all seventeen numbered requirements with their
+real text and stated verification method — which the sponsor asked for by name.
+
+### A defect I fixed before the reviewers reported it
+
+The work-order id scheme existed in three incompatible versions: the bible and
+most ledgers said WO-0013 and WO-0014, two ledgers invented WO-001/002/003, and
+the beat script that drives the animated Work orders box used a third set that
+nobody had been asked to change — mine. Unified to WO-0013, WO-0014, WO-0015
+across the animation and the content, with a negative lookahead in the rewrite so
+WO-001 did not eat the prefix of WO-0013.
+
+### Verification
+
+Harness clean at three viewports: play advances, no off-stage marks, no JS
+errors, and all 68 targets open a card. The NO-LIVE-DATA list it prints is now
+empty, where it named 34 boxes before.
+
+Extended it this round with an overflow check, because a screenshot showed the
+pinned 40-character SHA running to the annotation box's border: it now clicks
+every target at four times and fails if any element overflows its own card or if
+the body scrolls sideways. The SHA is fixed with overflow-wrap rather than by
+shortening the citation.
+
+site/build.py run before the commit this time, per the rule J-orchestrator-0302
+earned.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/lifecycle.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
