@@ -822,3 +822,31 @@ added to the record, a disposition is not rewritten.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-orchestrator-0284] 2026-08-12T11:04Z | task:WO-0084 | The one class no mutant ever tested is read: step 6 red, IC-2 a measured kill exactly where the seal predicted — the frozen tally unmoved, and WO-0084 fully closed
+
+### The read
+
+Build run 31589039601 (mut/wo-0084-class-03-v2 = 3f83864, base 77c755c),
+job 94089479238, read at the step the sealed rule names:
+
+- step 5 "Build" — **success** (v2 compiles; v1's warning-26 orphan is gone)
+- step 6 "Run tests (expect tests, waveform snapshots)" — **FAILURE**
+- cosim job — success
+
+Step 6 red = KILL (ADR-0020, the sealed step-6-not-job rule). IC-2 closes as
+a MEASURED KILL, matching dv's frozen IC-2=KILL seal prediction. This was a
+supplemental run, not a re-campaign: the frozen campaign tally does not move
+— the class that had no run (v1 never compiled) now has one, and it kills.
+The seal stands unfalsified end to end (12 predicted kills / 1 survivor; the
+one compile-fail now measured a kill; zero misses across all seats). WO-0084
+is fully closed.
+
+### Cleanup (this entry authorises it)
+
+The operator worktree scratchpad/wo0084-op2 and local branch
+mut/wo-0084-class-03-v2 are removed after this lands; the remote ref
+mut/wo-0084-class-03-v2 STANDS as the never-merge campaign record (ADR-0019).
+
+### Files-in-this-commit
+- (none)
