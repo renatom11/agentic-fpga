@@ -1358,3 +1358,246 @@ gap.
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_tx_64.md
 - agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md
+
+## [J-dv_lead-0198] 2026-08-12T11:12Z | task:ADR-0022 | ADR-0022 row 1 countersigned ACCEPT — the re-scoped warranty guards exactly the rule of what the verification line reads, and the unit-level UNTESTED is calibrated to a composite never assembled: not FIT, not NOT FIT, not upgraded
+
+### Trigger
+
+Orchestrator work order: the §3.5 normative-change countersignature owed by
+this seat at row 1 of `docs/adr/ADR-0022-the-warranty-and-the-split.md` §7.
+Not a description confirmation — a countersignature of a normative change to
+`docs/PROCESS.md`'s central warranty (its class 4, "what the artifact warrants
+and to whom"). The question is §3.5's exactly: **is the guard exactly the rule,
+or is it wider?** — asked of the constrained-seat's own artifact, with refusal a
+first-class outcome. I am the verification line; the claim under signature is a
+claim about what verification recognizes as true of an artifact it has read, so
+it is squarely my seat's competence and not architect_docs_lead's to self-adjudge
+(which is the procedural defect §2.3 bullet 4 and §7 exist to close).
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md` — both in full, both
+  first, per my launcher's mandatory order. §3.5-relevant: PROTOCOL §10
+  (independence and evidence), §7 (harvest attaches to `SO-`/gate, not this).
+- `docs/adr/ADR-0022-the-warranty-and-the-split.md` — in full, all 274 lines,
+  with attention as directed to §2 (Decision 1), §2.1 (the decision and its
+  measured basis), §2.3 (the four failure-mode bullets and the UNTESTED
+  statement), §2.4 (what it explicitly does not decide), and §7 (the table, the
+  precedent note, and the difference-this-time paragraph). Read only; **not
+  edited** — the acceptance act of §8 is the orchestrator's, citing this entry.
+- `docs/PROCESS.md` opening block (lines 1–20) — read at the working tree, to
+  check the re-scoped warranty **as it actually stands in the artifact**, not as
+  the ADR paraphrases it. The claim sits where §2.1 says it does, in the opening
+  paragraph a reader meets first: "one half of an export unit — the half that
+  explains … Read on its own, this document is a description … The replication
+  claim belongs to the unit, not to this half … the doc–shell drift check does
+  not exist … the unit's two halves are bound by nothing but this sentence and
+  the pin in §6.0."
+- `docs/reports/process-council/round-4/verdict.md` — in full. It commissioned
+  decision 2 and set the *condition* on decision 1 ("the re-scoping itself must
+  be governed … a normative change to the artifact's central warranty"), and its
+  First Principles Thinker made the exact calibration under signature here: "the
+  unit verdict is UNTESTED, not FIT or NOT FIT." Its blind-spot section records
+  that both executed runs ran where the shell was unreachable, so the with-shell
+  path is untested.
+- The two cold-adoption run records — the empirical basis I was told to verify
+  rather than take from the work order:
+  - `docs/reports/process-council/round-2/adoption-run-halt-log.md` — run 1, one
+    file handed over (2,973 lines), no shell named. Summary: "roughly one
+    hundred percent of the executable layer … is my invention." 18 halts, 3
+    STOPPED (HALT-01 no shell, HALT-14 no ratifier, HALT-16 no work).
+  - `docs/reports/process-council/round-3/adoption-run-2-halt-log.md` — run 2,
+    fourth edition (5,044 lines), shell pinned and verified at ref level
+    (`2ad82c3`, byte-identical to §6.0's pin), contents unreachable by the run
+    charter. Summary: interfaces transferred as facsimiles (trailer keys, entry
+    grammar, chain fields, scope-table semantics, rule numbering, both
+    thresholds, large-file figure — none invented); HALT-02: "~850 lines across
+    five enforcement scripts plus the hook remained pure invention." 17 halts,
+    **0 STOPPED**.
+- My own last entry, `J-dv_lead-0197`, for the id to increment and the
+  harvest-span boundary.
+
+**Not read**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`. No RTL reached
+this round's context — this is a governance countersignature about what an
+artifact warrants, judged from the artifact and its measured adoption record,
+which is the §3.5 competence of the verification line and not a module verdict.
+
+### Reasoning
+
+**What the two halves of row 1 actually ask, and why they are separable.** Row 1
+asks two things and I answer each on its own basis. (a) is the half-level
+question: is the re-scoped warranty — *this document read alone is a description,
+not a replication kit; replication belongs to the unit* — true of the artifact I
+have read? (b) is the composite-level question: is §2.3's *unit-level UNTESTED*
+neither too strong nor too weak? A guard can be exact at one level and wrong at
+the other, so I refused to collapse them.
+
+**(a) — the guard is exactly the rule, and the measurement is on record twice.**
+The re-scoped warranty makes three moves and I checked each against the artifact
+rather than the ADR's paraphrase. *Move 1*: "this half is the explaining half of
+an export unit." A claim about what the document IS; read alone it is a
+description, which both runs confirm operationally — an adopter executing §6.2
+with only this text cannot rebuild the executable layer. TRUE. *Move 2*: "read
+alone it is a description, not a replication kit." This is the load-bearing
+disclaimer, and it is the exact object of measurement: run 1 invented "roughly
+one hundred percent of the executable layer"; run 2, handed the same document
+with the interfaces now printed as facsimiles, still wrote ~850 lines of
+enforcement logic from nothing. Neither run replicated the machinery from the
+document alone. The disclaimer is TRUE and is measured, not asserted. *Move 3*:
+"the replication claim belongs to the unit, not to this half." This is where an
+overclaim could hide, so I tested it hardest. Relocating the claim to "the unit"
+could be read as implying the unit CAN replicate — which is UNTESTED and would be
+a widening. It is not that: the same opening paragraph discloses that the binding
+instrument (the doc–shell drift check) "does not exist" and that "the unit's two
+halves are bound by nothing but this sentence and the pin," and §2.3/§2.4
+explicitly withhold the unit-level claim. "Belongs to" names *where the claim
+would have to be adjudicated*, not that it is proven. So the guard (what this
+half warrants about itself) equals the rule (what is true of the artifact): it
+warrants description and disclaims replication, both true, and it does not smuggle
+in a unit-level warrant. It is also not NARROWER: §2.2 rejected "call it a memoir
+with no export function" precisely because the interfaces DID transfer (run 2's
+zero stops, every grammar/identifier/threshold/rule number a facsimile), so a
+document that disclaimed its export function would underclaim in the other
+direction. The chosen scope catches exactly what transferred and disclaims
+exactly what did not. **Guard = rule. No widening, no narrowing.**
+
+**A conflation I explicitly refused.** The round-4 verdict's finding 4 convicts a
+*different* sentence — "extracted project-free," the shell's domain-agnosticism —
+as materially false, a sixth-edition repair item. That is a claim about the
+UNIT/shell's de-domaining, not the Decision-1 warranty about this half being the
+explaining half. It does not touch row 1's object; if anything it reinforces that
+the unit-level claim must stay uncertified, which §2.3 already does. I record
+that I checked it and it does not move my verdict, so a later reader cannot think
+I missed it.
+
+**(b) — UNTESTED is calibrated to the composite, and the composite was never
+assembled.** §2.3 names the unit as a four-part composite: document + shell + a
+drift check that does not exist + a with-shell adoption path never executed. I
+verified each: the document exists (read); the shell exists as a pinned ref (run
+2, ref-level only — contents never read in either run); the drift check does not
+exist (PROCESS.md opening `[B.2·9]`; round-4 "built in none" for three editions);
+the with-shell path has never run (round-4 blind spot — both executed runs ran
+where the shell was unreachable). So no composite-level integration was ever
+measured in either direction.
+
+*Too strong?* FIT would assert the unit works — unearned, nothing assembled it.
+NOT FIT would assert it fails — also unearned, and actively contradicted by the
+one positive datum we have (run 2's interfaces transferred), so a negative
+verdict would over-claim a failure we never measured. UNTESTED sits between and
+claims neither. Not too strong.
+
+*Too weak?* A weaker calibration would let the re-scoping alone rescue the
+replication claim — "provisionally fit," or the claim left standing unqualified.
+§2.3 forecloses that in terms ("the honest verdict at the unit level is
+UNTESTED, not FIT, and this record does not upgrade it") and §2.4 names the two
+gates that would (the drift check built, and a with-shell alien-domain run by an
+uncommissioned party). It also does not soften the known hazards: the with-shell
+path forks at minute one with no tiebreaker (round-4), and §2.3's other bullets
+disclose the sentence-only binding and the quiet-widen risk. UNTESTED-plus-
+disclosed-hazards is the honest floor; it does not overstate assurance. Not too
+weak.
+
+*A distinction the calibration gets right.* The interface transfer measured in
+run 2 is a *half-level* fidelity result — evidence about the document's export of
+its own grammar — not a *unit-level* integration result. UNTESTED "at the unit
+level" keeps those two objects apart, which is exactly the discipline that keeps
+a true partial result from being read as a false whole. **Guard = rule here too:
+UNTESTED neither convicts (NOT FIT) nor acquits (FIT/upgraded) a composite that
+has no measurement.**
+
+**Why I do not refuse.** I steelmanned three refusals and each fails. (1)
+"Relocating to the unit overclaims replication" — no; the document withholds the
+unit claim explicitly and discloses the missing binding instrument. (2) "UNTESTED
+is too weak given the fork-at-minute-one defect" — no; a known hazard in an
+unexecuted path is not a measurement of failure, and the hazard is disclosed
+anyway. (3) "UNTESTED is too strong because part of the unit tested" — no;
+interface transfer is half-level, the composite was never assembled. None holds,
+so ACCEPT is the substantive verdict and not the agreeable one. My signature is
+of a normative change, and it is affirmative because on this artifact the guard is
+the rule at both levels.
+
+### Actions
+
+1. Read the charter and PROTOCOL in full, first, per the launcher order.
+2. Read ADR-0022 in full; read `docs/PROCESS.md`'s opening block to confirm the
+   re-scoped warranty as it actually stands in the artifact.
+3. Verified the empirical basis independently: the round-4 verdict, and both
+   cold-adoption halt logs, against the ADR's §2.1/§2.2 claims — the "~100%
+   invented" (run 1) and "~850 lines from nothing after facsimiles" (run 2)
+   figures reproduce verbatim in the source records, and run 2's zero-stop /
+   interfaces-as-facsimiles result reproduces.
+4. Answered §3.5 for both limbs of row 1: (a) guard-exactly-the-rule,
+   (b) guard-exactly-the-rule (UNTESTED correctly calibrated). Verdict **ACCEPT**.
+5. Appended this entry. **Did NOT** edit ADR-0022 (the §8 acceptance act is the
+   orchestrator's), and did **not** run `git add`, `git commit`, `git push`, or
+   `scripts/agent_commit.sh` — the orchestrator is the sole committer.
+
+### Evidence
+
+This is a countersignature entry; its "evidence" is the correspondence between
+the claims under signature and the committed records, all readable from a
+checkout at this SHA.
+
+- Re-scoped warranty text, `docs/PROCESS.md` lines 9–20 — the claim sits in the
+  opening paragraph as §2.1 states, and discloses the non-existent drift check
+  and the sentence-only binding.
+- Run-1 measurement: `docs/reports/process-council/round-2/adoption-run-halt-log.md`
+  Summary — "roughly one hundred percent of the executable layer … is my
+  invention"; 18 halts / 3 STOPPED.
+- Run-2 measurement: `docs/reports/process-council/round-3/adoption-run-2-halt-log.md`
+  HALT-02 and Summary — "~850 lines across five enforcement scripts plus the
+  hook remained pure invention"; "STOPPED: 0"; interfaces "transferred this time
+  as facsimiles"; shell pin verified at ref level `2ad82c3`, contents unreachable.
+- Calibration precedent: `docs/reports/process-council/round-4/verdict.md` — "the
+  unit verdict is UNTESTED, not FIT or NOT FIT"; the with-shell path untested
+  (blind-spot section); the drift check "built in none" for three editions.
+- Composite membership: ADR-0022 §2.3 (the four parts) and §2.4 (the two gates
+  that would upgrade the verdict), consistent with all of the above.
+
+**Not reproducible from this checkout**: nothing in this entry. Every figure is a
+quotation from a committed record readable at this SHA.
+
+### Outcome
+
+**Verdict: ACCEPT** — ADR-0022 §7 row 1, both limbs.
+
+- (a) The re-scoped warranty is one the verification line recognizes as TRUE of
+  the artifact it has read. **§3.5 answer: guard exactly the rule** — it warrants
+  description and disclaims replication (both measured), and does not widen into a
+  unit-level warrant nor narrow into a no-export disclaimer.
+- (b) The unit-level UNTESTED statement in §2.3 is neither too strong (not FIT,
+  not NOT FIT) nor too weak (not upgraded; the two gates named). **§3.5 answer:
+  guard exactly the rule** — UNTESTED is the honest verdict for a composite that
+  was never assembled, and the calibration keeps the half-level facsimile evidence
+  from being read as unit-level fitness.
+
+**DoD vs the work order: met.** ADR read in full; the basis verified from the
+records, not taken from the order; exactly one journal entry appended, id
+`J-dv_lead-0198`, pure EOF append, journal-only; ADR-0022 not edited; no git run.
+
+**Handoff**: this entry is the authority the orchestrator's §8 acceptance act
+cites to flip row 1 to signed; the file edit to ADR-0022 §7 is the orchestrator's,
+not mine. No `SO-`, `BUG-`, `RV-` or `WO-` is produced or owed by this round.
+
+**Harvest**: none due, declared rather than omitted. PROTOCOL §7 and ADR-0018
+attach the lessons harvest to every `SO-` and every phase gate; this is a
+normative-change countersignature, neither. The span since my last harvest stays
+open and continues to tile through this entry, so a skipped harvest would remain a
+visible gap and this declaration is what keeps it one interval.
+
+### Open-questions
+
+1. **The unit-level replication claim remains UNTESTED and I have signed that it
+   is** — my ACCEPT is not a certification of the unit, and must never be read as
+   one. Its two gates are architect_docs_lead's and the program's to build/run:
+   the doc–shell drift check (owed, three editions overdue) and a with-shell,
+   alien-domain adoption run by an uncommissioned party. Until both exist, no
+   seat — this signature included — may upgrade the unit verdict.
+2. **No escalation.** No E2 (no scope, requirement, phase or role moves; ADR-0022
+   status block says so), no E3 (no toolchain/licensing boundary moves), no E5
+   (no lead dispute — my read confirms the ADR's own calibration rather than
+   contesting it), no E6. No CRITICAL finding. Refusal was available under §3.5
+   and is not taken, on the merits recorded above.
+
+### Files-in-this-commit
+- (none)
