@@ -92,7 +92,7 @@ it is **not** a prediction of the seal's disposition, which I have not seen.
 |---|---|---|---|---|
 | **class-01** `preamble-txc` | REQ-201, §6.3 item 2 | M04-A1 (*"marking … as control, which a checker reading only `xgmii_txd` cannot see"*) | 136 (`preamble_word`) | SFD lane (7) control bit `gnd → vdd`: `xgmii_txc` on the preamble word becomes `0x81`, not `0x01` |
 | **class-02** `frame-lane-reversal` | REQ-012, REQ-021 | M04-B1 (*"Lane reversal within a word"*) | 280 (`body_word` payload octet) | payload octet select reversed: lane `j` emits source octet `7 − j` |
-| **class-03** `tkeep-ignored` | REQ-011 | M04-B2, M04-C4 (*"transmitting the whole final word"*) | 211 (`held_count`) | last-word octet count forced to `8`, `tkeep` ignored — the poison/short-word octets are transmitted |
+| **class-03** `tkeep-ignored` — active diff **`class-03-tkeep-ignored.v2.diff`** (v1 `class-03-tkeep-ignored.diff` **superseded — non-compiling**, §6) | REQ-011 | M04-B2, M04-C4 (*"transmitting the whole final word"*) | **198 (`held_keep`)** — v1 site was 211 (`held_count`) | `held_keep` sourced from constant `ones 8` instead of `i.tx.tkeep`: `tkeep` is ignored, the last-word octet count is always `8`, and the poison/short-word octets are transmitted. Identical wire behaviour to v1's intended constant-`8` count, but `held_keep` stays consumed (line 211's `popcount`), so the module compiles (§6). |
 | **class-04** `pad-target-64` | REQ-203 | M04-C1, M04-C2 (*"padding to 64 rather than 60"*) | 85 (`pad_target`) | pad target `60 → 64`: pads to 64 octets before the FCS |
 | **class-05** `pad-value-nonzero` | REQ-203 | M04-C1, M04-C4 (*"padding with 0xFF"*) | 283 (`body_word` pad octet) | pad octet value `zero 8 → ones 8`: pad octets are `0xFF` on the wire (CRC still covers them as zero) |
 | **class-06** `crc-omits-pad` | REQ-202, REQ-203 | M04-C3 (*"closes the CRC at `tlast` and pads afterwards"*) | 225 (`crc_count`) | CRC coverage keyed on `d_payload` not `d_pad`: pad octets are **not** covered — FCS equals the ref over the unpadded frame |
@@ -117,6 +117,9 @@ row could have gone red.
   lands at lane `7 − j`; invisible only under uniform filler, which B1 forbids.
 - **class-03** — a `P = 20` frame's last word puts four poison octets (positions 4–7)
   on the wire that a conformant M04 masks; observable at wire indices 20–23.
+  (**v2** renders this by forcing `held_keep = ones 8` at line 198, so `popcount` is
+  `8` on every last word — the same wire consequence as v1's intended constant-`8`
+  `held_count`, but with `held_keep` still consumed. §6 records the v1→v2 correction.)
 - **class-04** — `F = 68` not 64: the terminate lane, the octet count and the
   pre-FCS octet count all move.
 - **class-05** — wire pad octets are `0xFF` where REQ-203 requires `0x00`; the FCS is
@@ -165,6 +168,21 @@ pristine module — apply exactly one per ref.
 - Each mutation is type-correct by construction (same-width `Signal` / same-type `int`
   substitutions), so the module compiles and the suite is the instrument.
 
+> **Correction (2026-08-12, §6).** The third bullet's *"so the module compiles"*
+> clause was **falsified for class-03 v1**. That diff applies clean (`git apply
+> --check` green) but does **not** compile: it replaced `held_count = uresize
+> (popcount held_keep) position_bits` with a constant, removing the **sole**
+> consumer of `held_keep` (its only use in the module), and the resulting unused
+> `let` binding is fatal under the project's dune dev-profile warnings-as-errors.
+> The operator run recorded step-5 Build FAILURE / step-6 skipped
+> (`J-orchestrator-0281`); dv scored it UNSCOREABLE / MANIFEST DEFECT, IC-2 left
+> untested (`J-dv_lead-0196`, finding WO-0084-S3). The other twelve diffs are
+> unaffected — the attestation stands for them. class-03 **v2**
+> (`class-03-tkeep-ignored.v2.diff`) restores the clause: `git apply --check`
+> green at `712002f` (file byte-identical to base `9dba6d5`), `held_keep` stays
+> consumed (line 211), and `ones 8 : Signal.t` width 8 matches `i.tx.tkeep`'s
+> width, so the module compiles. Not operated as a campaign mutant this round.
+
 ## 5. What this manifest does not carry
 
 No scorecard, no run id, no CI conclusion, no `cosim` conclusion, no kill/survive
@@ -174,3 +192,89 @@ prediction: the "AP row(s) tested" column names a **public** claim, not the seal
 disposition, which I have not seen. A survivor, if any, is a finding act 4 routes with
 the survivor-evidence form; a mismatch between my thirteen and dv's thirteen is data
 act 4 reconciles.
+
+---
+
+## 6. Correction record — class-03 v1 did not compile; v2 is the cure (2026-08-12)
+
+This is a correction to **my own artifact** (this manifest), landed under the same
+discipline my posture-list self-corrections use: the record shows the defect and its
+cure, dated, and **nothing is silently overwritten**. The v1 diff file
+(`class-03-tkeep-ignored.diff`) is left **byte-untouched** — it is the frozen
+historical artifact the operator ran and dv scored, and their citations of it stay
+valid. The corrected diff is added **beside** it as `class-03-tkeep-ignored.v2.diff`,
+now the **active** class-03 diff.
+
+**What was wrong (v1).** `class-03-tkeep-ignored.diff` replaced, at line 211,
+
+    let held_count = uresize (popcount held_keep) position_bits in
+with
+    let held_count = of_int ~width:position_bits 8 in
+
+That is behaviourally the intended class — last-word octet count forced to `8`,
+`tkeep` ignored — but line 211 is the **sole consumer of `held_keep`** in the module
+(`held_keep` appears only at its definition, line 198, and at this popcount). Removing
+it orphans the `held_keep` binding, and an unused `let` binding is **fatal** under the
+project's dune dev-profile warnings-as-errors (warning 26). So the mutated module
+**fails to build**: the diff *applies* clean but does not *compile*. The operator's run
+recorded **step-5 Build FAILURE, step-6 (Run tests) skipped** (`J-orchestrator-0281`),
+and dv ruled it **UNSCOREABLE / MANIFEST DEFECT** with **IC-2 left untested**
+(`J-dv_lead-0196`, finding **WO-0084-S3**). This **falsified §4's attestation** —
+*"each … type-correct … so the module compiles and the suite is the instrument"* —
+**for class-03, and only class-03**; the other twelve diagnostics stand.
+
+**The cure (v2).** `class-03-tkeep-ignored.v2.diff` moves the injection to the **keep
+source**, line 198:
+
+    let held_keep = hold 8 i.tx.tkeep in
+becomes
+    let held_keep = hold 8 (ones 8) in
+
+- **Compiles.** `held_keep` remains **consumed** at the unchanged line 211
+  (`popcount held_keep`), so no binding is orphaned — v1's exact failure is cured.
+  Dropping the read of the `i.tx.tkeep` record **field** raises no warning (record
+  fields are not bindings; `i` and `i.tx` remain heavily used). `ones 8 : Signal.t` of
+  width 8 matches `i.tx.tkeep`'s width, so `hold 8 (ones 8)` type-checks exactly as
+  `hold 8 i.tx.tkeep` did. `ones` is in scope (used at line 242).
+- **Same live defect, same class (IC-2).** `held_keep = ones 8` for all inputs, so
+  `popcount held_keep = 8` on every last word and `held_count = 8` always — **byte-for-
+  byte the wire behaviour v1 intended** with its constant-`8` count. `tkeep` is ignored;
+  the last word is always treated as a full 8-octet word. Violates REQ-011; tests the
+  public **M04-B2 / M04-C4** Kills claim ("transmitting the whole final word").
+- **Non-equivalent, live.** For any last word with `tkeep ≠ 0xFF` (a partial final
+  word, e.g. `P = 20` → `tkeep = 0x0F`, conformant count 4), the mutant computes 8,
+  moving `payload_end`, `pad_end` and the terminate lane. A conformant M04 masks the
+  poison octets; the mutant transmits them — the same §3 observable, wire indices
+  20–23 for `P = 20`. It is not an equivalent mutant.
+
+**Verification this round (read-only; the tree was never modified).**
+
+    git apply --check docs/reports/audit/WO-0084-mutations/class-03-tkeep-ignored.v2.diff
+    # → clean at HEAD 712002f
+    git diff 9dba6d5 712002f -- libs/hardcaml_ethernet/src/xgmii_tx_64.ml
+    # → empty (file byte-identical to the manifest's declared base, so a diff that
+    #   applies at HEAD applies at 9dba6d5 / the mut/ base)
+
+Compile-correctness is established by **`git apply --check` + the type-correctness
+argument above**, per the round's scope. The mutant is **not** operated this round —
+no `mut/` ref is cut and no CI is run; that is a fresh operator act, deferred to a
+commissioned re-run.
+
+**IC-2 disposition and re-run recommendation.** IC-2 is presently the **one** seeded
+M04 class with **no behavioural measurement** — v1's compile-fail left it untested and
+v2's existence is a manifest fact, not a run (a manifest predicts a mechanism; a run
+measures it, ADR-0005). **Recommendation: a single-class supplemental operator run of
+`class-03-tkeep-ignored.v2.diff` is warranted before M04's `P<n>-module-ready` gate
+signs** — not a re-run of the full thirteen-class campaign. Grounds: (a) IC-2 is the
+tkeep / last-word-octet-count defect class, which governs frame-length and pad-boundary
+correctness — a coverage hole there is worth closing; (b) it is cheap: one `mut/` ref,
+one build, step-6 read; (c) it does **not** reopen or re-score the frozen campaign — the
+campaign's score is a frozen measurement (ADR-0020), and a v2 run is a **separate**
+supplemental measurement scored against the already-frozen IC-2 = KILL seal prediction;
+(d) the blind is discharged, so nothing is compromised by running it now. Until such a
+run exists, IC-2 must be carried in the gate tally as an **exclusion named with its
+ground** ("class-03 v2 rendered — awaiting operator run"), **not** read as a kill on the
+strength of the diff alone. If v2 is killed, IC-2 closes; if it survives, that is a real
+coverage finding (like S2's `cfg_ifg` gap) the gate must weigh. The decision to
+commission is the orchestrator's; this seat supplies the compiling mutant and the
+recommendation.

@@ -1722,3 +1722,197 @@ probe) are candidates. Nil yield **declared for this round**, not omitted.
 - docs/reports/audit/WO-0084-mutations/class-11-gap-ignores-ifg.diff
 - docs/reports/audit/WO-0084-mutations/class-12-underflow-qualifier-dropped.diff
 - docs/reports/audit/WO-0084-mutations/class-13-abort-word-swapped.diff
+
+## [J-auditor-0028] 2026-08-12T10:34Z | task:WO-0084 | class-03 re-seeded: v1's constant-8 count orphaned `held_keep` and would not compile — v2 forces the keep source to `ones 8`, the same tkeep-ignored defect, and the module builds; v1 is preserved as the frozen historical artifact and IC-2 is flagged for a single-class supplemental run
+
+### Trigger
+
+Orchestrator dispatch, **WO-0084-S3**, one round, my seat. This is dv_lead's
+finding routed to me from the scored M04 campaign (`J-dv_lead-0196` at `eeddbe8`):
+my class-03 mutation did **not compile** when operated (step-5 Build FAILURE), so
+the suite never ran and **IC-2** — the tkeep / last-word-octet-count defect class —
+was left **untested**. The task: re-derive a class-03 defect of the same class that
+**compiles**, land it without silently overwriting the v1 record, verify it applies
+clean without operating it as a campaign mutant, and recommend whether IC-2 warrants
+a re-run now that the other twelve are scored. This is a correction to my **own**
+artifact (the manifest), so the discipline is the same one my posture-list
+self-corrections use — the record must show the defect and its cure, dated.
+
+### Inputs
+
+- `agents/charters/auditor.md`, `agents/PROTOCOL.md` — in full, mandatory first
+  actions. §7 Mutation-record (b.1)/(b.2), §10 (transient model, ADR-0005: a
+  manifest predicts, a run measures), §6 (my write scope).
+- Orchestrator dispatch prompt for WO-0084-S3 — my task and its discipline.
+- `libs/hardcaml_ethernet/src/xgmii_tx_64.ml` at `712002f` — the mutation target,
+  read in full; byte-identical to base `9dba6d5` (`git diff 9dba6d5 712002f -- …`
+  empty), so a diff authored at HEAD applies at the manifest's declared base.
+- `docs/reports/audit/WO-0084-mutations/README.md` and
+  `docs/reports/audit/WO-0084-mutations/class-03-tkeep-ignored.diff` (v1) — the
+  manifest and the failing diff, my own artifacts.
+- `libs/hardcaml_ethernet/src/dune` and `dune-project` — the build config
+  (`ppx_jane`, no custom flags → dune dev-profile warnings 1..28 fatal, so an
+  unused `let` binding [warning 26] is a build error).
+- `J-dv_lead-0196` (`agents/journals/claude_dv_lead_agent.v12.md`) — dv's scoring:
+  the class-03 UNSCOREABLE / MANIFEST-DEFECT ruling, the probable-cause statement,
+  and the run evidence it cites (`J-orchestrator-0281`, step-5 Build FAILURE /
+  step-6 skipped, class-03). The blind is discharged, so reading dv's scoring is
+  permitted; I did not need the seal text itself for a re-render.
+
+### Reasoning
+
+**Confirming the root cause independently before re-rendering.** `held_keep` appears
+in the module at exactly two sites: its definition (line 198, `hold 8 i.tx.tkeep`)
+and one consumer (line 211, `uresize (popcount held_keep) position_bits`). v1
+replaced line 211 with `of_int ~width:position_bits 8` — behaviourally the right
+class, but it deleted the **sole** consumer of `held_keep`. Under the lib's dune
+dev-profile (no custom flags; warnings 1..28 fatal), the orphaned `let held_keep`
+binding is warning 26, fatal. So the diff *applies* (I re-confirmed `git apply
+--check` green on v1) but does **not** *compile* — step-5 red, step-6 never runs.
+This is the same cause dv stated from the committed diff without opening the module;
+I reached it from the module and the dune config, and the two agree. §4's attestation
+("type-correct by construction … so the module compiles and the suite is the
+instrument") was thereby falsified **for class-03 alone** — the falsification is the
+finding, and it is against my own seat.
+
+**The re-render must keep `held_keep` live while forcing the count to 8.** The stated
+intent — last-word octet count forced to 8, `tkeep` ignored, poison/short-word octets
+transmitted — is right; only the rendering was wrong. Two type-correct, compiling
+renderings exist. (A) At line 211, force the popcount argument to all-ones:
+`popcount (held_keep |: ones 8)` — keeps v1's site but reads as a contrived tautology.
+(B) At line 198, source the keep register from a constant: `hold 8 (ones 8)` — the
+keep register ignores the presented `tkeep` and holds all-kept. I chose **(B)**: it is
+the more **natural, plausible RTL fault** (a designer stubbing/forgetting to wire
+`tkeep`), which is what a mutation should be, and it reads transparently as
+"tkeep-ignored," the class name itself. It keeps `held_keep` consumed at the unchanged
+line 211, so the orphan is cured; dropping the read of the `i.tx.tkeep` record **field**
+raises no warning (fields are not bindings; `i`/`i.tx` stay heavily used); `ones 8 :
+Signal.t` width 8 matches `i.tx.tkeep`'s width, so `hold 8 (ones 8)` type-checks exactly
+as before, and `ones` is already in scope (line 242). The module compiles.
+
+**Same live defect, not an equivalent mutant.** `held_keep = ones 8` for all inputs, so
+`popcount = 8` on every last word and `held_count = 8` always — byte-for-byte the wire
+behaviour v1 *intended* with its constant-8 count. For any partial final word
+(`tkeep ≠ 0xFF`, e.g. `P = 20` → `0x0F`, conformant count 4) the mutant moves
+`payload_end` / `pad_end` / the terminate lane and transmits poison octets a conformant
+M04 masks — the §3 observable, wire indices 20–23. Distinguishable on every
+partial-last-word frame; live, in-class (IC-2, REQ-011, M04-B2/M04-C4).
+
+**Correction discipline: supersede, do not overwrite.** The v1 file
+(`class-03-tkeep-ignored.diff`) is the artifact the operator ran and dv scored; their
+citations must stay valid. So I left it **byte-untouched** and added v2 **beside** it
+(`class-03-tkeep-ignored.v2.diff`), with the README's §2 row, §3 bullet, §4 attestation
+and a new dated §6 all recording that v1 did not compile, why, and that v2 cures it —
+nothing silently rewritten. This is the posture-list self-correction discipline applied
+to the manifest.
+
+**Scope discipline this round.** Verification is `git apply --check` (green at
+`712002f`) plus the type-correctness argument — I did **not** cut a `mut/` ref, build,
+or run CI; operating the mutant is a fresh operator act, deferred. I touched only
+`docs/reports/audit/WO-0084-mutations/**`; I did not edit the RTL in the tree (I render
+a diff), `test/**`, or `AP-xgmii_tx_64.md` (dv's, in flight this round on S1/S2).
+
+**IC-2 re-run recommendation.** IC-2 is the one seeded M04 class with no behavioural
+measurement; v2's existence is a manifest fact, not a run. I recommend a **single-class
+supplemental operator run of v2 before M04's `module-ready` gate** — not a full
+thirteen-class re-campaign — because the tkeep/last-word class governs frame-length and
+pad-boundary correctness, the run is cheap, and it does **not** re-score the frozen
+campaign (ADR-0020: the score is a frozen measurement; a v2 run is a separate
+measurement against the already-frozen IC-2 = KILL seal prediction). Until it runs, IC-2
+stays a gate-tally **exclusion named with its ground**, never a kill on the diff alone.
+
+### Actions
+
+1. Read charter + PROTOCOL in full; precheck: `git rev-parse HEAD` = `712002f`, tree
+   clean, branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`; HEAD not behind, so
+   the standing fetch+ff-only cure was not needed and not run.
+2. Confirmed `held_keep`'s sole consumer (line 211) and the dune warnings-as-errors
+   config; confirmed file byte-identity `9dba6d5`→`712002f`; re-confirmed v1 applies
+   clean (so v1's fault is compile-time, not apply-time).
+3. Read dv's scoring (`J-dv_lead-0196`) to cite the concrete run evidence.
+4. Authored v2 in the scratchpad, `git apply --check` green, then wrote it to
+   `docs/reports/audit/WO-0084-mutations/class-03-tkeep-ignored.v2.diff` and
+   re-checked it applies clean at the final location.
+5. Annotated the README: §2 class-03 row (v2 active, v1 superseded, site 198), §3
+   observable bullet, a §4 correction blockquote (attestation falsified for v1 /
+   restored for v2), and a new dated **§6 Correction record** with the re-run
+   recommendation.
+6. Left v1's `.diff` byte-untouched; appended this entry.
+
+**Not done, deliberately**: no `mut/` ref cut, no build, no CI run, no campaign
+re-score; no edit to the RTL source, `test/**`, `AP-xgmii_tx_64.md`, or the seal; no
+`git add`/`commit`/`push` (orchestrator is sole committer, PROTOCOL §2) — I return for
+verification and commit.
+
+### Evidence
+
+All commands run from a checkout at `712002f`; the tree was never modified
+(`git apply --check` is read-only).
+
+    git rev-parse HEAD
+    # 712002ffba0a105e3c34f78c85b5b6490e94951e
+    git status --porcelain    # clean at precheck
+    date -u                   # Wed Aug 12 10:34:33 UTC 2026
+
+    # file byte-identical base -> HEAD, so a HEAD-authored diff applies at 9dba6d5:
+    git diff 9dba6d5 712002f -- libs/hardcaml_ethernet/src/xgmii_tx_64.ml      # (empty)
+
+    # held_keep has exactly one consumer (line 211); i.tx.tkeep read only at 198:
+    #   198: let held_keep = hold 8 i.tx.tkeep in
+    #   211: let held_count = uresize (popcount held_keep) position_bits in
+
+    # v1 applies clean but (per J-orchestrator-0281) does not compile:
+    git apply --check docs/reports/audit/WO-0084-mutations/class-03-tkeep-ignored.diff
+    # (green — apply succeeds; the failure is step-5 Build, warning-26 orphan)
+
+    # v2 applies clean at HEAD:
+    git apply --check docs/reports/audit/WO-0084-mutations/class-03-tkeep-ignored.v2.diff
+    # Checking patch libs/hardcaml_ethernet/src/xgmii_tx_64.ml...  (clean)
+    git status --porcelain
+    #  M docs/reports/audit/WO-0084-mutations/README.md
+    #  ?? docs/reports/audit/WO-0084-mutations/class-03-tkeep-ignored.v2.diff
+
+Type-correctness (the compile claim, established by reasoning per the round's scope,
+not by a build): v2 is the single substitution `hold 8 i.tx.tkeep` →
+`hold 8 (ones 8)` at line 198; `ones 8 : Signal.t` width 8 = `i.tx.tkeep`'s width;
+`held_keep` stays consumed at line 211; dropping an `i.tx` record-field read raises no
+warning. The exact binding that made v1 fatal (unused `held_keep`) is live in v2, and
+no new unused binding is introduced.
+
+Cross-reference (dv's scoring, read at committed text): `J-dv_lead-0196` rules
+class-03 UNSCOREABLE / MANIFEST DEFECT, IC-2 untested; run evidence `J-orchestrator-0281`
+records class-03 step-5 Build FAILURE / step-6 skipped.
+
+### Outcome
+
+**DoD: met.**
+
+- [x] class-03 re-derived as a type-correct, compiling, in-class live defect (IC-2);
+      `git apply --check` green at `712002f`; behaviour identical to v1's intent;
+      non-equivalent (distinguished on every partial-last-word frame).
+- [x] Manifest corrected without silent overwrite: v1 `.diff` byte-untouched and
+      preserved as the frozen historical artifact; v2 landed beside it; README §2/§3/
+      §4 annotated and a dated §6 correction record added.
+- [x] Compile verified by apply-check + type-correctness reasoning; **not** operated as
+      a campaign mutant (no `mut/` ref, no CI) — flagged as a fresh operator act.
+- [x] IC-2 re-run recommendation supplied (single-class supplemental run before
+      module-ready; not a re-score; exclusion-with-ground until run).
+- [x] Correction is to my own artifact and journaled as such; honest `date -u` stamp;
+      single entry header; `Files-in-this-commit` exact; no commit/push/stage.
+
+Handoff: return to the orchestrator for verification and commit under `Agent: auditor`.
+
+### Open-questions
+
+- The **decision** to commission the single-class v2 run is the orchestrator's; this
+  seat supplies the compiling mutant and the recommendation only. Until such a run
+  exists, IC-2 must be carried at M04's `module-ready` tally as an exclusion named with
+  its ground ("class-03 v2 rendered — awaiting operator run"), not read as a kill.
+- **Harvest**: none due — this is a correction round, neither an `SO-` nor a phase gate
+  (charter §8, PROTOCOL §7). Span since my last harvest is declared open across
+  `J-auditor-0027 .. J-auditor-0028` with nil yield, so the tiling shows no skipped
+  boundary; the next harvest falls at the next `SO-`/gate I sign.
+
+### Files-in-this-commit
+- docs/reports/audit/WO-0084-mutations/README.md
+- docs/reports/audit/WO-0084-mutations/class-03-tkeep-ignored.v2.diff
