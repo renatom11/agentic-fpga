@@ -10,7 +10,10 @@ Copy shaped by a four-agent review panel (three auditors + the sponsor's
 representative) on 2026-08-02; the representative's rulings are the spec
 for this page's voice. Regenerate: python3 site/build.py
 """
-import html, os, re, subprocess
+import html, os, re, subprocess, sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from framework_figs import FRAMEWORK_CSS, FIGS
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUB = os.path.join(ROOT, 'site', 'public')
@@ -682,18 +685,31 @@ PROCESS_CSS = """
   font-size:.74rem; letter-spacing:.06em; text-transform:uppercase; }
 """
 
-# ---- the framework page (docs/FRAMEWORK.md, rendered) -----------------------
-# The one-pager text renders verbatim. Figures are reinstated in the next
-# round: the first set was torn out because it labelled instead of encoding.
+# ---- the framework page (docs/FRAMEWORK.md + its figures) -------------------
+# The one-pager text renders verbatim; each section gets the figure(s) from
+# site/framework_figs.py that encode the mechanism it describes. The permission
+# matrix sits after the 'Who does what' intro, ahead of the seat list, because
+# it is the table that list would otherwise force a reader to build; every
+# other figure follows its section's full text.
 
 framework_md = open(os.path.join(ROOT, 'docs', 'FRAMEWORK.md')).read()
+fw_parts = []
+for chunk in re.split(r'\n(?=## )', framework_md):
+    title = chunk.split('\n', 1)[0].lstrip('#').strip()
+    key = title if chunk.startswith('## ') else '__intro__'
+    figs = ''.join(FIGS.get(key, []))
+    if key == 'Who does what' and '\n- ' in chunk:
+        cut = chunk.index('\n- ')
+        fw_parts.append(md_to_html(chunk[:cut]) + figs + md_to_html(chunk[cut + 1:]))
+    else:
+        fw_parts.append(md_to_html(chunk) + figs)
 framework = head_block('agentic-fpga — the framework',
                        'agentic-fpga — how the multi-agent framework works, on one page') + f'''
-<style>{STYLE}{PROCESS_CSS}</style>
+<style>{STYLE}{PROCESS_CSS}{FRAMEWORK_CSS}</style>
 {nav('framework.html')}
 <div class="wrap doc">
   <span class="eyebrow">agentic-fpga / framework</span>
-  {md_to_html(framework_md)}
+  {''.join(fw_parts)}
   <div class="foot">Text rendered verbatim from
   <span class="mono">docs/FRAMEWORK.md</span> at commit
   <a class="mono" href="{REPO_URL}/commit/{head_sha}" target="_blank" rel="noopener">{head_sha}</a>

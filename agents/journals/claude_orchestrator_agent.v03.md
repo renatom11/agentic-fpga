@@ -1103,3 +1103,89 @@ figures stay off this page.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0290] 2026-08-12T15:45Z | task:none | Five figures replace eight, each carrying a different encoding channel — permission as absence, knowledge as ordering, coverage as extent, protection as area, risk as a shaded interval
+
+### Trigger
+
+The tear-out at J-orchestrator-0289 left the framework page text-only. This is
+the rebuild: the sponsor's brief was 5-6 substantial figures, abstract and
+project-agnostic (the program's own measured numbers stay off this page by
+explicit choice), mostly static, reviewed by cold readers before the sponsor
+sees them.
+
+### The selection rule, and what it rejected
+
+Every candidate was put to one question — WHAT IS THE QUANTITY, AND WHAT IS
+THE CHANNEL? A candidate with no answer is a flow chart in disguise, which is
+precisely what the first set was. Sixteen candidates, five survive. The
+rejections that matter:
+
+- **The work-order lifecycle** (the old F4) is refused outright: the prose
+  already contains the arrows — "issued, returned, accepted, or bounced back"
+  — so the figure IS the sentence, redrawn. This was the clearest instance of
+  the failure and it does not come back.
+- **The founding-circularity figure** is refused although it was my own pick
+  and the richest idea in the set. Grounds: the one-pager's own sentence — "the
+  one legitimizing act the organization can't perform on itself" — beats any
+  drawing of a ring with a gap in it. The earn-its-place test is not "is this
+  idea deep", it is "must the reader assemble this from prose".
+- **A node-link org chart** is refused as redundant: the site already carries a
+  full interactive org-chart page, and the matrix shows POWERS, which that page
+  does not.
+- The charter contents, the finding severities, the roster, the escalation
+  ladder, the handbook/toolkit split: all lists or single sentences. No figure.
+
+### The five, and what each encodes
+
+1. **Permission matrix** (Who does what) — seats x powers; a filled disc is
+   authorship, a hollow ring is handling without authorship, an empty cell is
+   forbidden. The one-pager states five prohibitions in five separate places;
+   cross-tabulated they are one rule, and the empty cells carry it. An arc
+   springs from Specify, arches OVER Build, and lands on Test: tests derive
+   from the promise, never from the thing built. Row-hover mutes the other
+   seats — CSS only, no script.
+2. **The seal** (The paper trail) — a protocol clock in two lanes. The
+   load-bearing fact is a NEGATIVE, and prose can only assert a negative: at
+   t0 the auditor's lane is genuinely EMPTY, so a prediction sealed then cannot
+   have been tuned to a defect that does not exist. The barrier between lanes
+   has no opening until scoring; the defect branch terminates without rejoining
+   the product; outcomes land in the row of the prediction they answer, so
+   agreement is read off alignment.
+3. **Coverage** (The rules and their enforcement) — why TWO enforcers. The
+   local check covers one commit and has holes where it was skipped; every
+   server run starts again at the first commit, so the bands grow into a
+   staircase whose LENGTH is the claim "across the entire history". Trace down
+   from any hole and you land inside band after band.
+4. **What a grade buys** (Keeping itself honest) — the four postures as INK
+   AREA inside an identical outer claim, because the difference between them is
+   a magnitude delivered in the prose as four nouns, and four equal boxes is
+   the exact misreading to prevent. No row is ever full: the residue is punched
+   through the ink as a hole with the watching seat sitting in it.
+5. **The only channel** (the intro; also serves Working habits) — every stroke
+   vertical, never between agents. Shaded spans are the work existing only
+   inside a session: nearly invisible for an agent that writes often, enormous
+   for one that crashed after a single early write. The habit "push at every
+   stopping point" is justified by an interval the prose never names, so the
+   figure gives it an area.
+
+### Craft, against last round's failures
+
+Every coordinate computed, never hand-placed. Labels three words or fewer;
+all explanation in the figcaption. Nothing below 11.5px. Colours ride the site
+tokens, so one drawing serves both themes. Three screenshot rounds in light
+and dark fixed: the arc colliding with the rotated column labels, the seal's
+hatch swallowing its own carry-lines, the merge gate touching the skippable
+track, and two labels struck through by the write-strokes behind them. The
+first F5 draft was scrapped entirely — its write-strokes dominated the
+composition and the shaded exposure, the whole point, sat in a corner.
+
+### Files-in-this-commit
+- site/build.py
+- site/framework_figs.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
