@@ -21,6 +21,9 @@ jobs:
       - name: Protocol enforcement self-test
         run: bash scripts/test_protocol.sh
 
+      - name: Process document invariants (councils 4-5 graduated closure)
+        run: bash scripts/check_process_doc.sh
+
       - name: Verify full history (append-only cannot be re-checked incrementally)
         run: bash scripts/check_journals.sh --all
 

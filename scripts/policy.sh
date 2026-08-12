@@ -13,6 +13,35 @@ WORKER_AGENTS="rtl_module_dev tb_writer data_wrangler formal_dv"
 JOURNAL_SOFT_MAX="${JOURNAL_SOFT_MAX:-262144}"
 JOURNAL_HARD_MAX="${JOURNAL_HARD_MAX:-524288}"
 
+# ADR-0021 §6: WARN-STAMP band (advisory, never a refusal, both surfaces).
+# FAST anchor: the auditor's measured band — 0 of 16 false positives on
+# known-good behaviour; 369 of 371 measured violations are on this side.
+# SLOW anchor: the decided ±60 symmetric ONLY — FINDING F-0024-1 (auditor)
+# records that no slow-side measurement anchors this default; a correction is
+# a policy edit that restates this anchor. LIST_MAX: per-entry listing cap in
+# --range mode, sized so an ordinary push (1–5 commits) always itemises.
+JOURNAL_STAMP_FAST_MAX="${JOURNAL_STAMP_FAST_MAX:-3600}"
+JOURNAL_STAMP_SLOW_MAX="${JOURNAL_STAMP_SLOW_MAX:-3600}"
+JOURNAL_STAMP_LIST_MAX="${JOURNAL_STAMP_LIST_MAX:-20}"
+
+# ADR-0021 §2.2: extract the leading ISO-8601 token of the single appended
+# entry header. Strip through the FIRST "] " (a title containing "]" breaks a
+# greedy strip — J-dv_lead-0189 §1.7), then match the leading token only;
+# never hand the whole field to date(1). Prints the token, or nothing.
+stamp_of_entry_header() { # reads the appended region on stdin; args: agent
+  local hdr rest
+  hdr=$(grep -m1 -E "^## \[J-$1-[0-9]{4}\]" || true)
+  [ -n "$hdr" ] || return 0
+  rest="${hdr#*\] }"
+  printf '%s' "$rest" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2})?Z' || true
+}
+
+# ADR-0021 §2.5 F4: probe GNU date -d once per run; advisory checks degrade
+# gracefully rather than redden a build on a portability difference.
+have_gnu_date() {
+  date -u -d '2026-01-01T00:00Z' +%s > /dev/null 2>&1
+}
+
 is_known_agent() {
   local a
   for a in $KNOWN_AGENTS; do [ "$a" = "$1" ] && return 0; done

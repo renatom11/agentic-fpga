@@ -492,3 +492,109 @@ Final delivery to the sponsor accompanies this landing.
 - site/public/process.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0277] 2026-08-12T06:49Z | task:none | The check is finally where it runs: the stamp counter live on both surfaces reproducing the design's prediction to the tenth of a minute, the size limb on CI naming what only a bypass could land, the two-run step in the workflow with every riding condition applied - and this entry is the acceptance the route named
+
+### Trigger
+
+The head of the engineering queue after the second commission closed: the
+ADR-0021 implementation round plus the governance job council rounds 4 and 5
+graduated. All countersignature conditions stood at edit grade in the record
+(rtl J-rtl_lead-0026; dv J-dv_lead-0189; auditor J-auditor-0024 act 1); this
+round applies every one of them, in the scripts and in the ADR's own text,
+and this entry is PROTOCOL §11(2)'s acceptance act per the ADR's §9 route.
+
+### What landed, by file
+
+**scripts/policy.sh**: JOURNAL_STAMP_FAST_MAX / SLOW_MAX / LIST_MAX (defaults
+3600/3600/20; the slow anchor carries FINDING F-0024-1's "anchored to nothing
+measured" in its comment); stamp_of_entry_header (first-"]"-strip, leading-
+token regex, never the whole field to date) and have_gnu_date (the F4 probe).
+
+**scripts/agent_commit.sh**: WARN-STAMP on the one appended entry — warning
+never refusal, stderr, exit untouched in every branch, if/then shell-form
+per ADR-0016 §6.4, unparseable-is-testimony, graceful degradation.
+
+**scripts/check_journals.sh**: both counters. WARN-STAMP rides the existing
+oldest-first walk with zero added git invocations (the %at%n%B extension,
+dv's §1.5 note) — per-entry lines in --range capped at LIST_MAX with the
+surplus aggregated, per-chain block in --all (3 + |chains| lines, the latest
+cell = most recent OUT-OF-BAND entry per dv's §1.2, compliant-run as the
+zero-state fold). WARN-JOURNAL R10 size on the active volume per commit —
+frozen history aggregated, active-at-HEAD itemised, warning on the
+proportionality ground as corrected by dv's §2.1. One implementation defect
+found by the suite's own fixture and fixed: a declared-but-unassigned
+associative array trips set -u on the empty-history path.
+
+**scripts/test_protocol.sh**: entry() takes an ENTRY_STAMP override
+defaulting to now (dv's §1.6 — the hard-coded stamp made the suite time-
+fragile and the positive control unwritable); three capturing asserts
+(expect_ok_grep/nogrep/count — an absence assertion through expect_ok passes
+vacuously); scenarios S40-S51 including dv's owed S50 (rotation stamp checked
+as the entry's, exactly one line) and offered S51 (the cap's aggregation),
+S43 in its own repo so the count is exact, S45 on the history surface where
+the boundary is deterministic. Suite: 68 passed, 0 failed.
+
+**.github/workflows/build.yml**: the REQ-902 two-run step, placed before the
+determinism step's git add -A (the placement C-RL-12's porcelain limb dies
+without); the failure branch carries rtl's three-way evidence (ls-files,
+porcelain, scratch set); the environment comment declares the dune-exec
+difference and forbids mechanising it (C-RL-11: print, never assert); the
+negative control's filename assigned before use (rtl's offered nit, adopted).
+Subject 3 enters force at this step's first green run — run id owed at my
+next entry per REQ-906.
+
+**docs/adr/ADR-0021**: eleven text edits riding this commit per rtl's own
+attribution ruling ("an amendment riding your implementing commit
+discharges the condition" — J-rtl_lead-0026): C-RL-11's three targets
+(§4.2 note 1 verbatim, §4.5 env row, §4.4 diff-check clause); C-RL-12's
+three-way row split with the runs-opposite-to-instinct warning; dv's latest-
+column clause, fallback sentence, stderr pin, recurring-qualifier clause,
+and BOTH §2.1 cures — §3.4's ground replaced by the proportionality test
+(the refuted bolded sentence demoted to premise) and §8's drafted
+constitutional text cured BEFORE any adoption, as dv's condition required;
+the auditor's F-0024-1 note at §6. Status flipped: subjects 1/2/4 IN FORCE
+at this commit, subject 3 at its first green run. One citation error of mine
+caught pre-commit by my own verification: I wrote the auditor's
+countersignature as "J-auditor-0022-era" from memory; the record says
+J-auditor-0024 act 1. Corrected before landing — the invented-citation class
+again, this time stopped by the check the ledger bought.
+
+**scripts/check_process_doc.sh + journal-check.yml step**: the graduated
+governance job — sentinels-never-in-core, the two-volume contract, the
+golden tally closing internally AND against the core's printed figures
+(Charlie F1's class made structurally unrecurrable), fence pairing. Refusals
+not warnings, on the proportionality ground: these are structural invariants
+of committed artifacts, not testimony. Header states what it does NOT check
+(the shell-side drift check stays the architect's named debt).
+
+### Evidence
+
+test_protocol.sh: 68 passed, 0 failed (three consecutive full runs during
+development; final run after every edit). check_process_doc.sh green at this
+tree. check_journals.sh --range HEAD~2..HEAD green. The --all run at
+7b0e565: 634 commits green, and the WARN-STAMP block reproduced ADR §2.4's
+prediction cell for cell where the record had not moved (dv_lead latest
+out-of-band J-dv_lead-0178 +164.9m, orchestrator J-orchestrator-0250
++204.1m, architect +703.8m, rtl +834.5m, auditor +6422.3m, data_wrangler
++797.4m — the tenth-of-a-minute agreement §2.4 stakes) and moved with it
+where it had (372 of 634; tb_writer's latest = the live-fire -382.5m;
+19 volumes over S with dv's frozen v01 the one over H at 1,123,442 B; the
+at-HEAD itemisation naming tb_writer v03 at 269,331 B — the same warning
+the commit surface printed at 91f005d, the two surfaces agreeing at last).
+
+### Next
+
+Subject 3's run id at the push this commit rides. FINDING ADR21-1 (R10/R11
+absent from PROTOCOL) stays routed to the amendment batch with §8's now-
+cured draft text. The M04 mutation campaign WO is my next engineering act.
+
+### Files-in-this-commit
+- .github/workflows/build.yml
+- .github/workflows/journal-check.yml
+- docs/adr/ADR-0021-a-check-is-only-where-it-runs.md
+- scripts/agent_commit.sh
+- scripts/check_journals.sh
+- scripts/check_process_doc.sh
+- scripts/policy.sh
+- scripts/test_protocol.sh

@@ -54,6 +54,67 @@ jobs:
       - name: Generate RTL
         run: opam exec -- dune exec bin/generate.exe
 
+      - name: REQ-902 two-run determinism (second process, scratch cwd)
+        # REQ-902: regenerating from unchanged sources SHALL produce
+        # byte-identical files. The step below is the FIRST instrument for it.
+        # "Generate RTL" above generated once; the step below this one compares
+        # that output against the COMMITTED tree — cross-commit identity, not a
+        # double generation (J-dv_lead-0176 §9, J-rtl_lead-0021 §7).
+        #
+        # A second emission inside one process cannot expose the classes at
+        # issue: they are fixed once per process. So run 2 is a separate
+        # process, from a working directory OUTSIDE the checkout — bin/
+        # generate.ml writes "rtl_snapshots/<name>.v" relative to cwd and
+        # mkdir's the directory if absent, so a scratch cwd yields a complete
+        # second tree and touches nothing in the checkout (ADR-0015 R-CI-5's
+        # rule, applied here).
+        #
+        # The two runs do NOT share an environment: run 1 went through
+        # `dune exec`, which injects variables a direct invocation lacks
+        # (ADR-0021 §4.2 note 1 as corrected by C-RL-11 — the difference is
+        # DECLARED there, never asserted here; a hard-coded env check would
+        # redden on a dune bump for a reason unrelated to REQ-902).
+        #
+        # A diff here is a REQ-902 defect and is NEVER a promotion source:
+        # two runs disagree, so neither tree is authoritative and there is no
+        # correct file to promote. Contrast the step below, whose failure
+        # output IS the promotion source (ADR-0005 rule 2). Placement is
+        # forced: BEFORE the next step's `git add -A` (C-RL-12's porcelain
+        # limb is informative only while nothing has been staged).
+        run: |
+          set -euo pipefail
+          SCRATCH=$(mktemp -d)                    # outside the checkout
+          trap 'rm -rf "$SCRATCH"' EXIT
+          EXE="$PWD/_build/default/bin/generate.exe"
+          test -x "$EXE" || { echo "REQ-902: $EXE is not built"; exit 1; }
+          ( cd "$SCRATCH" && opam exec -- "$EXE" )
+          if ! diff -r "$SCRATCH/rtl_snapshots" rtl_snapshots > "$SCRATCH/req902.diff" 2>&1; then
+            echo '=== REQ-902 DEFECT: two generations of the same source disagree ==='
+            echo 'NOT a promotion source: neither run is authoritative.'
+            cat "$SCRATCH/req902.diff"
+            echo '--- tracked snapshots at HEAD ---'
+            git ls-files -- rtl_snapshots
+            echo '--- checkout worktree status (before any git add) ---'
+            git status --porcelain -- rtl_snapshots
+            echo '--- run 2 emitted set (the emitter registry, materialised) ---'
+            ls -1 "$SCRATCH"/rtl_snapshots
+            echo '--- run 1 (checkout) ---'; sha256sum rtl_snapshots/*.v
+            echo '--- run 2 (scratch)  ---'; sha256sum "$SCRATCH"/rtl_snapshots/*.v
+            echo '=== END REQ-902 DEFECT ==='
+            exit 1
+          fi
+          # Negative control, in the same step: the comparator must be able to
+          # fail. A comparator that cannot fail is indistinguishable from one
+          # that always passes (ADR-0015 R-CI-4's lesson, made per-run).
+          cp -r "$SCRATCH/rtl_snapshots" "$SCRATCH/ctrl"
+          CTRL_FILE=$(ls -1 "$SCRATCH"/ctrl/*.v | head -1)
+          printf 'x' >> "$CTRL_FILE"
+          if diff -r "$SCRATCH/ctrl" rtl_snapshots > /dev/null 2>&1; then
+            echo 'REQ-902: negative control did not fire — the comparator is inert'
+            exit 1
+          fi
+          echo "REQ-902: two generations byte-identical ($(ls -1 "$SCRATCH"/rtl_snapshots | wc -l) files); negative control fired"
+
       - name: Verify nothing was left unpromoted or non-deterministic
         # Catches three distinct failures with one check:
         #  * an expect test whose output changed but was never promoted

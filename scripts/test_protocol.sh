@@ -18,6 +18,28 @@ bad()  { FAIL=$((FAIL + 1)); say "  FAIL: $*"; }
 
 # expect_ok / expect_fail run a command and check its exit status.
 expect_ok()   { local d="$1"; shift; if "$@" > /dev/null 2>&1; then ok "$d"; else bad "$d (unexpectedly rejected)"; fi; }
+# Capturing asserts for advisory checks (J-dv_lead-0189 §1.6: expect_ok
+# discards both streams, so an absence assertion written with it passes
+# vacuously and permanently). Both capture stdout+stderr merged.
+expect_ok_grep()   { # desc pattern cmd...  — exit 0 AND output matches
+  local d="$1" pat="$2"; shift 2; local out
+  if out=$("$@" 2>&1); then
+    if printf '%s\n' "$out" | grep -qE "$pat"; then ok "$d"; else bad "$d (accepted, but expected output missing: $pat)"; fi
+  else bad "$d (unexpectedly rejected)"; fi
+}
+expect_ok_nogrep() { # desc pattern cmd...  — exit 0 AND output does NOT match
+  local d="$1" pat="$2"; shift 2; local out
+  if out=$("$@" 2>&1); then
+    if printf '%s\n' "$out" | grep -qE "$pat"; then bad "$d (accepted, but forbidden output present: $pat)"; else ok "$d"; fi
+  else bad "$d (unexpectedly rejected)"; fi
+}
+expect_ok_count()  { # desc pattern N cmd...  — exit 0 AND exactly N matching lines
+  local d="$1" pat="$2" want="$3"; shift 3; local out n
+  if out=$("$@" 2>&1); then
+    n=$(printf '%s\n' "$out" | grep -cE "$pat" || true)
+    if [ "$n" -eq "$want" ]; then ok "$d"; else bad "$d (accepted, but $n lines match '$pat', expected $want)"; fi
+  else bad "$d (unexpectedly rejected)"; fi
+}
 # expect_fail asserts BOTH that the command failed AND that it failed for the
 # named reason — a non-zero exit alone would let a scenario pass on an
 # unrelated rejection (AUD-0001-F1).
@@ -75,11 +97,15 @@ This file is APPEND-ONLY. Volume $3 of a chain (ADR-0017 §4.3).
 EOF
 }
 
-entry() { # agent NNNN title files...
+entry() { # agent NNNN title files...  (stamp: ENTRY_STAMP env override;
+          # defaults to now so every fixture is in-band — J-dv_lead-0189 §1.6:
+          # a hard-coded stamp made the whole suite drift out of band with
+          # wall-clock time and the positive control unwritable)
   local agent="$1" num="$2" title="$3"; shift 3
+  local stamp="${ENTRY_STAMP:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}"
   cat <<EOF
 
-## [J-$agent-$num] 2026-08-01T00:00:00Z | task:none | $title
+## [J-$agent-$num] $stamp | task:none | $title
 ### Trigger
 test scenario
 ### Inputs
@@ -637,6 +663,180 @@ else
   bad "header-field pipeline raced or misread (got '${S39_VAL:-}'; SIGPIPE regression)"
 fi
 rm -f s39_volume.md
+
+# ---- S40/S41: WARN-STAMP silence in band, one advisory line out (ADR-0021) ---
+# The pair that must never pass vacuously together: one asserts absence, the
+# other asserts presence, on the same mechanism (ADR-0021 §2.7).
+say "S40/S41: WARN-STAMP — in-band silence, out-of-band advisory, exit 0 both"
+J_RTL2=agents/journals/claude_rtl_lead_agent.v02.md
+RL2_LAST=$(grep -oE "^## \[J-rtl_lead-[0-9]{4}\]" "$J_RTL2" | grep -oE "[0-9]{4}" | tail -1)
+RL2_NEXT=$(printf "%04d" $((10#$RL2_LAST + 1)))
+entry rtl_lead "$RL2_NEXT" "in-band stamp" >> "$J_RTL2"
+git add "$J_RTL2"
+expect_ok_nogrep "S40: in-band stamp commits with NO WARN-STAMP output" 'WARN-STAMP' \
+  scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT" --work-order none -m "in band" --journal-only
+RL2_NEXT2=$(printf "%04d" $((10#$RL2_NEXT + 1)))
+ENTRY_STAMP=$(date -u -d '+6 hours' +%Y-%m-%dT%H:%M:%SZ) entry rtl_lead "$RL2_NEXT2" "six hours fast" >> "$J_RTL2"
+git add "$J_RTL2"
+expect_ok_count "S41: +6h stamp ACCEPTED with exactly one WARN-STAMP line" \
+  '^WARN-STAMP: J-rtl_lead-[0-9]{4} header stamp drifts \+3(5[89]|60)\.[0-9]m' 1 \
+  scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT2" --work-order none -m "fast stamp" --journal-only
+
+# ---- S42: the same violation through CI's history surface --------------------
+say "S42: check_journals --all names the drifted chain in the summary block"
+expect_ok_grep "S42: --all exit 0 with rtl_lead chain line (out >= 1, run reset to 0)" \
+  '^WARN-STAMP: rtl_lead .* 1 out  latest J-rtl_lead-[0-9]{4} \(\+3(5[89]|60)\.[0-9]m\)  compliant-run 0' \
+  scripts/check_journals.sh --all
+
+# ---- S43: the noise bound, counted exactly, in its own repo -------------------
+# Own repo because the count is exact: 3 header lines + 2 chain lines = 5,
+# and specifically NOT >= 5 (ADR-0021 §2.7 S43; J-dv_lead-0189 §1.6).
+say "S43: --all noise bound — five violations across two chains emit exactly five lines"
+S43_DIR=$(mktemp -d)
+(
+  cd "$S43_DIR"
+  git init -q -b s43 .
+  git config user.email test@example.invalid
+  git config user.name protocol-test
+  mkdir -p scripts agents/journals
+  cp "$SANDBOX"/scripts/*.sh scripts/ && chmod +x scripts/*.sh
+) > /dev/null 2>&1
+S43_JO=agents/journals/claude_orchestrator_agent.md
+S43_JR=agents/journals/claude_rtl_lead_agent.md
+pushd "$S43_DIR" > /dev/null
+seed_journal "$S43_JO" orchestrator
+seed_journal "$S43_JR" rtl_lead
+OOB() { date -u -d '+6 hours' +%Y-%m-%dT%H:%M:%SZ; }
+ENTRY_STAMP=$(OOB) entry orchestrator 0001 "one" "$S43_JR" >> "$S43_JO"
+git add "$S43_JO" "$S43_JR"
+scripts/agent_commit.sh --agent orchestrator --entry J-orchestrator-0001 --work-order none -m "b1" > /dev/null 2>&1
+for n in 0002 0003; do
+  ENTRY_STAMP=$(OOB) entry orchestrator "$n" "more" >> "$S43_JO"
+  git add "$S43_JO"
+  scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$n" --work-order none -m "b$n" --journal-only > /dev/null 2>&1
+done
+for n in 0001 0002; do
+  ENTRY_STAMP=$(OOB) entry rtl_lead "$n" "rtl" >> "$S43_JR"
+  git add "$S43_JR"
+  scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$n" --work-order none -m "r$n" --journal-only > /dev/null 2>&1
+done
+expect_ok_count "S43: exactly 3+2 WARN-STAMP lines (never per-entry spam)" \
+  '^WARN-STAMP' 5 scripts/check_journals.sh --all
+popd > /dev/null
+rm -rf "$S43_DIR"
+
+# ---- S44: malformed stamp — warned, never refused, both surfaces --------------
+say "S44: malformed stamp is testimony (unparseable notice, exit 0, both surfaces)"
+RL2_NEXT3=$(printf "%04d" $((10#$RL2_NEXT2 + 1)))
+ENTRY_STAMP='not-a-date' entry rtl_lead "$RL2_NEXT3" "malformed stamp" >> "$J_RTL2"
+git add "$J_RTL2"
+expect_ok_grep "S44a: commit surface accepts with the unparseable notice" \
+  'WARN-STAMP: J-rtl_lead-[0-9]{4} unparseable stamp' \
+  scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT3" --work-order none -m "malformed" --journal-only
+expect_ok_grep "S44b: history surface exits 0 with the unparseable notice" \
+  'WARN-STAMP: [0-9a-f]+ J-rtl_lead-[0-9]{4} unparseable stamp' \
+  scripts/check_journals.sh --all
+git reset -q --hard HEAD~1
+
+# ---- S45: the band boundary, on the surface where it is deterministic --------
+# Placed on check_journals.sh: its ref is the commit's frozen author time
+# (J-dv_lead-0189 §1.6 — on the commit surface a one-second boundary races).
+say "S45: strict-> boundary pinned on the history surface"
+# S44's reset freed its entry number, so the boundary fixture REUSES it —
+# the chain's last landed entry is still S41's (monotonicity, R5).
+ENTRY_STAMP=$(date -u -d '+2 hours' +%Y-%m-%dT%H:%M:%SZ) entry rtl_lead "$RL2_NEXT3" "boundary fixture" >> "$J_RTL2"
+git add "$J_RTL2"
+scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT3" --work-order none -m "boundary" --journal-only > /dev/null 2>&1
+S45_AT=$(git log -1 --format=%at)
+S45_ST=$(git show HEAD:"$J_RTL2" | grep -oE "^## \[J-rtl_lead-$RL2_NEXT3\] [0-9T:Z-]+" | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z')
+S45_DRIFT=$(( $(date -u -d "$S45_ST" +%s) - S45_AT ))
+expect_ok_nogrep "S45a: drift == FAST_MAX exactly -> no warning (strict >)" \
+  "J-rtl_lead-$RL2_NEXT3" \
+  env JOURNAL_STAMP_FAST_MAX="$S45_DRIFT" scripts/check_journals.sh --range HEAD~1..HEAD
+expect_ok_grep "S45b: one second under -> the warning fires" \
+  "J-rtl_lead-$RL2_NEXT3 header stamp drifts" \
+  env JOURNAL_STAMP_FAST_MAX="$((S45_DRIFT - 1))" scripts/check_journals.sh --range HEAD~1..HEAD
+
+# ---- S46: graceful degradation without GNU date -d ---------------------------
+say "S46: no GNU date -d — one skipped notice, exit 0, both surfaces"
+mkdir -p s46_shim
+cat > s46_shim/date <<'SHIM'
+#!/usr/bin/env bash
+for a in "$@"; do [ "$a" = "-d" ] || [[ "$a" == -d* ]] && exit 1; done
+exec /bin/date "$@"
+SHIM
+chmod +x s46_shim/date
+RL2_NEXT5=$(printf "%04d" $((10#$RL2_NEXT3 + 1)))
+entry rtl_lead "$RL2_NEXT5" "no gnu date" >> "$J_RTL2"
+git add "$J_RTL2"
+expect_ok_grep "S46a: commit surface degrades to a single skipped notice" \
+  'WARN-STAMP: stamp checking unavailable \(no GNU date -d\); skipped' \
+  env PATH="$PWD/s46_shim:$PATH" scripts/agent_commit.sh --agent rtl_lead --entry "J-rtl_lead-$RL2_NEXT5" --work-order none -m "no gnu date" --journal-only
+expect_ok_grep "S46b: history surface degrades identically, exit 0" \
+  'WARN-STAMP: stamp checking unavailable' \
+  env PATH="$PWD/s46_shim:$PATH" scripts/check_journals.sh --range HEAD~1..HEAD
+rm -rf s46_shim
+
+# ---- S47: R10 size on CI — the landed over-H volume named, never refused -----
+# The over-H volume already in this history is S35/S37's: v01 of the
+# orchestrator chain, ~1.5 MB while active, frozen by S37's rotation.
+say "S47: --all exits 0 while naming the over-H volume and its byte count"
+expect_ok_grep "S47: over-H history aggregated with path and max bytes, exit 0" \
+  'WARN-JOURNAL: 1 exceeded H \(agents/journals/claude_orchestrator_agent.md, max 15[0-9]+ B, frozen\)' \
+  scripts/check_journals.sh --all
+
+# ---- S48: size noise bound — one line per oversized ACTIVE volume ------------
+say "S48: five commits over one oversized active volume emit ONE at-HEAD line"
+J_ORCH2=agents/journals/claude_orchestrator_agent.v02.md
+OR2_LAST=$(grep -oE "^## \[J-orchestrator-[0-9]{4}\]" "$J_ORCH2" | grep -oE "[0-9]{4}" | tail -1)
+OR2_NEXT=$(printf "%04d" $((10#$OR2_LAST + 1)))
+{ entry orchestrator "$OR2_NEXT" "pad past S"; head -c 300000 /dev/zero | tr '\0' 'x'; printf '\n'; } >> "$J_ORCH2"
+git add "$J_ORCH2"
+scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR2_NEXT" --work-order none -m "pad" --journal-only > /dev/null 2>&1
+for i in 1 2 3 4; do
+  OR2_NEXT=$(printf "%04d" $((10#$OR2_NEXT + 1)))
+  entry orchestrator "$OR2_NEXT" "small append $i" >> "$J_ORCH2"
+  git add "$J_ORCH2"
+  scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR2_NEXT" --work-order none -m "s$i" --journal-only > /dev/null 2>&1
+done
+expect_ok_count "S48: exactly one 'active volume over S at HEAD' line for five over-S commits" \
+  'WARN-JOURNAL: active volume over S at HEAD: agents/journals/claude_orchestrator_agent\.v02\.md' 1 \
+  scripts/check_journals.sh --all
+
+# ---- S49/S50: rotation — the frozen volume aggregates; the rotation commit's
+# stamp is checked as the ENTRY's, not the volume header's (F7) ----------------
+say "S49/S50: rotation past the oversized volume; out-of-band rotation stamp warns once"
+J_ORCH3=agents/journals/claude_orchestrator_agent.v03.md
+OR3_NEXT=$(printf "%04d" $((10#$OR2_NEXT + 1)))
+OR2_SHA=$(git show "HEAD:$J_ORCH2" | sha256sum | awk '{print $1}')
+OR2_BYTES=$(git show "HEAD:$J_ORCH2" | wc -c)
+seed_volume "$J_ORCH3" orchestrator 03 "J-orchestrator-$OR2_NEXT" "$J_ORCH2" "$OR2_SHA" "$OR2_BYTES"
+ENTRY_STAMP=$(date -u -d '+6 hours' +%Y-%m-%dT%H:%M:%SZ) entry orchestrator "$OR3_NEXT" "rotation, stamp fast" >> "$J_ORCH3"
+git add "$J_ORCH3"
+expect_ok_count "S50: rotation commit warns exactly once, naming the ENTRY id" \
+  "^WARN-STAMP: J-orchestrator-$OR3_NEXT header stamp drifts" 1 \
+  scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR3_NEXT" --work-order none -m "rotate v03" --journal-only
+expect_ok_nogrep "S49a: rotated-past volume no longer itemised at HEAD" \
+  'WARN-JOURNAL: active volume over S at HEAD: agents/journals/claude_orchestrator_agent\.v02\.md' \
+  scripts/check_journals.sh --all
+expect_ok_grep "S49b: it enters the frozen aggregate instead" \
+  'WARN-JOURNAL: R10 history: [0-9]+ volume\(s\) exceeded S while active' \
+  scripts/check_journals.sh --all
+
+# ---- S51: --range listing cap aggregates the surplus (ADR-0021 §2.3) ---------
+say "S51: LIST_MAX=2 over a three-violation range lists two and aggregates one"
+for i in 1 2 3; do
+  OR3_NEXT=$(printf "%04d" $((10#$OR3_NEXT + 1)))
+  ENTRY_STAMP=$(date -u -d '+6 hours' +%Y-%m-%dT%H:%M:%SZ) entry orchestrator "$OR3_NEXT" "range violation $i" >> "$J_ORCH3"
+  git add "$J_ORCH3"
+  scripts/agent_commit.sh --agent orchestrator --entry "J-orchestrator-$OR3_NEXT" --work-order none -m "rv$i" --journal-only > /dev/null 2>&1
+done
+expect_ok_count "S51a: exactly two itemised entry lines under the cap" \
+  'header stamp drifts' 2 \
+  env JOURNAL_STAMP_LIST_MAX=2 scripts/check_journals.sh --range HEAD~3..HEAD
+expect_ok_grep "S51b: the surplus is aggregated, never dropped" \
+  'WARN-STAMP: and 1 more out-of-band' \
+  env JOURNAL_STAMP_LIST_MAX=2 scripts/check_journals.sh --range HEAD~3..HEAD
 
 # ---- summary ----------------------------------------------------------------
 say ""

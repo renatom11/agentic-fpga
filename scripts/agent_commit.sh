@@ -181,6 +181,33 @@ if [ "$staged_bytes" -gt "$JOURNAL_SOFT_MAX" ]; then
   echo "WARN-JOURNAL: $JOURNAL is ${staged_bytes} bytes (> $((JOURNAL_SOFT_MAX / 1024)) KiB); rotate to volume ${NEXT_VOL} at your next entry (R10, ADR-0017)" >&2
 fi
 
+# ---- WARN-STAMP: advisory drift counter (ADR-0021 §2) ------------------------
+# A warning, never a refusal: R3 freezes committed stamps, and a blocking check
+# pays its subject to lie (J-dv_lead-0189 §1). Exit code untouched in every
+# branch; all output on stderr (ADR-0021 §2.4 as narrowed at J-dv_lead-0189
+# §1.4). Shell-form per ADR-0016 §6.4: if/then, never `[ … ] && …`, so the
+# compliant path cannot kill a `set -e` script.
+if have_gnu_date; then
+  stamp_tok=$(stamp_of_entry_header "$AGENT" < "$TMPDIR_P/appended")
+  if [ -z "$stamp_tok" ]; then
+    echo "WARN-STAMP: $ENTRY unparseable stamp '$(grep -m1 -E "^## \[J-${AGENT}-[0-9]{4}\]" "$TMPDIR_P/appended" | cut -c1-80)' (advisory)" >&2
+  else
+    stamp_epoch=""
+    if ! stamp_epoch=$(date -u -d "$stamp_tok" +%s 2>/dev/null); then
+      echo "WARN-STAMP: $ENTRY unparseable stamp '$stamp_tok' (advisory)" >&2
+    else
+      ref_epoch=$(date -u +%s)
+      drift=$((stamp_epoch - ref_epoch))
+      if [ "$drift" -gt "$JOURNAL_STAMP_FAST_MAX" ] || [ "$drift" -lt "$((-JOURNAL_STAMP_SLOW_MAX))" ]; then
+        drift_m=$(awk "BEGIN{printf \"%+.1f\", $drift/60}")
+        echo "WARN-STAMP: $ENTRY header stamp drifts ${drift_m}m from now (band +$((JOURNAL_STAMP_FAST_MAX / 60))m/-$((JOURNAL_STAMP_SLOW_MAX / 60))m; advisory — a warning is not a verdict)" >&2
+      fi
+    fi
+  fi
+else
+  echo "WARN-STAMP: stamp checking unavailable (no GNU date -d); skipped" >&2
+fi
+
 # ---- R4: Files-in-this-commit set-equality ----------------------------------
 has_files_section < "$TMPDIR_P/appended" \
   || fail "new entry lacks a '### Files-in-this-commit' section (R4)"

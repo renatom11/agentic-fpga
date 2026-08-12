@@ -32,6 +32,20 @@ BLOB_MAX="${AGENT_COMMIT_BLOB_MAX:-1000000}"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
+# ---- WARN-STAMP / WARN-JOURNAL accounting (ADR-0021 §2–§3) -------------------
+# Advisory counters, never a verdict: nothing here touches the exit code, and
+# every warning line goes to stderr (J-dv_lead-0189 §1.4). Single pass, one
+# integer per chain, zero state files (ADR-0021 §2.4; auditor constraint iii).
+GNU_DATE=0
+if have_gnu_date; then GNU_DATE=1; else
+  echo "WARN-STAMP: stamp checking unavailable (no GNU date -d); skipped" >&2
+fi
+# =() makes each SET-but-empty: a declared-but-unassigned array trips set -u
+# at ${#arr[@]} on the empty-history path (found by S43's own-repo fixture).
+declare -A st_entries=() st_out=() st_latest=() st_run=()
+declare -A sz_over_s=() sz_over_h=() sz_h_max=()
+stamp_listed=0 stamp_suppressed=0
+
 checked=0
 for C in $COMMITS; do
   short=$(git rev-parse --short "$C")
@@ -55,7 +69,12 @@ for C in $COMMITS; do
     fail "$short: merge commit introduces content found in neither parent (conflict resolution or divergent auto-merge) (R9)"
   fi
 
-  git show -s --format=%B "$C" > "$TMP/msg"
+  # %at on the first line, message body after: the stamp check's reference
+  # clock rides the call the loop already makes (J-dv_lead-0189 §1.5 — zero
+  # added git invocations; author time per ADR-0021 §2.2).
+  git show -s --format='%at%n%B' "$C" > "$TMP/msg_at"
+  AT=$(head -n 1 "$TMP/msg_at")
+  tail -n +2 "$TMP/msg_at" > "$TMP/msg"
   # Trailer parsing: only the message's final trailer block counts, and the
   # protected keys must be unique — a crafted body line or duplicate trailer
   # cannot shadow the real one (R6).
@@ -82,6 +101,21 @@ for C in $COMMITS; do
   # enumerated from the state being checked — never the worktree, which would
   # credit old commits with volumes they never contained).
   JOURNAL="$(active_journal_for "$AGENT" "$C")"
+
+  # R10 size limb on the CI surface (ADR-0021 §3): the ACTIVE volume at this
+  # commit, warning not refusal — history is immutable, and a permanent red is
+  # proportionate to harm that persists in every future reader, not to harm
+  # bounded by one file's readability (J-dv_lead-0189 §2.1's ground).
+  jsz=$(git cat-file -s "$C:$JOURNAL" 2>/dev/null || echo 0)
+  if [ "$jsz" -gt "$JOURNAL_SOFT_MAX" ]; then
+    sz_over_s["$AGENT:$JOURNAL"]=1
+  fi
+  if [ "$jsz" -gt "$JOURNAL_HARD_MAX" ]; then
+    sz_over_h["$AGENT:$JOURNAL"]=1
+    if [ "$jsz" -gt "${sz_h_max[$AGENT:$JOURNAL]:-0}" ]; then
+      sz_h_max["$AGENT:$JOURNAL"]="$jsz"
+    fi
+  fi
 
   if [ "$nwords" -eq 2 ]; then
     PARENT=$(git rev-parse "$C^")
@@ -180,6 +214,43 @@ for C in $COMMITS; do
   [ "$actual" = "$expected" ] \
     || fail "$short: entry $actual not monotonic (last $last, expected $expected) (R5)"
 
+  # WARN-STAMP accounting (ADR-0021 §2): the ONE appended entry's stamp against
+  # this commit's author time. F3: an unparseable stamp is testimony too —
+  # warned, never refused. F7/S50: on a rotation the appended region opens with
+  # the volume header; extraction keys on the entry-header line, not position.
+  if [ "$GNU_DATE" -eq 1 ]; then
+    st_entries["$AGENT"]=$(( ${st_entries[$AGENT]:-0} + 1 ))
+    stamp_tok=$(stamp_of_entry_header "$AGENT" < "$TMP/appended")
+    stamp_epoch=""
+    if [ -n "$stamp_tok" ]; then
+      if ! stamp_epoch=$(date -u -d "$stamp_tok" +%s 2>/dev/null); then
+        stamp_epoch=""
+      fi
+    fi
+    if [ -z "$stamp_epoch" ]; then
+      echo "WARN-STAMP: $short $ENTRY unparseable stamp (advisory)" >&2
+      st_run["$AGENT"]=0
+    else
+      drift=$((stamp_epoch - AT))
+      if [ "$drift" -gt "$JOURNAL_STAMP_FAST_MAX" ] || [ "$drift" -lt "$((-JOURNAL_STAMP_SLOW_MAX))" ]; then
+        drift_m=$(awk "BEGIN{printf \"%+.1f\", $drift/60}")
+        st_out["$AGENT"]=$(( ${st_out[$AGENT]:-0} + 1 ))
+        st_latest["$AGENT"]="$ENTRY (${drift_m}m)"
+        st_run["$AGENT"]=0
+        if [ "$MODE" = range ]; then
+          if [ "$stamp_listed" -lt "$JOURNAL_STAMP_LIST_MAX" ]; then
+            stamp_listed=$((stamp_listed + 1))
+            echo "WARN-STAMP: $short $ENTRY header stamp drifts ${drift_m}m from its commit (advisory — a warning is not a verdict)" >&2
+          else
+            stamp_suppressed=$((stamp_suppressed + 1))
+          fi
+        fi
+      else
+        st_run["$AGENT"]=$(( ${st_run[$AGENT]:-0} + 1 ))
+      fi
+    fi
+  fi
+
   # R4: Files-in-this-commit set-equality (work paths + foreign seeds).
   has_files_section < "$TMP/appended" \
     || fail "$short: entry lacks '### Files-in-this-commit' (R4)"
@@ -252,5 +323,66 @@ for C in $COMMITS; do
 
   checked=$((checked + 1))
 done
+
+# ---- WARN-STAMP summary (ADR-0021 §2.3–§2.4): last output before the verdict
+# line, all on stderr. --all aggregates per CHAIN (bounded by the roster, never
+# by history); --range itemised above, so here it only accounts a surplus.
+# The "latest" cell is the most recent OUT-OF-BAND entry of that chain
+# (J-dv_lead-0189 §1.2 — the column that forces the reading).
+if [ "$GNU_DATE" -eq 1 ]; then
+  if [ "$MODE" = all ]; then
+    tot=0; out_tot=0
+    for a in "${!st_entries[@]}"; do
+      tot=$((tot + st_entries[$a])); out_tot=$((out_tot + ${st_out[$a]:-0}))
+    done
+    if [ "$tot" -gt 0 ]; then
+      {
+        echo "WARN-STAMP: $out_tot of $tot checked entries carry a header stamp outside the band"
+        echo "WARN-STAMP: (fast > +$((JOURNAL_STAMP_FAST_MAX / 60))m, slow < -$((JOURNAL_STAMP_SLOW_MAX / 60))m, vs their own commit's author time). Advisory:"
+        echo "WARN-STAMP: a warning is not a verdict and its absence is not a clearance."
+        for a in "${!st_entries[@]}"; do
+          printf '%s %s\n' "${st_entries[$a]}" "$a"
+        done | sort -rn | while read -r n a; do
+          printf 'WARN-STAMP: %-20s %4d entries %4d out  latest %s  compliant-run %d\n' \
+            "$a" "$n" "${st_out[$a]:-0}" "${st_latest[$a]:--}" "${st_run[$a]:-0}"
+        done
+      } >&2
+    fi
+  elif [ "$stamp_suppressed" -gt 0 ]; then
+    echo "WARN-STAMP: and $stamp_suppressed more out-of-band entr(ies) in this range (cap $JOURNAL_STAMP_LIST_MAX; advisory)" >&2
+  fi
+fi
+
+# ---- WARN-JOURNAL size summary (ADR-0021 §3.3): --all only. Aggregate what no
+# one can act on (frozen history), itemise what someone can (an active volume
+# at HEAD over a threshold — its owner rotates at the next entry).
+if [ "$MODE" = all ]; then
+  s_n=${#sz_over_s[@]}; h_n=${#sz_over_h[@]}
+  h_detail="."
+  if [ "$h_n" -gt 0 ]; then
+    h_worst=""; h_worst_sz=0
+    for k in "${!sz_h_max[@]}"; do
+      if [ "${sz_h_max[$k]}" -gt "$h_worst_sz" ]; then h_worst_sz="${sz_h_max[$k]}"; h_worst="${k#*:}"; fi
+    done
+    h_detail=" ($h_worst, max ${h_worst_sz} B, frozen)."
+  fi
+  {
+    echo "WARN-JOURNAL: R10 history: $s_n volume(s) exceeded S while active over $checked commits;"
+    echo "WARN-JOURNAL: $h_n exceeded H$h_detail"
+    head_over=0
+    for a in "${!st_entries[@]}"; do
+      hj=$(active_journal_for "$a" HEAD 2>/dev/null || true)
+      [ -n "$hj" ] || continue
+      hsz=$(git cat-file -s "HEAD:$hj" 2>/dev/null || echo 0)
+      if [ "$hsz" -gt "$JOURNAL_SOFT_MAX" ]; then
+        head_over=$((head_over + 1))
+        echo "WARN-JOURNAL: active volume over S at HEAD: $hj (${hsz} B); rotate at next entry (R10)"
+      fi
+    done
+    if [ "$head_over" -eq 0 ]; then
+      echo "WARN-JOURNAL: active volumes at HEAD: all within S."
+    fi
+  } >&2
+fi
 
 echo "OK: $checked commit(s) satisfy the journal/commit protocol"

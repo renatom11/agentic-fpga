@@ -1,10 +1,16 @@
 # ADR-0021: a check is only where it runs
 
-- **Status**: **PROPOSED**. **NOT IN FORCE.** Nothing in this file binds
-  anything until the route of §9 completes, and the route completes **per
-  subject**, not once for the file — §9's table is the only place this ADR's
-  force is stated. Proposed at `J-architect_docs_lead-0049` on an orchestrator
-  dispatch of one round.
+- **Status**: **ACCEPTED — force per subject, per §9's table.** Subjects
+  **1, 2 and 4 are IN FORCE** at the commit carrying `J-orchestrator-0277`
+  (the §11(2) acceptance entry): every countersignature on their routes is
+  paid (dv_lead `J-dv_lead-0189`; auditor `J-auditor-0024` act 1 on
+  subject 1; rtl_lead `J-rtl_lead-0026` carrying its conditions to edit
+  grade), every countersignature condition is applied in this file's text and
+  in the implementation, and scenarios `S40`–`S51` are green in the suite.
+  **Subject 3 enters force at the first green run of its step**, cited by run
+  id per `REQ-906` — owed at the implementing seat's next entry. Proposed at
+  `J-architect_docs_lead-0049`; the first edition of this block read
+  PROPOSED/NOT IN FORCE.
 - **Deciders**:
   - **orchestrator** — the four decisions themselves, all four made before this
     round opened and recorded here as its: the ±60-minute stamp-sanity
@@ -189,9 +195,12 @@ differ, because the two surfaces examine different objects.
   and match the **leading token** with
   `^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2})?Z`.
   **Never hand the whole field to `date`.** Measured ground: of 600 stamps, 377
-  are minute-precision, 222 are second-precision, and **one carries a trailing
-  parenthetical** — `2026-08-11T13:00Z (estimated, see Open-questions)`
-  (`J-tb_writer-0044`). GNU `date` happens to parse that leniently; a leading-token
+  are minute-precision, 222 are second-precision, and a trailing parenthetical
+  — `2026-08-11T13:00Z (estimated, see Open-questions)` (`J-tb_writer-0044`) —
+  is **a recurring practice of at least one chain, with a recorded cause
+  outside the grammar** *(J-dv_lead-0189 §1.9: two consecutive entries of that
+  chain carry it, structurally, until the work order that forces the estimate
+  is repaired)*. GNU `date` happens to parse that leniently; a leading-token
   regex parses it *correctly*, and an entry that qualifies its own stamp is
   **more** honest than the grammar, not less. It must not be flagged as
   malformed, and at −11.8 minutes it is in band anyway.
@@ -234,13 +243,18 @@ view and the new-commits view are already separate steps with separate logs. A
 new violation appears as its own line in the range step; the history stays one
 line per chain in the `--all` step. **The tip signal and the historical noise
 were already in different places, and the design's whole job was to not fight
-that.**
+that.** One limit, this ADR's own thesis applied to itself *(J-dv_lead-0189
+§1.3)*: when the range step cannot compute its range (`github.event.before`
+absent, all-zero, or unfetched) it falls back to `--all`, and on that push the
+range step degrades to the history view — the new violation is visible only
+inside its chain's aggregate.
 
 ### 2.4 The `--all` summary, and its measured bound
 
-Emitted **once**, immediately before the final `OK: N commit(s) …` line, every
-line prefixed with the single token `WARN-STAMP` so a log scan counts
-deterministically:
+Emitted **once**, on **stderr** on both surfaces (the class `WARN-JOURNAL`
+already instantiates — J-dv_lead-0189 §1.4), as the **last output before the
+verdict line**, every line prefixed with the single token `WARN-STAMP` so a
+log scan counts deterministically:
 
 ```
 WARN-STAMP: 371 of 600 checked entries carry a header stamp outside the band
@@ -263,6 +277,12 @@ line count does not match this ADR, and that is the first thing to check.
 **The bound, stated as a property rather than a hope**: the block is
 `3 + |chains|` lines — **ten today** — and it does not grow with history. 371
 violations produce ten lines. `grep -c '^WARN-STAMP' ` is bounded by the roster.
+
+**The `latest` cell is the chain's most recent OUT-OF-BAND entry, with its
+drift** — not the chain's latest entry *(J-dv_lead-0189 §1.2: the two readings
+produce identical totals and line counts, and only this one reproduces the
+block's cells, so the falsifier at this section's head does not discriminate
+them; this clause is what does)*.
 
 **`compliant-run` is the column that does the work.** It is the number of
 consecutive **most recent** entries of that chain whose stamp is in band. It is
@@ -438,13 +458,19 @@ declares the residue").
 **Why CI warns where the commit path refuses.** Not deference to the decision —
 the decision has a ground, and it is one the blob gate does not share:
 
-- **History is immutable and `--all` re-reads it forever.** If CI refused, then
-  the moment an over-`H` volume landed — and the only way it can land is a
-  bypass — **every future push by every agent would fail**, permanently, on a
-  commit already in history. The only remedy would be a history rewrite, which
-  `R9` forbids and which is the precise attack the append-only property exists
-  to prevent. **A rule whose only remedy is forbidden cannot be a refusal in a
-  full-history checker.**
+- **A permanent red is proportionate to harm that persists in every future
+  reader, and disproportionate to harm bounded by one file's readability**
+  *(the ground as corrected by J-dv_lead-0189 §2.1 — the first edition's
+  bolded sentence, "a rule whose only remedy is forbidden cannot be a refusal
+  in a full-history checker", is refuted by this repository's own `R11`, which
+  is exactly such a refusal and is kept; it survives below as a premise, not
+  the test)*. A landed multi-megabyte blob costs every future clone until
+  someone deals with it; an oversized journal volume costs the readability of
+  one file, and its cure is available prospectively and unilaterally to its
+  owner. As a premise: history is immutable, `--all` re-reads it forever, and
+  if CI refused here, one seat's one-round oversight would fail every future
+  push by every agent, permanently, with the only remedy a history rewrite
+  `R9` forbids.
 - **The harm is bounded and self-curing.** `R11`'s blob gate protects every
   future clone, and a landed multi-megabyte blob keeps costing until someone
   deals with it — a permanent red is proportionate. An over-`H` journal volume
@@ -595,10 +621,22 @@ Placed between the current lines 55 and 57 of `.github/workflows/build.yml`:
 
 Three notes on the text, each a decision rather than a detail.
 
-- **`opam exec --` wraps run 2** so that the only *declared* difference between
-  the two runs is cwd and process identity. Run 1 executes under
-  `opam exec -- dune exec`; an unwrapped run 2 would differ in environment as
-  well, and a diff would then be ambiguous between the program and the harness.
+- **`opam exec --` wraps run 2** so that both runs resolve the same opam
+  switch. It does **not** make the two environments equal, and the difference
+  is declared here rather than removed *(C-RL-11, J-rtl_lead-0026 — this
+  bullet's first edition claimed the only declared difference was cwd and
+  process identity)*. Run 1 goes through `dune exec`, which injects nine
+  variables the direct invocation does not have — `INSIDE_DUNE`,
+  `DUNE_SOURCEROOT`, `DUNE_OCAML_STDLIB`, `DUNE_OCAML_HARDCODED`, `OCAMLPATH`,
+  `OCAMLFIND_IGNORE_DUPS_IN`, `OCAMLTOP_INCLUDE_PATH`, `CAML_LD_LIBRARY_PATH`,
+  `MANPATH` — and prepends `_build/install/default/bin` to `PATH`; three of
+  the nine are absolute paths into the checkout. The set is **descriptive of
+  one measurement** (dune 3.24.1) and not a pinned contract:
+  `agentic_fpga.opam` requires only `dune >= 3.0` and CI resolves the version
+  through `ocaml/setup-ocaml@v3`. Declaring beats equalising precisely
+  because of that — and it must never be mechanised as an assertion: a
+  hard-coded equality check goes red on a dune bump for a reason unrelated to
+  `REQ-902`. If mechanised at all: **print** the delta, never assert it.
 - **`_build/default/bin/generate.exe` directly, never `dune exec`.** `dune exec`
   runs from the project root — it would overwrite run 1's output and destroy the
   comparison — and may relink. The path is rtl_lead's own.
@@ -624,9 +662,11 @@ Three notes on the text, each a decision rather than a detail.
 
 | output | class | disposition |
 |---|---|---|
-| `Files … differ` | **`REQ-902` defect** — the same source emitted different bytes in two processes | job **red**; never promote; the commit does not advance; route to rtl_lead as a defect against the emitter, not against the snapshot |
+| `Files … differ` | **`REQ-902` defect** — the same source emitted different bytes in two processes | job **red**; never promote; the commit does not advance; route to rtl_lead as a defect against the emitter, not against the snapshot — **but before routing, check the differing bytes for any of the values §4.2 note 1 declares. A harness-caused diff and a program-caused diff are the same `diff` output, and this check is the only thing that separates them** *(C-RL-11)* |
 | `Only in <scratch>/rtl_snapshots` | **`REQ-902` defect** — a file written by one process and not the other | job **red**; same routing. A write that happens once is nondeterminism of the strongest kind |
-| `Only in rtl_snapshots` | **orphan snapshot** — a committed `.v` that no emitter writes | job **red**, but **not** a `REQ-902` finding: the remedy is a deletion, and the disposition is rtl_lead's inventory, not the emitter's determinism. Named separately so the step's red is never mis-filed |
+| `Only in rtl_snapshots`, **untracked** (absent from `git ls-files`, `??` in status) | **`REQ-902` defect** — row 2's class, direction-reversed: run 1 wrote it, run 2 did not *(C-RL-12)* | job **red**; **never delete**; route to rtl_lead against the emitter |
+| `Only in rtl_snapshots`, **tracked and modified** (` M`) | **`REQ-902` defect** — the checkout copy is not `HEAD`'s bytes, so run 1 rewrote it while run 2 did not write it at all *(C-RL-12)* | job **red**; **never delete**; route to rtl_lead |
+| `Only in rtl_snapshots`, **tracked and clean** | **undetermined at the step** — git cannot separate *run 1 rewrote it identically* from *run 1 never touched it* *(C-RL-12)* | job **red**; resolved by one read of `bin/generate.ml`'s emitter list: **if the list names the file it is a `REQ-902` defect** (run 2 omitted a registered emission); **only if the list does not name it** is it an orphan, remedy deletion, rtl_lead's inventory. The test runs opposite to the reading it invites: a file is an orphan **only when no emitter row names it** |
 
 And a fourth, from `set -e` rather than from `diff`: **run 2 exits nonzero**
 while run 1 succeeded. That is the same class as the second row and the strongest
@@ -650,7 +690,7 @@ divergences"* — never *"`REQ-902` holds"*.
 | cwd dependence, absolute-path leakage into output | **yes** | deliberately varied — the scratch cwd is not decoration |
 | per-process random seed, pid, or start-time dependence | **yes** for seed/pid | two processes differ in both |
 | hash-table iteration order under a per-process seed | **no, under the shipped runtime** | OCaml's `Hashtbl` is not randomised unless `~random:true` or `OCAMLRUNPARAM=R`. The class rtl_lead named first is the one this instrument does **not** reach as configured, and saying so is the difference between an instrument and a claim |
-| environment / locale dependence | **no** | both runs share the environment, deliberately, so a diff attributes to the program |
+| environment / locale dependence | **yes, incidentally — and now declared** | the two runs do **not** share an environment: `dune exec` injects into run 1 the set §4.2 note 1 names *(C-RL-11)*. The capability is a by-product of the harness asymmetry, not a designed probe, so it is not a controlled variation of any one variable and supports no claim about which one mattered |
 | coarse time-of-day dependence (a timestamp embedded in output) | **not reliably** | two runs seconds apart usually agree; a date stamp in emitted Verilog would pass most of the time and fail at midnight |
 | machine, OS, opam switch, dune or library version | **no** | one runner, one build |
 | a nondeterministic **compiler** | **no** | both runs execute the same binary |
@@ -870,7 +910,7 @@ edit that restates its anchor, not a new ADR.
 | parameter | default | anchor |
 |---|---|---|
 | `JOURNAL_STAMP_FAST_MAX` | `3600` | the auditor's measured band: 0 of 16 false positives on known-good behaviour; the entire measured defect population is on this side (369 of 371) |
-| `JOURNAL_STAMP_SLOW_MAX` | `3600` | the decided ±60 symmetric. Separated from the fast bound because the false-positive risk is entirely here (§2.5 F5) and grows with round length |
+| `JOURNAL_STAMP_SLOW_MAX` | `3600` | the decided ±60 symmetric — and **anchored to nothing measured**: the 0-of-16 false-positive rate and the 369-of-371 population are fast-side facts that do not transfer (`FINDING F-0024-1`, auditor countersignature). Separated from the fast bound because the false-positive risk is entirely here (§2.5 F5) and grows with round length |
 | `JOURNAL_STAMP_LIST_MAX` | `20` | the per-entry listing cap in `--range` mode; above it, the range aggregates like `--all`. Sized so an ordinary push (1–5 commits) always itemises |
 
 No parameter disables the stamp check. Graceful degradation exists for the one
@@ -958,9 +998,14 @@ sentences join ADR-0017 §8.2's `R10` text, which is still unapplied:
 
 `R10` gains: *"The active volume's size is bounded: above `JOURNAL_SOFT_MAX` the
 commit script warns, above `JOURNAL_HARD_MAX` it refuses and names the rotation.
-CI evaluates the same bound over history and reports it as a warning, because
-the only remedy for a landed oversized volume is a rotation that lies in the
-future and a history rewrite is forbidden by `R9`."*
+CI evaluates the same bound over history and reports it as a warning, because a
+permanent red is proportionate to harm that persists in every future reader and
+an oversized volume's harm is bounded by one file's readability, with its cure
+available prospectively to its owner — where `R11`'s blob gate refuses on
+exactly the opposite proportionality."* *(Cured per J-dv_lead-0189 §2.1 before
+any constitutional application: the first draft recited the refuted
+remedy-ground, and adopting it would have written into the constitution a
+principle its own `R11`, two paragraphs later, breaks.)*
 
 `R11` (new, retro-naming what `check_journals.sh` already enforces): *"**R11 —
 CI blob gate.** `check_journals.sh` re-verifies ADR-0002's blob threshold over
