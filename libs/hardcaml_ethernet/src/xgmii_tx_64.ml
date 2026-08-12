@@ -284,7 +284,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
                 (mux2
                    is_fcs
                    fcs_octet
-                   (mux2 is_term (of_int ~width:8 terminate_char) (of_int ~width:8 idle_char))))
+                   (mux2 is_term (of_int ~width:8 terminate_char) (of_int ~width:8 0))))
          in
          octet, ~:(is_payload |: is_pad |: is_fcs)))
   in
