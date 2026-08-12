@@ -436,3 +436,360 @@ revision of this packet; the mutation campaign over these eight rows declared
 ### Files-in-this-commit
 - test/attack_plans/AP-xgmii_tx_64.md
 - agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md
+
+## [J-dv_lead-0195] 2026-08-12T08:45Z | task:WO-0084 | The M04 campaign's seal is frozen before a single defect exists: thirteen classes over thirty-four claims, twelve kills predicted and one survivor named on arithmetic that convicts my own attack plan — and the base state's build is red on a citation, which is the signal the whole campaign would otherwise be scored on
+
+### Trigger
+
+Orchestrator dispatch, WO-0084 act 1 — the seal, one round, my seat. The
+packet (`agents/handoffs/WO-0084_m04-mutation-campaign.md`, ISSUED, committed
+at `6d92bf9`) commissions the M04 mutation campaign in `docs/PROCESS.md`
+§3.3's determinate order: **I seal first, the auditor seeds blind, the
+orchestrator operates, I score.** Act 1 is barred from being anything but
+first — the campaign may render no diff until this seal's commit exists.
+
+Precheck as dispatched: `git rev-parse HEAD` =
+`6d92bf99bdd84788bab87e0c7fe6bb720a4682bf`, `git status --porcelain` empty,
+branch `claude/fpga-hardcaml-agent-orchestration-37ceyf`. **HEAD was not
+behind**, so incidents 13/14's declared cure (fetch + ff-only) was not needed
+and was not run.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` — §3 (packets), §4
+  (entry grammar), §7's **Mutation record** (b.1)–(b.4), §10 (independence,
+  the transient mutation model, **R-SEAL-1**).
+- `agents/handoffs/WO-0084_m04-mutation-campaign.md` — in full, the four acts.
+- `docs/PROCESS.md` §3.3 — the campaign-seal law at its seventh edition: the
+  cast bound to functions, the freeze point (*before any defect **diff**
+  exists*, not "before any evidence"), the one-way blind, the facsimile, and
+  `[B.11·8]`'s measurement over the record's thirteen seals.
+- **My own attack plan**, `test/attack_plans/AP-xgmii_tx_64.md` — in full: §0.1's
+  three standing rules, §0.2's prohibition register, §1's vocabulary, §2's seven
+  standing obligations, §3's stimulus legality, §4's arithmetic identity and
+  every row table, §6/§6.1's coverage map, §7.1's **BAR T1**, and **§9's four
+  absorption rows**, which are where the discharge census lives.
+- **My own suite** — `test/xgmii_tx_64/bench.mli`, `bench.ml`'s
+  `assert_instruments_scheduled`/`_clean_n`/`_clean` and `underflow_event`, and
+  all eight unit files, read for **assertion order**: which check speaks first
+  under a given defect is the whole content of a message prediction, and it
+  cannot be inferred from what a row is "about". Reading these is my right and
+  my obligation — my suite, my claims, and the packet says so in terms.
+- The standing instruments I must predict the text of: `test/xgmii/tx_decoder.ml`
+  (violation formats, `report`, `is_clean`, and the four blind spots I measured
+  off its own `close_frame`), `test/monitors/strobe_monitor.ml` (`match_up`,
+  `errors`, `report`).
+- Precedent seals for **form**, not for content: `WO-0077`'s (family K + the
+  N-completion section) in full to §4, `WO-0076`'s (family J) §§0–5.
+- CI at the base, read at source from the job record by step **name, number and
+  status**: workflow runs `31577965739` (`build`, jobs `build` id
+  `94054290693` and `cosim` id `94054290782`) and `31577965794`
+  (`journal-check`), plus the failing job's log tail.
+
+**Not read**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`,
+`test/third_party/**`, and **no `mut/` material of any kind** — none exists for
+this campaign and none may until this seal's commit exists. **No RTL reached
+this round's context.** In particular `libs/hardcaml_ethernet/src/xgmii_tx_64.ml`,
+the file every defect of this campaign will be rendered against, was not
+opened at this commit or any earlier one; every class below is composed from
+SPEC-M04, from my own plan's Kills cells, and from my own suite's control flow.
+
+### Reasoning
+
+**What act 1 is actually for.** The M04 suite discharged rows across four
+rounds and every one of those rows carries a Kills cell — a claim that some
+wrong design would turn a named unit red. **Not one of those claims has ever
+been tested by an actual defect.** A seal frozen after the diffs exist proves
+nothing, because a prediction can be fitted to a patch its author has read;
+§3.3 makes the freeze point *before any defect diff exists* and the packet bars
+the campaign from rendering until this commit lands. So the whole of this
+round's value is in what could not be written later.
+
+**The census, corrected in the open.** The packet and the dispatch both say
+*"39 discharged ASSERT rows"*. My plan's own four absorption rows measure
+**39 discharged = 34 ASSERT + 5 NO-ASSERT** (11+2 at `af06c62`, 10+2 at
+`aabae58`, 5+1 at `65ba148`, 8+0 at `91f005d`; the NO-ASSERT five are `A5`,
+`C6`, `D5`, `E5`, `F5`). **A NO-ASSERT row claims no kill** — it is a
+prohibition on the suite, not a claim about the design, and there is no
+assertion for a mutation to redden — so no defect class is derived from one and
+none can be. The denominator of claims is **34**. Cross-check against the
+plan's own status-cell counts: 34 ASSERT discharged of 58, 5 NO-ASSERT of 12,
+plus 6 NO-STIMULUS + 5 STRUCTURAL + 1 GAP → 39 discharged, 43 outstanding, 82
+rows. Closes. I corrected the figure rather than absorbing it, because
+`AP-M04` §0.1(i) forbids quoting a census nobody measured at the point of
+citation — including one handed to me by the seat that commissioned the round.
+
+**Granularity, and why thirteen.** The dispatch left class count and
+granularity to me. Family-level classes were available and I rejected them:
+family G's rows claim four *different* mechanisms (a late pin, a pulse per
+missing cycle, an absent `tlast` qualifier, a mis-armed detector), and a class
+vague enough to cover all four is a class whose predicted messages are
+undetermined — which is the definition of a vacuous seal, and §3.3 says a
+vacuous seal is visible in the seal. I went the other way: **one class per
+distinct mechanism**, thirteen of them, spanning all seven families whose rows
+are discharged, each specific enough that a seeder reading only SPEC-M04 and
+the RTL can render exactly one diff for it, and each with disclosed branches
+wherever a rendering could legitimately differ.
+
+**The unit of scoring is the class**, per PROTOCOL §7 (b.1)'s own words — *the
+unit of this record is the class, not the branch, ref or file that delivered
+it*. One kill per class however many units redden. Per-row kill claims live
+inside each class and are scored in a **second column**, because a class can be
+killed by the suite while qualifying no row at all, and folding those two facts
+into one number is what would hide the campaign's most interesting result.
+
+**The structural fact this port has and M03 did not, which is where most of the
+thinking went.** At M03 the standing monitor judged an `Axi64` stream. At M04
+`Dv_xgmii.Tx_decoder` judges REQ-201 through REQ-206 on *every frame of every
+run*, and `assert_instruments_clean` runs four arms in a fixed order. **Twelve
+of the twenty-six row-bearing units call it FIRST** — I measured that column
+unit by unit rather than assuming it. The consequence, frozen before any diff:
+in those twelve, a defect the decoder can see makes the decoder's message speak
+and **the unit's own row assertions never run**. Under the standing rule
+inherited from `WO-0076` such a red qualifies the row *not at all*. So this
+campaign will produce reds that are real kills of the class and no evidence
+whatever that the row claiming the kill works — and the two clearest cases
+(`M04-B3` and `M04-G6`, the two rows written expressly for the
+CRC-not-re-seeded defect, `M04-G6`'s own message reading *"only this comparison
+speaks"*) are **both** shadowed by their own units' first call. I sealed IC-6
+as **KILL qualifying NO ROW** rather than discovering it at scoring.
+
+**The base state's red, and why it is the most load-bearing paragraph in the
+seal.** I read CI at `6d92bf9` expecting a formality and found the `build` job
+`failure`. Step by step: *Build*, *Run tests*, *Generate RTL*, *REQ-902 two-run
+determinism* and *Verify nothing was left unpromoted* are all `success`, the
+`cosim` job is `success`, `journal-check` is `success` — **the DV suite is green
+end to end** — and the job conclusion is red on **step 10** alone. Reproduced
+locally from a checkout at this commit (`bash tools/dv_checks.sh`): every other
+limb passes and the sole undeclared item is `WO-0084`'s **own** citation of
+`docs/reports/audit/WO-0084-mutations/`, a directory the seeding seat has not
+created yet. A forward reference in the commissioning packet.
+
+That is not a nuisance, it is a trap with a precise shape. **Every
+`mut/wo-0084-<class>` ref is `6d92bf9` plus one diff and inherits the same
+red** — including a class that survives and including a diff that does nothing.
+A scorer reading job conclusions would return **13 of 13 kills off a citation
+checker**. Worse, the red *cures itself at act 2*: once the manifest is
+committed the citation resolves and the branch goes green, while refs rendered
+against the seal's base still carry it — an asymmetry that looks like signal
+and is not. So I minted a new standing rule for this campaign (**rule 9**): no
+cell is scored on a workflow-run or job conclusion; every cell is scored on
+step 6 and on the failing unit's own message text. This could only be written
+now, and if it were written after the runs nobody could tell it from an excuse.
+
+**Where the derivation was hardest, and the one place it convicted me.** I
+worked each class's first-speaking assertion against the committed control
+flow. Three results are worth the record:
+
+1. **IC-9** (the gap served by §0.3's *rejected* convention) reddens **exactly
+   one member of one unit in the whole repository** — `M04-F2 (P1=64)`. Worked
+   at all eight residues, this specification and the rejected reading agree at
+   seven and differ only at `t = 4`, 12 against 20; and the standing decoder is
+   blind, because it only violates REQ-204 when a gap is *below* `cfg_ifg`. The
+   plan drove that sweep whole rather than sampled for exactly this reason, and
+   a sampled sweep would have had a seven-in-eight chance of scoring this class
+   a survivor. That is the narrowest, most falsifiable cell in the seal.
+
+2. **IC-2** and **IC-3** are invisible to the standing decoder, and I asserted
+   that rather than assumed it: the decoder judges REQ-203 as `n < 64` (a frame
+   too *long* raises nothing) and REQ-202 as self-consistency against what is on
+   the wire (a payload corrupted with the FCS computed over the corruption
+   passes). Both classes therefore have to be caught by the rows' own
+   assertions, and both are — which is the campaign's best evidence that
+   obligation 7's poisoned filler and family C's length checks earn their keep.
+   And a load-bearing green falls out: `M04-C4`, the row that exists to catch a
+   padding defect, is **green** under IC-3, because its scan domain is
+   hard-coded to `0 .. 59` and a pad running four octets further is conformant
+   inside it.
+
+3. **IC-10 is predicted to SURVIVE, and the ground convicts my own plan.**
+   `M04-F6`'s Kills cell names *"a design measuring the gap from the `/E/`
+   character rather than from the `/T/` (t = 0, gap 16)"*. **16 is
+   unreachable.** `Tx_decoder.gaps` counts from the terminate character
+   inclusive, that character is the `/T/` at lane 1, REQ-201 puts every start
+   character in lane 0, so every recordable abort gap is `8k − 1` — the set
+   `{7, 15, 23, …}`, always `≡ 7 (mod 8)`. And the substitution itself has **no
+   effect at all** at the only `cfg_ifg` any committed unit drives:
+   `ceil((12 + t)/8) = 2` for `t` in `0 … 3`, so the `/E/`-based and `/T/`-based
+   renderings put the next start character in the same word and the wire is
+   byte-identical. I checked this three ways before sealing it, because a
+   predicted survivor is the one cell in a seal that costs its author
+   something. It is **not** an equivalent mutant — PROTOCOL §7 (b.3) demands the
+   equivalence be proven over the *specification's* legal stimulus space, and at
+   `cfg_ifg ≥ 13` the two renderings separate — so it stays in the denominator
+   and its disposition is a survivor under (b.2), whose cause is that `M04-F3`,
+   the `cfg_ifg` parameterisation, is outstanding. The row is **not** vacuous:
+   it kills any rendering that changes the *word* the next start falls in. But
+   its Kills cell and its own failure message both quote a figure the row's own
+   stimulus cannot produce, and `FINDING WO-0084-S1` (MINOR, mine) is
+   pre-committed at §11 item 7 **to be filed at act 4 whatever the runs
+   return** — so it cannot later be mistaken for a finding invented to explain
+   a result.
+
+**What I rejected.** A fourteenth class over `M04-A2`'s preamble-rotation kill
+(dropped for length; §10 item 1 carries it as an unclosed bound rather than
+letting the campaign imply coverage of it). Family-level classes (§ above).
+Reading `libs/**` to check whether a class is renderable — that would have
+made every prediction below a statement about the implementation rather than
+about my own claims, and it is the one shortcut this round could not take.
+Predicting only kills, which would have made the seal unfalsifiable.
+
+### Actions
+
+- Derived the campaign's defect-class list from my own plan's 34 discharged
+  ASSERT rows: **13 classes, IC-1 … IC-13**, spanning families A (1), B/C (1),
+  C (2), C/D-B/G (2), D (1), E (2), F (2), G (3).
+- Authored and froze `agents/handoffs/WO-0084-SEALED-predictions.md` against
+  base `6d92bf9`: header with the seeding-seat prohibition **and its reason
+  inside the file being opened**; nine standing rules; the denominators and
+  both stimulus censuses re-measured at this tree; **§0.1**, the base state's
+  own red and the step-6 scoring rule; the unit inventory with each unit's
+  standing-instrument position; the shadowing law and the decoder's four blind
+  spots measured off its own source; the matrix, the rules with complete
+  conjunct lists, and the row qualifications; the REQUIRED cells verbatim;
+  shadowed cells; §6's worked survivor; collisions with discriminators; eight
+  pre-committed dispositions; mutant-owned quantities as inequalities; seven
+  unclosed bounds; pass criteria; and what the seeding seat is not told.
+- Computed the REQ-305 oracle values the exact cells quote, independently of
+  this repository (reflected IEEE 802.3 polynomial, least significant octet
+  first), and anchored the computation against a value the tree already
+  carries: `Frame.fcs` over sixty zero octets = `[8; 137; 18; 4]` = `0x04128908`,
+  which is `test_m04_d.ml`'s own promoted `[%expect]` block at this commit.
+- Appended act 1's Return-log row to `WO-0084`.
+- Did **not** run `git commit`, `git push`, `git add`, or any staging command.
+
+### Evidence
+
+All commands run from a repo checkout at `6d92bf9`; every CI reference is a run
+or job id with its conclusion, read at source (PROTOCOL §4.1(b)).
+
+    git rev-parse HEAD    # 6d92bf99bdd84788bab87e0c7fe6bb720a4682bf
+    git status --porcelain  # (empty at precheck)
+    date -u                 # Wed Aug 12 08:45:37 UTC 2026
+
+The base is the suite and the DUT as they were measured green:
+
+    git diff --stat 91f005d 6d92bf9 -- libs/ test/xgmii_tx_64/   # (empty)
+
+CI at `6d92bf9`, by step name/number/status:
+
+    run 31577965739  build   job build (94054290693)   conclusion FAILURE
+       5 Build                                                    success
+       6 Run tests (expect tests, waveform snapshots)              success
+       7 Generate RTL                                              success
+       8 REQ-902 two-run determinism (second process, scratch cwd) success
+       9 Verify nothing was left unpromoted or non-deterministic   success
+      10 DV mechanical checks (C-9 record-vs-appendix, X-9 …)      FAILURE
+      11 Abort-bit availability quantifier (C-37/ADR-0012)         skipped
+    run 31577965739  job cosim (94054290782)            conclusion success
+    run 31577965794  journal-check                      conclusion success
+
+Step 10's failing limb, reproduced locally:
+
+    bash tools/dv_checks.sh
+    #  === docs/** citation resolve-check (RN-6) ===
+    #  BROKEN  agents/handoffs/WO-0084_m04-mutation-campaign.md
+    #          cites docs/reports/audit/WO-0084-mutations/
+    #  …  1  UNDECLARED broken citations
+    #  === docs/** citation resolve-check: FAILED ===
+    # every other limb passes: check_records_vs_appendix 23/23,
+    # check_emitted_verilog 5/5, precompile_check 31+12 units 0 errors
+
+Denominators, measured not recalled:
+
+    grep -rh --include=*.ml 'let%expect_test' test/ | grep -c .   # 167
+    # test/xgmii_tx_64/ 27 (26 row-bearing + U1 scaffold); non-M04 140
+    # of the 140: 80 structurally DUT-independent (test/xgmii/dune: "No
+    # Hardcaml dependency … libs/** is not depended on"), 60 build-level
+    # detectors (test/xgmii_rx_64/ 59 + test/hardcaml_ethernet/ 1),
+    # test/cosim/ 0 units and blind by BAR T1
+
+Oracle anchor for the exact cells:
+
+    python3 -c "import zlib; v=zlib.crc32(bytes(60)); print([v&255,(v>>8)&255,(v>>16)&255,(v>>24)&255])"
+    # [8, 137, 18, 4]  — agrees with test_m04_d.ml's promoted [%expect] at 6d92bf9
+
+**Nothing in this entry is a claim about the campaign's outcome.** No diff
+exists, no ref exists, no run exists. The only measurements here are of the
+base state, of my own suite, and of my own plan.
+
+### SECOND COPY — the seal's frozen content, restated (the anti-tamper half)
+
+The seal file is not covered by the append-only rule; this journal is. If
+either is later edited to fit a result, the other convicts it.
+
+**Base**: `6d92bf9`. **Scoring unit**: the **class**; one kill per class.
+**Classes**: 13. **Predicted**: **12 KILL, 1 SURVIVE**.
+
+| id | class — the transmitter behaves as if … | disposition | killing unit(s) BY NAME | discriminating message text |
+|---|---|---|---|---|
+| IC-1 | the preamble word's octets are not REQ-201's `[0xFB; 0x55 ×6; 0xD5]` | KILL | `M04-A1, M04-A2, M04-A5` (U2) | α `preamble word data does not match [0xFB; 0x55 x6; 0xD5], lane 0 first`; β `preamble word control = 255, expected 1 (bit 0 set, bits 1-7 clear)` |
+| IC-2 | `tkeep` is ignored on the `tlast` word | KILL | `M04-B2` (U4); `M04-C4` (U9); `M04-D6` (U13) | `wire octets 20-23 (lanes 4-7 of C+4) are not all 0x00`; `poison 0xA5 present among wire octets 0..F-5`; `wire FCS octets = [165; 165; 165; 165], expected Frame.fcs(zeros_60) = [8; 137; 18; 4]` |
+| IC-3 | REQ-203's pad target is 64, not 60 | KILL | `M04-C1, M04-C6` (U6); `M04-C2` (U7); `M04-C5` (U10) | `wire octet count = 68, expected 64` (and `…, expected F = 64` at the two sweeps) |
+| IC-4 | the CRC closes at `tlast`; the pad follows it | KILL | `M04-C3` (U8) | `wire octets (lanes 4-7 of C+9) do not equal Frame.fcs(pad_to_60(content))` — assertion 1, **not** assertion 2, which is shadowed |
+| IC-5 | the FCS is not the REQ-305 value in REQ-202's wire order | KILL | `M04-D1, M04-D2, M04-D4, M04-D5` (U11) | `wire FCS octets = [<a>; <b>; <c>; <d>], expected Frame.fcs(pad_to_60(content)) = [135; 7; 193; 206]` at `P=1`; α = the exact reverse, β = octetwise XOR `0xFF` |
+| IC-6 | the CRC register is not re-seeded between frames | **KILL qualifying NO ROW** | every multi-frame unit, all through arm (i) | `<row>: wire decoder unclean:` + a `REQ-202` violation at a **second or later** frame and **none at any first frame**. `M04-B3`'s and `M04-G6`'s own comparisons never run |
+| IC-7 | the terminate character always lands in lane 0 after the FCS | KILL | `M04-E1, M04-E2, M04-E3, M04-E5` (U14), `P=60` **green**, first red `P=61` | α `lane 1 of cycle <C+10> = 7, expected 0xFD`; β `lane 1 of cycle <C+10> does not carry a control character, expected /T/` |
+| IC-8 | fill lanes carry the control bit over stale data | KILL | `M04-E1, M04-E2, M04-E3, M04-E5` (U14) | `terminate word, lane 1 = <n>, expected 0x07 (/I/)`, `<n> <> 7`, derived **58** |
+| IC-9 | the gap is twelve idle octets **after** the terminate character | KILL | `M04-F2 (P1=64)` (U18), **that member alone in the repository** | `the one gap = <n>, expected 12`, `<n> > 12`, derived **20** |
+| IC-10 | the abort gap is measured from the `/E/`, not the `/T/` | **SURVIVE** (α, β); KILL only under γ | none under α/β | — `ceil((12+t)/8) = 2` at `t ∈ 0…3`, so the wire is byte-identical at `cfg_ifg = 12`; and `16` is unreachable, gaps after an abort being `≡ 7 (mod 8)` |
+| IC-11 | `error_underflow` pulses at the `/E/` word, not at the pin | KILL | `M04-G5` (U22); `M04-G1, M04-G2, M04-G8` (U23); `M04-G3` (U24); `M04-G6` (U25); `M04-F6` (U26); `M04-A4` (U27) | `<row>: strobe monitor unclean:` + **one missing at `r`** and **one unexpected at `r+2`**; `r` = `C+1`, `C+95`, `C+185`, `C+4`, `C+4`, `C+15`. `M04-G2`'s own separation assertion is **shadowed** |
+| IC-12 | the underflow condition re-fires on every withheld cycle | KILL | `M04-G3` (U24), **that unit alone** (`hold > 1` is driven once in the repository) | α `<row>: strobe monitor unclean:` + **no missing** and **three unexpected** at `C+186`, `C+187`, `C+188`. β → UNSCOREABLE |
+| IC-13 | REQ-206's `tlast` qualifier is absent | KILL | `M04-G9 (P=1)` (U16); `M04-G10` (U21) | α `M04-G9 (P=1): strobe monitor unclean:` (no missing, one unexpected) — this arm **is** `M04-G9`'s own observable; β `wire decoder unclean:`. At U21: `error_underflow is high at cycle C+12 — the cycle route 2's unfixed design strobed at, by BUG-0004 §9.3's own derivation` |
+
+**Load-bearing greens** (a red at one is a finding against the seal):
+`M04-C4` green under IC-3; `M04-A3`, `M04-F6`, `M04-G5` green under IC-2;
+U14's `P ≥ 64` members green under IC-3; U18's seven non-`t=4` members green
+under IC-9; every unit without `hold > 1` green under IC-12; all 140 non-M04
+units green behaviourally under every class.
+
+**Rows reached by no class**: `M04-A2`, `M04-D2`, and the five NO-ASSERT rows.
+**Assertions reached by no class**: `M04-C3` assertion 2, `M04-G2` assertion 3,
+`M04-B3`'s and `M04-G6`'s octet comparisons, `M04-A3`'s per-frame preamble
+comparison.
+
+**Standing rule 9, minted this round**: no cell is scored on a workflow-run or
+job conclusion; every cell is scored on step 6 and the unit's own message.
+
+**Pre-committed**: `FINDING WO-0084-S1` (MINOR, mine) is filed at act 4
+**whatever the runs return** — `M04-F6`'s Kills cell and failure message quote
+a gap figure (`16`) its own stimulus cannot produce.
+
+### Outcome
+
+**DoD for act 1: met.** The seal is a file in the commit that claims it
+(R-SEAL-1), frozen before any defect diff exists, against a named base state
+whose DV suite is green with its one red named and dispositioned, its content
+duplicated here, its state line declared as the single mutable line **and
+undertaken not to be mutated** so the immutability check stays the flat one.
+Class count **13**, scoring unit **the class**, predicted **12 kills of 13**.
+
+Handoff: `agents/handoffs/WO-0084-SEALED-predictions.md`, plus act 1's row in
+`WO-0084`'s Return log. **Act 2 may begin once this commit exists, and not
+before.** The seeding seat is told the fact of this seal and none of its
+content — except §0.1's step-6 rule, which is a property of the base state
+rather than of any prediction and which the operating seat needs.
+
+**No harvest note is owed this round**: ADR-0018 and PROTOCOL §7 attach the
+harvest to every module sign-off and every phase gate, and this is neither —
+no `SO-xgmii_tx_64.md` is opened or offered here. The span since my last
+harvest stays open and un-tiled at `J-dv_lead-0195`, so a later harvest reads
+one interval and not two.
+
+### Open-questions
+
+1. **`FINDING WO-0084-S1`** — `M04-F6`'s Kills cell names a design (`gap 16`)
+   that no conformant-decoder observation can produce. Filed at act 4, routed
+   to my own plan's next repair round; **not** repaired here, because a seal
+   round may not edit the artifact it is sealing predictions about.
+2. **The step-10 red will cure itself at act 2** and the `mut/` refs will not
+   inherit the cure. If the operating seat rebases any ref onto the manifest
+   commit, the base has changed and §8 disposition 6 governs — I would rather
+   be told than infer it from a scorecard.
+3. **`M04-F3` (the `cfg_ifg` parameterisation) is outstanding**, and IC-10's
+   predicted survive rests entirely on `cfg_ifg = 12`. The day that row lands,
+   IC-10 must be **re-run, not re-quoted**.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0084-SEALED-predictions.md
+- agents/handoffs/WO-0084_m04-mutation-campaign.md
