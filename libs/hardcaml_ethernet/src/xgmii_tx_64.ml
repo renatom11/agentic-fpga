@@ -82,7 +82,7 @@ let sfd_char = 0xd5
 
 (* REQ-203's pad target, in destination-address-through-payload octets. With
    the four FCS octets this is the 64-octet minimum frame of §0.3. *)
-let pad_target = 60
+let pad_target = 64
 
 (* Position arithmetic width. A position runs from 0 to a maximum frame's
    1514 payload octets plus pad, FCS and terminate, and is compared as a
