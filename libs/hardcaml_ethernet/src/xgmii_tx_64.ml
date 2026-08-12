@@ -146,9 +146,9 @@ let abort_word =
   word_of_lanes
     (List.init 8 ~f:(fun k ->
        if k = 0
-       then of_int ~width:8 error_char, vdd
-       else if k = 1
        then of_int ~width:8 terminate_char, vdd
+       else if k = 1
+       then of_int ~width:8 error_char, vdd
        else of_int ~width:8 idle_char, vdd))
 ;;
 
