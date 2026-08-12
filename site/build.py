@@ -131,11 +131,11 @@ PHASES = [
 
 # D4: plain-first, insider reference in parentheses — the standing style.
 NEXT = [
-    'Council review of the process document, rounds two and three: round one’s verdict and two seats’ independent confirmations are already folded in, and each next round runs standards-setter first, then three reviewers, then the five-advisor council, with revisions between rounds',
-    'Finish the transmitter’s test plan — stage one of the two-frame work is reviewed and accepted (six more checks green, the anchor law now measured where it was only derived); stage two follows a packet revision, with 57 of 82 planned checks still open on the plan’s books',
-    'Seeded-defect campaign against the transmitter’s newest benches — planted bugs must be caught before any sign-off credit (AP-M04 → SO-M04)',
-    'Enforcement hardening implementation: the countersigned design that puts each check on the surface it actually runs on, with every signing seat’s conditions riding (ADR-0021)',
-    'Independent design review of the frame receiver and frame transmitter, then the transmitter’s cross-simulation lane against the reference design (M06/M07, co-sim BAR T1)',
+    'Seeded-defect campaign against the transmitter’s benches — now commissionable: the abort path finally has killing units, and planted bugs must be caught before any sign-off credit (AP-M04 → SO-M04)',
+    'Enforcement hardening implementation plus the governance CI job the councils graduated: each check lands on the surface it actually runs on, and the document’s self-checks become a script instead of a promise (ADR-0021, drift check)',
+    'The auditor’s full claim census against the seventh edition — the revision cycle has stopped, so the measurement the last three councils flagged as stale finally re-runs (posture re-measurement 2)',
+    'The amendment batch: the constitution absorbs the rule ids its scripts already refuse by, the charters re-quote current law, and the split’s governing decision record collects its three signatures (ADR-0022)',
+    'Stage-two packet revision (eleven routed items) and the transmitter’s remaining test families, then independent design review of both newest modules and the cross-simulation lane (M06/M07, co-sim BAR T1)',
     'Accumulate per-module rows on the module-readiness gate toward the sponsor’s signature — the receiver’s fourteen-of-fourteen PASS is row one (P1-module-ready); the first lessons harvest awaits the maintainer’s review (federation inbox PR #3)',
 ]
 

@@ -433,3 +433,62 @@ advertised path's first measurement ever.
 - site/public/org-chart.html
 - site/public/process.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0276] 2026-08-12T06:22Z | task:none | The second commission closes on the advertised path's first measurement: ninety-five percent imported, zero enforcement lines invented, two deliberate stops - and the trend line from three cold boots is the only sentence the replication claim now needs
+
+### Trigger
+
+Probe 5.2 returned — blank adopter, empty repo, shell REACHABLE — the first
+run ever on the path every real adopter takes. This entry lands its halt log
+verbatim at docs/reports/process-council/round-5/probe-5-2-halt-log.md,
+carries the closing board flip, the NEXT rewrite, and the site render (both
+volumes re-rendered at the seventh edition; renders verified zero strays).
+
+### The measurement
+
+16 halts: 2 STOPPED — both DELIBERATE open rows (the retro-audit deferred by
+the shell's own spawn-ordering law to the first fork's gate; the stale
+journal INDEX left per the shell's own cadence, residue-routed) — and 14
+improvisations, none of them enforcement: ZERO machinery lines invented
+(run 2 invented ~850; run 1, everything), ~95% imported by weight, self-test
+52/52 from a clean clone, the shell pinned at the document's exact pin with
+zero drift. The trend across three cold boots — 18/3-stopped/all-invented →
+17/0/interfaces-transferred → 16/2-deliberate/95%-imported — is the
+empirical form the round-5 council said the replication claim must take.
+Findings with owners: the precedence rule earned its keep once and failed
+twice, and the real problem is COVERAGE NOT CONFLICT (the two orders are
+different kinds of procedure; the expensive seams are where only one
+speaks); the shell's governing rule lives in its CLAUDE.md, not the
+BOOTSTRAP.md the document names; the kit table's divergence column
+describes the origin's copies, not the shell's (two of three warnings
+stale, one live at the pin); the posture list and golden tally are
+unreachable from the shell side; three of §6.2's six invariants DISSOLVE
+on the with-shell path rather than get satisfied. The drift check is
+confirmed the genuinely missing instrument by a third independent route —
+it heads my implementation round with ADR-0021.
+
+### The commission, closed
+
+Report card → fifth edition (13/14) → round 4 (FIT WITH REPAIRS;
+"confession has replaced repair") → sixth edition (the split; nothing
+deleted; ADR-0022 PROPOSED) → round 5 (RETURN; eight repairs) → seventh
+edition (all eight performed; fourteen margins restored, falsifier 4 at
+zero; the tally closed both ways from the record's own figures; the
+Ground-3 marking REFUSED on IC-2's evidence — the council's premise was
+false and the record decided it) → probe 5.2. Every verdict, report,
+framework, halt log and reader reconstruction committed under
+docs/reports/process-council/. POSTURE-RE-MEASUREMENT-2's trigger fires:
+the revision cycle stops at 2ed029d; the auditor's census round is due.
+Final delivery to the sponsor accompanies this landing.
+
+### Files-in-this-commit
+- docs/reports/process-council/round-5/probe-5-2-halt-log.md
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/memoir.html
+- site/public/org-chart.html
+- site/public/process.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
