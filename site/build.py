@@ -183,6 +183,7 @@ PAGES = [
     ('spec-atlas.html', 'SPEC ATLAS'),
     ('org-chart.html', 'ORG CHART'),
     ('process.html', 'PROCESS'),
+    ('memoir.html', 'MEMOIR'),
     ('backlog.html', 'BACKLOG'),
 ]
 
@@ -699,9 +700,27 @@ process = head_block('agentic-fpga — the process',
 </body></html>
 '''
 
+memoir_md = open(os.path.join(ROOT, 'docs', 'PROCESS-MEMOIR.md')).read()
+memoir = head_block('agentic-fpga — the process memoir',
+                    'agentic-fpga — the process memoir: revision archaeology and program-local annexes') + f'''
+<style>{STYLE}{PROCESS_CSS}</style>
+{nav('memoir.html')}
+<div class="wrap doc">
+  <span class="eyebrow">agentic-fpga / process memoir</span>
+  {md_to_html(memoir_md)}
+  <div class="foot">Rendered verbatim from
+  <span class="mono">docs/PROCESS-MEMOIR.md</span> at commit
+  <a class="mono" href="{REPO_URL}/commit/{head_sha}" target="_blank" rel="noopener">{head_sha}</a>
+  · {gen_date} · the companion volume: the core at PROCESS governs where they disagree.</div>
+  <!-- regenerate: python3 site/build.py -->
+</div>
+</body></html>
+'''
+
 open(os.path.join(PUB, 'index.html'), 'w').write(index)
 open(os.path.join(PUB, 'backlog.html'), 'w').write(backlog)
 open(os.path.join(PUB, 'process.html'), 'w').write(process)
+open(os.path.join(PUB, 'memoir.html'), 'w').write(memoir)
 
 # ---- site chrome on the artifact pages (idempotent) -------------------------
 CHROME_START = '<!-- site-chrome-start -->'

@@ -369,3 +369,67 @@ one-line defect is repaired instead of eloquently disclosed."
 - site/public/org-chart.html
 - site/public/process.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0275] 2026-08-12T05:19Z | task:none | Round five returns a RETURN: the split's warranty found false when actually run, the densest law in the book indeterminate by prose drift - and the repair list is bounded, mechanical, and conditioned on the first measurement of the advertised path
+
+### Trigger
+
+Round 5 completed (workflow wf_b4271ba8-465, ten agents, zero errors). All ten
+artifacts landed VERBATIM at docs/reports/process-council/round-5/. My site
+render rides this commit (build.py gains the MEMOIR page; both volumes render
+clean: process 14 fences/8 blockquotes/0 strays, memoir 1/1/0).
+
+### The verdict, compressed (the file is the record)
+
+**RETURN — not accept-with-conditions**, on the record's own evidence that
+conditions become ledger rows (the drift check: named in three editions,
+built in none). Five convergences, the chairman re-executing the first three:
+(1) §3.9's seeded-defect law is INDETERMINATE — the prose copy dropped
+PROTOCOL's determinacy clause ("All three sit in sealed, none in seeded"),
+the negative control sits in two columns at once, and no exercised Ground-3
+instance exists in the record — design intent sold as case law under the
+document's strongest import instruction; (2) the split's preservation
+warranty is FALSE when run — ~14 fifth-edition margins in neither volume,
+orphaned [CORRECTED] stamps whose own legend says "or it means nothing",
+falsifier 4 using the manifest (the claim) as its own standard; (3) prose
+does not keep itself true — R10/R11 absent from PROTOCOL while scripts
+refuse by those names, ADR-0020 restatement debts unpaid in four charters,
+ADR-0022 unsigned — one datum, not four findings: re-read text decays,
+runnable checks stayed true; (4) the adoption path broken at both ends —
+every real adopter routes onto BOOTSTRAP.md which no one in this record has
+audited, while both halt logs measure only the shell-less fallback; (5) the
+core violates its own substrate law (315,204 bytes against its own 262,144
+anchor, undisclosed) and the memoir's "nothing here is current" is false —
+it holds the only statement of the two OPEN certification gates. Credit
+side undisputed: the enforcement-honesty core again survived hostile
+re-execution; the split's own falsifier apparatus caught the CRITICAL
+against it. Eight bounded repairs; two mechanical closures graduate from
+the Expansionist (a governance CI job — falsifier greps, line accounting,
+cross-volume counts as a script, which is the drift check's real shape and
+lands on MY queue; a golden-tally data file making the §3.9 contradiction
+structurally unrecurrable); the polish items explicitly NOT conditioned.
+The One Thing: restore the determinacy sentence and write the fifteen-line
+worked tally beneath it, columns checked against the real record — "you
+cannot write one tally both ways." And the seventh edition presents with
+probe 5.2's first run: blank agent, empty repo, SHELL REACHABLE — the
+advertised path's first measurement ever.
+
+### Files-in-this-commit
+- docs/reports/process-council/round-5/bill.md
+- docs/reports/process-council/round-5/bob.md
+- docs/reports/process-council/round-5/charlie.md
+- docs/reports/process-council/round-5/contrarian.md
+- docs/reports/process-council/round-5/executor.md
+- docs/reports/process-council/round-5/expansionist.md
+- docs/reports/process-council/round-5/first-principles.md
+- docs/reports/process-council/round-5/outsider.md
+- docs/reports/process-council/round-5/sal-framework.md
+- docs/reports/process-council/round-5/verdict.md
+- site/build.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/memoir.html
+- site/public/org-chart.html
+- site/public/process.html
+- site/public/spec-atlas.html
