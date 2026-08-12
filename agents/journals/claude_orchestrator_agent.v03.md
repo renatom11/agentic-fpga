@@ -727,3 +727,67 @@ reconciles them; the operator states the runs and stops.
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0084_m04-mutation-campaign.md
+
+## [J-orchestrator-0282] 2026-08-12T09:56Z | task:none | The campaign closes with the seal unfalsified and the yield exactly what a mutation campaign is for: a real coverage gap two blind seats named at once - and the board carries the enforcement layer in force, the campaign result, and two zero-loss recoveries
+
+### Trigger
+
+WO-0084 act 4 landed (eeddbe8, J-dv_lead-0196): the campaign is scored. This
+entry is the closing board flip carrying the arc from J-orchestrator-0277
+(ADR-0021 acceptance) through 0281 (the operator runs), plus the site rebuild
+and the worktree cleanup.
+
+### The campaign, closed
+
+SEAL UNFALSIFIED, ZERO MISSES. 11 kills, 1 survivor, 1 non-compiling mutant;
+both tally closures hold. The survivor — class-11, gap-ignores-ifg — passed
+the whole suite because the benches never vary cfg_ifg, and it was named
+from two directions blind: the auditor pre-flagged it at seeding without the
+seal, and dv's sealed IC-10 predicted the identical gap without the manifest.
+Two seats, independent partitions, one real coverage debt (WO-0084-S2). That
+convergence is the campaign's integrity made visible: the value of the blind
+is not that the seeder is clever, it is that when the seeder and the sealer
+agree without communicating, the finding is the artifact's and not either
+seat's.
+
+### The ratified judgment, recorded
+
+dv declined to flip the seal's state line, and I accept it. Its grounds are
+stronger than my dispatch's instruction: the second copy is in an append-only
+journal it cannot edit, so "flip both copies" is unexecutable; and keeping the
+seal byte-frozen preserves the flat empty-diff immutability check the document
+rates strictly stronger than "empty but for one line." The unseal is recorded
+in the packet Return log, where the seal itself named its home. The lesson: a
+dispatch instruction that a downstream discipline can improve is improved, and
+the improvement is put on the record before the commit, not after.
+
+### Cleanup and the record
+
+Operator worktree removed, 13 local mut branches deleted; the 13 remote
+mut/wo-0084-* refs stand as the never-merge record (verified present). The
+enforcement layer is fully in force: all four ADR-0021 subjects, the
+governance job, the 68-scenario suite. Incidents 13 and 14 (stale-snapshot
+container restores) cost one fetch each, zero loss — the cure is now a
+standing preamble in every dispatch, which is the right altitude for a
+recurrent, boring incident class.
+
+### My ledger, this window
+
+The invented CI run-id probed before listing (now twice-convicted — the habit
+is real and the check catches it every time, which is the argument for the
+check and against the habit). The J-auditor-0024 citation I first wrote from
+memory as 0022-era, corrected by my own verification before the commit. The
+WO-0084 packet's forward-citation of a manifest directory that did not exist
+when I wrote it — which reddened the base build job, was caught by dv at the
+seal, and became the campaign's sealed step-6-not-job scoring rule. Three
+errors, three catches, none reaching a landed artifact uncorrected.
+
+### Files-in-this-commit
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/index.html
+- site/public/memoir.html
+- site/public/org-chart.html
+- site/public/process.html
+- site/public/spec-atlas.html
+- tasks/BOARD.md
