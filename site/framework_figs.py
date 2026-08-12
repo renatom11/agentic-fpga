@@ -92,10 +92,10 @@ _F1_GROUPS = [
 _F1_ROWS = [
     ('Sponsor',             'h', '####' '#.....' '...'),
     ('Orchestrator',        'a', '....' '000000' '##.'),
-    ('Specification lead',  'a', '....' '.#....' '...'),
+    ('Specification lead',  'a', '....' '.#..#.' '...'),
     ('Implementation lead', 'a', '....' '..#.#.' '...'),
     ('worker',              'w', '....' '..#.#.' '...'),
-    ('Verification lead',   'a', '....' '...#.#' '...'),
+    ('Verification lead',   'a', '....' '...###' '...'),
     ('worker',              'w', '....' '...#..' '...'),
     ('Auditor',             'a', '....' '......' '..#'),
 ]
@@ -126,8 +126,8 @@ def _f1():
 
     # rotated column labels
     for i, name in enumerate([c for _, cols in _F1_GROUPS for c in cols]):
-        o.append(f'<text x="{xs[i]:.0f}" y="{top - 46}" class="f-lab2" '
-                 f'transform="rotate(-54 {xs[i]:.0f} {top - 46})">{name}</text>')
+        o.append(f'<text x="{xs[i]:.0f}" y="{top - 62}" class="f-lab2" '
+                 f'transform="rotate(-54 {xs[i]:.0f} {top - 62})">{name}</text>')
 
     # the arc: tests derive from the specification and skip the implementation.
     # springs from Specify, arches OVER Build, lands on Test.
@@ -139,6 +139,8 @@ def _f1():
              f'{a2:.0f} {peak:.0f}, {a2:.0f} {top - 6}" class="f-arc"/>')
     o.append(f'<path d="M{a2 - 4:.0f} {top - 12} L {a2:.0f} {top - 4} '
              f'L {a2 + 4:.0f} {top - 12} Z" class="f-fill"/>')
+    o.append(f'<text x="{(a1 + a2) / 2:.0f}" y="{top - 44}" text-anchor="middle" '
+             f'class="f-keyr">tests derive here</text>')
 
     # rows
     for r, (name, kind, cells) in enumerate(_F1_ROWS):
@@ -184,19 +186,19 @@ def _f1():
     o.append(f'<text x="{LEFT - 200 + 524}" y="{ly}" class="f-lab2">the human</text>')
 
     return _fig(''.join(o),
-                'Every seat&rsquo;s powers, cross-tabulated. The one-pager states five '
-                'separate prohibitions in five separate places; laid on a grid they turn out '
-                'to be one rule. <b>Read the empty cells.</b> The implementation row has no '
-                'mark under <i>Test</i> &mdash; it never writes the tests that grade its own '
-                'output &mdash; and the teal arc shows why: tests spring from the '
-                'specification and arch <i>over</i> the build, never touching it. The auditor '
-                'holds exactly one power and has no mark under <i>Repair</i>: it cannot fix '
-                'what it finds, deliberately, because an auditor that repairs things has an '
-                'incentive to find only what it can repair. The orchestrator&rsquo;s row is '
-                'the only one that is solid in the machinery group and <b>hollow all the way '
-                'across the work</b> &mdash; total reach, zero authorship. And the human&rsquo;s '
-                'row is filled at the frame and the vision, then blank across everything '
-                'in between.',
+                'Every seat&rsquo;s powers, cross-tabulated. The one-pager states five separate '
+                'prohibitions in five separate places, so no reader ever holds them at once; '
+                'on a grid they are all in view together, and <b>every one of them is an empty '
+                'cell.</b> The implementation row has no mark under <i>Test</i> &mdash; it '
+                'never writes the tests that grade its own output &mdash; and the arc shows '
+                'where those tests come from instead: they spring from the specification and '
+                'arch <i>over</i> the build, never touching it. Every seat that authors '
+                'something also repairs it &mdash; every seat but one. The auditor holds a single '
+                'power and is the lone blank in the <i>Repair</i> column, because an auditor that '
+                'repairs things has an incentive to find only what it can repair. The '
+                'orchestrator spawns and commits, yet its whole run across the work group is '
+                'hollow: total reach, zero authorship. And the human&rsquo;s row is filled at the '
+                'frame and the vision, then blank across everything in between.',
                 'Matrix of seats against powers. Filled discs mark authorship, hollow rings '
                 'mark handling without authorship, and empty cells mark forbidden powers; the '
                 'implementation row is empty under Test and the auditor row is empty under '
@@ -213,101 +215,99 @@ def _f1():
 # leaving the region genuinely empty.
 
 def _f2():
-    W, H = 880, 424
-    x0, x1 = 132, 812
-    T = {'seal': 258, 'plant': 432, 'run': 606, 'score': 762}
-    upper, lower = 96, 248                       # lane tops
-    LH = 92                                      # lane height
-    bar = 214                                    # the barrier
-    rail = 372                                   # the product rail
+    """Stripped to its two real ideas: the ordering, and the row-by-row scoring.
+
+    The first draft was carrying a hatched band, a labelled 'blind' rule, a
+    third time gate where nothing happened, and a product lane that was mostly
+    dead space. A cold reader could decode none of the hatch and correctly
+    called the labelled rule 'a wall drawn as a line labelled wall'. All of it
+    is gone. What survives: an empty region that means what it looks like, four
+    rows whose alignment does the comparing, and a gap between the lanes that
+    nothing ever crosses.
+    """
+    W, H = 880, 372
+    x0, x1 = 186, 838
+    T = {'seal': 286, 'plant': 486, 'score': 742}
+    ROWS = 4
+    ry = [104 + i * 26 for i in range(ROWS)]          # the four defect classes
+    low = [232 + i * 26 for i in range(ROWS)]         # same four, auditor's side
+    held = [True, True, False, True]
     o = []
 
-    # lanes
-    o.append(f'<rect x="{x0}" y="{upper}" width="{x1 - x0}" height="{LH}" class="f-band" opacity=".55"/>')
-    o.append(f'<text x="{x0 - 12}" y="{upper + 22}" text-anchor="end" class="f-lab">Verification</text>')
-    o.append(f'<text x="{x0 - 12}" y="{upper + 39}" text-anchor="end" class="f-lab">lead</text>')
-    o.append(f'<text x="{x0 - 12}" y="{lower + 30}" text-anchor="end" class="f-lab">Auditor</text>')
-    # the auditor's lane is tinted ONLY from the moment bugs exist
-    o.append(f'<rect x="{T["plant"]}" y="{lower}" width="{x1 - T["plant"]}" height="{LH}" '
-             f'class="f-band" opacity=".55"/>')
-    o.append(f'<rect x="{x0}" y="{lower}" width="{T["plant"] - x0}" height="{LH}" '
-             f'fill="none" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="5 5"/>')
-    o.append(f'<text x="{(x0 + T["plant"]) / 2:.0f}" y="{lower + LH / 2 + 5:.0f}" '
-             f'text-anchor="middle" class="f-key">no defect exists yet</text>')
+    # time gates
+    for k, lab in (('seal', 'seal'), ('plant', 'plant'), ('score', 'score')):
+        o.append(f'<line x1="{T[k]}" y1="66" x2="{T[k]}" y2="{low[-1] + 30}" '
+                 f'class="f-rule" stroke-dasharray="3 5"/>')
+        o.append(f'<text x="{T[k]}" y="56" text-anchor="middle" class="f-keyr">{lab}</text>')
+    o.append(f'<path d="M{x0} 42 H{x1}" class="f-rule" opacity=".6"/>')
+    o.append(f'<text x="{x1}" y="{low[-1] + 46}" text-anchor="end" class="f-key">time</text>')
+    o.append(f'<path d="M{x0} {low[-1] + 40} H{x1 - 44}" class="f-rule2" opacity=".5"/>')
+    o.append(f'<path d="M{x1 - 44} {low[-1] + 36} l 8 4 l -8 4 Z" fill="var(--ink-2)" opacity=".5"/>')
 
-    # time rules + captions
-    for k, lab in (('seal', 't&#8320; &#183; seal'), ('plant', 't&#8321; &#183; plant'),
-                   ('run', 't&#8322; &#183; run'), ('score', 't&#8323; &#183; score')):
-        xx = T[k]
-        o.append(f'<line x1="{xx}" y1="62" x2="{xx}" y2="{rail + 46}" class="f-rule" '
-                 f'stroke-dasharray="3 5"/>')
-        o.append(f'<text x="{xx}" y="52" text-anchor="middle" class="f-keyr">{lab}</text>')
+    o.append(f'<text x="{x0 - 14}" y="{ry[0] - 22}" text-anchor="end" class="f-lab">Verification</text>')
+    o.append(f'<text x="{x0 - 14}" y="{ry[0] - 6}" text-anchor="end" class="f-lab">lead</text>')
+    o.append(f'<text x="{x0 - 14}" y="{low[0] + 8}" text-anchor="end" class="f-lab">Auditor</text>')
 
-    # the seal: four predictions frozen at t0, hatched (written once) to t3
-    o.append('<defs><pattern id="fwHatch" width="7" height="7" '
-             'patternTransform="rotate(45)" patternUnits="userSpaceOnUse">'
-             '<line x1="0" y1="0" x2="0" y2="7" stroke="var(--rx)" stroke-width="2.2" '
-             'opacity=".16"/></pattern></defs>')
-    o.append(f'<rect x="{T["seal"]}" y="{upper + 8}" width="{T["score"] - T["seal"]}" '
-             f'height="{LH - 16}" fill="url(#fwHatch)"/>')
-    o.append(f'<rect x="{T["seal"]}" y="{upper + 8}" width="{T["score"] - T["seal"]}" '
-             f'height="{LH - 16}" fill="none" stroke="var(--rx)" stroke-width="1.4"/>')
-    rows_y = [upper + 22 + i * 18 for i in range(4)]
-    for i, ry in enumerate(rows_y):
-        o.append(f'<rect x="{T["seal"] + 10}" y="{ry - 6}" width="26" height="12" rx="2" '
-                 f'class="f-fill" opacity="{0.95 if i != 2 else 0.95}"/>')
-        # the frozen prediction carried forward to scoring
-        o.append(f'<line x1="{T["seal"] + 40}" y1="{ry}" x2="{T["score"] + 12}" y2="{ry}" '
-                 f'stroke="var(--rx)" stroke-width="1.1" opacity=".55" stroke-dasharray="2 4"/>')
+    # the four sealed predictions, locked at t0 and carried to scoring
+    o.append(f'<rect x="{T["seal"] - 34}" y="{ry[0] - 15}" width="30" '
+             f'height="{ry[-1] - ry[0] + 30}" rx="4" fill="none" stroke="var(--rx)" stroke-width="1.6"/>')
+    o.append(f'<path d="M{T["seal"] - 26} {ry[0] - 15} v-7 a7 7 0 0 1 14 0 v7" fill="none" '
+             f'stroke="var(--rx)" stroke-width="1.6"/>')
+    for i, yy in enumerate(ry):
+        o.append(f'<rect x="{T["seal"] - 28}" y="{yy - 5}" width="18" height="10" rx="2" class="f-fill"/>')
+        o.append(f'<line x1="{T["seal"] - 4}" y1="{yy}" x2="{T["score"] - 10}" y2="{yy}" '
+                 f'stroke="var(--rx)" stroke-width="1.2" opacity=".5" stroke-dasharray="2 4"/>')
 
-    # the barrier: unbroken from t0 to t3, opening only at scoring
-    o.append(f'<line x1="{x0}" y1="{bar}" x2="{T["score"]}" y2="{bar}" class="f-rule2" '
-             f'stroke-width="2.4"/>')
-    o.append(f'<line x1="{T["score"]}" y1="{bar}" x2="{x1}" y2="{bar}" class="f-rule" '
-             f'stroke-dasharray="4 4"/>')
-    o.append(f'<text x="{(x0 + T["score"]) / 2:.0f}" y="{bar - 8}" text-anchor="middle" '
-             f'class="f-key">blind &#183; no opening</text>')
+    # NOTHING in the auditor's half until the defects exist. No label: the
+    # emptiness is the encoding, and a void that needs a caption is not working.
+    for i, yy in enumerate(low):
+        o.append(f'<path d="M{T["plant"]} {yy} H{T["score"]} C {T["score"] + 8} {yy}, '
+                 f'{T["score"] + 8} {ry[i]}, {T["score"] + 16} {ry[i]}" fill="none" '
+                 f'stroke="var(--fw-gap)" stroke-width="1.2" opacity=".5" stroke-dasharray="2 4"/>')
+        o.append(f'<path d="M{T["plant"] + 4} {yy + 7} l 9 -15 l 9 15 Z" class="f-gapfl"/>')
 
-    # the bugs: nothing before t1
-    for i in range(4):
-        bx = T['plant'] + 16 + i * 26
-        o.append(f'<path d="M{bx} {lower + 30} l 9 16 l -18 0 Z" class="f-gapfl"/>')
-    o.append(f'<text x="{T["plant"] + 16}" y="{lower + 72}" class="f-lab2">defects planted</text>')
+    # the two halves are separated by a band nothing ever crosses
+    mid = (ry[-1] + low[0]) / 2
+    o.append(f'<rect x="{x0 - 8}" y="{mid - 11}" width="{T["score"] - x0 + 8}" height="22" '
+             f'fill="var(--ink-2)" opacity=".13"/>')
+    o.append(f'<line x1="{x0 - 8}" y1="{mid - 11}" x2="{T["score"]}" y2="{mid - 11}" class="f-rule2"/>')
+    o.append(f'<line x1="{x0 - 8}" y1="{mid + 11}" x2="{T["score"]}" y2="{mid + 11}" class="f-rule2"/>')
 
-    # product rail + the branch that never rejoins
-    o.append(f'<line x1="{x0}" y1="{rail}" x2="{x1}" y2="{rail}" class="f-rule2"/>')
-    o.append(f'<text x="{x0 - 12}" y="{rail + 5}" text-anchor="end" class="f-lab">Product</text>')
-    o.append(f'<path d="M{T["plant"]} {rail} V{rail + 34} H{T["score"]}" class="f-gapln" '
-             f'stroke-dasharray="5 4"/>')
-    o.append(f'<line x1="{T["score"]}" y1="{rail + 24}" x2="{T["score"]}" y2="{rail + 44}" '
-             f'class="f-gapln" stroke-width="3"/>')
-    o.append(f'<text x="{T["score"] + 10}" y="{rail + 38}" class="f-keyg">discarded</text>')
-
-    # scoring: outcomes land in the sealed rows, so agreement is alignment
-    for i, ry in enumerate(rows_y):
-        hit = (i != 2)
-        if hit:
-            o.append(f'<circle cx="{T["score"] + 22}" cy="{ry}" r="6.5" class="f-fill"/>')
+    # scoring: each outcome lands in the row of the prediction it answers
+    for i, yy in enumerate(ry):
+        if held[i]:
+            o.append(f'<circle cx="{T["score"] + 16}" cy="{yy}" r="6.5" class="f-fill"/>')
         else:
-            o.append(f'<circle cx="{T["score"] + 22}" cy="{ry}" r="6.5" fill="none" '
-                     f'stroke="var(--fw-gap)" stroke-width="2"/>')
-    o.append(f'<text x="{T["score"] + 36}" y="{rows_y[0] - 14}" class="f-key">scored</text>')
+            o.append(f'<path d="M{T["score"] + 10} {yy - 6} l 12 12 M{T["score"] + 22} {yy - 6} '
+                     f'l -12 12" stroke="var(--fw-gap)" stroke-width="2.6" fill="none"/>')
+    o.append(f'<text x="{T["score"] + 16}" y="{ry[0] - 26}" text-anchor="middle" '
+             f'class="f-key">prediction held / broke</text>')
+
+    ly = low[-1] + 68
+    o.append(f'<rect x="{x0 - 8}" y="{ly - 10}" width="18" height="10" rx="2" class="f-fill"/>')
+    o.append(f'<text x="{x0 + 16}" y="{ly}" class="f-lab2">a sealed prediction</text>')
+    o.append(f'<path d="M{x0 + 210} {ly + 1} l 9 -15 l 9 15 Z" class="f-gapfl"/>')
+    o.append(f'<text x="{x0 + 236}" y="{ly}" class="f-lab2">a planted defect</text>')
 
     return _fig(''.join(o),
-                'A campaign&rsquo;s honesty is an ordering and a blindness, so it is drawn on '
-                'a clock. <b>The most important region of this figure is empty:</b> at '
-                't&#8320;, when the verification lead freezes its predictions, no planted '
-                'defect exists anywhere &mdash; the auditor&rsquo;s lane is blank until '
-                't&#8321;. A prediction made about nothing cannot be tuned to it. The barrier '
-                'between the two lanes has <b>no opening</b> until scoring, so neither party '
-                'can see the other&rsquo;s work while it matters; the hatched band is the seal, '
-                'readable and unwritable once made. The planted defects live on a branch that '
-                'ends in a stop, never rejoining the product. At t&#8323; each outcome lands '
-                'in the row of the prediction it answers, so agreement is something you read '
-                'off alignment &mdash; three predictions held, one did not.',
-                'Protocol timeline in two lanes over four moments. The auditor lane is empty '
-                'until defects are planted, an unbroken barrier separates the lanes until '
-                'scoring, and the defect branch terminates without rejoining the product.',
+                'The campaign&rsquo;s honesty is an ordering, so it is drawn on a clock. '
+                'Predictions are locked at the left, one per row. <b>Now look at the '
+                'auditor&rsquo;s half before the middle gate: there is nothing in it.</b> When '
+                'the verification lead sealed those predictions, not one of the defects it '
+                'predicts existed yet &mdash; so they cannot have been tuned to what was '
+                'planted, and no amount of good faith is being relied on to make that true. '
+                'The band between the halves is what the verification line cannot see '
+                'through: the defects are planted <i>secretly</i>, so no test can be quietly '
+                'tuned to the thing it is about to be graded on. Each planted defect then '
+                'rises at scoring to meet the prediction that anticipated it, and the verdict '
+                'is read off that join. Note what counts as success here: a sealed prediction '
+                'may be that a test <i>will miss</i> a whole class of bug &mdash; and when it '
+                'duly misses, the prediction held. Three held; one broke, and the break is as '
+                'legible as the rest.',
+                'A timeline in two halves over three moments. Four sealed predictions are '
+                'locked at the left; the auditor half is completely empty until defects are '
+                'planted at the middle gate; a solid band separates the halves; and at the '
+                'right each row ends in a hit or a cross.',
                 (W, H))
 
 
@@ -334,35 +334,36 @@ def _f3():
     o.append(f'<text x="{x0 - 14}" y="{spine + 58}" text-anchor="end" class="f-lab2">server, binding</text>')
 
     # the spine of commits, fading at the left so it reads as "so far", not a count
-    o.append(f'<line x1="{x0 - 8}" y1="{spine}" x2="{ticks[-1] + 16}" y2="{spine}" class="f-rule"/>')
-    for i, tx in enumerate(ticks):
-        op = min(1.0, 0.18 + i * 0.22)
+    o.append(f'<line x1="{ticks[0] - 3}" y1="{spine}" x2="{ticks[-1] + 16}" y2="{spine}" class="f-rule"/>')
+    for tx in ticks:
         o.append(f'<rect x="{tx - 3}" y="{spine - 7}" width="6" height="14" rx="1.5" '
-                 f'class="f-fill" opacity="{op:.2f}"/>')
+                 f'class="f-fill" opacity=".9"/>')
 
     # top track: one short segment per commit, covering only that commit — with holes
     for i, tx in enumerate(ticks):
         if i in skips:
             continue
-        op = min(1.0, 0.18 + i * 0.22)
         o.append(f'<rect x="{tx - 9}" y="{spine - 46}" width="18" height="9" rx="2" '
-                 f'class="f-fill" opacity="{op * 0.85:.2f}"/>')
+                 f'class="f-fill" opacity=".78"/>')
     for i in skips:
         tx = ticks[i]
         o.append(f'<rect x="{tx - 9}" y="{spine - 46}" width="18" height="9" rx="2" '
                  f'fill="none" stroke="var(--fw-gap)" stroke-width="1.4" stroke-dasharray="3 3"/>')
-        o.append(f'<line x1="{tx}" y1="{spine - 34}" x2="{tx}" y2="{spine - 12}" '
-                 f'class="f-gapln" stroke-dasharray="2 4" opacity=".8"/>')
+        o.append(f'<line x1="{tx}" y1="{spine - 34}" x2="{tx}" '
+                 f'y2="{spine + 30 + len(pushes) * 17 + 4}" class="f-gapln" '
+                 f'stroke-dasharray="2 4" opacity=".9"/>')
 
     # bottom track: every band starts at the first commit — length IS the claim
     for k, p in enumerate(pushes):
         by = spine + 30 + k * 17
-        o.append(f'<rect x="{x0 - 8}" y="{by}" width="{ticks[p] - x0 + 16}" height="11" rx="3" '
+        o.append(f'<rect x="{ticks[0] - 3}" y="{by}" width="{ticks[p] - ticks[0] + 11}" height="11" rx="3" '
                  f'fill="var(--tx)" opacity="{0.20 + k * 0.13:.2f}"/>')
         o.append(f'<line x1="{ticks[p] + 8}" y1="{by}" x2="{ticks[p] + 8}" y2="{by + 11}" '
                  f'stroke="var(--tx)" stroke-width="2"/>')
-    o.append(f'<text x="{x0 - 8}" y="{spine + 30 + len(pushes) * 17 + 22}" class="f-key">'
-             f'always from commit one</text>')
+    ay = spine + 30 + len(pushes) * 17 + 20
+    o.append(f'<path d="M{ticks[0] - 3} {ay - 12} V{ay - 4} H{ticks[0] + 40}" class="f-rule2" '
+             f'opacity=".7"/>')
+    o.append(f'<text x="{ticks[0] + 46}" y="{ay}" class="f-key">every run starts here</text>')
 
     # the merge gate hangs off the binding track, not the skippable one
     mx = ticks[-1] + 40
@@ -381,9 +382,9 @@ def _f3():
                 'own tick &mdash; and an agent can skip it, which is what the dashed outlines '
                 'are. Every server-side run instead starts again at the <b>first commit ever '
                 'made</b>, so the bands below grow into a staircase whose length is the claim '
-                '&ldquo;across the entire history&rdquo;. <b>Trace straight down from any hole '
-                'in the top row</b> and you land inside band after band: a skipped check is '
-                'not an escape, it is a deferral. The merge gate hangs off the binding track, '
+                '&ldquo;across the entire history&rdquo;. <b>Every dotted line dropping from a hole '
+                'passes through band after band beneath it.</b> A skipped check is not an '
+                'escape, it is a deferral. The merge gate hangs off the binding track, '
                 'never the skippable one.',
                 'A row of commits with short per-commit checks above it, three of them missing, '
                 'and below it a staircase of bands each starting at the first commit, so the '
@@ -447,6 +448,8 @@ def _f4():
                      f'text-anchor="middle" class="f-keyg">claimed, not delivered</text>')
         o.append(f'<text x="{L - 18}" y="{y + RH2 / 2 + 4:.0f}" text-anchor="end" class="f-lab">{name}</text>')
     o.append(f'<text x="{L}" y="{40}" class="f-key">the rule&#8217;s whole claim</text>')
+    o.append(f'<text x="{L + RW}" y="{40}" text-anchor="end" class="f-key" opacity=".8">'
+             f'areas are schematic</text>')
     o.append(f'<line x1="{L}" y1="46" x2="{L + RW}" y2="46" class="f-rule"/>')
     ly = 58 + len(_F4_ROWS) * (RH2 + GAP) + 8
     o.append(f'<rect x="{L}" y="{ly - 9}" width="22" height="11" fill="var(--rx)" opacity=".82"/>')
@@ -463,10 +466,12 @@ def _f4():
                 'only where somebody looked, and the white between them is unwatched time. '
                 '<b>Then the ink falls off a cliff:</b> <i>performed once</i> is not a bar at '
                 'all but a mark at the left edge and then nothing, and <i>planned</i> is an '
-                'empty outline &mdash; a claim with no protection under it at all. <b>And no '
-                'row is ever full:</b> every rule names the part its enforcement cannot reach, '
-                'punched here as a hole straight through the ink, with the seat that watches '
-                'that gap sitting in it.',
+                'empty outline &mdash; a claim with no protection under it at all. <b>And even '
+                'the strongest row is not solid:</b> a genuinely machine-checked rule still '
+                'names the part its enforcement cannot reach, punched here as a hole straight '
+                'through the ink with the seat that watches that gap sitting in it. The lower '
+                'two rows are almost all gap, which is why the grade is worth printing beside '
+                'the rule.',
                 'Four bars of identical outer size with steeply decreasing filled area: nearly '
                 'solid, striped, a single narrow tick, and an empty outline. The two filled '
                 'bars have a hole punched through them containing a marker.',
@@ -481,81 +486,94 @@ def _f4():
 # it an area and the rule stops being tidiness and becomes risk.
 
 def _f5():
-    """Two seats, four agents, one shared store. The subject is the shaded area."""
-    W, H = 880, 380
-    x0, x1 = 168, 838
-    railA, railB = 92, 168
-    repo_top, repo_bot = 244, 322
+    """Two seats, four agents, one shared store. The subject is the shaded area.
+
+    STRUCTURAL CONSTRAINT, and the reason the timings look staggered: no write
+    stroke may cross another seat's agent bar. The first draft put the frequent
+    writer on the upper rail, so all twelve of its strokes passed behind the
+    lower seat's bar — which manufactured exactly the horizontal agent-to-agent
+    connection the figure exists to deny. Fixed by construction: the sparse
+    writer sits on top and its two strokes fall in the lower rail's gaps, so
+    nothing crosses anything.
+    """
+    W, H = 880, 388
+    x0, x1 = 176, 842
+    railT, railB = 96, 168                    # crashing seat above, diligent below
+    repo_top, repo_bot = 250, 328
     o = []
 
-    def rail(ry, nm):
+    def rail(ry, nm):                          # the rail IS the seat: it outlives every agent on it
         o.append(f'<line x1="{x0}" y1="{ry}" x2="{x1}" y2="{ry}" class="f-rule" '
                  f'stroke-dasharray="2 4"/>')
         o.append(f'<text x="{x0 - 14}" y="{ry + 4}" text-anchor="end" class="f-lab">{nm}</text>')
-        o.append(f'<text x="{x1 + 8}" y="{ry + 4}" class="f-key">seat</text>')
-    rail(railA, 'Specification')
-    rail(railB, 'Implementation')
+    rail(railT, 'Implementation')
+    rail(railB, 'Specification')
     o.append(f'<text x="{x0 - 14}" y="{repo_top + 48}" text-anchor="end" class="f-lab">Repository</text>')
 
-    # the store: an edge that only ever steps up — a correction is a new step
-    commits = [214, 262, 310, 358, 406, 454, 502, 560, 616, 664, 712, 760, 806]
-    lvl, path = repo_top + 56, [f'M{x0} {repo_bot}', f'L{x0} {repo_top + 56}']
+    commits = [250, 300, 340, 380, 420, 460, 500, 540, 660, 700, 760]
+    lvl, path = repo_top + 58, [f'M{x0} {repo_bot}', f'L{x0} {repo_top + 58}']
     for cx in commits:
         path += [f'L{cx} {lvl:.1f}']
-        lvl -= 4.0
+        lvl -= 4.6
         path += [f'L{cx} {lvl:.1f}']
     path += [f'L{x1} {lvl:.1f}', f'L{x1} {repo_bot} Z']
     o.append(f'<path d="{" ".join(path)}" fill="var(--rx)" opacity=".14" '
              f'stroke="var(--rx)" stroke-width="1.5"/>')
 
+    strokes, bars = [], []                     # bars drawn last, so nothing sits on top of a seat
+
     def writes(ry, xs_):
-        for wx in xs_:                       # work and journal entry, inseparable
-            o.append(f'<path d="M{wx - 2} {ry + 11} V{repo_top}" class="f-rule2"/>')
-            o.append(f'<path d="M{wx + 2} {ry + 11} V{repo_top}" class="f-rule2"/>')
-            o.append(f'<circle cx="{wx}" cy="{repo_top}" r="3.6" class="f-fill"/>')
+        for wx in xs_:                         # work and journal entry, inseparable
+            strokes.append(f'<path d="M{wx - 2} {ry + 11} V{repo_top}" class="f-rule2"/>')
+            strokes.append(f'<path d="M{wx + 2} {ry + 11} V{repo_top}" class="f-rule2"/>')
+            strokes.append(f'<circle cx="{wx}" cy="{repo_top}" r="3.6" class="f-fill"/>')
 
     def read(ry, rx_, hot=False):
         st = 'var(--rx)' if hot else 'var(--ink-2)'
-        o.append(f'<path d="M{rx_} {repo_top} V{ry + 11}" stroke="{st}" stroke-width="1.5" '
-                 f'fill="none" stroke-dasharray="3 3" opacity=".85"/>')
-        o.append(f'<path d="M{rx_ - 4} {ry + 18} L{rx_} {ry + 10} L{rx_ + 4} {ry + 18} Z" '
-                 f'fill="{st}" opacity=".85"/>')
+        strokes.append(f'<path d="M{rx_} {repo_top} V{ry + 11}" stroke="{st}" stroke-width="1.5" '
+                       f'fill="none" stroke-dasharray="3 3" opacity=".9"/>')
+        strokes.append(f'<path d="M{rx_ - 4} {ry + 18} L{rx_} {ry + 10} L{rx_ + 4} {ry + 18} Z" '
+                       f'fill="{st}" opacity=".9"/>')
 
     def bar(ry, ax, bx, crash=False):
         if crash:
-            o.append(f'<path d="M{ax} {ry - 11} H{bx - 12} l 8 5 l -8 6 l 8 6 l -8 5 H{ax} Z" '
-                     f'fill="var(--panel)" stroke="var(--fw-gap)" stroke-width="2"/>')
+            bars.append(f'<path d="M{ax} {ry - 11} H{bx - 12} l 8 5 l -8 6 l 8 6 l -8 5 H{ax} Z" '
+                        f'fill="var(--panel)" stroke="var(--fw-gap)" stroke-width="2"/>')
         else:
-            o.append(f'<rect x="{ax}" y="{ry - 11}" width="{bx - ax}" height="22" rx="5" '
-                     f'class="f-panel"/>')
+            bars.append(f'<rect x="{ax}" y="{ry - 11}" width="{bx - ax}" height="22" rx="5" '
+                        f'class="f-panel"/>')
 
     def exposure(ry, ax, bx, strong):
-        op, h = (.30, 40) if strong else (.16, 40)
-        o.append(f'<rect x="{ax}" y="{ry - h / 2:.0f}" width="{bx - ax}" height="{h}" '
-                 f'fill="var(--fw-gap)" opacity="{op}"/>')
+        o.append(f'<rect x="{ax}" y="{ry - 20}" width="{bx - ax}" height="40" '
+                 f'fill="var(--fw-gap)" opacity="{".30" if strong else ".16"}"/>')
 
-    # RAIL A — writes often, so almost nothing is ever only in the session
-    bar(railA, 196, 470);  writes(railA, [214, 262, 310, 358, 406, 454]);  read(railA, 206)
-    exposure(railA, 454, 470, False)
-    bar(railA, 540, 828);  writes(railA, [560, 616, 664, 712, 760, 806]);  read(railA, 550)
-    exposure(railA, 806, 828, False)
-
-    # RAIL B — one early write, then a long unwritten stretch, then a crash
-    bar(railB, 196, 520, crash=True);  writes(railB, [214]);  read(railB, 206)
-    exposure(railB, 214, 520, True)
-    o.append(f'<rect x="{(214 + 520) / 2 - 84:.0f}" y="{railB - 43}" width="168" height="18" '
+    # UPPER RAIL — one early write, a long unwritten stretch, then a crash.
+    # Its two strokes (x=250 and x=760) fall in the lower rail's gaps by design.
+    bar(railT, 224, 576, crash=True);  writes(railT, [250]);  read(railT, 236)
+    exposure(railT, 250, 576, True)
+    o.append(f'<rect x="{(250 + 576) / 2 - 86:.0f}" y="{railT - 44}" width="172" height="18" '
              f'fill="var(--bg)"/>')
-    o.append(f'<text x="{(214 + 520) / 2:.0f}" y="{railB - 30}" text-anchor="middle" '
+    o.append(f'<text x="{(250 + 576) / 2:.0f}" y="{railT - 31}" text-anchor="middle" '
              f'class="f-keyg">lost if it ends here</text>')
-    # the partial edit leaves the workspace and dead-ends: it is evidence, not a resume point
-    o.append(f'<path d="M520 {railB + 13} V{railB + 44} H566" class="f-gapln" stroke-dasharray="4 4"/>')
-    o.append(f'<rect x="570" y="{railB + 32}" width="88" height="24" rx="5" fill="var(--bg)" '
+    # the partial edit leaves the workspace and dead-ends: evidence, not a resume point.
+    # routed BELOW the replacement's read so the two never touch.
+    o.append(f'<path d="M576 {railT - 11} V{railT - 58} H636" class="f-gapln" stroke-dasharray="4 4"/>')
+    o.append(f'<rect x="640" y="{railT - 70}" width="92" height="24" rx="5" fill="var(--bg)" '
              f'stroke="var(--fw-gap)" stroke-width="1.3" stroke-dasharray="4 3"/>')
-    o.append(f'<text x="614" y="{railB + 48}" text-anchor="middle" class="f-lab2">evidence</text>')
-    o.append(f'<line x1="662" y1="{railB + 34}" x2="662" y2="{railB + 54}" class="f-gapln" stroke-width="2.6"/>')
-    # the replacement re-reads an EARLIER committed state, left of where the crash happened
-    bar(railB, 596, 800);  writes(railB, [664, 712, 760]);  read(railB, 606, hot=True)
-    exposure(railB, 760, 800, False)
+    o.append(f'<text x="686" y="{railT - 54}" text-anchor="middle" class="f-lab2">evidence</text>')
+    o.append(f'<line x1="736" y1="{railT - 68}" x2="736" y2="{railT - 48}" class="f-gapln" stroke-width="2.6"/>')
+    # the replacement reads an EARLIER committed state — left of where the crash happened
+    bar(railT, 620, 800);  writes(railT, [760]);  read(railT, 632, hot=True)
+    exposure(railT, 760, 800, False)
+
+    # LOWER RAIL — writes constantly, so almost nothing is ever only in-session
+    bar(railB, 280, 560);  writes(railB, [300, 340, 380, 420, 460, 500, 540]);  read(railB, 290)
+    exposure(railB, 540, 560, False)
+    bar(railB, 644, 720);  writes(railB, [660, 700]);  read(railB, 652)
+    exposure(railB, 700, 720, False)
+
+    o.extend(strokes)
+    o.extend(bars)
 
     ly = repo_bot + 34
     o.append(f'<path d="M{x0 - 2} {ly - 12} V{ly + 2} M{x0 + 2} {ly - 12} V{ly + 2}" class="f-rule2"/>')
@@ -565,22 +583,24 @@ def _f5():
 
     return _fig(''.join(o),
                 'Scan this figure for a line running <i>between</i> two agents. <b>There '
-                'isn&rsquo;t one.</b> Every stroke is vertical &mdash; agents write down into '
-                'the repository and read back up out of it, and nothing passes between them '
-                'directly, which is what makes the record complete rather than merely diligent. '
-                'The seat rails run the full width while the agents occupying them start, '
-                'finish and vanish. The store&rsquo;s edge only ever steps up: a correction is '
-                'a new step, never an erased one. <b>The red areas are the point.</b> They are '
-                'the work that exists only inside a session &mdash; gone if it ends there. The '
-                'agent that writes often is barely exposed at all; the one that crashed '
-                'mid-edit loses everything since its single early write. That partial work is '
-                'kept as evidence outside the workspace and dead-ends there, because its author '
-                'can no longer be asked what it was about to do &mdash; so its replacement '
-                'starts by reading an <i>earlier</i> committed state instead.',
+                'isn&rsquo;t one.</b> Every stroke is vertical &mdash; each agent writes down '
+                'into the repository and reads back up out of it, and none of them touches '
+                'another, which is what makes the record complete rather than merely diligent. '
+                '(The orchestrator does the committing, under the authoring seat&rsquo;s name; '
+                'a write here is that seat&rsquo;s work entering the record.) The rails are '
+                'seats and run the full width, while the agents occupying them start, finish '
+                'and vanish. The store&rsquo;s edge only ever steps up: a correction is a new '
+                'step, never an erased one. <b>The red areas are the point.</b> They are the '
+                'work that exists only inside a session &mdash; gone if it ends there. The '
+                'agent below writes constantly and is barely exposed; the one above wrote once '
+                'and then crashed, losing everything after that single write. Its partial work '
+                'is kept as evidence outside the workspace and dead-ends there, because its '
+                'author can no longer be asked what it was about to do &mdash; so its '
+                'replacement starts by reading an <i>earlier</i> committed state instead.',
                 'Two seat rails above a repository band. Agent bars connect to the band by '
                 'vertical write and read strokes only, never to each other. Red shaded spans '
-                'mark unwritten work: narrow for an agent that writes often, wide for one that '
-                'crashed after a single early write.',
+                'mark unwritten work: narrow for an agent that writes constantly, wide for one '
+                'that crashed after a single early write.',
                 (W, H))
 
 

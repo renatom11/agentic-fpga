@@ -1189,3 +1189,87 @@ composition and the shaded exposure, the whole point, sat in a corner.
 - site/public/index.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0291] 2026-08-12T15:59Z | task:none | Two blind reviews convict the figures on their own terms: one drawing was asserting a rule the source contradicts, another was manufacturing the very connection its caption denied - both repaired, the seal figure rebuilt to a third of its footprint
+
+### Trigger
+
+The five figures landed at fd0a6e6 went to two independent reviewers before
+the sponsor: a COLD READER given the images and nothing else (never shown
+docs/FRAMEWORK.md), asked what each drawing told them BEFORE reading its
+caption; and an ACCURACY AUDITOR given the source text, asked whether each
+drawing asserts anything the text does not support. Both were told a polite
+review is a useless review.
+
+### The two convictions that mattered
+
+1. **The permission matrix was inventing a rule.** Its Repair column marked
+   the specification lead and the verification lead as FORBIDDEN to repair.
+   The source says a finding "closes only when repaired, or ruled on with
+   written grounds by whoever owns the thing it's about" — and those seats own
+   the documentation and the tests respectively. The grid was legislating.
+   Fixed: every authoring seat repairs what it owns, which makes the auditor's
+   blank the LONE hole in that column — the actual claim the text makes, now
+   stronger than the version I drew.
+2. **The channel figure was drawing the line it swore was absent.** Its
+   caption opens "scan for a line running between two agents — there isn't
+   one," and the auditor traced all twelve write-strokes: every one began at
+   the upper rail and passed behind the lower seat's bar, because the two
+   rails' write positions overlapped. To a reader that IS a line between two
+   agents, on precisely the check the figure invites. It also meant the crashed
+   agent's "single early write" was not drawn at all — the reader was being
+   pointed at a stroke belonging to a different seat. Fixed structurally, not
+   cosmetically: the sparse writer moved to the upper rail and its two strokes
+   placed in the lower rail's gaps, so NO stroke crosses another seat's bar by
+   construction, with the constraint written into the function's docstring so a
+   later edit cannot quietly reintroduce it.
+
+### Three more repairs
+
+- **The seal figure claimed mutual blindness.** The source grants secrecy in
+  one direction only ("the auditor secretly plants known bugs") and never says
+  the seal cannot be read — scoring requires reading it. The figure was also
+  contradicting itself, calling the seal readable while labelling the barrier
+  no-opening. Now claims only what the text grants.
+- **The cold reader could decode none of the seal's hatch** and called its
+  labelled barrier "a wall drawn as a line labelled wall" — prose in costume.
+  The figure was rebuilt at about a third of its footprint: hatch gone, the
+  third time-gate where nothing happened gone, the mostly-empty product lane
+  gone, the two labels that explained an emptiness gone (a void that needs a
+  caption is not working). What survives is the ordering, an empty region that
+  means what it looks like, and four rails on which each planted defect now
+  RISES at scoring to meet the prediction it answers — the comparison drawn
+  instead of asserted.
+- **The coverage figure stopped one inch short of its own thesis**: its dotted
+  droppers halted at the history row, and the caption then told the reader to
+  "trace straight down" — a figure that asks you to draw the decisive line
+  yourself should have drawn it. The droppers now run through every band, and
+  the caption states the finding instead of issuing an instruction.
+
+### Captions
+
+The cold reader caught a tic worth fixing: all five captions opened by
+instructing the reader how to look. Reduced to two, where the instruction is
+the point. Two captions were also over-claiming — one asserted the grid
+performs a synthesis it does not perform, another declared of four rows what
+the drawing shows on two. Both now say what is actually drawn.
+
+### Standing
+
+Neither reviewer recommended deleting a figure outright; the cold reader's
+delete-candidate was the seal AS DRAWN, with an explicit preference for cutting
+it down over cutting it, which is what happened. The accuracy auditor named
+four paragraphs that deserve figures and have none — the escalation ladder,
+the amendment procedure with its veto, the work-order lifecycle, the
+ratification loop. Three were refused with grounds at J-orchestrator-0290 and
+the refusals stand; the escalation ladder is the honest candidate for a sixth
+and is the sponsor's call, not mine.
+
+### Files-in-this-commit
+- site/framework_figs.py
+- site/public/backlog.html
+- site/public/block-diagram.html
+- site/public/framework.html
+- site/public/index.html
+- site/public/org-chart.html
+- site/public/spec-atlas.html
