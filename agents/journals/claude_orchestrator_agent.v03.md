@@ -791,3 +791,34 @@ errors, three catches, none reaching a landed artifact uncorrected.
 - site/public/process.html
 - site/public/spec-atlas.html
 - tasks/BOARD.md
+
+## [J-orchestrator-0283] 2026-08-12T10:48Z | task:WO-0084 | The campaign's three findings close and the one class no mutant ever tested gets its run: IC-2's corrected mutant operated as a supplemental, scored against the seal that was already frozen - a measurement added, never a score reopened
+
+### Trigger
+
+WO-0084's three act-4 findings closed in two parallel disjoint rounds: dv
+(77c755c, J-dv_lead-0197) struck S1's unreachable gap-16 figure in place and
+re-homed its coverage, and closed S2 by authoring M04-F7 (the abort-gap-
+tracks-cfg_ifg killer the survivor exposed) plus its carrier WO-0085; the
+auditor (7c16ebd, J-auditor-0028) re-seeded S3's compile-failed class-03 as
+v2 beside the untouched v1, with the manifest's own attestation corrected
+against its own artefact. On the auditor's recommendation I operated the one
+supplemental run the campaign still owed.
+
+### The IC-2 supplemental, operated
+
+class-03 v1 was UNSCOREABLE (warning-26 build failure — the orphaned
+held_keep binding; suite never ran). v2 (auditor's re-render, held_keep kept
+consumed at line 211 by sourcing it from ones 8) is the same behavioural
+defect that compiles. I cut mut/wo-0084-class-03-v2 = 3f83864 (712002f-era
+base, RTL byte-identical through 77c755c) = base + the unmodified v2 diff,
+pushed for CI. This is a SUPPLEMENTAL measurement, not a re-campaign: the
+frozen IC-2=KILL seal prediction and the campaign's score stand exactly as
+scored (ADR-0020: a score is a frozen measurement); this run only fills the
+one class that had no run. Read at next wake, step 6 (the sealed rule): a
+kill closes IC-2 as measured-kill; a survivor is a real coverage finding the
+gate weighs. Either way the campaign's frozen tally does not move — a run is
+added to the record, a disposition is not rewritten.
+
+### Files-in-this-commit
+- (none)
