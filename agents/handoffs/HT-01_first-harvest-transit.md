@@ -191,3 +191,30 @@ The shell's law reshaped the delivery, and the reshape is recorded here:
 - **The one-commit rule**: this repo's side of the harvest transit is the
   packet's outbox commit; the shell's side is whatever protocol-conforming
   commits its maintainer lands — counted at the shell, per its own law.
+
+## 6. Disposition under ADR-0023 (2026-08-17, appended, not rewritten)
+
+**The mechanism this packet executed was retracted before any landing.** The
+sponsor's direction of 2026-08-17 — executed in the shell as its ADR-0018
+(the federation retraction, shell main `cb8a9f3`: the inbox perimeter and
+FEDERATION law this packet §5-pre conformed to are deleted) and mirrored in
+this program as ADR-0023 — retires the transit as a class. Dispositions:
+
+- **EXECUTED stands as history.** Everything above is true of what happened.
+- **PR #3 is closed unlanded by the shell's maintainer**, citing the shell's
+  ADR-0018. The maintainer's id-mapping table §5 anticipated will never
+  arrive; §4's local provisional index is a local index, and local is now the
+  only kind there is.
+- **The 353 candidates landed locally** as the first landing in this
+  repository's own `docs/LESSONS.md` — the travel copy — seeded verbatim from
+  the frozen outbox packet (`docs/federation/outbox/SO-xgmii_rx_64.md`,
+  7fb2c99), A2-D8's no-statement-edited bar applied unchanged. The four
+  shell-corpus merge pre-judgments (§3.3) and the `LD-` domain row travel as
+  recorded annotations; the merge partners live in another repository this
+  program does not inherit from, so the judgments are preserved, not
+  executed.
+- **The outbox file stays frozen in place** as the record of the one delivery
+  ever performed; no `HT-02` will exist.
+
+Authority: ADR-0023 (sponsor-directed), acceptance `J-orchestrator-0305`
+(0fe5f8c); this note `J-orchestrator-0306`.

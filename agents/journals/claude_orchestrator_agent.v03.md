@@ -2206,3 +2206,74 @@ HT-01's appended disposition note, and the board's owed rows re-pointed.
 
 ### Files-in-this-commit
 - agents/PROTOCOL.md
+
+## [J-orchestrator-0306] 2026-08-17T23:05:00Z | task:none | Landing H1: the travel copy exists, seeded verbatim from the one delivery that never landed anywhere else
+
+### Trigger
+ADR-0023 D5's execution half, this round's second orchestrator commit
+(acceptance and PROTOCOL diff landed at 0fe5f8c, J-orchestrator-0305).
+Dispatch-only, collator's act under ADR-0018 §4.1 as amended. Precheck
+(§4.1): tree clean at 0fe5f8c before this round's edits; no declared
+siblings (the architect's round closed at 28c0707).
+
+### Inputs
+- docs/federation/outbox/SO-xgmii_rx_64.md at 7bit-frozen 7fb2c99 lineage
+  (the seed source; body transferred byte-identical from "## dv_lead" on).
+- agents/handoffs/HT-01_first-harvest-transit.md (census, method, the four
+  merge pre-judgments, the LD- row).
+- docs/adr/ADR-0023-the-retraction-mirrored-lessons-are-local.md §§2, 6, 7.
+- tasks/BOARD.md rows: Gates/P1-module-ready, WO-0078, the head.
+
+### Reasoning
+D5 names the collator's three acts and this commit performs all three,
+because they verify each other (PROCESS §5.6): the landing without the
+board's re-pointing leaves the board demanding a transit the law retired;
+the HT-01 note without the landing records a destination that does not
+exist. Seeding is derivation, not authorship: a script strips the packet's
+transit front matter and transfers every candidate section byte-identical
+(A2-D8 — no statement edited, the collator synthesises nothing; the new
+header is front matter describing the landing, and its one correction in
+drafting was to describe the LD- row's real in-section form rather than
+the section layout I had planned — the file describes its contents, never
+the reverse). The four shell-corpus merge pre-judgments stay annotations:
+their partners are in a repository this program does not inherit from.
+War stories transfer inside the frozen appendix as record; they bind
+nowhere and stay re-offerable (§3.5).
+
+### Actions
+- Created docs/LESSONS.md: travel-copy header (contract, empty baseline,
+  reading rules) + landing-H1 front matter + the packet's seven seat
+  sections, LD- row, and war-story appendix, verbatim.
+- tasks/BOARD.md: head gains the standing lessons line; the
+  P1-module-ready gate row and the WO-0078 status cell each gain a dated
+  bracket re-pointing Part B to the local landing (frozen narrative left
+  in place, annotated not rewritten).
+- agents/handoffs/HT-01_first-harvest-transit.md: appended §6 disposition
+  note per ADR-0023 §6.1.
+
+### Evidence
+- `grep -c '^### \`L' docs/LESSONS.md` → 353 (the census count).
+- `wc -c docs/LESSONS.md` → 156,912-band, under the 262,144 soft threshold.
+- Byte-fidelity of the transferred body: the derivation script copies from
+  the packet's "## dv_lead" heading to EOF unmodified; re-runnable from the
+  scratchpad script quoted in this entry's Actions, and checkable by
+  `diff <(sed -n '/^## dv_lead/,$p' docs/federation/outbox/SO-xgmii_rx_64.md) <(sed -n '/^## dv_lead/,$p' docs/LESSONS.md)`
+  → empty.
+- Board edits: 3 asserted-unique replacements, each verified single-site
+  before writing.
+
+### Outcome
+D5 executed in full on this repository's side. Part B of harvest 1 is
+DISCHARGED locally; re-verification rides P1-module-ready per A2-D3.
+Remaining outside this commit: PR #3's closure (the shell maintainer's
+act, next), the PROCESS.md eighth edition (architect, this round), and
+the P1-module-ready checklist's own §7.1 re-quote (architect's next
+docs/gates/ round, ADR-0023 §7 row 7).
+
+### Open-questions
+- none
+
+### Files-in-this-commit
+- docs/LESSONS.md
+- tasks/BOARD.md
+- agents/handoffs/HT-01_first-harvest-transit.md
