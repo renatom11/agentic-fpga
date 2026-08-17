@@ -2137,3 +2137,72 @@ terms. 367 ledger rows.
 - site/public/lifecycle.html
 - site/public/org-chart.html
 - site/public/spec-atlas.html
+
+## [J-orchestrator-0305] 2026-08-17T21:24:00Z | task:none | ADR-0023 accepted, and the constitution's harvest routing goes local
+
+### Trigger
+The sponsor's direction of 2026-08-17, verbatim on the record at ADR-0023's
+Status block: the fork-and-flow-back design "shouldnt be like it currently
+is" — harvesting stays, transport retires. The shell executed it first (its
+ADR-0018 + retraction sweep, shell main = cb8a9f3); this program's own
+constitution still held the outbound half. Dispatch-only round: the
+commissioning seat is also the committer, so no packet exists and this entry
+says so (PROCESS §3's dispatch-only rule). Precheck (§4.1): tree clean at
+28c0707 (`git status --short` empty; `git log --oneline -1` = 28c0707,
+the architect's ADR-0023 commit). No declared siblings.
+
+### Inputs
+- docs/adr/ADR-0023-the-retraction-mirrored-lessons-are-local.md (whole),
+  at 28c0707 — §4 is the source text for this commit's edit.
+- agents/PROTOCOL.md §7 (the passage §4 quotes, verified against the live
+  file before applying).
+- /workspace/generic-agentic-fpga-org/docs/adr/ADR-0018-the-federation-retraction.md
+  at cb8a9f3 (the shell's decision this mirrors).
+- docs/gates/lessons-harvest-block.md as amended at 28c0707.
+
+### Reasoning
+Acceptance and application are one round because the deciding authority is
+the sponsor's quoted direction — this entry is the §11(2) acceptance act,
+and the applying edit is clerical under §3.6: the instrument (ADR-0023 §4)
+carries the diff; the orchestrator, sole staging authority for
+agents/PROTOCOL.md, applies it citing the record. Route (a), no
+countersignature: the change retires a power (the sponsor's own, on the
+sponsor's direction) and moves a destination inside a review-enforced
+criterion; no enforcement semantics move, so §11(3) owes no test case —
+ADR-0023 §4 states this and I verified it: no script reads §7's routing
+sentences. The hunk was extracted from the ADR's own §4 by the command the
+ADR prints, so the applied text and the record's text cannot silently
+differ.
+
+### Actions
+- Extracted §4's diff from the ADR and applied it: `git apply -v -` →
+  "Applied patch agents/PROTOCOL.md cleanly."
+- Verified the result reads as §4's replacement table says, surrounding
+  clauses (war-story sentence, gate-block precondition, Enforcement note)
+  untouched.
+- ACCEPTED ADR-0023 in this entry: D1–D5 in force at this commit, with D5's
+  seeding act and the board/HT-01 dispositions to land in the next commit
+  (this round, the collator's).
+
+### Evidence
+- `git apply --check` then `git apply -v` on the extracted hunk: exit 0,
+  "Applied patch agents/PROTOCOL.md cleanly." (reproducible from the ADR §4
+  command block at 28c0707).
+- `sed -n '347,368p' agents/PROTOCOL.md` shows the replacement text with
+  the gate-block precondition and Enforcement note intact.
+- `grep -c "generic shell's" agents/PROTOCOL.md` → the routing reference is
+  gone from §7 (remaining shell mentions in PROTOCOL, if any, are
+  historical narrative, not routing).
+
+### Outcome
+ADR-0023 in force. The constitution's lessons routing is local: collation
+into docs/LESSONS.md, one landing commit per harvest, hand-carry only, the
+sponsor's refusal power retired. Next commit this round: the collator's —
+docs/LESSONS.md created and seeded from the frozen outbox packet (D5),
+HT-01's appended disposition note, and the board's owed rows re-pointed.
+
+### Open-questions
+- none
+
+### Files-in-this-commit
+- agents/PROTOCOL.md

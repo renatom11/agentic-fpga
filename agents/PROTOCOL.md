@@ -348,11 +348,17 @@ provenance hidden: a general candidate must teach a stranger to the domain, a
 domain candidate a stranger to this project. Anything passing neither grade is
 recorded as a war story and goes no further; a nil yield is declared, never
 omitted. The **orchestrator collates**: into the gate record locally, and into
-the generic shell's `LESSONS` file with permalinked provenance, the shell
-unfreezing for **exactly one commit per harvest**, sponsor-visible at the gate —
-the sponsor may refuse a candidate. **Routing**: a general candidate goes to the
-shell's universal set, a domain candidate to the pack its note named, which a
-later project pulls in only if that domain is its own. A gate is not passed
+this repository's own `docs/LESSONS.md` — the travel copy (ADR-0023) — in
+**exactly one local landing commit per harvest**. **Routing**: a general
+candidate goes to that file's general sections, a domain candidate to a
+domain-titled section of the same file with its grade noted on the entry, which
+a later reader pulls in only if that domain is its own; project-tier statements
+and war stories stay where they already are. **Nothing transmits**: learning
+leaves this repository only when a human hands the file, or its post-baseline
+tail, to another session or project, recorded at the receiving end as seed
+provenance. The sponsor's harvest touchpoint is the gate signature already
+given; the candidate-by-candidate refusal power retires with the transit it
+gated (ADR-0023). A gate is not passed
 while any box of the instantiated `docs/gates/lessons-harvest-block.md` is
 unchecked. *Enforcement*:
 review-enforced, like §10 — no `R`-rule is minted and no script changes, so
