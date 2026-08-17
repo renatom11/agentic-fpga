@@ -1058,3 +1058,516 @@ PROTOCOL §11(2), stated in the record's own Status block.
 ### Files-in-this-commit
 - docs/adr/ADR-0023-the-retraction-mirrored-lessons-are-local.md
 - docs/gates/lessons-harvest-block.md
+
+## [J-architect_docs_lead-0059] 2026-08-17T23:41:30Z | task:none | The eighth edition is the first this document did not need a grader for: six streams moved the record under six stamped claims in five days, the text moves to match without one stamp being re-measured — and three counts the dispatch handed me came back wrong against the record, including one the seventh edition had already been carrying stale from the fifth
+
+### Trigger
+
+Orchestrator dispatch, one round, **dispatch-only** — the class §3 of the process
+description names and this entry is obliged to declare rather than let pass. No
+work-order packet exists; the commission is the dispatch text at
+`wo-eighth-edition.md`, and this is the fourth consecutive edition commissioned
+that way (`docs/PROCESS-MEMOIR.md` B.6).
+
+The commission: the **eighth edition** of `docs/PROCESS.md` and its companion
+`docs/PROCESS-MEMOIR.md`, as a **currency edition** — twenty-four numbered edit
+items over six streams of record motion that landed after the seventh edition's
+commit `2ed029d` and are reflected nowhere in it. Expected head `5d2264d`, clean
+tree, no declared siblings.
+
+### Inputs
+
+Read in full: `agents/charters/architect_docs_lead.md`; `agents/PROTOCOL.md`;
+the dispatch. Then, as the dispatch names them:
+
+- `docs/PROCESS.md` (5,538 lines) and `docs/PROCESS-MEMOIR.md` (2,028 lines) at
+  `5d2264d`, both end to end.
+- `docs/adr/ADR-0023-the-retraction-mirrored-lessons-are-local.md` in full — my
+  own last round's record, whose §7 rows 3 and 6 are this dispatch.
+- `docs/adr/ADR-0021-a-check-is-only-where-it-runs.md` — Status block and §§1–5
+  (subjects 1–4, §3.4's posture-asymmetry ground, §3.5's `FINDING ADR21-1`,
+  §5.2's refusal and §5.4's evidence form).
+- `docs/reports/process-council/round-5/probe-5-2-halt-log.md` — head, RAN-CLEAN,
+  HALT-01/05/06/08/09, the Definition-of-Done table and SUMMARY.
+- `agents/handoffs/WO-0084_m04-mutation-campaign.md` return log rows 1–4;
+  `agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md` header.
+- `agents/handoffs/HT-01_first-harvest-transit.md` §6 (the appended disposition
+  note); `docs/LESSONS.md` front matter and landing H1.
+- `/workspace/generic-agentic-fpga-org/docs/adr/ADR-0018-the-federation-retraction.md`
+  §Decision, and `/workspace/generic-agentic-fpga-org/BOOTSTRAP.md` Stage 0 plus
+  `README.md`'s *Getting started* — **outside this repository, and named as such
+  wherever the core rests on them.**
+- `scripts/policy.sh`, `scripts/check_journals.sh`, `scripts/agent_commit.sh`,
+  `scripts/check_process_doc.sh`, `.github/workflows/journal-check.yml` — read as
+  evidence, not as editable text (all orchestrator scope).
+- `agents/journals/claude_architect_docs_lead_agent.v06.md` tail, for the next
+  free id.
+
+### Reasoning
+
+**1. What kind of edition this is, and why the anchor has to say so.** Editions
+two through seven were each produced by a committed external measurement *of the
+document* — a posture census, four councils, two cold readers, an external
+grading — and Part IV's genealogy makes that pattern its one generalisable claim:
+*the anchor moved on contact every time, seven for seven.* This edition breaks
+it. Nobody graded the document; what happened is that the **world under six
+stamped claims moved in five days**. A document whose running lines describe a
+retracted mechanism, an unbuilt instrument that exists, and an untested path
+executed twice is **false in the present tense** whatever its stamps say, and no
+grader is required to establish that.
+
+I could have written the anchor as though this were a seventh-council edition and
+said nothing. I refused that on the ground the document itself supplies: a
+genealogy that fits every edition to one pattern is a genealogy nobody can
+falsify. So Part IV carries the departure explicitly, and it carries the
+distinction that makes the departure legitimate rather than convenient —
+**a currency round and an audit round are different instruments**, the first
+cheap, self-commissionable and checkable against commits, the second expensive
+and only meaningful from outside. Running the first and calling it the second is
+the failure; running only the second means the document is accurate about a world
+five days stale at every reading in between. That paragraph is the one piece of
+this edition I expect a later council to argue with, and it is written so that it
+can be.
+
+**2. The dispatch's own rule — no stamp re-measured — is what makes the whole
+round tractable, and I applied it literally.** Six rows (`C-46`, `C-53`, `C-54`,
+`C-55`, `C-56`, `C-119`) now index worlds that have moved. The tempting act is to
+re-stamp them; that is this seat editing the measurement that grades its own
+document, which is §5.7's root class in one act and is refused in B.13's refusal
+list for the seventh consecutive edition. What I did instead, at every one of the
+six sites: **state the new fact, name the act that changed it, date it, and say
+in terms that the row still indexes the world before it.** The reader gets
+current law and a visible seam; the auditor's artifact is untouched.
+
+**3. Three counts the dispatch handed me came back wrong against the record, and
+the dispatch's own instruction is what made me check.** The commission says
+*re-measure every figure you print; never carry my numbers without re-running the
+command*, and it turned out to bind the dispatch's own figures.
+
+- **The posture-list debt.** E2/E4 said *"owed, three editions running" → four.*
+  I traced the phrase through committed editions: it was written at the **fifth**
+  (`d96a5b1`) and carried **byte-identical** through the sixth (`592926e`) and
+  seventh (`2ed029d`). So *three* was three editions stale, and an increment
+  would have shipped *four* against a true **six**. I wrote six, at both sites,
+  with the carrying named in place — because the row's own subject is a debt
+  nobody re-measures, and a stale count inside it is the row committing its own
+  defect.
+- **The drift check's edition count.** E19 said *four→five*. The core printed
+  **four** while the companion's own refusal lists printed **five consecutive**
+  at the seventh edition — the two volumes disagreeing about the same debt, in
+  the direction that flatters. Re-derived from the refusal lists (third edition
+  first named, this one sixth): **six**. I corrected the core against the
+  ledger, because the ledger was the one that was right, and said so at B.0.4a.
+- **The uart-demo founding's date.** The dispatch dated it 2026-08-15. The
+  repository's own history spans **2026-08-12 to 2026-08-13**, sixteen commits,
+  head `7e61184`. I printed what the record says.
+
+None of these is a criticism of the dispatch; two of them are figures the
+dispatch inherited from the document I wrote last time. The point is the one
+§3.9 already states and this round exercised against its own commission:
+**import the rules, re-derive the numbers.**
+
+**4. One currency stream the dispatch did not name, found by sweeping, and it was
+the most consequential single repair in the round.** The governance check the
+seventh edition commissioned at §6.0 — printed there as
+`[PLANNED — no posture row; the instrument does not exist]` — **exists**. It
+landed at `9fa4159` as `scripts/check_process_doc.sh`, is wired into
+`.github/workflows/journal-check.yml`, refuses rather than warns, and passes at
+this tree. Two running lines called it absent: §6.0's block and the head's split
+residue. Both are repaired.
+
+The interesting half is *how it landed*, and it is why I printed the non-coverage
+beside the coverage rather than announcing the closure. **The instrument that
+landed is narrower than the one that was commissioned**: it holds falsifier 1,
+the two-volume contract, the golden tally's closure against the core's printed
+figures, and fence pairing — and it does **not** hold falsifiers 3 and 4, the
+index re-derivation, or the cross-volume figures, on the stated ground that those
+compare two committed editions and belong at an edition boundary. A commissioned
+instrument that lands smaller than its commission is the case a ledger most
+easily records as discharged, because **the commission is what a later reader
+remembers.** So the core prints both halves in the same block and B.13 row 20
+exists so the unlisted repair is a decision rather than a drift.
+
+**5. What the retraction actually cost the document, and what it did not.** The
+sponsor retracted a *topology*, not a discipline. §3.10's replacement is the
+place that has to make that visible, and the sentence I care most about in this
+edition is the one that says the harvest law survived the transport law's
+retraction **whole** — every bar, span rule, grade, classifier and gate
+precondition byte-unchanged; one arrow moved. That is the property that made the
+retraction one round's work instead of a rewrite, **and it is only visible on the
+day one of them is taken away, which is the day it is too late to build.** I
+paired it with the other general form the episode supplies: *a mechanism priced
+at design time is re-priced by its exercised value, and a pipeline that has never
+landed is a design rather than an asset.*
+
+Two judgements inside that section. I kept the granularity argument in the
+companion rather than deleting it, because it is **still correct about refusal
+powers in general** and simply has no subject here — and I wrote that distinction
+out, since a ledger that records only *removed* cannot tell a later reader
+whether a power was taken back or whether its object disappeared. And I stated
+what did **not** change as an explicit list, on ADR-0023's own principle that an
+amendment which does not say what it leaves alone invites a re-reading of
+everything.
+
+**6. §2.4(a) is the one place I moved a posture without an instrument landing,
+and it is the move I want examined.** The clause's advisory note was *owed* for
+three editions. It was then **designed and refused** — `ADR-0021` §5.2 traced its
+two reachable cases and found it loud where a refusal already fires and silent
+where the residue actually is. I wrote the posture as **deliberately absent by a
+decided refusal**, which is stronger than *owed*, and I generalised it: a debt
+ledger recognises two terminal states, *built* and *refused with grounds*, and
+one that recognises only the first converts every considered refusal into a
+permanent row and teaches its keepers that naming is cheaper than deciding. I
+kept the honest remainder in the same breath — the constitution's withheld-results
+advisory is still unbuilt and no script emits it, verified by grep.
+
+**7. The seal census was re-derived by a better method than the one it asked
+for.** E11 asked for thirteen→fourteen and nine→ten. Reading state lines would
+have satisfied that. Instead I compared **every seal file's current bytes against
+its bytes at the commit that introduced it**, which returns the flippers as a
+measurement rather than as a reading: exactly four differ, exactly ten are
+byte-identical, and the four are exactly the four whose state lines say
+`UNSEALED`. That is a stronger claim than the one the section carried and it cost
+one loop. The scored split (seven of eleven scored campaigns scored without a
+byte of their seal being touched) rests on the seventh edition's seal-by-seal
+measurement plus this round's one new scored campaign, and the arithmetic closes
+both ways — which I take as a check rather than as a proof, and did not dress up
+as a fresh walk of every verdict.
+
+**8. §3.9's second survivor is the exhibit I think this record has been owed
+since the campaign model was written.** The section's standing claim — *exactly
+one defect in this record survived its own campaign* — is **still true under its
+own definition**, and I said so first rather than quietly replacing it, because
+the definition is a property of a **prediction** and not of a run. The new case is
+a different object: a rendered class the seal held **no prediction over**, which
+survived at exactly the configuration-coverage gap the seeding seat had
+pre-flagged blind, in writing, before any run.
+
+What makes it worth its lines is not the survival. It is that the campaign
+mechanism's usual justification is negative — a seeder who knows the kill set can
+choose sites that satisfy it — and this campaign supplies the **positive** one:
+two independent partitions of one artifact found things neither would have found
+alone. The seal's partition produced a clean seven-for-seven and no information
+about the gap; the seeder's produced the gap and no predictions. **A campaign run
+by one seat holding both partitions would have returned the score and not the
+finding.** That sentence is the argument for the separation, and until this
+campaign the record could not make it.
+
+**9. §6.2's stop column needed a distinction, not an apology.** Run three returns
+16 halts and **2 STOPPED**, against run two's 17 and **0** — which reads as a
+regression and is not. Both of run three's stops are **by law**: a retro-audit row
+an actor of one must leave open, and a stale aid a cadence rule forbids repairing
+in place. I wrote the distinction as its own claim — *a stop by law and a stop by
+under-determination are different objects; the first two runs' stops were the
+document failing and run three's are the document holding* — because a halt log's
+stop count is only comparable across runs if the stops are the same kind of
+event, and this is the pair that proves they are not.
+
+**10. What I refused.** The precedence rule's disagreement bullet was **doubly**
+superseded and I could have simply deleted it. I kept the **constraint** it rests
+on (the platform's picker cannot name a check it has never seen) and discarded
+only the adjudication, because the constraint is what any order must satisfy and
+the adjudication was an artefact of one pin. I also declined to add *travel copy*
+to the dialect, per E24: it is defined once at §3.10 and reached by pointer
+elsewhere, which is this document's own fact-once convention — and B.13's refusal
+5 names it as a dialect candidate so the omission is a decision rather than an
+oversight.
+
+### Actions
+
+- **Precheck (§4.1)** performed before opening any file; both commands' output in
+  Evidence.
+- `docs/PROCESS.md` — all twenty-two core-side edit items, plus three unlisted
+  currency repairs found by sweeping (the governance check at §6.0 and at the
+  head's split residue; §2.4's corollary exhibit; §5.9's cure-part-one note).
+  No §-level heading added or removed; the dialect list untouched.
+- `docs/PROCESS-MEMOIR.md` — seventeen passages preserved in Part I behind the
+  sentinel under seven anchors, one of them new (`### Anchored at — 3.10`); a new
+  manifest block **§0.2b**; §0.3's arithmetic re-derived; §0.4's falsifier note
+  updated; §0.5's census re-run and reconciled; **B.13** minted with twenty rows
+  and six refusals; B.0.4a/B.0.4b and B.3 updated; Part IV row eight and both
+  closing patterns; Annex C's `HT-` and export-packet families marked retired and
+  two rows added.
+- Ran the governance check, the index derivation, the sentinel census, the sweep
+  greps and every figure command below. **No git write command of any kind.**
+
+### Evidence
+
+Every command below was run from a checkout at this tree; the two `git ls-remote`
+calls reach the network and are labelled.
+
+```sh
+# §4.1 precheck — both outputs, as dispatched
+git status --short
+#   (no output — clean)
+git log --oneline -1
+#   5d2264d Landing H1: docs/LESSONS.md is the travel copy, seeded verbatim from
+#   the delivery that never landed - and the board stops asking for a transit the
+#   law retired
+```
+
+```sh
+# Both volumes, before and after. BEFORE is `git show 5d2264d:<path> | wc`.
+wc -l -c docs/PROCESS.md docs/PROCESS-MEMOIR.md
+#   before:  5538  366906  docs/PROCESS.md
+#            2028  198269  docs/PROCESS-MEMOIR.md
+#   after :  6023  403384  docs/PROCESS.md
+#            2547  244076  docs/PROCESS-MEMOIR.md
+# The boundary block prints 6,023 / 403,384 / 244,076 and 54 per cent past the
+# 262,144 anchor; (403384-262144)/262144 = 0.5375. The memoir is inside it.
+```
+
+```sh
+# E3 — the subsection index, re-derived with the command the document prints
+awk '/^[`][`][`]/ { fence = !fence; next }
+     !fence && /^##+ / { if (h != "") printf "%s · %d\n", h, n; h = $0; n = 0; next }
+     !fence        { n += gsub(/C-[0-9]+/, "&") }
+     END           { if (h != "") printf "%s · %d\n", h, n }' docs/PROCESS.md | wc -l
+#   72        (unchanged; no §-level heading added or removed)
+# Diff of the derivation before vs after the edits: exactly four seam counts
+# moved, all upward, all where a stamped row is cited again in the sentence
+# naming the later act:
+#   2.2  5 -> 6 · 2.4  4 -> 6 · 2.6  13 -> 14 · 5.1  2 -> 3
+# The pasted list was verified equal to the command's output, entry for entry,
+# modulo the document's own bold-placement rendering.
+```
+
+```sh
+# E23(d) — the sentinel census, reconciled
+grep -c 'SUPERSEDED — historical record, not current law:' docs/PROCESS.md
+#   0                      (falsifier 1 closes; also enforced by CI, below)
+grep -c 'SUPERSEDED — historical record, not current law:' docs/PROCESS-MEMOIR.md
+#   69
+awk '/^## Part 0/,/^## Part I/'  docs/PROCESS-MEMOIR.md | grep -c 'SUPERSEDED — historical record, not current law:'   #  4  (mentions)
+awk '/^## Part I/,/^## Part II/' docs/PROCESS-MEMOIR.md | grep -c 'SUPERSEDED — historical record, not current law:'   # 63  (uses)
+awk '/^## Part II/,0'            docs/PROCESS-MEMOIR.md | grep -c 'SUPERSEDED — historical record, not current law:'   #  2  (1 use in B.1, 1 mention in B.10)
+#   uses 63 + 1 = 64 · mentions 4 + 1 = 5 · 64 + 5 = 69, which is the grep.
+#   Movement: seventh edition 47 uses -> 64. 47 + 17 = 64, and §0.2b manifests
+#   exactly seventeen passages across sixteen rows (row 16 carries two).
+```
+
+```sh
+# E13(a) — the marked-reference population, re-measured at this state (network)
+git ls-remote origin 'refs/heads/mut/*' | wc -l
+#   100
+git ls-remote origin 'refs/heads/mut/*' | sed 's#.*refs/heads/mut/##' \
+  | sed -E 's/^(wo-?[0-9]+[a-z]?).*/\1/' | sort -u | wc -l
+#   18  = 16 campaign prefixes + 2 probes (bug3-sev-probe, wo70-cost-probe-l)
+# The newest family is mut/wo-0084-class-01..13 plus class-03-v2 = 14 refs.
+```
+
+```sh
+# The never-merged property, checked two ways because one way is vacuous here
+for sha in $(git ls-remote origin 'refs/heads/mut/*' | cut -f1); do
+  git cat-file -e "$sha^{commit}" 2>/dev/null && echo present || echo absent; done \
+  | sort | uniq -c
+#   86 present   14 absent
+for sha in $(git ls-remote origin 'refs/heads/mut/*' | cut -f1); do
+  git merge-base --is-ancestor "$sha" HEAD 2>/dev/null && echo MERGED; done | wc -l
+#   0
+ls .git/shallow 2>/dev/null || echo "not shallow"; git rev-list --count HEAD
+#   not shallow
+#   672
+# The 14 absent objects are settled by the clone's shape rather than by a test:
+# a full clone holds every ancestor of HEAD, so an object it does not have
+# cannot be one. 86 tested + 14 by construction = none of the 100 merged.
+```
+
+```sh
+# E11 — the seal census, by a stronger method than reading the state line
+ls agents/handoffs/ | grep -ci SEALED
+#   14
+for f in agents/handoffs/*SEALED*.md; do
+  intro=$(git log --diff-filter=A --format=%h -1 -- "$f")
+  [ "$(git hash-object "$f")" = "$(git rev-parse "$intro:$f")" ] \
+    && echo UNCHANGED || echo CHANGED; done | sort | uniq -c
+#   4 CHANGED      (WO-0039, WO-0041, WO-0050, WO-0055 — the four early flippers)
+#  10 UNCHANGED    (byte-identical to their introducing commit)
+# The four CHANGED are exactly the four whose State line reads UNSEALED, so the
+# state-line reading and the byte comparison agree.
+```
+
+```sh
+# E21 and the two figures §6.3 carries
+ls docs/adr | wc -l
+#   23        (was twenty-two; ADR-0023 landed at 28c0707 this round)
+grep -oE '"S[0-9]+' scripts/test_protocol.sh | sort -u | wc -l
+#   51        (S1..S51 — unmoved, and §6.3 now says which of the two moved)
+```
+
+```sh
+# E17 — the 353, re-derived from the landed file rather than quoted
+grep -cE '^### `LC-' docs/LESSONS.md   #  352
+grep -cE '^### `LD-' docs/LESSONS.md   #    1
+grep -cE '^### `(LC|LD)-' docs/LESSONS.md  # 353
+```
+
+```sh
+# ADR-0021's landings, and ADR-0023's, dated from the record not from the dispatch
+git log -1 --format='%h %ad' --date=short 9fa4159   # 2026-08-12  (subjects 1,2,4)
+git log -1 --format='%h %ad' --date=short 0e11ea8   # 2026-08-12  (subject 3, first green run)
+git log -1 --format='%h %ad' --date=short 0fe5f8c   # 2026-08-17  (PROTOCOL §7 amended)
+# E15's span, re-derived rather than carried (the dispatch said 2026-08-11):
+git log --format='%h %ad %s' --date=short -S "the sponsor may refuse a candidate" -- agents/PROTOCOL.md
+#   0fe5f8c 2026-08-17  (the clause leaves)
+#   564420f 2026-08-04  (the clause lands)
+```
+
+```sh
+# The unlisted stream: the governance check exists, and refuses
+git log --diff-filter=A --format='%h %ad' --date=short -- scripts/check_process_doc.sh
+#   9fa4159 2026-08-12
+grep -n "check_process_doc" .github/workflows/journal-check.yml
+#   25:        run: bash scripts/check_process_doc.sh
+bash scripts/check_process_doc.sh
+#   OK: process document invariants hold (sentinels, volumes, golden tally, fences)
+#   exit 0
+```
+
+```sh
+# The escape ledger, re-verified as still uninstantiated (E4 asked)
+ls docs/reports/audit/dv_escapes.md          # No such file or directory
+git log --all --oneline -- docs/reports/audit/dv_escapes.md   # (no output)
+git log --all --diff-filter=A --name-only --format='' | grep -i escape   # (no output)
+```
+
+```sh
+# E16/E18 — the shell, first-party (network), and the local checkout it was landed from
+git ls-remote https://github.com/renatom11/generic-agentic-fpga-org refs/heads/main
+#   cb8a9f3a715678dce1401a0726fd7711f32de751  refs/heads/main
+git -C /workspace/generic-agentic-fpga-org log -1 --format='%H %ad' --date=short
+#   cb8a9f3a715678dce1401a0726fd7711f32de751 2026-08-17
+# The shell's Stage 0 (BOOTSTRAP.md) and README "Getting started" were read for
+# the one-hop order and the protections-inside-G0 placement. OUTSIDE THIS
+# REPOSITORY and not re-verifiable from a checkout of it.
+```
+
+```sh
+# E18(d)/E19 — the second founding, measured rather than quoted (network + clone)
+git ls-remote https://github.com/renatom11/agentic-uart-demo
+#   7e611841572ebb4ba679db9854cf48f457c59ab8  HEAD / refs/heads/main
+# Cloned to a scratch directory (EPHEMERAL — outside this repository and not
+# reproducible from a checkout of it; re-clone to re-run):
+#   git rev-list --count HEAD          -> 16
+#   git log --format='%ad' --date=short | sort | uniq -c
+#        6 2026-08-12
+#       10 2026-08-13     <- the dispatch said 2026-08-15; the record says this
+#   tasks/BOARD.md:  "609 checks, 609 pass, 0 fail" ; BUG-0001 = uart_tick_gen
+#   reloaded its counter to 1 instead of 0, so the start bit was 433 cycles
+#   against 434 for the nine following intervals; fixed at 27104a8.
+#   The same board records, unprompted: no mutation campaign has been run, and
+#   the module-ready gate is NOT SIGNED. The core prints that qualification.
+```
+
+```sh
+# E22 — the two sweeps, at the final state
+grep -n -i "federation\|outbox\|inbox\|transit" docs/PROCESS.md
+#   11 hits, every one justified:
+#     61,63   the anchor's stream 1 — names the retraction, dated
+#     2513    §3's transit form, labelled record-not-practice with its retirement
+#     2534    "EXECUTED (a transit that has been performed)" — a state the record
+#             genuinely runs, on the one instance; true as written
+#     2551    facsimile comment: "transit form, retired — §3, §3.10"
+#     2564    the HT- line: "executed once; mechanism since retracted — §3.10"
+#     2580    FALSE POSITIVE — the word "state transition" in the return-log skeleton
+#     4857    the pin: "under a transit law since retracted (§3.10)"
+#     4956    BOOTSTRAP kit row: "the federation namespaces it used to stage are gone"
+#     5075    "There is no outbox, no inbox" — a negation, current law
+#     5462    Step −1: "under the since-retracted transit law (§3.10)"
+grep -n "eighty-six\|thirty-seven\|thirteen seals\|ten scored" docs/PROCESS.md
+#   1 hit, deliberate:
+#     3786    "five of thirty-seven committed renderings", now scoped in place to
+#             "measured over the first artifact's campaign era, before this
+#             record's eleventh campaign", so the figure keeps its truth as the
+#             record grows. eighty-six, thirteen seals and ten scored are gone.
+```
+
+```sh
+# E24 and two structural checks
+awk '/^### The dialect/,/^---$/' docs/PROCESS.md | grep -c "^- \*\*"
+#   15        (the list is untouched; "Fifteen terms" stands over its own list)
+for f in docs/PROCESS.md docs/PROCESS-MEMOIR.md; do grep -c '^```' $f; done
+#   32 / 2    (both even — fence pairing, which CI also refuses on)
+git status --short
+#    M docs/PROCESS-MEMOIR.md
+#    M docs/PROCESS.md
+```
+
+**Not re-executed, and stated so no reader takes it for a fresh audit.** The
+seventh edition's seal-by-seal *scored* split (four flippers scored, six frozen
+scored, three frozen unscored) is **carried**, with this round's one new scored
+campaign added on top; I re-derived the seal population and the flipped/frozen
+split by the byte comparison above, not the per-campaign scoring status. The
+golden tally at §3.9 is **untouched** and its figures are unmoved. The posture
+list was **not opened**.
+
+### Outcome
+
+**DoD met.** Both volumes edited; every E-item executed; the journal entry
+appended; the file list below is exact.
+
+- **E1–E22** applied in the core, **E23(a)–(h)** in the companion, **E24**
+  verified rather than changed.
+- **Exceeded in one direction, and named**: three currency repairs the dispatch
+  did not list — the landed governance check at two sites, §2.4's corollary
+  exhibit whose live unrepaired instance was the same landing, and §5.9's
+  cure-part-one note — performed under the dispatch's own governing rule that a
+  running line must state the new fact where the record moved. B.13 row 20 exists
+  so the widening is a decision on the record rather than a drift.
+- **Three dispatched figures corrected against the record** (posture-list
+  editions, drift-check editions, uart-demo dates), each with its derivation
+  printed above and recorded at B.13 refusal 6.
+- **Not performed, by scope**: `agents/PROTOCOL.md` (`R10`/`R11` still absent
+  from its enumeration — `ADR-0021` §3.5's finding stands, re-verified this
+  round), the four charters' and the gate checklist's re-quoting, and
+  `docs/gates/P1-module-ready-checklist.md` §7.1 — ADR-0023 §7 row 7's owed item,
+  still owed to my next `docs/gates/` round. `docs/reports/audit/**` untouched.
+
+**Handoff**: to the orchestrator, for verification and commit. Nothing in this
+round is in force as an amendment — it amends nothing; it makes a description
+current.
+
+### Open-questions
+
+1. **The eighth edition has no external anchor and I do not think one was
+   required, but that is a judgement a council should get to review.** Every
+   prior edition followed somebody else's committed report. This one followed a
+   direction and a record. I have written the distinction into Part IV rather
+   than assuming it, and the question I cannot answer from here is whether a
+   currency round should be *allowed* to run without a reviewer at all, or
+   whether it needs a cheaper form of one — a single reader confirming that each
+   repaired line matches the commit it cites. **The failure mode is specific: a
+   currency round is exactly the round in which an author can smuggle a
+   preference in beside a dated fact**, because every sentence around it is
+   checkable and nobody re-reads the ones that are not.
+2. **`C-46`, `C-53`, `C-54`, `C-55`, `C-56` and `C-119` are now six rows whose
+   worlds have moved, and the posture list has not been re-measured for seven
+   editions.** The seam column counts *citations*, so this edition raised it
+   without raising coverage — which the index note now says. The debt is the
+   auditor's and I did not touch it, but its cost has changed shape: it is no
+   longer *the document grew*, it is *six specific rows are now known to index
+   superseded worlds and the document says so in six places*. That is arguably a
+   cheaper re-measurement than the general one, and whether it can be scoped that
+   way is not mine to decide.
+3. **The travel copy that never travels still has no cure and I did not invent
+   one**, unchanged from my last round. §3.10 now carries the hand-carry contract
+   as law with no machinery behind it, and the visible signal remains thin: a
+   baseline line that never moves and a file no session cites.
+4. **The precedence rule's coverage gap is disclosed and not repaired.** Run
+   three had to invent the meta-rule under which four §6.2-only instruments still
+   execute; I wrote the gap into §6.0 as the rule's honest limit, and left the
+   meta-rule un-adopted. **Adopting it would be this document legislating for an
+   order it does not own**, and refusing to adopt it leaves the next with-shell
+   adopter inventing the same adjudication. I do not know which is worse and the
+   text says so rather than choosing quietly.
+5. **The governance check's non-coverage is now printed, which makes it
+   countable and does not make it owned.** Falsifiers 3 and 4 are the two that
+   catch a silent deletion, they are the two the check declines, and they are the
+   two whose absence let the sixth edition ship a false warranty. An
+   edition-boundary job that runs them against the previous edition's commit is
+   the obvious instrument; it is another seat's scope, it is not commissioned,
+   and naming it here is all I can do from inside this round.
+
+### Files-in-this-commit
+- docs/PROCESS.md
+- docs/PROCESS-MEMOIR.md

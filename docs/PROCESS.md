@@ -11,15 +11,21 @@ export unit** — the half that **explains**; §6.0's shell is the half that
 **runs**. Read on its own, this document is a **description**: a rationale-rich
 account of a working organization, from which you can understand every control
 and rebuild none of them cheaply. **The replication claim belongs to the unit,
-not to this half** — an adopter handed only this text and told to execute §6.2
-reported roughly one hundred percent of the executable layer invented, and a
-second adopter, executing the revised order in a world with no shell, still
-invented every line of that layer's logic (§6.0, §6.2). And the instrument that
-would bind the two halves — the doc–shell drift check — **does not exist**
-`[B.2·9]`, so the unit's two halves are bound by nothing but this sentence and
-the pin in §6.0. `[B.9·2]`
+not to this half**, and three executed adoption runs are what that sentence now
+rests on: an adopter handed only this text reported roughly **one hundred per
+cent** of the executable layer invented; a second, executing the revised order in
+a world with no shell, still wrote every line of that layer's logic; and a third,
+with the shell in hand, invented **none of it** and put the import at roughly
+**ninety-five per cent by weight of machinery** (§6.0, §6.2). **That third run is
+the first evidence for the half of the bet this document cannot supply from
+inside itself** — and it was commissioned by this program, which is why it
+discharges reachability and not independence. And the instrument that would bind
+the two halves — the doc–shell drift check — **still does not exist** `[B.2·9]`,
+so the unit's two halves are bound by nothing but this sentence, the pin in §6.0,
+and one dated cell-by-cell check that found the pin exact and three kit rows
+wrong. `[B.9·2]`
 
-**This edition is the second that is only the law, and the first whose split
+**This edition is the third that is only the law, and the second whose split
 survives its own falsifiers.** Five editions carried their own revision history
 inside their running text: every corrected claim preserved beside its correction,
 every edition's item-by-item disposition, the whole genealogy of how the document
@@ -36,27 +42,46 @@ restored, the falsifiers that could not have caught it are rebuilt against
 committed states, and the block below is where a reviewer verifies that rather
 than trusting it.*
 
-**Edition anchor — seventh edition · 2026-08-12 · `docs/PROCESS.md` on this
+**Edition anchor — eighth edition · 2026-08-17 · `docs/PROCESS.md` on this
 program's working branch, at the commit that carries this line; written against
-`d96ffe2`, the commit this revision branched from, with the **committed fifth
-edition at `d96a5b1`** as the external standard for the split's warranty. No
-sibling lane was declared live at dispatch, and none had landed at this writing;
-the inward declaration of §4.2 is therefore a nil return rather than an
-unperformed act. **This edition performs the fifth council's returned repair
-list**, in the text and in the record, and its companion volume
+`5d2264d`, this dispatch's head. The document's own text had not moved since
+`2ed029d`, the seventh edition's commit; the record it describes moved through
+`dc4785e` — the last commit before this round opened — and then through this
+round's own three acts. No sibling lane was declared live at dispatch, and none
+had landed at this writing; the inward declaration of §4.2 is therefore a nil
+return rather than an unperformed act. The companion volume
 `docs/PROCESS-MEMOIR.md` carries its own anchor at the same commit.**
-This edition's basis is the **fifth council's committed verdict**, at
-`docs/reports/process-council/round-5/verdict.md`, adjudicating eight reports
-committed beside it. That verdict was a **RETURN**, not an acceptance with
-conditions, on the stated ground that this organization has metabolized
-conditions into ledger rows — so every item below is performed rather than
-disclosed, and where the record refused the verdict's own premise, the record
-governs and the refusal is stated in place (§3.9, ground 3). The second edition
-was measured claim-by-claim at one commit; that measurement is what every `C-nn`
-stamp below cites, and **no stamp in this edition has been re-measured.**
-Everything the third edition and after added carries no row and is marked in
-place; the edition-by-edition list of what each one changed is in the companion
-volume, at its Annex B.
+
+**This is a currency edition, and the distinction matters for how to read it.**
+The five editions before the seventh were each produced by an external
+measurement *of this document*. This one is not: **the record moved six ways
+after the seventh edition's commit, and this edition moves the text to match.**
+The six, one sentence each:
+
+1. **The federation retraction** (sponsor-directed, 2026-08-17). The shell
+   retired its transfer law; this program mirrored it, all harvest destinations
+   are now local, and the transit form is retired as a class (§3.10, §6.0).
+2. **The advisory-warning decision record entered force** (2026-08-12), so two
+   instruments this document called owed for three editions now run — one built,
+   one closed by a decided refusal (§2.4, §2.5, §5.1).
+3. **A third cold adoption run** executed the order with the shell reachable for
+   the first time, and returned the machine half of the unit's bet (§6.0, §6.2).
+4. **An eleventh seeded-defect campaign** landed the record's fourteenth seal and
+   a second, differently-shaped survivor (§3.3, §3.9).
+5. **A with-shell founding was driven to a working program** in a second
+   repository, by this program's own commissioning (§6.0).
+6. **This round's own acts** — the mirroring decision record, the constitutional
+   amendment, and the first local landing of the harvest (§3.10, §4.7).
+
+**No stamp in this edition has been re-measured.** The second edition was
+measured claim-by-claim at one commit; that measurement is what every `C-nn`
+stamp below cites, and where a stamped claim's *world* has moved, the running
+line states the new fact with the later act named and dated, while the row keeps
+indexing the old measurement. Everything the third edition and after added
+carries no row and is marked in place; the edition-by-edition list of what each
+one changed is in the companion volume, at its Annex B. **The split's four
+falsifiers are re-closed at this commit**, and the figures they close over are
+re-measured below rather than carried.
 *A stamp is a measurement at one commit. So is a document: an edition with no
 anchor cannot be cited, and a reader cannot tell which repository state it
 describes.*
@@ -174,16 +199,20 @@ split, not a claim that the matched text is law:
 > *(No posture row — this document's own drafting rule, binding its author and
 > no seat, like the mechanism-placement rule above.)*
 
-*And the honest residue.* **Nothing mechanical binds these two files.** The
-split can hide a dropped byte from a reader of either one, and the falsifiers
-above are a reviewer's acts, not a script's — which is precisely how the sixth
-edition shipped a false warranty. That residue is **no longer merely declared**:
-a governance check that runs falsifiers 1, 3 and 4 mechanically is commissioned,
-named with its owner at §6.0, and until it lands the class stands. What bounds it
-meanwhile is that the companion states **no rule of its own**: a drift between the
-two can only ever be a stale history, never a competing law. *A residue with a
-named owner and no cadence is a residue routed to nobody* — §1.1's own lesson,
-applied to this document's own instrument.
+*And the honest residue, which is smaller than it was and is not gone.* **Part of
+this is now mechanical.** A governance check landed on 2026-08-12 and runs on
+every push: it refuses if falsifier 1 finds a sentinel in this volume, if either
+volume loses its edition anchor, if the worked tally stops closing or stops
+agreeing with this document's printed figures, or if a fence is left unclosed
+(§6.0 states its coverage and its non-coverage). **Falsifiers 2, 3 and 4 remain a
+reviewer's acts** — they compare two committed editions, which is an
+edition-boundary operation rather than a per-push one — and *those are the two
+that catch a silent deletion*, which is precisely how the sixth edition shipped a
+false warranty. What bounds the remainder is that the companion states **no rule
+of its own**: a drift between the two can only ever be a stale history, never a
+competing law. *A residue with a named owner and no cadence is a residue routed
+to nobody* — §1.1's own lesson, applied to this document's own instrument, and
+the part of it that got an instrument is the part that got a cadence with it.
 
 ---
 
@@ -334,23 +363,31 @@ before you read anything as evidence.** `[B.8·6]`
 
 > **The stamps do not cover this document. They cover the document it used to
 > be.** The posture list measured `docs/PROCESS.md` as it stood at one commit,
-> at **1,445 lines**. The text you are reading is **5,538 lines — nearly four
-> times that**, and the figure is *this* edition's, re-measured in the act that
-> moved it. Well over half of it — everything the second edition
-> added in response to the measurement, and everything the five editions after
-> it added in response to four councils, two executed adoption runs, two cold
-> readings and an external grading — **postdates its own evidentiary spine and
-> has never been audited against the machinery.** A stamped sentence and an
-> unstamped one sit in the same paragraph, in the same voice, and the stamped
-> one lends its authority to its neighbour whether or not the neighbour earned
-> it.
+> at **1,445 lines**. The text you are reading is **6,023 lines — past four
+> times that**, and the figure is *this* edition's, re-measured in the act
+> that moved it. *(The adjective moved with the figure: it read "nearly four
+> times" while the ratio was 3.8, and the ratio crossed four at this edition. **A
+> qualifier is part of a measurement and goes stale with it** — which is the
+> defect this block exists to name, committed by this block, and caught by
+> re-deriving the ratio instead of only the count.)* Well over half of it — everything the second edition
+> added in response to the measurement, and everything the six editions after
+> it added in response to five councils, **three executed adoption runs**, two
+> cold readings, an external grading and a sponsor direction — **postdates its
+> own evidentiary spine and has never been audited against the machinery.** A
+> stamped sentence and an unstamped one sit in the same paragraph, in the same
+> voice, and the stamped one lends its authority to its neighbour whether or not
+> the neighbour earned it.
 >
-> **The split did not change this, and it is worth saying so rather than
-> letting a smaller number imply otherwise.** Moving 1,082 lines of archaeology
-> to the companion removed *unmeasured* text, so the measured fraction rose
-> slightly and the boundary moved in the reader's favour — but **not one stamp
-> was re-measured**, and the ratio is still the one above. A file getting
-> shorter is not a file getting better evidenced.
+> **Neither the split nor this edition changed that, and it is worth saying so
+> rather than letting a moving number imply otherwise.** Moving 1,082 lines of
+> archaeology to the companion removed *unmeasured* text, so the measured
+> fraction rose slightly and the boundary moved in the reader's favour; this
+> edition moved the boundary the other way, by adding unmeasured text in every
+> place where the record moved under a stamped claim. **Not one stamp was
+> re-measured in either act**, and the ratio is still the one above. *A file
+> getting shorter is not a file getting better evidenced, and a file getting
+> more current is not either* — currency and coverage are different properties,
+> and this edition bought the first at the cost of a little of the second.
 >
 > **What this edition adds is the seam, in the cheapest mechanical form
 > available.** The subsection index below carries, per section, `· n`: the
@@ -369,12 +406,12 @@ before you read anything as evidence.** `[B.8·6]`
 > program's file-size discipline to the largest file the agents' own reading tool
 > returns in one call — **262,144 bytes** — and §2.2 states the failure class in
 > terms: *a file that exceeds what a reader can load in one piece stops being
-> read at all.* **This file is 366,906 bytes.** It is past its own anchor
-> by roughly 40 per cent, in the runtime that produced it, and the
+> read at all.* **This file is 403,384 bytes.** It is past its own anchor
+> by roughly 54 per cent, in the runtime that produced it, and the
 > declared blank-slate executor of §6.2 **cannot load it in one call there**.
 > The discipline was applied to journals, which rotate, and never to this
 > document, which has no rotation story. The companion volume, at
-> 198,269 bytes, is inside the anchor.
+> 244,076 bytes, is inside the anchor.
 >
 > **So fragment-reading is not merely possible here, it is forced — and what a
 > windowed reader should load first is stated rather than left to the window.**
@@ -646,10 +683,16 @@ complete statement. The complete repair is the re-measurement owed at **B.2
 item 8**, which is the auditor's artifact and not this document's.
 `[B.10·1]`
 
-**Derived at:** this edition's commit, 2026-08-12 — **72 headings**, this index's
+**Derived at:** this edition's commit, 2026-08-17 — **72 headings**, this index's
 own heading included. Re-derive it rather than editing it; the list below is
 this command's output, one entry per output line, in order, with the leading
-`#` markers rendered as list depth and nothing else changed:
+`#` markers rendered as list depth and nothing else changed. *(The heading count
+is unchanged from the seventh edition — this edition added no §-level structure —
+and exactly four seam counts moved, all upward and all at sites where a stamped
+row is cited again in the sentence naming the later act that moved its world:
+§2.2, §2.4, §2.6 and §5.1. **A currency edition raises the seam count without
+raising the coverage**, which is the column's own limit arriving as an example:
+it counts citations, not claims.)*
 
 ```
 awk '/^[`][`][`]/ { fence = !fence; next }
@@ -689,11 +732,11 @@ instead; that disclosure is deleted because it is no longer true.*
   - 1.8 Phase, milestone, and when history moves to the trunk · 0
 - **2. The constitution and its enforcement** · 4
   - 2.1 One agent per commit, coupled to a journal entry · 5
-  - 2.2 Journals are append-only, and a journal is a chain · 5
+  - 2.2 Journals are append-only, and a journal is a chain · 6
   - 2.3 Path isolation — every seat has a write scope · 5
-  - 2.4 Mechanical refusal over advisory warning — and the exceptions, deliberately · 4
+  - 2.4 Mechanical refusal over advisory warning — and the exceptions, deliberately · 6
   - 2.5 Continuous integration is the adjudicator · 3
-  - 2.6 The numbered commit rules · 13
+  - 2.6 The numbered commit rules · 14
   - 2.7 The amendment procedure · 1
 - **3. The artifact grammar** · 1
   - 3.1 The journal entry · 5
@@ -716,7 +759,7 @@ instead; that disclosure is deleted because it is no longer true.*
   - 4.7 The sponsor's reserved decisions · 2
   - 4.8 Refusal is a first-class outcome · 2
 - **5. The failure museum** · 0
-  - 5.1 Remedies decay without mechanical checks · 2
+  - 5.1 Remedies decay without mechanical checks · 3
   - 5.2 A column's name is not its definition · 1
   - 5.3 A relay can demonstrate the hazard it reports · 1
   - 5.4 Timestamps are testimony; entry ids are sequence · 1
@@ -908,9 +951,9 @@ sum is a different fact from any of its parts:
 | Relay-fidelity spot-check on protected classes | §4.3 `[PLANNED · C-109]` | **Never.** Two receiving-seat checks fired instead — a different control (§4.3). |
 | The escape ledger | §1.5 item 5, §3.8 | **Never instantiated**; the file has never existed (§1.5 item 5). |
 | The recovery drill | §1.6 `[CORRECTED · C-33]` | **Never run.** |
-| Re-measurement of the posture list against the grown text | *Read this first*, **B.2 item 8** | **Owed**, three editions running — *as read at this edition's own commit; the artifact moved in its owner's lane during this round and this seat did not open it (**B.2 item 8**).* |
+| Re-measurement of the posture list against the grown text | *Read this first*, **B.2 item 8** | **Owed**, and **six editions running** — *a count re-derived here rather than carried: this cell read "three editions running" from the fifth edition through the seventh without moving, which is this row's own subject arriving in the row. As read at this edition's own commit; the artifact is its owner's and this seat did not open it (**B.2 item 8**).* |
 | The doc–shell drift check | §6.0 `[PLANNED]`, Annex B.2 item 9 | **Does not exist.** |
-| The advisory warning instruments | §2.4(b), §5.1 `[PLANNED · C-53, C-54, C-119]` | **Unbuilt**; specified in a decision record that is still proposed. |
+| The advisory warning instruments | §2.4(b), §5.1 `[PLANNED · C-53, C-54, C-119]` | **Landed, 2026-08-12 — the dormancy ends here.** Subjects 1 and 2 of `ADR-0021` entered force at the commit carrying `J-orchestrator-0277`: the author's-own-timestamps warning on **both** surfaces, and `R10`'s size limb on the pushed-history surface as a designed warning. Subject 3 entered force at its own first green run. **The rows keep indexing the pre-landing world** (§2.4(b), §5.1); what changed it is named and dated at each site. |
 | Evidence re-execution by the independent seat | §1.5 item 4 `[P1 · 2026-08-01 · C-28]` | **Twice** — ratification, and the measurement behind this document's stamps. |
 | Audit of the orchestrator | §1.5 item 3 `[P1 · 2026-08-01 · C-27]` | **Once**, at ratification. |
 
@@ -1888,11 +1931,31 @@ both anchored to a **measured substrate fact** — the largest file the agents'
 own reading tool will return in one call — rather than to taste, so that changing
 them is a parameter edit with the anchor restated rather than an argument. The
 numbers and their anchor are in **Annex A**; measure yours before copying them.
-`[MC · C-46]` — **on the local commit surface only.** The re-check over pushed
-history contains no size check at all, so an append that bypasses the local hook
-lands unnoticed. This is the live instance of §2.4's own both-surfaces corollary,
-inside the very rule family that minted it; the instrument that would close it is
-a proposed decision record, not in force at this writing (**Annex B**).
+`[MC · C-46]` — **and the two surfaces now evaluate the same predicate, with
+different postures, by design.** The commit gate **refuses** an append past the
+hard threshold. The re-check over pushed history carries the same size limb as a
+**warning**: it names the volume and its byte count and exits clean. So a
+bypassed over-threshold append still lands, and from that change on it is
+**named on every push instead of never** — the gap closes to *detected and
+named*, not to zero.
+
+*Row `C-46` measured the world before that limb existed, and what changed it is
+named here rather than left to a reader to reconcile.* The limb landed
+**2026-08-12**, at the commit carrying `J-orchestrator-0277`, under `ADR-0021`
+§3 — which also records the ground for the posture asymmetry, and the ground is
+the interesting half: **history is immutable and the full-history re-check
+re-reads it forever, so a permanent red is proportionate to harm that persists
+in every future reader and disproportionate to harm bounded by one file's
+readability.** A landed oversized blob costs every future clone until someone
+deals with it; an oversized journal volume costs the readability of one file, and
+its cure is available prospectively and unilaterally to its owner, who rotates at
+its next entry and freezes the volume forever. Refusing here would convert one
+seat's one-round oversight into a permanent stop for every other seat, with the
+only remedy a history rewrite the branch rule forbids. **This is what the
+both-surfaces corollary looks like when it is applied honestly rather than
+uniformly: the same predicate on both surfaces, and the posture chosen per
+surface from the shape of the harm.** For the corollary's own live unrepaired
+instance — this rule was it — see §2.4.
 
 ### 2.3 Path isolation — every seat has a write scope
 
@@ -1983,11 +2046,40 @@ quotation of a claim, or a genuine relay from a summary, is not a string match. 
 these, the program mints no machine rule at all — the posture is declared
 **review-enforced**, and the document says so in the clause itself `[RE · C-52]`.
 A script may emit an advisory note, and the clause states in the same breath that
-the note's absence proves nothing `[PLANNED · C-53]` — **the honesty is real and
-the note does not exist**: it is contemplated by the clause, drafted inside a
-decision record, and emitted by nothing. A qualifier attached to an unbuilt
-instrument reads, to a stateless seat at spawn, as a description of a running
-one.
+the note's absence proves nothing `[PLANNED · C-53]`.
+
+*What has happened to that note since the row was measured, and it is not what
+"planned" predicts.* The one advisory note of this class that this program
+actually put through a decision was **designed and then refused**, on
+2026-08-12, inside the decision record that landed the enforcement round
+(`ADR-0021` §5.2). The offered note would have fired when a constitutional file
+was staged and the entry's body did not name it; tracing its two reachable cases
+killed it. In the accidental case, the files-list rule (§2.6, `R4`) **already
+refuses the commit** and prints the offending path — so the note is *loud where a
+refusal already fires*. In the legitimate case, the entry's body **is** about the
+file, so the predicate is false and the note is *silent exactly where the residue
+lives*, which is an unintended change riding inside a file the commit
+legitimately lists. **A note that is loud where a refusal already fires and
+silent where the residue actually is has no case left to serve.** What was
+adopted in its place is not a weaker instrument but a different kind: an
+**evidence form** (`ADR-0021` §5.4) obliging the committing seat to record a
+byte-check in its own entry — which converts an unenforceable habit into a claim
+one pass over history can measure.
+
+**The general form is worth a sentence, because a ledger with no closing move
+for it will carry the row forever.** An instrument this document called *owed*
+for three editions was closed by **deciding not to build it** — and that is a
+legitimate closing act, not an unpaid debt. A debt ledger recognizes two
+terminal states, *built* and *refused with grounds*; a ledger that recognizes
+only the first converts every considered refusal into a permanent row and
+teaches its keepers that naming is cheaper than deciding (§5.9). **The posture
+of this clause is therefore no longer *owed*: it is deliberately absent by a
+decided refusal, which is a stronger statement than an absence.** *(The other
+advisory note the clause's family contemplates — the one the constitution's
+withheld-results rule names — is still unbuilt, and no script emits it. That one
+remains owed, and the honesty about it is unchanged: a qualifier attached to an
+unbuilt instrument reads, to a stateless seat at spawn, as a description of a
+running one.)*
 
 *Failure class.* A mechanical check whose predicate is a proxy for the real rule
 produces both false convictions and — far worse — a **clearance**: the check
@@ -2001,14 +2093,27 @@ the correct instrument in that case** — not a weaker version of a refusal, but
 the right shape, because the failure it catches is one that must remain fixable.
 `[PLANNED · C-54]`
 
-*The posture that clause actually holds.* The designed class has exactly one
-implemented member, and that member is a size rule — **structure, not
-testimony**. The case that motivated the corollary, an author's own timestamps,
-has no warning at all: one was specified after a program-wide census, with
-candidate bands, measured false-positive rates and a twenty-entry lead time, and
-it was **not built**. So the clause describes a class whose only member is not of
-the kind the class is about. Carry the reasoning; do not carry the implication
-that the layer exists.
+*The posture that clause actually holds, re-stated at this edition because it
+moved.* The designed class now has **two** implemented members, and the second
+is the case that motivated the corollary in the first place: **an author's own
+timestamps**. Since **2026-08-12**, at the commit carrying `J-orchestrator-0277`
+and under `ADR-0021` §2, a drift band compares each entry's header stamp against
+the time of the commit that carries it and emits an advisory line — **on both
+surfaces, never a refusal**, with the local gate reporting one entry and the
+history re-check aggregating per chain so the line count is bounded by the
+roster rather than by history. **The band is the one the census measured**, and
+its two sides are not equally anchored: the fast side rests on a measurement (no
+false positives against known-good behaviour), and the slow side is a symmetric
+default that the record itself flags as unanchored — which is the honest shape
+for a parameter, and is recorded where the parameter lives rather than here.
+*The history is worth one clause: the instrument was specified after a
+program-wide census, with candidate bands, a measured false-positive rate and a
+twenty-entry lead time, and then went unbuilt for three editions while this
+paragraph said so.* So the sentence this paragraph used to carry — that the
+class's only member is not of the kind the class is about — **is no longer
+true**, and the row `C-54` above measures the world before the landing. Carry
+the reasoning either way: **a warning is the right shape for testimony, and it
+buys latency rather than honesty** (§5.1).
 
 **And the general principle underneath both: a rule without its check is a
 suggestion.** The counterpart is equally load-bearing and was learned the hard
@@ -2022,33 +2127,65 @@ the local commit path — and not on the other — the re-check over pushed hist
 — the asymmetry is itself the defect. Both surfaces or neither. `[P1 ·
 2026-08-03 · C-55]`
 
-*And it was applied once, to one rule, in the act that minted it.* A large-file
-gate was mirrored into the pushed-history re-check and given its own numbered
-rule and test case. The journal size threshold, in the same rule family, was
-**not** mirrored in the same act and is still not mirrored (§2.2, §2.5). So the
-corollary stands with a live unrepaired instance inside the family that produced
-it — which is the most useful thing about it as an exhibit: **a corollary adopted
-without a sweep of its own kind is a corollary adopted for one case.** If you
-adopt this one, the adopting act should enumerate every check on either surface
-and dispose of each, or the enumeration never happens.
+*And it was applied once, to one rule, in the act that minted it — and its own
+family's unrepaired instance then stood for nine days and four editions.* A
+large-file gate was mirrored into the pushed-history re-check and given its own
+numbered rule and test case. The journal size threshold, in the same rule family,
+was **not** mirrored in the same act. **That instance closed on 2026-08-12**, at
+the commit carrying `J-orchestrator-0277`, under `ADR-0021` §3: the size limb now
+evaluates on both surfaces over the same subject, refusing on one and warning on
+the other for a recorded reason (§2.2, §2.5). Row `C-55` measured the
+corollary as *performed once, with a live unrepaired instance*; the instance is
+what moved, and the row still indexes the world before it did.
+
+**Keep the exhibit anyway, because the repair is not what makes it useful.** The
+lesson is in the nine-day gap, not in its closing: **a corollary adopted without
+a sweep of its own kind is a corollary adopted for one case**, and this one sat
+one clause away from its own counterexample while three editions described it
+correctly. If you adopt this rule, the adopting act should **enumerate every
+check on either surface and dispose of each**, in that act — because the
+enumeration that is not done at minting is done, if at all, by a reader who
+happens to notice, on a schedule nobody set. *The instance here was closed by
+exactly such a reader: an independent review of this document found it, and the
+enforcement round that followed was where it was paid.*
 
 ### 2.5 Continuous integration is the adjudicator
 
-Every rule the commit script enforces **but one** is re-verified by continuous
-integration over the entire pushed history, not merely over the newly pushed
-range `[CORRECTED · C-56]`. A locally bypassed check — and every commit tool has
-a bypass flag — still fails before merge `[MC · C-57]`, with that same single
-exception.
+**Every rule the commit script enforces is re-verified by continuous integration
+over the entire pushed history**, not merely over the newly pushed range
+`[CORRECTED · C-56]`. A locally bypassed check — and every commit tool has a
+bypass flag — is caught before merge `[MC · C-57]`.
 
-*The exception, named rather than averaged away.* The commit script refuses an
-append that pushes a journal past its hard size threshold; the pushed-history
-re-check has **no size check at all**. A commit made with the local hook
-bypassed therefore passes the re-check clean. What the full-history claim gets
-right stands: the re-check really does run over all of history rather than the
-new range, for the reason given below, and **everything except the size
-threshold really is on both surfaces**. A proposed decision record specifies the
-missing limb; it is **not in force**, and the sentence above will be true
-without qualification only when it lands.
+*The single exception this section carried for five editions closed on
+2026-08-12*, at the commit carrying `J-orchestrator-0277`, under `ADR-0021` §3.
+The closed form is worth stating precisely, because "closed" here does not mean
+"identical on both surfaces" and a reader who takes it that way will build the
+wrong thing:
+
+- **Both surfaces now evaluate the same predicates.** The one rule that ran on
+  the commit surface alone — the journal size threshold — runs on the
+  pushed-history surface too, over the same subject: the active volume, which is
+  what the commit gate examines.
+- **The postures differ per limb, deliberately.** The **blob gate** re-verifies
+  on the history surface as a **refusal**, with the journal paths carved out of
+  it. The **journal size limb** re-verifies there as a **warning**, and the
+  ground is recorded rather than assumed: history is immutable and the
+  full-history re-check re-reads it forever, so a permanent red is proportionate
+  to harm that persists in every future reader and disproportionate to harm
+  bounded by one file's readability — whose cure is available prospectively and
+  unilaterally to the volume's own owner (§2.2).
+- **What the closure actually bought is naming, not prevention.** A commit made
+  with the local hook bypassed still lands its oversized append; it can no
+  longer land it **unnoticed**, because the history surface names the volume and
+  its byte count on every push from that change onward.
+
+**The general form, and it is the one an adopter should take rather than the
+uniformity:** *both surfaces must evaluate the same rule; they need not deliver
+the same verdict.* Where the harm a rule guards is permanent, refuse on both.
+Where it is bounded and self-curing, refuse where the act can still be
+prevented and name it where it can only be observed — and **write down which of
+the two you chose and why**, because a posture nobody recorded is a posture the
+next reader will assume was uniform.
 
 *And the quantifier in "the entire pushed history" wants delimiting too, in the
 section that convicts the first edition for an unqualified one.* The re-check
@@ -2157,7 +2294,7 @@ named in §5 as of this edition, and the repair is another seat's file.
 | `R7` | Path isolation | Every staged non-journal path must be in the committing agent's scope | Both surfaces `[MC · C-65]` |
 | `R8` | Foreign journal seeding only | Another agent's journal may be staged only as a newly created, entry-free file (onboarding); modifying an existing one is always refused | Both surfaces `[MC · C-66]` |
 | `R10` | Journal chain and rotation | Volumes are gapless, each carries its predecessor's path and digest, only the active volume may change | Both surfaces, by limb — headers at rotation plus chain-wide ids on the commit surface, the full walk on the pushed-history surface and in the standalone verifier (§2.2) `[MC · C-45]` |
-| `R10` | Journal size thresholds | A soft threshold warns, a hard one refuses, anchored to the reader's single-file limit | **Commit surface only** — the asymmetry of §2.5 `[MC · C-46]` |
+| `R10` | Journal size thresholds | A soft threshold warns, a hard one refuses, anchored to the reader's single-file limit | **Both surfaces, by limb, since 2026-08-12** (`ADR-0021` §3): the commit surface **refuses** above the hard threshold; the pushed-history surface evaluates the same predicate over the same subject — the active volume — and **warns**, on the recorded ground that a permanent red is disproportionate to harm bounded by one file's readability (§2.2, §2.5). Row `C-46` measured the commit-surface-only world `[MC · C-46]` |
 | `R11` | Large-file gate | A staged file over **1,000,000 bytes** is refused, with the journal carved out (**Annex A.7**); the refusal names the sanctioned route — see below | Both surfaces — the one place the both-surfaces corollary was applied |
 | `R9` | Merge triviality | A merge commit's tree must equal one of its parents' trees; multi-parent merges beyond two are rejected outright | **Pushed-history re-check only**, not the commit script `[CORRECTED · C-67]` |
 | `R9` | One branch, no rebases, no force pushes | Work lands sequentially on one working branch; pushed history is never rewritten | **No script anywhere.** The hosting platform's branch protection, and nothing else `[CORRECTED · C-67]` |
@@ -2374,8 +2511,16 @@ and they
 want different responses.
 
 *Forms outside the six.* A **transit packet** carrying a harvest across an
-organizational boundary (§3.10, §6.0) — collation record, delivery record and
-conformance notes, with its own state vocabulary. An **adjudication companion**
+organizational boundary — collation record, delivery record and conformance
+notes, with its own state vocabulary. **That form is now record rather than
+practice**: it was executed exactly once, and the mechanism it carried was
+**retracted on 2026-08-17** when this program's harvest destinations all became
+local (§3.10). The one instance keeps its identifier and stays in the packet
+directory as the record of the one delivery; no second one will exist, and the
+routing this list says the form is owed is **discharged by its retirement**
+rather than left open. *Note which way that closes: an unrouted extension can be
+retired as well as routed, and a taxonomy that only knows how to admit forms
+will carry dead ones forever.* An **adjudication companion**
 to a work order, holding a ruling too long for a return log. A **pre-run reading
 note**, filed before a round begins, recording what its author read. A
 **campaign packet** and its **defect manifest** and **campaign brief** (§3.9) —
@@ -2402,7 +2547,8 @@ what makes an adopter's machinery incomparable with anyone else's.
 
 ```
 packets/<TYPE>-NNNN_<slug>.md          # numbered types: work orders, defects, verdicts
-packets/<TYPE>-<subject>.md            # per-subject types: sign-offs, transits
+packets/<TYPE>-<subject>.md            # per-subject types: sign-offs; and the
+                                       # transit form, retired — §3, §3.10
 packets/<TYPE>-NNNN_<slug>-SEALED-predictions.md   # a seal ships beside its own commission
 
 # <TYPE> is a fixed short token per type, not the English name. This program's,
@@ -2415,7 +2561,8 @@ packets/<TYPE>-NNNN_<slug>-SEALED-predictions.md   # a seal ships beside its own
 #   <the seal>                <the commissioning packet's own name>-SEALED-predictions.md
 #   <a finding>               no file token: findings carry ids inside reports and
 #                             packets (F-<origin>-<n>), and have no packet file
-#   HT-   harvest transit     HT-01_<slug>.md     (an unrouted extension, §3)
+#   HT-   harvest transit     HT-01_<slug>.md     (an unrouted extension, §3;
+#                             executed once; mechanism since retracted — §3.10)
 
 # --- packet skeleton -------------------------------------------------------
 # <TYPE>-NNNN — <one-line title>
@@ -2726,23 +2873,40 @@ the version-control tool, and the commit does not exist until another seat
 creates it.
 
 **And the state field is not a mutable line, which is the opposite of what five
-editions of this document said.** `[B.11·8]` *(Re-derived this round, seal by
-seal, over every one in the record; no posture row — the claim it replaces
-carried none either, and its replacement is a measurement rather than a
-posture.)* The description carried here was **generalized from the four earliest
-seals** and was false of the nine that followed them, which are the current
-practice:
+editions of this document said.** `[B.11·8]` *(Re-derived seal by seal at this
+edition's own commit, and by a stronger method than reading the state line:
+every seal file's current bytes were compared against its bytes at the commit
+that introduced it. No posture row — the claim it replaces carried none either,
+and its replacement is a measurement rather than a posture.)* The description
+carried here was **generalized from the four earliest seals** and was false of
+the ten that followed them, which are the current practice:
 
-- **Thirteen seals exist.** Four — the earliest — flip their state line to
+- **Fourteen seals exist.** Four — the earliest — flip their state line to
   `UNSEALED <date>` when the campaign opens, and those four are what the "single
-  mutable line" sentence described.
-- **Nine carry a `FROZEN` state line that was never edited at all.** Six of the
-  nine were scored, each with a committed verdict quoting its sealed cells; the
-  remaining three are frozen and unscored. **So of the ten scored campaigns in
-  this record, six were scored without one byte of their seal being touched.**
+  mutable line" sentence described. They are also **exactly** the four whose
+  files differ from their introducing commit; the other ten are byte-identical
+  to the day they were frozen.
+- **Ten carry a `FROZEN` state line that was never edited at all.** Seven of the
+  ten were scored, each with a committed verdict quoting its sealed cells; the
+  remaining three are frozen and unscored. **So of the eleven scored campaigns
+  in this record, seven were scored without one byte of their seal being
+  touched.**
 - **The later practice records the unsealing in the campaign packet's own
   verdict, not in the seal.** The seal is written once and never opened for
   writing again.
+
+**And the record's newest seal goes one step further than the practice this
+section already calls strictly stronger — by declining a permission it held.**
+It pre-committed, **in its own frozen text**, to never flipping its state line at
+all; it recorded its unsealing in the campaign packet's return log, at exactly
+the place its own text said the unseal would live; and when the scoring round
+arrived holding one authorized flip, the scoring seat **declined to use it**, on
+the stated ground that flipping would convert the immutability check from *the
+diff is empty, full stop* into *the diff is empty but for one line*. **That is a
+seat giving up a permission in order to keep its own check flat** — the strongest
+form of the argument two paragraphs below, chosen by a party whose convenience
+ran the other way, and it is the reason the argument is worth more than its
+reasoning: the record now contains an instance of it being taken.
 
 **The later form is strictly stronger and it is the one to build.** A seal with
 a designed mutable line is the shape §5.4 warns about — an author-editable field
@@ -3410,17 +3574,31 @@ on a population being enumerable needs its enumeration rule written down**, or
 the measurement guarding it measures whatever its author remembered to look at.
 
 **The population, stated here because two other sections point at this one for
-it.** `[B.11·18]` At this revision's own commit the marked population is
-**eighty-six references, none of them an ancestor of the working branch's head**,
-grouped under fifteen campaign prefixes and two probes. Read the unit carefully,
-because this is the one section that **rules a reference population cannot be a
-denominator**: eighty-six is a count of *references*, not of campaigns — of
-which there are fifteen — and still less of defect classes, which is the unit
-every rule below insists on. **A section that rules against a denominator may
-not quote its own reference count loosely, or the next reader will divide by
-it.** The shape an adopter will actually find here is a run of campaigns against
-one artifact, interleaved with defect packets and their repairs, not one
-campaign sitting in one gap.
+it.** `[B.11·18]` At this revision's own commit the marked population is **one
+hundred references, none of them an ancestor of the working branch's head**,
+grouped under **sixteen campaign prefixes and two probes** — the sixteenth
+prefix being this edition's own newest campaign, whose fourteen references carry
+thirteen seeded classes and one re-seed of the class that would not compile. Read
+the unit carefully, because this is the one section that **rules a reference
+population cannot be a denominator**: one hundred is a count of *references*, not
+of campaigns — of which there are sixteen — and still less of defect classes,
+which is the unit every rule below insists on. **A section that rules against a
+denominator may not quote its own reference count loosely, or the next reader
+will divide by it.** The shape an adopter will actually find here is a run of
+campaigns against one artifact, interleaved with defect packets and their
+repairs, not one campaign sitting in one gap.
+
+*How the never-merged half was re-checked at this edition, because it is the
+half that is a measurement rather than a listing.* Two ways, and the second is
+the one worth copying. Each reference whose object this clone holds was tested
+directly for ancestry of the working branch's head, and none is an ancestor. The
+remainder — the newest campaign's references, pushed but never fetched here —
+are settled by a property of a full clone rather than by a test: **a commit that
+is an ancestor of the head is necessarily present in a clone that holds the
+head's whole history, so an object this clone does not have cannot be one.**
+*An absence that follows from the shape of the artifact is stronger evidence than
+a check somebody has to remember to run* — and noticing that is cheaper than
+fetching a hundred references to prove a negative.
 
 The sequencing and the separations matter more than the technique:
 
@@ -3606,7 +3784,11 @@ The rules that transfer:
   between those three is the part worth importing: the first is disclosed in the
   clause itself, and **the other two were found afterwards, by applying the
   clause.** In this record five of thirty-seven committed renderings no longer
-  apply to the artifact they were scored against — the survivor form replays a
+  apply to the artifact they were scored against — *a figure measured over the
+  first artifact's campaign era, before this record's eleventh campaign, and
+  scoped that way here so it keeps its truth as the record grows; the later
+  campaign is against a different artifact and enters no part of it* — the
+  survivor form replays a
   patch and so self-checks against that drift, while the kill form asks only that
   a unit be present and green and cannot notice that the class's rendering has
   stopped existing — and the unit names the older campaign records carry were
@@ -3745,9 +3927,39 @@ This is why the naming duty is closed while the list of grounds is open (§5.2).
 **The survivor whose rehabilitation expires.** Exactly one defect in this record
 survived its own campaign — its seal predicted a kill and no unit killed it —
 and it was rehabilitated in the strict form from the first statement of it.
-**This is the exhibit written *from* a practice rather than against a lapse**,
-which is the rarer and better kind. The hazard it exists to name arrived
-afterwards, and it is the one an adopter will actually meet.
+**That sentence is still true at this edition, under its own definition**, and
+the definition is what keeps it true: *survived its own campaign* means a seal
+predicted a kill and no unit killed it, which is a property of a **prediction**
+and not of a run. **This is the exhibit written *from* a practice rather than
+against a lapse**, which is the rarer and better kind. The hazard it exists to
+name arrived afterwards, and it is the one an adopter will actually meet.
+
+**And the record now holds a second survivor of a different shape, which is the
+campaign mechanism working end to end rather than a repetition of the first.**
+In this edition's own newest campaign a rendered class survived the suite, and
+**the seal held no prediction over it at all** — the two partitions differ by
+design, since the seeding seat composes its classes blind to the seal and the
+sealing seat writes its predictions blind to the classes. So it is not a missed
+prediction; it is a class the prediction never reached. Three things make it
+worth its lines. It survived at **exactly the configuration-coverage gap the
+seeding seat had pre-flagged as a probable survivor before any run**, in the
+packet, in writing — so the shape was called in advance by the party that could
+not know what the suite would do. It was dispositioned as a **suite finding with
+a repair axis commissioned** — a work order for the missing coverage — rather
+than as a rehabilitation case, because nothing about it needs rehabilitating:
+the suite really does not drive that configuration. And its evidence carries the
+falsifier the strict form asks for anyway: the unmodified committed diff, at a
+reference, at a run identifier, with the named condition under which it reddens.
+
+*What this pair of survivors demonstrates is the reason for the seeder's
+independence, and it is not the reason usually given.* The usual argument is
+negative — a seeder who knows the predicted kill set can choose sites that
+satisfy it. **The positive argument is the one this campaign supplies: two
+independent partitions of the same artifact find things neither would have found
+alone.** The seal's partition produced a clean seven-for-seven and no
+information about the gap; the seeder's partition produced the gap and no
+predictions at all. A campaign run by one seat holding both partitions would
+have returned the score and not the finding.
 
 The form the rule demands is the narrow one that cannot be argued — the
 **unmodified committed patch**, replayed against the suite as it stands at the
@@ -3832,9 +4044,14 @@ universally — a protocol family, a class of algorithm, an interface standard. 
 domain-grade rule names the pack it belongs to so that a later program pulls in
 only the packs whose domains are its own. **State where your packs live before you
 run your first harvest**, even if the answer is "one file in this repository":
-this program routes admissible candidates into a separate reusable repository
-(§6.0), and the harvest is worth running from day one only if its output has a
-destination on day one.
+the harvest is worth running from day one only if its output has a destination on
+day one. **Since 2026-08-17 that instruction reads as literally this program's
+own practice**: its destination is one file in this repository — a lessons file
+holding the general candidates in its own sections and the domain candidates in
+domain-titled sections of the same file, each with its grade on the entry. The
+sentence used to name a separate reusable repository, and the rule survived the
+change of destination without a word moving, which is the useful thing about
+having written it as *a destination* rather than as *that destination*.
 
 The classifier is run **by the mining seat, on its own candidates**, in a fixed
 order, starting from the most general honest statement: the domain grade is
@@ -3844,23 +4061,64 @@ The collating seat re-runs it as a check, with the provenance hidden.
 Collation is clerical. The collating seat may bounce a defective statement back to
 its author and may not improve one `[RE · C-106]`.
 
-**And the harvest is where the sponsor's fifth standing power is exercised.**
-*(No posture row — added after the measurement; posture **review-enforced**,
-granted by the constitution's harvest clause.)* `[B.8·2]` The collated
-candidates are
-**sponsor-visible at the gate, and the sponsor may refuse a candidate — one at a
-time, by name, with no obligation to refuse the batch or accept it.** That is
-why this program's transit takes the form it does (§6.0): the harvest is
-delivered to its destination as a *proposed* change that a human can decline
-item by item, rather than as a push that has already happened.
+**And where the harvest goes is now a settled question with a short answer, and
+the answer changed on 2026-08-17.** *(No posture row — added after the
+measurement; posture **review-enforced**, carried by the constitution's harvest
+clause and by the gate block's boxes.)* `[B.8·2]` The sponsor who commissioned
+this organization **retracted the design under which a program's learning moved
+to another repository** — the direction may be paraphrased without any program's
+nouns: *harvesting rules from a reasoning log is worth keeping; it should be for
+one project; the useful artifact is a file of what this project has learned that
+you could hand to another session.* What replaces it:
 
-*Why the granularity is the whole point.* A batch that can only be accepted or
-rejected whole converts the one human judgement in the export path into a
-formality — nobody refuses eleven good rules to stop one bad one. **A refusal
-power that cannot be exercised at the granularity of the thing being refused is
-not a power, it is a notification.** Note also which direction it runs: this is
-the only place in the process where the sponsor can stop something that is
-*correct by every internal check* and still not wanted outside the program.
+- **All destinations are local.** The collating seat lands each harvest in the
+  program's own lessons file, in **one landing commit per harvest** — never one
+  per gate, so the file reads as a list of harvests rather than a stream of
+  edits. Project-tier statements and war stories stay exactly where they already
+  are.
+- **That file doubles as the hand-off artifact — the *travel copy*.** Its header
+  carries the contract, so a reader who opens only that file learns how it
+  moves: **learning leaves the repository only when a human hands the file, or
+  its post-baseline tail, to another session or project, and the receiving end
+  records that as seed provenance.** A **baseline** line marks where the
+  program's own learning starts, so a later reader can tell what a program
+  learned from what it was given — and *empty* is a legitimate baseline that
+  must be written down rather than left implied.
+- **There is no transport.** No packet, no perimeter, no proposal, no consent
+  question — because nothing transmits. A shared corpus, if one exists anywhere,
+  grows by its own maintainer's hand-carried commits under ordinary review, and
+  the originating program has no lane into it.
+- **The sponsor's candidate-by-candidate refusal power retires with the movement
+  it gated**, and the harvest's whole sponsor touchpoint is the gate signature
+  they were already giving (§4.7). *A refusal power over a movement that does
+  not happen is not a reduced power; it is a power with no object, and keeping
+  it as ceremony would put a human signature on a decision about nothing.*
+
+**The honest history of what was retracted, because a retraction described only
+as an improvement teaches nothing.** The pipeline this replaces was designed,
+specified, built and executed **exactly once, end to end** — a collation record,
+a frozen export packet, a delivery to another repository as an open proposal —
+and that proposal **never landed**. Its owner retracted it before its first
+landing, which was also its designated first test. **Two general forms come out
+of that and both transfer.** *A mechanism priced at design time is re-priced by
+its exercised value, and a pipeline that has never landed is a design rather than
+an asset* — the cost of removing it was one round precisely because nothing was
+running on it. And: **the discipline survived the transport's retraction whole.**
+Every bar, span rule, grade, classifier and gate precondition below is
+byte-unchanged; one arrow moved. *That is what a clean separation between a
+discipline and its transport buys, and it is only visible on the day one of them
+is taken away — which is the day it is too late to build.*
+
+**What did not change, listed because an amendment that does not say what it
+leaves alone invites a re-reading of everything.** The three admissibility bars;
+the two portability grades and the rule that both are read with the provenance
+hidden; **spans stated as entry-id intervals so that they tile and a skipped
+harvest is a visible gap**; the **nil yield declared, never omitted**; war
+stories kept, binding nowhere, re-offerable later; the classifier and its order,
+the domain grade reachable only *through* a general statement that was attempted
+and found hollow; collation as clerical, with the collator free to bounce a
+statement and barred from improving one; and the **gate precondition** — a gate
+is not passed while any box of the instantiated harvest block is unchecked.
 
 **The failure classes.** *Without the cadence:* lessons live in one session's
 context and die with it, and the same defect is rediscovered at full price. *Without
@@ -4102,7 +4360,7 @@ already rejected converts a disagreement into a legitimacy problem.
 ### 4.7 The sponsor's reserved decisions
 
 The sponsor's surface is deliberately small, and this is it **as of this
-edition** — five standing items, closed by the amendment procedure rather than
+edition** — four standing items, closed by the amendment procedure rather than
 by assertion:
 
 1. the **six escalation classes** (§4.6);
@@ -4110,11 +4368,24 @@ by assertion:
    the history guarantee is convention `[P1 · 2026-08-01 · C-115]`, configured
    and live-fire verified (§2.5);
 3. the standing **canary** power (§1.5);
-4. **ratification of the organization itself** (§1.7);
-5. **candidate-by-candidate refusal at the lessons harvest** (§3.10) — the human
-   gate on what leaves the program. *(No posture row — added after the
-   measurement. Posture **review-enforced**, granted by the constitution's
-   harvest clause and exercised by the form the transit takes.)* `[B.8·2]`
+4. **ratification of the organization itself** (§1.7).
+
+*And a fifth item stood here from 2026-08-04 to 2026-08-17, which is why the
+count moved rather than why it was wrong.* **Candidate-by-candidate refusal at
+the lessons harvest** — the human gate on what left the program — was granted by
+the constitution's harvest clause when that clause landed, and it left the
+constitution with the clause's amendment on 2026-08-17: **it was retired with the
+movement it gated** (§3.10), because nothing leaves any more and a refusal power
+over a movement that does not happen is a power with no object. **It was never
+exercised**, and the reason is worth the half-sentence: the one delivery this
+program ever made never landed anywhere, so no candidate ever reached the point
+at which a refusal would have been taken. The sponsor's harvest touchpoint is
+now the gate signature they were already giving. *(No posture row — added after
+the measurement. Posture while it stood: **review-enforced**, granted by the
+constitution's harvest clause.)* `[B.8·2]` **Note what kind of movement this
+is**: an enumerated surface got smaller by an amendment, on the record, with a
+date on each end — which is the only way a list like this one can shrink without
+becoming a list nobody can check.
 
 *And how a sponsor signs anything, since they have no reasoning log.* §3.7
 requires every gate signature to resolve to an entry in the signer's own log,
@@ -4209,12 +4480,23 @@ an outright wrong date**. `[P1 · 2026-08-11 · C-118]`
 warning rather than a refusal (because the subject is testimony, or because a
 blocking check would make legitimate corrections impossible), the honest framing
 is: the warning does not buy honesty, it buys **latency** — the next decay would
-be visible in three entries instead of twenty-four. `[PLANNED · C-119]` —
-**stated in the conditional because the warning does not exist.** It was
-specified in the same round as the census, with measured bands and a measured
-false-positive rate, and it has not been built; the instrument that would build
-it is a proposed decision record (**Annex B**). The arithmetic above is a
-projection from the census, not an observation of a running control.
+be visible in three entries instead of twenty-four. `[PLANNED · C-119]`
+
+*And the instrument exists now, which changes what that arithmetic is.* The
+warning was built and entered force on **2026-08-12**, at the commit carrying
+`J-orchestrator-0277`, under `ADR-0021` §2: it runs on **both** surfaces, over
+the band the census measured, and it is a counter rather than a gate. Row
+`C-119` measured the world before that landing, and this paragraph is where the
+later act is named. **Read the latency figure exactly, because it is still a
+projection and now has a running instrument behind it**: the census computed
+what such a control *would* have caught — the decay it was designed against
+would have been named twenty entries and one working day before the bounce that
+actually found it — and that computation is now attached to something that
+fires, rather than to something specified. **What the landing did not change is
+the corollary itself**: a warning still buys latency and not honesty, and the
+measurement of whether the latency is real is the *next* decay, which has not
+happened yet. *A control that has never fired in anger is a design with a
+process id.*
 
 **Without it:** every remedy in the record is a claim about the past rather than a
 property of the present, and a reader auditing the program's rules cannot tell
@@ -4476,6 +4758,21 @@ debts as it does to controls: routed with no interval is routed to nobody.
 distinctive text across the artifacts that restate it and fail on a mismatch —
 which is the only form that survives an organization that stops looking.
 
+**Part one has now been exercised once, on 2026-08-17, and the first exercise
+returned the thing the cure was designed to catch.** The decision record that
+moved this program's harvest destination carried an owed-restatement list naming
+each target file with its owner and its closing event — and the list its author
+wrote came back **two rows longer than the one it was handed**, because two live
+targets had been missed. *A cure whose first run finds two omissions in its own
+commission is a cure that was worth writing down*; a cure whose first run finds
+nothing has usually not been run against anything. **Parts two and three remain
+unbuilt**, and the ledger's rows still carry closing events rather than cadences.
+One more thing the same round settled, and it belongs here because a debt ledger
+without it grows forever: **a debt is discharged either by building the
+instrument or by refusing it with grounds**, and this round closed one owed
+instrument each way (§2.4). *A ledger that recognizes only the first terminal
+state teaches its keepers that naming is cheaper than deciding.*
+
 **Without it:** the organization runs two rules, the record's and the artifacts',
 and the one a working seat obeys is whichever artifact is nearest to hand — which
 is reliably the stale one, because the stale ones are the operational files and
@@ -4547,14 +4844,19 @@ further.** *(No posture row.)* `[B.9·2]`
 > **Facsimiles taken at:** this repository, at this edition's own commit — the
 > `FACSIMILE` blocks in this document are transcribed from **this program's**
 > artifacts, not read from the shell. **Shell observed at:** `main` =
-> **`2ad82c3`**, on **2026-08-11**, the state from which this program's
-> federation transit branch was cut; that observation is recorded in this
-> repository's own transit packet and is checkable from a clone of it.
-> **Shell current through:** **unknown from here, by construction.** The shell
-> is an independently maintained repository with its own maintainer, its own
-> federation law and its own commit count; at the one transit this program has
-> performed it was found **thirty-one commits ahead** of this program's picture
-> of it. **Fetch before you rely on anything below.**
+> **`cb8a9f3`**, on **2026-08-17** — the commit carrying the shell's own
+> retraction sweep. **Read the grade of that observation, because it is not the
+> grade of the previous one**: it is **first-party**, made by this program's own
+> operating seat acting in the shell as its maintainer, which is *stronger than
+> a fetch* — the observer knows what the commit contains — and *weaker than an
+> independent reader*, because the party that observed the state is the party
+> that landed it. An adopter's own fetch is the only observation that is
+> neither. **Shell current through:** **unknown from here, by construction.**
+> The shell is an independently maintained repository with its own maintainer,
+> its own law and its own commit count; at the **one delivery** this program
+> performed — under a transit law since retracted (§3.10) — it was found
+> **thirty-one commits ahead** of this program's picture of it. **Fetch before
+> you rely on anything below.**
 
 *Why the pin is worded that way rather than as a tag.* A pin is only worth what
 the pinning party measured, and **this party measured its own repository**. The
@@ -4581,8 +4883,9 @@ entirely in the incident-hardened details — the failure modes of a pipeline th
 swallows an error, enumeration of a journal chain from committed state rather
 than from the working tree, protection of the metadata keys against shadowing —
 none of which any prose description will regenerate. **That prediction has now
-been tested twice.** The first cold adopter executing §6.2 with this document and
-nothing else reported the machinery as *roughly one hundred percent invention*: every script
+been tested three times, and the third test is the one that closes it.** The
+first cold adopter executing this order with this document and nothing else
+reported the machinery as *roughly one hundred percent invention*: every script
 line, every file format, every identifier scheme, every marker name, the rule
 numbering and one enforcement threshold, "constrained but never determined by
 the prose." The second adopter, running against a document
@@ -4590,8 +4893,14 @@ that had since printed the formats, the identifiers, the numbering and the
 thresholds, reported the split this bet actually predicts: **the interfaces
 transferred and the implementation did not** — some eight hundred and fifty
 lines of enforcement script and push-hook logic still written from nothing,
-because that world could not reach the shell either (§6.2). The prediction was
-in the text before both runs, and both runs returned it.
+because that world could not reach the shell either (§6.2). **The third adopter
+could reach it, and invented zero lines of enforcement**: the layer arrived
+working, proved itself green from a clean clone before anything was trusted to
+it, and the run put the whole founding at roughly ninety-five per cent imported
+by weight of machinery — the remaining five per cent being **judgement rather
+than code**, concentrated at the seams where the two halves duplicate or fall
+silent. The prediction was in the text before all three runs; **the first two
+returned its premise and the third returned its conclusion.**
 
 The unit's contents, and what each is for:
 
@@ -4603,10 +4912,30 @@ mechanism-placement rule (*the shell is the normative source of every grammar*)
 builds from the original rather than from this document's facsimile and imports
 the defect from the normative source. So each row now states what is known to
 diverge, at this edition, or says **none known**. *(No posture row — added after
-the measurement. Posture: **review-enforced**; nothing checks a divergence cell,
-which is what the commissioned governance check below is for.)* **A kit whose
-originals are warranted to exist and not warranted to be current is a kit that
-exports its owner's unpaid debts under the word *original*.**
+the measurement. Posture: **review-enforced**; nothing checks a divergence cell.)*
+**A kit whose originals are warranted to exist and not warranted to be current
+is a kit that exports its owner's unpaid debts under the word *original*.**
+
+**And read the fourth column with the scope the one execution of it established,
+because that scope is narrower than the column's own heading suggests.** Every
+cell in it describes **this repository's originals** — the copies in the program
+that paid for them. The shell's copies are a different set of files, and the
+first party ever to check them cell by cell was the third adoption run
+(2026-08-12), which found the two sets disagreeing in both directions: **two of
+the three divergences named here were already stale against the shell** (its
+auditor charter and its campaign template carry the current model, not the
+superseded one), **one was live there** exactly as stated, and **three kit
+artifacts named in this table are absent or reshaped in the shell** — two of them
+because *"this repository"* means a third repository the export unit neither
+ships nor licenses an adopter to fetch, and one because its function lives inside
+another script rather than in a file of its own. **So an importer reading this
+column is reading a measurement of a repository they never open, while the
+mechanism-placement rule at the top of this document tells them the shell is the
+normative source of every grammar** — the column and the rule point at different
+repositories, and nothing here arbitrates between them. **The instrument that
+would is the doc–shell drift check, which still does not exist**; until it does,
+the run's committed trace is the interim evidence, and it is one dated
+observation rather than a standing check.
 
 | Kit artifact | What it is | Where its original lives | Known divergences from current law, at this edition |
 |---|---|---|---|
@@ -4621,10 +4950,10 @@ exports its owner's unpaid debts under the word *original*.**
 | **The packet forms** | The taxonomy of §3, as skeletons with their required sections | this repository, packet directory | **The sign-off skeleton still teaches the ratio the constitution outlaws** — *kills N/N* — which §3's facsimile was corrected precisely because of. An importer copying the form from the normative source imports the outlawed shape; copy §3's facsimile instead until the original is re-quoted |
 | **The sponsor guide** | §4.7's surface, in the sponsor's language, including the spot-check steps and the one-time platform setup | this repository, sponsor file | **None known** |
 | **The chain verifier** | The fifth enforcement script: the whole journal chain walked from a bare checkout with no history — gapless volumes, back-links, digests, contiguous ids — so the property is checkable by a stranger holding only a clone (§2.2) | this repository, enforcement directory | **None known** |
-| **The posture list** | The claim-by-claim measurement every `C-nn` stamp in this document cites: one row per enforcement or event claim, its posture, and the evidence that decided it | this repository, `docs/reports/audit/PROCESS-claims-posture.md` | **It measures a document three and a half times smaller than this one.** Its re-measurement against the grown text is **owed, three editions running**; the boundary block in *Read this first* is the complete statement of what that costs a reader |
+| **The posture list** | The claim-by-claim measurement every `C-nn` stamp in this document cites: one row per enforcement or event claim, its posture, and the evidence that decided it | this repository, `docs/reports/audit/PROCESS-claims-posture.md` | **It measures a document three and a half times smaller than this one.** Its re-measurement against the grown text is **owed, and six editions running** — a count re-derived at this edition, the *three* having been carried unchanged from the fifth edition through the seventh; the boundary block in *Read this first* is the complete statement of what that costs a reader |
 | **The golden tally** | The machine-readable original of §3.9's worked seeded-defect tally: every excluded class with its ground and its evidence, the survivor with its replay identifiers, the unreachable set, and the two arithmetic checks — the file §3.9's printed block is derived from | this repository, `docs/process-golden-tally.json` | **None known.** It carries the record's own carried era figure beside the amended one and names the re-statement still owed by the verification lead |
 | **The anonymized auditor charter** | The one charter whose mechanisms this document leans on and cannot delegate: cadenced duties, the escape ledger, the canary information rule, no direct worker interface, falsifiable evaluation criteria (§1.5) | this repository, charter directory | **Its body contradicts current law in two places**: it obliges the outlawed *N/N* ratio at four sites, and it teaches the superseded transient mutation model. Import the **mechanism list** §1.5 enumerates; re-quote the clauses against your own constitution |
-| **The shell's own bootstrap order** — `BOOTSTRAP.md` | A *second* adoption order, written from the shell's side: fork-based, from cloned shell to running program, with its own staging, its own federation namespaces and its own intake rows for the founding gate. **It is not this document's order and it does not agree with it** — see the precedence rule immediately below | the shell repository, top level | **Never audited by this program, and it governs the path every real adopter takes.** One disagreement with §6.2 is known and adjudicated below; the number of unknown ones is unbounded by construction, and the instrument that would bound it is the drift check, which does not exist |
+| **The shell's own bootstrap order** — `BOOTSTRAP.md` | A *second* adoption order, written from the shell's side and **rewritten on 2026-08-17** with the retraction: founding is **one hop** — clone the shell, push to a new empty repository, land the identity-recording founding commit on the default branch, get CI green, and the founding gate opens; the platform protections sit **inside** that gate rather than before it, and the federation namespaces it used to stage are gone. **It is still a second order**, with its own stages and its own intake rows, and it is the one a reader with the shell in hand executes | the shell repository, top level | **Never audited by this program.** What it has now is one execution: the third adoption run followed it end to end and logged where it under-determined. The run's own finding about the pair is the one to carry — **the two orders' real relationship is coverage, not conflict**: they are different kinds of procedure over mostly disjoint steps, and the precedence rule below is silent about that |
 
 **What this table asserts, and what it does not.** Every artifact above **exists,
 in its original form, in the repository that paid for it** — that is checkable
@@ -4652,72 +4981,172 @@ minute one:
   it is where every step's *why* is written. **Follow the shell's sequence and
   read §6.2's grounds for each step**; where the shell's order does something
   §6.2 warns against, §6.2's warning is the thing to check, not to obey blindly.
-- **One known, concrete disagreement, named rather than left for the adopter to
-  discover**: the shell configures platform protections early; §6.2 Step 3
-  deliberately places them **after** continuous integration has run green once,
-  because the platform's required-check picker lists only checks it has already
-  seen (**Annex A.5**), and a sponsor sent there earlier arrives at an empty
-  list with no explanation. **On this point §6.2 is right and the reason is a
-  measured founding failure**, so take §6.2's placement whichever order you are
-  running.
+- **The one concrete disagreement this document carried was found stale by the
+  first run that tested it, and none is currently known.** Through the seventh
+  edition this bullet said the shell configures platform protections early while
+  §6.2 places them after continuous integration has run green once, and declared
+  §6.2 right. The third adoption run went to apply that adjudication and found
+  **nothing to apply**: at the pinned shell the two orders already agreed —
+  green-first, protections after — and the shell's retraction-era order keeps
+  that agreement, with the protections sitting inside the founding gate. **So
+  the disagreement was stale at the pin the document was pinned to, and the
+  document could not tell**, which is the drift check's absence arriving as a
+  concrete cost rather than as a disclosure. What survives is the **constraint**
+  rather than the adjudication: the platform's required-check binding cannot name
+  a check the platform has never seen (**Annex A.5**), so *any* order must put
+  the first green run before the protections, and an order that does not will
+  send a sponsor to an empty picker with no explanation. **Check your order
+  against the constraint, not against this bullet's history.**
+- **And the rule's honest limit, which the same run measured and which is larger
+  than any single disagreement.** *The precedence rule adjudicates sequence and
+  is silent about coverage.* It answers *who wins when both orders speak*; it
+  says nothing about *who speaks when only one does* — and that is the ordinary
+  case, because the two are **different kinds of procedure**: this document's
+  order constructs machinery from prose, and the shell's order configures
+  machinery that already exists. Three findings follow, all from the one
+  execution. The shell's operative order is **not one file**: it spans the
+  founding topology in its README, the boot-and-role determination in its
+  session-entry file, and the staged checklist in its bootstrap file — and the
+  rule that decided that run's entire path lived in the second of the three,
+  which this table names nowhere. **Four instruments exist only here** — the
+  preflight, the Step 0 trace, the residue list and the definition of done — have
+  no counterpart in the shell's order, and every one of them still ran, under a
+  meta-rule the adopter had to invent: *the shell's text governs wherever it
+  speaks; the items with no counterpart still execute, landing as reports rather
+  than as law.* And the better cross-check instrument is not this rule at all but
+  **the six invariants below**, three of which **dissolve** on the with-shell
+  path rather than needing satisfaction — the bootstrap paradox simply does not
+  arise when the gate predates the adopter's first commit. **A precedence rule
+  written for conflict will be read as though it covered coverage, and the gap
+  is invisible until somebody runs both halves at once.**
 
-**And the honest scope of this rule, which is the part not to skip.** The
-with-shell path is **untested**: both executed adoption runs happened in worlds
-that could not reach the shell, so *the only path this unit has evidence for is
-the one no adopter with network access will take.* The precedence rule above is
-reasoned, not measured. Closing it needs a with-shell adoption run by a party
-this program did not commission, and that is a condition on any future claim
-about the unit, not a repair this document can make of itself.
+**And the honest scope of all of this, which is the part not to skip.** The
+with-shell path is no longer untested: it has now been executed **twice**, and
+both executions were **commissioned by this program itself**, which is exactly
+the fact that decides what they close and what they do not.
 
-**How the export actually moves.** `[B.8·5]` **The shell is an independently
-maintained repository with its own maintainer and its own law** — at the first
-transit it was found **thirty-one commits ahead** of this program's picture of
-it — and it is not frozen, kept, or controlled from here. What actually
-happens:
+- **The third adoption run** (2026-08-12) founded a copy from the shell with the
+  shell reachable for the first time, at exactly the commit this section's pin
+  named — zero drift — and ran the shell's own order end to end. It returned the
+  half of the unit's bet that had never been tested: **zero enforcement lines
+  invented, roughly ninety-five per cent imported by weight of machinery**, with
+  the layer proving itself green from a clean clone before anything was trusted
+  to it. Its two stops were both **by law** rather than by under-determination
+  (below, §6.2).
+- **The founding of a second, working program** (2026-08-12 to 2026-08-13, at
+  `github.com/renatom11/agentic-uart-demo` — a program noun, admitted here by
+  this section's own rule that an identifier a reader cannot resolve is worth
+  nothing). The shell's machinery was carried whole into an empty repository and
+  a small program was run under it end to end: a specification with numbered
+  requirements, decision records, a **test author blinded from the
+  implementation**, and **a real defect the blind bench found and the record
+  adjudicated** — a counter reload off by one, which made a transmitted start bit
+  one cycle short and which no interval-based check could have seen. Its suite
+  runs green in blocking continuous integration. *Its own record is worth
+  reading for what it declines to claim: it states in terms that no seeded-defect
+  campaign has run, that one real catch is a data point rather than a detection
+  rate, and that its module gate is **unsigned** — which is the shape §6.2's
+  definition of done asks for and the shape an adopter should expect.*
 
-1. The origin program collates a harvest (§3.10) and freezes it as an **export
-   packet** in its own outbox — a versioned file, in the origin's repository,
-   under the origin's rules, with its provenance citations bound to a stated
-   base.
-2. The packet is delivered to the shell as an **inbox pull request** — one
-   branch, one file, byte-identical to the outbox copy — which is a *proposal*,
-   not a landing. It carries no commit to the shell's own corpus.
-3. The shell's maintainer screens it under the shell's **federation law**, maps
-   identifiers into the shell's own scheme, and lands whatever conforms, in
-   commits that are the shell's, counted at the shell.
-4. **There is no privileged lane for the origin.** The program that seeded the
-   shell enters by the same inbox as any other program, and the sponsor's
-   candidate-by-candidate refusal (§3.10, §4.7) is exercisable precisely because
-   the delivery is a proposal a human can decline item by item.
+**What remains untested is the only thing condition (ii) ever demanded: an
+adopter this program did not commission.** Reachability is discharged — the path
+runs, twice, and the machine half of the bet came back. Independence is not: both
+runs were commissioned by the party whose claim they support, and *a measurement
+of a document by the document's own organization raises the floor and closes
+nothing* (§5.7). The condition stands for that reason and for no other, which is
+a narrower and more useful statement than the one this paragraph carried.
 
-*Why the correction matters more than the mechanism.* An adopter told the shell
-is frozen will treat it as a fixed artifact and will not look for its law; an
-adopter told the truth builds the fetch-first habit that caught the drift here.
-And note what the record was doing while the document said "frozen": it had
-already built a working transfer pipeline between organizations — outbox packet,
-inbox proposal, no origin privilege — **invisible in the chapter about
-exporting**. The document believed it was the primary artifact with an
-executable appendix. The record shows it is the rationale half of a
-shell-primary unit, and it fails exactly where it impersonates the machine half.
+**How learning actually travels.** `[B.8·5]` **The shell is an independently
+maintained repository with its own maintainer and its own law**, not frozen,
+kept, or controlled from here — and on **2026-08-17**, sponsor-directed, it
+**retired the transfer law it used to carry**. What replaces it is short enough
+to state in full:
+
+1. **Two roles, and no third.** A **canonical shell**, which is the installer and
+   runs no program; and a **founded project**, which is a copy running one
+   program. Every earlier intermediate role retires.
+2. **Founding is one hop.** Clone the shell, push it to a new empty repository,
+   land the founding commit that records the copy's own identity **on the
+   default branch**, and get continuous integration green — which is the
+   condition that opens the founding gate. *The relationship the copy needs is a
+   full-history copy: the commit chain must arrive unsquashed, because the
+   history is what the enforcement layer re-checks.*
+3. **Each program's learning lands in its own lessons file**, which doubles as
+   the **travel copy** (§3.10). There is no outbox, no inbox, no proposal and no
+   perimeter.
+4. **Transport is a human handing over a file** — one direction, one hop, no
+   machinery, with the receiving end recording seed provenance beside its own
+   baseline.
+5. **The shell's corpus grows only by its maintainer's hand-carried commits**,
+   landed under ordinary review whenever that maintainer chooses to adopt
+   something. **The originating program has no lane**, which is the same
+   property the retired pipeline claimed and now holds without machinery.
+6. **The defect channel is unchanged**: defects against the shell travel as
+   issues on the shell. *Defects were never lessons, and a design that mixed the
+   two channels would have to re-answer the question this retraction just
+   closed.*
+
+**Disposition of the one delivery that was ever made, because a retraction that
+does not account for what was in flight is a retraction with a loose end.** It
+reached the shell on **2026-08-11** as an open proposal, carrying **353
+collated candidates**; it **never landed**; and it was closed unlanded at the
+retraction, citing the retracting record. Those 353 candidates then landed
+**locally**, as the first entry in this program's own travel copy, seeded
+verbatim from the frozen delivery packet — **352 general and one domain-graded**,
+re-derived at this edition by counting the landed file's own entries rather than
+quoting the packet's summary. The delivery packet itself stays frozen in place as
+the record of the one delivery: *a retired mechanism's artifacts are annotated,
+never deleted, or the thing it did becomes unauditable.*
+
+**And the fetch-first moral survives the change, pointed at something new.** An
+adopter told a repository is frozen will not look for its law; the habit this
+document has always asked for is to fetch and read. **The law an adopter must now
+look for at the shell is the retraction itself** — because a document that
+describes a transfer pipeline to a reader whose shell no longer has one is
+exactly the failure this paragraph replaced, one edition later. *What the record
+was doing while this document described a pipeline is the part worth carrying:
+it had built one, run it once, and had it retracted by its owner before its first
+landing — and the chapter about exporting was the last place to find that out.*
 
 **The instrument that binds the two halves, named and owed.** A **doc–shell
 drift check**: a test that this document's §2.6 rule table — ids, functions and
 enforcing surfaces — agrees with the shell's actual rule set, failing loudly when
 either moves. `[PLANNED — no posture row; the instrument does not exist]`
 
-**And the second instrument, commissioned in this edition's own round rather than
-named for a fourth time.** `[PLANNED — no posture row; the instrument does not
-exist]` `[B.12·16]` A **governance check** in this repository's continuous
-integration, owned by **the routing-and-committing seat**, whose scope the
-enforcement and workflow directories are: it runs the split's falsifiers 1, 3 and
-4 mechanically, re-derives the subsection index and its seam counts, re-derives
-the cross-volume line and byte figures printed in the boundary block, and checks
-§3.9's printed tally against `docs/process-golden-tally.json`. Each of those is a
-figure this document currently asserts and a reviewer currently re-derives by
-hand, which is how a false warranty shipped for an edition. **It is named here
-with its owner because a commissioned instrument with no owner is the same object
-as an uncommissioned one** — and because this document may not build it: the
-directories are another seat's scope, and §2.3 refuses the commit.
+**And the second instrument, commissioned in the previous edition's round, is
+the one that landed.** `[MC — no posture row; added after the measurement]`
+`[B.12·16]` A **governance check** runs in this repository's continuous
+integration, on every push, built and owned by **the routing-and-committing
+seat** whose scope the enforcement and workflow directories are. It landed on
+**2026-08-12**, at the commit carrying `J-orchestrator-0277`, and it **refuses**
+rather than warns — deliberately, and on the same proportionality reasoning §2.5
+uses in the other direction: *these are structural invariants of committed
+artifacts, not testimony, so the shape that makes a stamp counter a warning makes
+a broken tally a red.* What it holds:
+
+- **The split's cheapest falsifier**, mechanically: zero superseded-text
+  sentinels in this volume.
+- **The two-volume contract**: wherever this file names the companion, the
+  companion exists, and **both volumes carry an edition anchor in their head** —
+  which is the one check that would have caught an edition shipping without one.
+- **The worked tally's closure, twice**: the machine-readable tally closes on its
+  own two arithmetic identities, **and this document's printed figures are found
+  in this document's text** — so a hand-edited tally block and its data file
+  cannot silently disagree.
+- **Render safety**: fence markers pair off in both volumes, since one unclosed
+  block corrupts every line after it.
+
+**And what it deliberately does not hold, stated here because a landed check is
+read as covering more than it does.** It does **not** run the line-accounting
+falsifier or the diff-against-a-committed-edition falsifier — those need two
+committed states and belong at an edition boundary rather than at a push. It does
+**not** re-derive the subsection index or its seam counts, and it does **not**
+re-derive the cross-volume line and byte figures the boundary block prints; those
+remain a reviewer's acts. And it does not touch the **doc–shell drift check**,
+which needs the other repository and is still owed. *The general form: a check
+that lands with its own non-coverage written into it is worth more than one that
+lands silently, because the next reader inherits the boundary along with the
+guarantee.*
 
 > **THE TWO CONDITIONS THAT CURRENTLY GATE THIS UNIT'S CENTRAL CLAIM, STATED
 > HERE BECAUSE THEY ARE CURRENT LAW.** `[B.12·17]` *(No posture row — added after
@@ -4728,15 +5157,30 @@ directories are another seat's scope, and §2.3 refuses the commit.
 >
 > - **(i) The doc–shell drift check does not exist**, and the unit's two halves
 >   are therefore bound by nothing but the sentence at the top of this file and
->   the pin above. It has been **named in four consecutive editions and built in
->   none**, and a deadline set for it by an earlier council came and went. Owner:
->   this document's own seat, for the specification; the shell's side for the
->   half that runs there.
+>   the pin above. It has been **named in six consecutive editions and built in
+>   none**, and a deadline set for it by an earlier council came and went.
+>   *(That count is re-derived at this edition rather than incremented: the
+>   previous edition printed **four** here while its own companion volume
+>   recorded the same debt as **five consecutive**, so the core's figure was
+>   already a year of editions behind its own ledger. The correction is the
+>   count; the debt is unchanged.)* Owner: this document's own seat, for the
+>   specification; the shell's side for the half that runs there. **And the cost
+>   of its absence is now measured rather than argued**: the one cell-by-cell
+>   check of this document's claims against the shell found two of three named
+>   divergences already stale and three kit artifacts absent or reshaped there
+>   — none of which any sentence here could have known.
 > - **(ii) A with-shell adoption run by a party this program did not commission
->   has never happened.** Both executed runs were in worlds that could not reach
->   the shell, so the only path with evidence is the one no adopter with network
->   access will take. Owner: a party outside this program, which is what makes it
->   a condition rather than a task.
+>   has never happened — and the condition now stands on one leg rather than
+>   two.** The path itself has been executed **twice**, both times with the shell
+>   reachable: the third adoption run on **2026-08-12**, and the founding of a
+>   working second program at `github.com/renatom11/agentic-uart-demo` on
+>   **2026-08-12 to 2026-08-13**. **Reachability is discharged**; the machine
+>   half of the unit's bet came back, and this section says what it returned.
+>   **Independence is not**: both executions were commissioned and run by this
+>   program's own operating seat, so the party measuring the claim is the party
+>   making it, which is §5.7's root class arriving at the export boundary. Owner:
+>   a party outside this program, which is what makes it a condition rather than
+>   a task.
 >
 > **Why this block is in the law volume and not in the ledger.** Through the sixth
 > edition these two rows lived only in the companion — the volume whose first page
@@ -4822,17 +5266,19 @@ A load-ordered checklist, each step keyed to the kit artifact that performs it
 (§6.0). The order is not a preference: each step's failure is unrecoverable once
 the following steps have run on top of it.
 
-**This order has been executed twice, both times by somebody who did not write
-it.** `[P1 · 2026-08-11/12 and 2026-08-12 — no posture row; both performed after
-the measurement]` A cold adopter is handed this document alone, in an empty
-repository, and told to run §6.2 literally and to log a halt at every point
-where the text under-determines, contradicts itself, or fails against the
-platform. Both halt logs are committed artifacts of this program.
+**This order has been executed three times, every time by somebody who did not
+write it.** `[P1 · 2026-08-11/12, 2026-08-12 and 2026-08-12 — no posture row;
+all performed after the measurement]` A cold adopter is handed this document, in
+an empty repository, and told to run the adoption procedure literally and to log
+a halt at every point where the text under-determines, contradicts itself, or
+fails against the platform. All three halt logs are committed artifacts of this
+program.
 
 | Run | Executed against | Halts | STOPPED | Log |
 |---|---|---|---|---|
 | **one** | the second edition's order | 18 | **3** | `docs/reports/process-council/round-2/adoption-run-halt-log.md` |
 | **two** | the fourth edition's restructured order, acts 1a–1d | 17 | **0** | `docs/reports/process-council/round-3/adoption-run-2-halt-log.md` |
+| **three** | the seventh edition's §6.0/§6.2 **with the shell reachable** — the shell's own order governing per the precedence rule | 16 | **2** | `docs/reports/process-council/round-5/probe-5-2-halt-log.md` |
 
 **Read the stop column, not the halt column.** The raw count barely moved; the
 composition changed completely. Run one's stops were world-reconstruction
@@ -4846,16 +5292,48 @@ the reasons here, ship the machine in the shell — is therefore half-vindicated
 and half-untested**: the reasons half now transfers, and nothing about the
 machine half was verifiable from that world. `[B.10·6]`
 
-*What this pair does not license anyone to say.* Neither run closed the
-replication claim: **run two proceeded by improvisation seventeen times.** And a
-run that reaches deeper finds new halts: several of run two's are new *only*
-because it got far enough to touch machinery run one never reached — the
-amendment procedure live-fired, the gate signature mechanics, a push hook's
+*What that pair does not license anyone to say.* Neither of the first two runs
+closed the replication claim: **run two proceeded by improvisation seventeen
+times.** And a run that reaches deeper finds new halts: several of run two's are
+new *only* because it got far enough to touch machinery run one never reached —
+the amendment procedure live-fired, the gate signature mechanics, a push hook's
 environment. **A falling stop count over a flat halt count is a document that
-has stopped being unexecutable and has not yet become determinate.** Both runs
-also ran in worlds that could **not reach the shell**, so what they measured is
-the fallback path and not the one an adopter with network access will take
-(§6.0's precedence rule).
+has stopped being unexecutable and has not yet become determinate.**
+
+**Run three reverses run two's headline on the half of the bet that had never
+been tested.** Run two, in a world that could not reach the shell, wrote **some
+eight hundred and fifty lines** of enforcement logic from nothing. Run three
+cloned the shell — at exactly the commit §6.0's pin named, with **zero drift** —
+and **invented zero lines of enforcement**: every script, rule, form, seat,
+charter and the constitution arrived working, the self-test proved them **from a
+clean clone before anything was trusted to them**, and the run's own accounting
+puts it at roughly **ninety-five per cent imported by weight of machinery**, with
+the remaining five per cent *almost entirely judgement rather than code*. **The
+unit's bet — ship the reasons here, ship the machine in the shell — is therefore
+no longer half-untested.** Both halves have now returned a measurement, and what
+run three still had to invent is the thing neither half ships: **the
+adjudications at every seam where the two halves disagree, duplicate, or fall
+silent.**
+
+**And read run three's stop column with its cause, because two stops after a
+zero looks like a regression and is not.** Both of run three's stops are **by
+law**: a retro-audit row an actor of one *must* leave open, because the
+independence it requires cannot be manufactured; and a stale navigation aid a
+cadence rule *forbids* repairing in place. **A stop by law and a stop by
+under-determination are different objects.** The first two runs' stops were the
+document failing — nothing named, nothing stated, no path forward. Run three's
+are the document **holding**: the text told the adopter what it could not do, the
+adopter did not do it, and the gate row stayed open and true. *A halt log's stop
+count is only comparable across runs if the stops are the same kind of event, and
+this is the pair that proves they are not.*
+
+**Where each run could reach, since that is what their evidence is scoped to.**
+The first two ran in worlds that could **not reach the shell**, so what they
+measured is the fallback path — the one no adopter with network access will take
+(§6.0's precedence rule). The third could reach it, ran under the shell's own
+order, and §6.0 carries what it returned about the pair: the pin held, the
+enforcement layer transferred, and the precedence rule earned its keep once and
+failed twice.
 
 *Five of run two's seventeen improvisations were order defects in this section
 rather than facts about its world. They were repaired in place in the sixth
@@ -4976,15 +5454,17 @@ because each one's absence is discovered late and expensively:
   two adoption orders governs (§6.0's precedence rule) and whether most of a day
   of executable-layer work is on your critical path. **Both of this document's
   executed adoption runs failed this check and neither of them knew that was a
-  finding**, which is why it is a step now. **Then check out the commit §6.0's
-  pin names, or record your own observed head with its date before you build on
-  it.** `[B.12·19]` The shell is independently maintained — at the one transit
-  this program performed it was found thirty-one commits ahead of this
-  program's picture of it — so *fetch it* alone means **two adopters on different
-  days adopt different machinery under one warranty**, and neither can say which.
-  Whichever you take, the founding gate records the SHA. *An unpinned dependency
-  is not a dependency you have; it is a dependency you will have again tomorrow,
-  differently.*
+  finding**; the third performed it, fetched the shell, and found the pin exact.
+  That is why it is a step. **Then check out the commit §6.0's pin names — which
+  is now a post-retraction observation — or record your own observed head with
+  its date before you build on it.** `[B.12·19]` The shell is independently
+  maintained: at **the one delivery this program performed under the
+  since-retracted transit law (§3.10)** it was found thirty-one commits ahead of
+  this program's picture of it — so *fetch it* alone means **two adopters on
+  different days adopt different machinery under one warranty**, and neither can
+  say which. Whichever you take, the founding gate records the SHA. *An unpinned
+  dependency is not a dependency you have; it is a dependency you will have again
+  tomorrow, differently.*
 
 *The general form, which is the part that transfers past this list.* **An order
 whose first step is inside the repository has already assumed everything outside
@@ -5238,7 +5718,9 @@ order never issued, because the gate never closed. That is the design working.)*
 
 **Step 6 — only then start the work**, and start the harvest cadence with it
 rather than after it — with the harvest's destination decided on day one (§3.10),
-even if that destination is one file in your own repository.
+even if that destination is one file in your own repository — **which is now this
+program's own practice (§3.10)**, and stopped being a hypothetical example on
+2026-08-17.
 
 **The definition of done for an adoption**, so that "we adopted it" is a
 falsifiable claim rather than a feeling:
@@ -5313,10 +5795,13 @@ you will drop it in the round where it would have mattered.
 
 *And the counterweight this program's own history supplies, because the sentence
 above is too comfortable on its own.* It took the seats that had the reasons
-firsthand — who lived every incident in the museum — twenty-two numbered decision
-records, a self-test grown to fifty-one cases, and repeated
+firsthand — who lived every incident in the museum — **twenty-three** numbered
+decision records, a self-test grown to **fifty-one** cases, and repeated
 green-locally-red-in-the-re-check incidents to get from those reasons to working
-mechanisms. **Reasons did not regenerate
+mechanisms. *(Both figures re-derived at this edition rather than carried: the
+first by counting the decision-record directory, the second by counting the
+scenario identifiers the suite actually runs. The first moved this round; the
+second did not, and saying which is the point of re-deriving both.)* **Reasons did not regenerate
 mechanisms even for the people who owned them.** That is the argument for §6.0:
 the failure classes are why a rule survives contact with a schedule, and the
 shell is what stops an adopter re-deriving a commit gate from first principles at
