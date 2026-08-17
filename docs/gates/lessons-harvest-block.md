@@ -15,7 +15,11 @@ which the sentence three lines below it contradicts: an `SO-` that copied the
 block verbatim would render four boxes ADR-0018 §A2.2 forbids it to render, and
 would be incomplete on all four for the life of the packet. "Verbatim" is true of
 a gate and false of a packet, and it is now said of each separately* (ledger item
-44, `J-architect_docs_lead-0043`).
+44, `J-architect_docs_lead-0043`). *From 2026-08-17 every destination below is
+**local**: tier 1 and tier 2 both land in this repository's own
+`docs/LESSONS.md` — the travel copy. The 7/4 partition is unchanged in count —
+no Part A box moves, and within Part B the sponsor-visibility box retires with
+the transit it observed and its seat is taken by the dedup box (ADR-0023).*
 
 Nothing here is signed. This file never records a harvest; instantiations do.
 
@@ -50,9 +54,10 @@ Nothing here is signed. This file never records a harvest; instantiations do.
 ## 2. The bar, for the reviewer's convenience
 
 Normative text is ADR-0018 §3.4 as amended by §A1.2; this is the short form.
-**Three tiers** (ADR-0018 §A1.1): **1 general** — to the shell's universal set;
-**2 domain** — to a named domain pack in the shell, pulled in by a later project
-only if that domain is its own; **3 project-specific** — stays here.
+**Three tiers** (ADR-0018 §A1.1; destinations per ADR-0023): **1 general** — to
+the lessons file's general sections (`docs/LESSONS.md`); **2 domain** — to a
+domain-titled section of the same file, pulled in by a later reader only if that
+domain is theirs; **3 project-specific** — stays here.
 
 | | Criterion | Passes when |
 |---|---|---|
@@ -122,15 +127,16 @@ the orchestrator; each row's authority is the cited journal entry.
 
 ### Yield — tiers 1 and 2
 
-`LC-` = tier 1, general, to the shell's universal set. `LD-` = tier 2, domain, to
-the named pack. The two prefixes number independently.
+`LC-` = tier 1, general, to the lessons file's general sections. `LD-` = tier 2,
+domain, to a domain-titled section of the same file, grade noted on the entry.
+The two prefixes number independently.
 
 | id | Rule statement (one line) | Grade | Domain pack | Mined by | Note entry | LH1 provenance | Disposition |
 |---|---|---|---|---|---|---|---|
-| LC-<seat>-H<k>-1 | | LH2-g | — | | J-…-NNNN | `<sha>` | transcribed as `L-…` / sponsor-refused |
-| LD-<seat>-H<k>-1 | | LH2-d | `<pack-slug>` | | J-…-NNNN | `<sha>` | transcribed as `L-…` in pack / sponsor-refused |
+| LC-<seat>-H<k>-1 | | LH2-g | — | | J-…-NNNN | `<sha>` | landed as `L-…` in `docs/LESSONS.md` / deduped against `<L-…>` |
+| LD-<seat>-H<k>-1 | | LH2-d | `<pack-slug>` | | J-…-NNNN | `<sha>` | landed as `L-…` in the `<pack-slug>` section / deduped against `<L-…>` |
 
-### Tier 3 — war stories and local accretions (not transcribed to the shell)
+### Tier 3 — war stories and local accretions (not transcribed to the lessons file)
 
 | Candidate | Mined by | Failed | Why | Tier-3 disposition |
 |---|---|---|---|---|
@@ -163,22 +169,30 @@ the named pack. The two prefixes number independently.
 
 #### Part B — collation (a gate)
 
-- [ ] **Shell transcription: exactly one commit**, containing the admissible
-      candidates — general and domain — with permalinked provenance, and nothing
-      else. Commit: `<link>`
+- [ ] **Local landing: exactly one commit**, transcribing this harvest's
+      admissible candidates — general and domain — into `docs/LESSONS.md`, and
+      nothing else. Commit: `<sha>`
 - [ ] **`LC-`/`LD-` → `L-` pairs recorded** in the Yield table's Disposition
-      column, so each shell entry is traceable back to the note that minted it.
-- [ ] **Sponsor-visible**: the harvest table and the shell diff were surfaced at
-      this gate. Refusals, if any, are recorded as `sponsor-refused` above.
+      column, with **ids local, seat-qualified and unrenumbered** (A2-D6,
+      A2-D7), so each landed entry is traceable back to the note that minted it.
+- [ ] **Dedup against the file recorded**: every candidate checked against what
+      `docs/LESSONS.md` already holds, and the outcome recorded on its row.
+      Dedup is clerical — a drop carries its reason; composition is selection
+      and is never performed (A2-D8, §4.1).
 - [ ] **Harvest declared complete** by the orchestrator: `J-orchestrator-NNNN`.
+
+**The landing rides the gate-closing commits the sponsor already signs**, which
+is the sponsor's whole lessons touchpoint: nothing leaves this repository, so
+there is no diff to surface for refusal and no refusal column to fill
+(ADR-0023 D4).
 
 **In an `SO-` instantiation Part B's four boxes are not rendered as boxes** —
 this line stands in their place, and it names the gate that owes them (A2-D1):
 
-> **Part B — collation, deferred to `<gate>`.** Shell transcription, the
-> `LC-`/`LD-` → `L-` pairing, sponsor visibility and the completeness declaration
+> **Part B — collation, deferred to `<gate>`.** The local landing, the
+> `LC-`/`LD-` → `L-` pairing, the dedup record and the completeness declaration
 > are the collator's acts at the gate that ratifies this harvest (ADR-0018 §4.2,
-> §4.4, D6; A2.2).
+> A2.2; ADR-0023 D1, D3).
 ```
 
 ---
@@ -191,14 +205,16 @@ this line stands in their place, and it names the gate that owes them (A2-D1):
 - **An `SO-`'s Part A check does not discharge the gate's** (A2-D3). A gate's
   harvest is a different trigger over different spans, so a gate re-checks Part A
   over its **own** spans and inherits no box from a sign-off — and **several
-  harvests ratified at one gate are transcribed as several shell commits, one per
-  harvest, in harvest order**, never one commit per gate (A2-D5).
+  harvests ratified at one gate land as several local landing commits, one per
+  harvest, in harvest order**, never one commit per gate (A2-D5 as restated by
+  ADR-0023 D3).
 - **You are not the selector.** Collation is clerical: you may bounce a candidate
   to its author for a defective statement, and you may not improve one. A collator
-  who edits statements shapes the shell without any note showing it.
+  who edits statements shapes the corpus without any note showing it.
 - **Run the hide-the-provenance test yourself** at transcription — you are the
-  reader who has the shell's audience in mind, and it is the last point before the
-  rule leaves this repo. Use the right stranger: for `LC-`, someone who knows
+  reader who has the travel copy's audience in mind, and it is the last point
+  before the rule enters the file a human may hand onward (ADR-0023 D2). Use the
+  right stranger: for `LC-`, someone who knows
   neither the domain nor this project; for `LD-`, someone who knows the domain and
   not this project.
 - **A harvest whose war-stories table is empty at every round** says something

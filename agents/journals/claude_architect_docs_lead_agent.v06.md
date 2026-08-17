@@ -709,3 +709,352 @@ set it and not run. Handoff: to the orchestrator for verification and commit —
 - docs/PROCESS.md
 - docs/PROCESS-MEMOIR.md
 - docs/process-golden-tally.json
+
+## [J-architect_docs_lead-0058] 2026-08-17T22:54:18Z | task:none | The retraction arrives from the shell and this program still holds the outbound half: ADR-0023 moves every harvest destination inside this repository, writes the constitution's diff for the orchestrator to apply, retires the sponsor refusal power along with the transit that made it a power — and names two owed-restatement targets the dispatch did not, because a record that cites §5.9 and then omits a live target has minted the defect it quotes
+
+### Trigger
+Orchestrator dispatch, one round, **dispatch-only — no `WO-` packet**, and the
+entry is obliged to declare that rather than let it pass. The class is the one
+`docs/PROCESS.md` §3.2 names and this seat has now written four entries under:
+the commissioning seat is also the sole committer, so a work order would be a
+packet the orchestrator writes to itself and then commits, and the dispatch text
+plus this entry carry what a `WO-` would have carried. **No siblings were
+declared** and none was announced in flight, so §4.2's inward declaration is
+answered with a nil rather than performed.
+
+The commission: mirror, in this program's law, the retraction the shell
+(`generic-agentic-fpga-org`) executed on the sponsor's 2026-08-17 direction.
+Two deliverables — a new decision record, and an amendment to the gate block
+that carries the harvest's tier routing.
+
+**§4.1 abort-first precheck, run first, both outputs recorded**:
+
+```
+$ git status --short
+            (no output — clean tree)
+$ git log --oneline -1
+dc4785e Two adversarial rounds convict the page of animating the implementation
+        lead reviewing verification's own bench - and of keeping every worker
+        alive for two minutes while telling the reader they are short-lived
+```
+
+Both match the dispatch's expected state exactly: `HEAD = dc4785e`, clean tree,
+no declared siblings. Nothing was aborted.
+
+### Inputs
+- `agents/charters/architect_docs_lead.md` — my charter, read first, in full.
+- `agents/PROTOCOL.md` (450 lines) — the constitution, read in full. §7's
+  lessons-harvest paragraph at lines 332–359 is this round's subject; §4 (entry
+  grammar), §5 (R1–R9), §6 (write scopes) and §11 (amendment procedure) govern
+  the round's form.
+- `docs/adr/ADR-0018-the-harvest-is-a-cadence-not-an-event.md` — read in full,
+  all 1,596 lines: §§1–12, Amendment A1 (the domain tier, the classifier,
+  `LD-`, the parked federation-governance decision at A1.7(4)), Amendment A2
+  (the 7/4 partition A2-D1…A2-D5, the seat-qualified id A2-D6…A2-D9, the span's
+  closed end A2-D10…A2-D12). This is the record ADR-0023 amends.
+- `docs/gates/lessons-harvest-block.md` (221 lines pre-edit, 237 after) — the
+  file I amend.
+- `agents/handoffs/HT-01_first-harvest-transit.md` — the executed transit,
+  including its own appended correction and §5's PR #3 record.
+- `docs/federation/outbox/SO-xgmii_rx_64.md` — header and tier summary read
+  (2,810 lines total; the 353 rows themselves not re-walked this round, and the
+  entry says so rather than implying a re-audit).
+- `/workspace/generic-agentic-fpga-org/docs/adr/ADR-0018-the-federation-retraction.md`
+  — the shell's retraction, read in full, for the register and for its eight
+  decisions. **Outside this repository**: read-only, cited, never edited.
+- `docs/PROCESS.md` §2.7 (the amendment procedure and its fourth requirement),
+  §3.10 (the lessons harvest), §4.7 (the sponsor's reserved decisions), §5.9
+  (the amendment pipeline has no last mile), §6.0 (the export unit, including
+  *"How the export actually moves"* at lines 4672–4689).
+- `docs/gates/P1-module-ready-checklist.md` — §7.1 and the Yield/tier-3 sections
+  read, **not edited** (see Reasoning).
+- `docs/PROCESS-MEMOIR.md` — grepped for live pipeline claims; row `B.0.4b` and
+  the §6.0 disposition rows read.
+- `tasks/BOARD.md` — the `P1-module-ready` gate row and the `WO-0078` harvest
+  row read for the owed obligations they carry.
+- `docs/adr/ADR-0022-the-warranty-and-the-split.md` — header block only, for the
+  house Status/Deciders idiom at its most recent.
+- `agents/journals/claude_architect_docs_lead_agent.v06.md` — header and the
+  tail of `J-architect_docs_lead-0057`, for the chain's next id and the entry
+  format actually in use.
+
+### Reasoning
+**How this ADR came to be asked, which is the part the charter says must not be
+a restatement of the ADR.** It was not asked by a defect found here. The sponsor
+retracted a design premise he had authored — and the shell moved first, landing
+its own ADR-0018 and a 24-file sweep at `cb8a9f3`. What arrived at this seat was
+therefore a *fait accompli in another repository* plus a live constitution here
+that still routes learning into it. The question I actually had to answer was
+not "should the destination be local" — that was decided above me and is quoted
+as the acceptance authority — but **which of this program's instruments are the
+retraction and which are collateral**, because the cheapest wrong version of
+this round is a sweep that deletes the harvest along with its destination.
+
+**The discriminator I used, and it is the one the shell's own decision 2
+supplies**: the harvest law survives *unchanged in discipline*; only the arrow
+moves. So every clause I could reach was tested by one question — *does this
+clause describe what a candidate must be, or where it goes?* Bars, grades,
+classifier, spans, tiling, nil, war stories, self-mining, the clerical bar, the
+id scheme and its grandfathering, and the whole in-flight accretion tier all
+answer *what*, and none of them is touched. §4.2's shell tier, A2-D5's shell
+commit, A2 Part B's shell boxes, the block's tier destinations and PROTOCOL §7's
+Routing sentence all answer *where*, and all of them move. That test is what
+kept the diff at one paragraph of the constitution rather than a rewrite of §7.
+
+**Three judgement calls, each of which could have gone the other way.**
+
+*One — the sponsor's refusal power.* The dispatch told me it retires; the
+argument for retiring it rather than re-aiming it is mine and is at §8.5. It
+existed to gate what left the program, and re-aiming it at a local landing would
+be a **new** power, granted for a different reason, over the program's record of
+itself, that nobody asked for. Retiring it is the smaller act. The cost is real
+and I recorded it rather than smoothing it: `docs/PROCESS.md` §3.10 carries a
+good argument — *"a refusal power that cannot be exercised at the granularity of
+the thing being refused is not a power, it is a notification"* — which is now an
+argument about a power this program held, and §4.7's list drops from five items
+to four. Both are named in the owed-restatement list rather than left for a
+later reader to trip on.
+
+*Two — the block's box arithmetic, which I got wrong first and then fixed.* The
+dispatch asked for local-landing boxes carrying four properties and for the
+`Sponsor-visible` box to become a line. My first pass made **dedup** a fifth box
+and dropped sponsor visibility, giving Part B three boxes — and then §5.2 of the
+record I was writing asserted a 7/3 partition while the file I had just edited
+rendered four. The block file is the authority a future gate is graded against;
+a record whose arithmetic disagrees with it is the A2.1 shape exactly (the block
+over-reaches, a criterion quotes it in good faith, the executing round pays). I
+chose the version that keeps A2.2's **7/4 unchanged and swaps one Part B box**:
+dedup takes the retired box's seat. It is better on the merits too — dedup is
+the one genuinely new risk of a local destination (§9's third failure mode), and
+a risk with its own box is checkable, while a risk folded into another box is a
+clause. The count-preservation is a consequence of the swap, not its motive, and
+§5.2 says so.
+
+*Three — where I exceeded the dispatch, deliberately and in one direction.* The
+dispatch said of the block *"touch nothing else"*, and I touched three further
+sites in it: the Yield caption, the Yield table's **Disposition** cells, and
+three transcriber notes. The reason is not tidiness. Box 9, which I was told to
+rewrite, **points at the Disposition column**; leaving that column offering
+*"transcribed as `L-…` / sponsor-refused"* would have produced a template whose
+box records a local landing and whose column instructs the next instantiator to
+record a shell transcription and a retired refusal. Likewise §4's note asserting
+*"several shell commits, one per harvest"* would have left one file saying two
+things. **An internal contradiction inside one template is worse than a stale
+cross-file restatement**, because the cross-file case is what §5.9's list is
+for and the internal case is what a copying instantiator hits first. Every
+mining, span, bar, nil and war-story box is byte-identical; §1 and §2's bar
+table and classifier are untouched; the historical 2026-08-11 note is kept and a
+second dated note is added beside it in the same idiom.
+
+**And the symmetric restraint, which is the same judgement pointing the other
+way.** `docs/gates/P1-module-ready-checklist.md` is an **OPEN gate record in my
+scope** whose §7.1 carries harvest 1's Part B against the shell — the outbox
+link, the inbox PR, the maintainer's id-mapping, a shell-diff sponsor line, and
+finding `G-7` asking whether a shell commit may land before the gate that
+ratifies it. It is stale as of this commit and I did **not** edit it. A2.4's
+write-set discipline is the reason and it is not an inability: this round's
+dispatched write set is two files, and an open gate checklist edited outside its
+commission produces a `Files-in-this-commit` that disagrees with what was
+commissioned — in the commit of a record about instruments minted in one
+sitting. So it is **named in the owed-restatement list with a dated owner and a
+closing event**, which is §5.9's cure applied honestly rather than the version
+where the list contains only what was convenient. The same reasoning added
+`docs/PROCESS-MEMOIR.md`, whose `B.0.4b` is an open condition that returns a
+halt log *through the federation inbox*. **Neither was on the dispatch's list.**
+A record that quotes §5.9 and then ships an incomplete list has minted the
+defect it cites, in the round that cites it — that is the failure shape §5.9
+itself describes, and I was not willing to be its next exhibit.
+
+**On HT-01, the one thing I refused to propose.** The tempting disposition is to
+finish the delivery — hand the 353 to the shell's maintainer as one hand-carry,
+since the shell's own decision 5 permits exactly that. I rejected it at §8.3 on
+jurisdiction: the maintainer's adoption is **optional and theirs**, and making
+this ADR's completion depend on it would re-create the outbound obligation in
+the one form the retraction left standing. This program's obligation is the
+local landing, and it completes when the file holds the 353. The other tempting
+disposition — delete HT-01 and the outbox — is rejected at §8.2 on the rule this
+program applies to every frozen record it owns: **annotated, never rewritten**.
+That rule is not decoration here; HT-01 is the *authority* for the local
+landing, since it holds the extraction fidelity checks, the merge sweeps and the
+hide-test verdicts that make the 353 citable at all.
+
+**One thing I found rather than inherited**: the four shell-corpus merge
+pre-judgments (`ADL-45`→`L-B15`, `rtl H1-8`→`L-D03`, `AUD-14`→`L-C15`,
+`AUD-10`→`L-E06`) **cannot be executed locally**, because their surviving
+partners are entries in the shell's seeded corpus and this program inherited no
+corpus. They land as ordinary entries carrying the pre-judgment as a recorded
+annotation. The dispatch said "carried as recorded annotations" and did not say
+why; §6.2 supplies the why, because a later reader who finds four entries marked
+"merges to `L-B15`" beside no `L-B15` deserves the sentence explaining it.
+
+**Why the PROTOCOL diff is written here and applied elsewhere.** PROTOCOL §3.6's
+rule — the instrument does not edit the file it governs — plus ADR-0016 §8's
+holding that an ADR is not an exception to a write scope. This is the third hunk
+this seat has authored for the orchestrator to apply (ADR-0018 §8, A1.6, now
+this). I machine-checked it against the live file rather than eyeballing the
+context, using A1.6's own method: extract the patch body *from the record's own
+section*, so the check runs against the text a transcriber will copy and not
+against a retyped duplicate.
+
+### Actions
+1. Ran the §4.1 precheck; recorded both outputs verbatim in Trigger.
+2. Read the charter, the protocol, this program's ADR-0018 entire, the gate
+   block, HT-01, the outbox packet's header, the shell's ADR-0018, and the five
+   `docs/PROCESS.md` sections that restate the routing.
+3. **Created** `docs/adr/ADR-0023-the-retraction-mirrored-lessons-are-local.md`
+   (688 lines): Status with the sponsor's direction quoted verbatim and the
+   acceptance act named as the orchestrator's separate entry; Deciders,
+   Proposed-by, Work-order (none), Journal (this entry), Affects; §1 context
+   including the shell's eight decisions and this program's four still-outbound
+   artifacts; §2 decisions D1–D5; §3 the unmoved sites as a table; §4 the
+   PROTOCOL §7 diff with the replaced sentences quoted before it, the hunk, the
+   machine-check, and a clause-by-clause table of what the replacement says;
+   §5 the block's edit as performed; §6 HT-01, the 353, and PR #3; §7 the
+   owed-restatement list, seven rows; §8 five alternatives; §9 consequences and
+   four failure modes; §10 the non-decisions.
+4. **Amended** `docs/gates/lessons-harvest-block.md` in place, ten sites:
+   preamble (a second dated note, in the file's own idiom); §2's tier line;
+   §3's Yield caption; §3's two Disposition cells; §3's tier-3 heading; §3's
+   Part B boxes 8, 9 and 10 (box 10's seat re-used for dedup); the standing
+   sponsor line replacing the `Sponsor-visible` box; the `SO-` deferral line;
+   and three of §4's transcriber notes. Box count verified at eleven, unchanged.
+5. Corrected my own first pass, three times, before finishing: the 7/3-vs-7/4
+   arithmetic (Reasoning, call two); a tier-1 arithmetic slip that had dv's 95th
+   row double-counted into the 352 (the seven chains sum to 352 exactly; the
+   95th is the `LD-` row, and §6.2 now shows the sum); and **a false claim I
+   nearly landed about markdown** — that the machine-check snippet's nested
+   three-backtick pattern breaks its own fence, and that ADR-0018 §A1.6
+   therefore renders wrong. It does not: a closing fence must be a line of
+   backticks and nothing else, so backticks inside a `sed` argument close
+   nothing. I had already widened both fences to four backticks and written the
+   accusation into §4 before checking the rule; both are reverted, and §4 now
+   records the correct reading and that this seat acted on the wrong one first.
+   **A record whose first act is to convict a landed file of a defect it does
+   not have is the vacuity finding pointed at another seat.**
+6. Appended this entry. **No git write command was run** — not `add`, not
+   `commit`, not `push`. `git status`, `git log` and `git apply --check` are
+   read-only and are the only git invocations of the round.
+
+### Evidence
+All commands run from a repo checkout at this commit; the first two were run at
+parent `dc4785e` before any edit and are quoted in Trigger.
+
+```sh
+# The hunk at §4 applies to the live constitution — extracted from the record
+# itself, per A1.6's method, so the check is against the text a transcriber copies:
+sed -n '/^## 4\. The PROTOCOL §7 diff/,/^## 5\./p' \
+    docs/adr/ADR-0023-the-retraction-mirrored-lessons-are-local.md \
+  | sed -n '/^```diff$/,/^```$/p' | sed '1d;$d' > /tmp/adr23.diff
+wc -l /tmp/adr23.diff
+#    25 /tmp/adr23.diff
+{ printf -- '--- a/agents/PROTOCOL.md\n+++ b/agents/PROTOCOL.md\n@@ -347,13 +347,19 @@\n'
+  cat /tmp/adr23.diff; } | git apply --check -v -
+#    Checking patch agents/PROTOCOL.md...
+#    exit=0
+```
+
+```sh
+# The block carries no surviving reference to the retired destination. The one
+# hit is the new standing line, which names it in order to say nothing leaves:
+grep -n "shell\|sponsor-refused\|Sponsor-visible\|leaves this repo" \
+    docs/gates/lessons-harvest-block.md
+#    185:is the sponsor's whole lessons touchpoint: nothing leaves this repository, so
+```
+
+```sh
+# D2's "this program inherited no corpus" is checkable here, and this is the check:
+# the file the retraction makes the destination has never existed in this history.
+git log --all --oneline -- docs/LESSONS.md
+#    (no output)
+```
+
+```sh
+# A2.2's partition survives in count: eleven boxes, seven Part A and four Part B.
+grep -c "^- \[ \]" docs/gates/lessons-harvest-block.md
+#    11
+```
+
+```sh
+# The round's write set is exactly the two commissioned files:
+git status --short
+#     M docs/gates/lessons-harvest-block.md
+#    ?? docs/adr/ADR-0023-the-retraction-mirrored-lessons-are-local.md
+```
+
+The 353 / 352+1 / 47 figures at §6.2 are the **outbox packet's own** tier
+summary, read at `docs/federation/outbox/SO-xgmii_rx_64.md`, not re-derived by
+walking its rows this round — stated so no reader takes them for a fresh audit.
+The four merge pre-judgments and the seeded corpus's 44 entries are HT-01 §2.1
+and §3.3. The shell's `main = cb8a9f3`, its ADR-0018 and its 24-file sweep are
+the orchestrator's relay and the shell's own committed record, read at
+`/workspace/generic-agentic-fpga-org/` — **outside this repository, and not
+re-verifiable from a checkout of this one**, which is exactly the class ADR-0018
+A1.7(4)(b) named and which this retraction removes the need for going forward.
+
+### Outcome
+**DoD met for both dispatched deliverables**, with one item exceeded and one
+deliberately not performed, both recorded above rather than in chat.
+
+- `docs/adr/ADR-0023-…` created, carrying every element the dispatch enumerated:
+  Status/Deciders/Proposed-by/Work-order/Journal/Affects; decisions (1)–(5) as
+  D1–D5; the explicit §11(3) statement that no test case is owed; alternatives
+  recorded honestly with the three the dispatch named plus two more; the
+  not-decided list; the PROTOCOL §7 diff with the current sentences quoted and
+  the replacement written in full, surrounding clauses intact; and the
+  owed-restatement list under PROCESS §5.9's cure.
+- `docs/gates/lessons-harvest-block.md` amended in place, tier descriptions and
+  Part B re-scoped, every mining/span/bar/nil/war-story box untouched.
+- **Exceeded**: the owed-restatement list carries seven rows, not the five
+  dispatched — `docs/PROCESS-MEMOIR.md` and `docs/gates/P1-module-ready-checklist.md`
+  were found live-stale and named.
+- **Not performed, by design**: `agents/PROTOCOL.md` (orchestrator scope, §4's
+  hunk is the source text), `docs/LESSONS.md` (the collator's to create and
+  seed), `agents/handoffs/HT-01_…` (its author's appended note), `tasks/BOARD.md`
+  (orchestrator scope), and the P1-module-ready checklist (owed to my next
+  `docs/gates/` round, jointly with A2.4's five clerical edits).
+
+**Handoff**: to the orchestrator, for verification and commit, and for the four
+acts §7 rows 1, 4, 5 and the `docs/LESSONS.md` seeding assign to it. **Nothing
+in this round is in force until the orchestrator writes its acceptance entry** —
+PROTOCOL §11(2), stated in the record's own Status block.
+
+### Open-questions
+1. **The travel copy that never travels has no cure and I did not invent one.**
+   Hand-carry is machinery-free by direction, so the failure mode — a file with
+   an aspirational header that no human ever hands to anyone — is unguarded, and
+   §9 says so rather than proposing a transport under a new name. The visible
+   signal I could name is thin: a baseline line that never moves and a file no
+   session cites. Whether that is a finding shape for the auditor is not decided
+   here, and it is the same open question ADR-0018 §7.1 left about nil yields.
+2. **`docs/LESSONS.md`'s internal format is left to the collator and that is a
+   real delegation, not a formality.** Section naming, entry fields, how a
+   domain-titled section is headed, how the baseline line reads and how an
+   annotation records a merge pre-judgment against an absent partner are all
+   decisions the seeding commit will make, and this record fixes only the
+   destination, the routing and the header contract. If the collator's shape
+   turns out to need law, it needs an A-amendment to this record, not a silent
+   convention.
+3. **ADR-0018's A1.7(4) parked federation decision is retired *by* this record
+   rather than *at* the sponsor's own act.** §3's table calls it retired with its
+   subject, which I believe is right — the question was the acceptance policy
+   for foreign lessons arriving at a shared corpus, and no shared corpus exists.
+   But it was explicitly the **sponsor's** parked decision, and a seat retiring
+   another party's parked question because the question's subject vanished is a
+   move worth someone disagreeing with out loud. If the sponsor wants it kept
+   parked against a future design, that is a one-line correction to §3.
+4. **Row 7 is a live gate record that is stale from the moment this commits.**
+   `docs/gates/P1-module-ready-checklist.md` §7.1 will describe a shell
+   transcription, an open PR and a maintainer's id-mapping until my next
+   `docs/gates/` round lands. That window is the §5.9 defect in miniature,
+   accepted deliberately for write-set discipline and disclosed rather than
+   avoided — which §5.9 itself warns is exactly how the class survives. The
+   window should be short, and naming it here is the only pressure I can apply
+   from inside this round.
+5. **Finding `G-7` is answered by retirement, and nobody has ruled that it is.**
+   *May a shell commit land before the gate that ratifies it?* has no subject
+   now. I stated the answer in §7's row 7 rather than in a ruling, because the
+   finding lives in a file I did not open this round.
+
+### Files-in-this-commit
+- docs/adr/ADR-0023-the-retraction-mirrored-lessons-are-local.md
+- docs/gates/lessons-harvest-block.md
