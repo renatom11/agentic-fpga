@@ -379,7 +379,7 @@ before you read anything as evidence.** `[B.8·6]`
 
 > **The stamps do not cover this document. They cover the document it used to
 > be.** The posture list measured `docs/PROCESS.md` as it stood at one commit,
-> at **1,445 lines**. The text you are reading is **6,081 lines — past four
+> at **1,445 lines**. The text you are reading is **6,115 lines — past four
 > times that**, and the figure is re-measured in the act that moved it, which
 > at this state is the currency-repair round of 2026-08-18 rather than an
 > edition. *(The adjective moved with the figure: it read "nearly four
@@ -424,14 +424,16 @@ before you read anything as evidence.** `[B.8·6]`
 > program's file-size discipline to the largest file the agents' own reading tool
 > returns in one call — **262,144 bytes** — and §2.2 states the failure class in
 > terms: *a file that exceeds what a reader can load in one piece stops being
-> read at all.* **This file is 407,753 bytes.** It is past its own anchor
-> by roughly 55 per cent, in the runtime that produced it, and the
+> read at all.* **This file is 410,403 bytes.** It is past its own anchor
+> by roughly 57 per cent, in the runtime that produced it, and the
 > declared blank-slate executor of §6.2 **cannot load it in one call there**.
 > The discipline was applied to journals, which rotate, and never to this
 > document, which has no rotation story. The companion volume, at
-> 251,807 bytes, is inside the anchor — by under eleven thousand bytes, which
+> 254,247 bytes, is inside the anchor — by under eight thousand bytes, which
 > is one repair round's worth of margin and is stated as a figure rather than
-> as a comfort.
+> as a comfort. *(It was under eleven thousand one round ago, and this round's
+> single addendum row took 2,440 of it. **A margin stated as a figure is the
+> only kind that can be watched shrinking.**)*
 >
 > **So fragment-reading is not merely possible here, it is forced — and what a
 > windowed reader should load first is stated rather than left to the window.**
@@ -4834,6 +4836,34 @@ rather than the half that runs.** The other half is an executable **shell**: the
 machinery, extracted into its own repository, which an adopter clones and starts
 from.
 
+**Since 2026-08-18 the unit ships whole, which is the first change to its shape
+since it was named.** `[B.13·H1]` *(No posture row — added after the measurement.
+Posture: **review-enforced**; nothing checks that the carried copy is current.)*
+The shell now carries **`docs/handbook/`** — a pinned, byte-identical copy of all
+three volumes of this document, taken at this repository's commit **`9ba1138`**
+and landed in the shell at the shell's commit **`10d3aec`** — so **an adopter in a
+world that can reach the shell and not this repository now receives the explaining
+half along with the half that runs**, which is the mirror image of §6.2's
+shell-less fallback and closes **one of the two** ways to hold half a unit — the
+other, an adopter holding this document and unable to reach the shell, is
+unchanged, is the case §6.2 exists for, and is the only one of the two anybody has
+ever actually executed. **The carried set is reference and not law**: every stamp,
+exhibit, figure and halt-log
+citation in it measures *this* program's machinery at that commit and asserts
+nothing about the shell, about the copy, or about any project founded from it — so
+a program adopting those volumes as its own law does it through §6.1's fork
+contract and never by possession. **The staleness contract travels with the copy**:
+it is re-carried when this document publishes a new edition or it is stale, and
+where the two differ **the file in this repository is the governing text and the
+carried one is old**. **And the residue is this section's own residue one hop
+further out** — a carried copy is a **third** copy of these volumes, bound to this
+one by nothing but the pin and the re-carry duty, which is the binding-by-sentence
+that condition (i) below convicts, now holding two artifacts instead of one; the
+instrument class that would bind it mechanically is the **doc–shell drift check**,
+still owed, and until it exists the whole check is a diff of the carried directory
+against this repository at the pinned commit, **expected empty**, runnable in one
+line by anyone holding both clones.
+
 **And the shell is FPGA-generic, not domain-free — which is the correction of
 the one materially false load-bearing sentence this document has carried.**
 `[B.11·11]` Through the fifth edition the line above read *"extracted
@@ -5007,7 +5037,11 @@ is the fourth column's whole job, and which the previous four editions left to a
 annex row an importer never opens. The shell is their extracted copy in a
 separate repository, and **its contents are not verifiable from here**: an adopter
 reading this document should treat the shell as named, not as inspected, until
-they have looked at it.
+they have looked at it. **One exception now exists, and it is this document rather
+than the kit**: the three volumes the shell carries at `docs/handbook/` are pinned
+byte-identical to this repository at `9ba1138` (above), so for those three files —
+and no others in the unit — checking the shell's copy is a diff with an
+expected-empty result rather than a reading. `[B.13·H1]`
 
 **THE PRECEDENCE RULE — read this before §6.2, because it is the first decision
 an adopter makes and until this edition the document did not know it existed.**

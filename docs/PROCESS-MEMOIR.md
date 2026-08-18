@@ -1527,7 +1527,7 @@ They are named so the debt is countable; none is applied in this edition.
    agreed to it, which is §3.7's checklist-amending-the-constitution defect run
    from the other end.
 8. **The re-measurement of the posture list against the grown document.** The
-   list measured 1,445 lines; the core is now **6,081 lines, past four times
+   list measured 1,445 lines; the core is now **6,115 lines, past four times
    that**, and the boundary block in *Read this first* carries that figure and
    re-measures it in every act that moves it. *(This cell said
    "nearly three times" against a preamble saying "about three and a half" —
@@ -2424,6 +2424,24 @@ not built. **Nor is the core-to-rendition axis bound by anything**: the renditio
 currency is still carried by a sentence, and this round is one cold reading rather
 than a standing check. *A cold reading that finds seventeen things is evidence about
 the instrument that was missing, not evidence that it now exists.*
+
+**The carried handbook, 2026-08-18 — the export unit changes shape, and all three
+volumes travel with it.**
+
+Twenty minutes after the probe repairs landed, sponsor-directed, **the shell's maintainer landed
+`docs/handbook/` in the shell**: a pinned, byte-identical copy of all three volumes at
+this repository's commit `9ba1138`, at the shell's commit `10d3aec`, under a carrying
+README that states whose record the volumes measure, the pin, the staleness contract,
+and that the set is reference rather than law which a founded project may keep or
+delete. **This program neither committed it nor can enforce it** — the shell is
+independently maintained under its own law (§3.10) — so what the core records is the
+new fact, its date, its two commits, and the residue the act creates rather than the
+one it closes. The row is lettered rather than numbered because it is not a probe
+finding.
+
+| # | Class | Site | Disposition |
+|---|---|---|---|
+| H1 | the shell's own act, sponsor-directed | §6.0 export-unit framing; §6.0's *what this table asserts* paragraph; both the rendition's header and its §6.0 | **Applied, and stated as a change of shape rather than as an improvement.** The unit now ships whole: an adopter who can reach the shell and not this repository receives the explaining half, which is the mirror of §6.2's shell-less fallback and closes **one of the two** ways to hold half a unit — the other, an adopter who cannot reach the shell, is unchanged and is the only one of the two that anybody has executed. Recorded with both commits — this repository's `9ba1138`, the shell's `10d3aec` — with the carried set stated as **reference and not law** (its marks measure this program at that commit; §6.1's fork contract governs any adoption of them as law), with the **staleness contract** (re-carried per edition or stale, the file here governing), and with the residue named rather than smoothed: **a carried copy is a third copy**, bound to this one by the pin and the re-carry duty alone, which is condition (i)'s binding-by-sentence now holding two artifacts instead of one. Until the **doc–shell drift check** exists the whole check is a diff of the carried directory against this repository at the pinned commit, **expected empty**. *A copy that explains itself is worth more than one pointing at an explanation it cannot reach, and worth exactly nothing more than the discipline that re-carries it.* |
 
 ---
 

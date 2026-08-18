@@ -2584,3 +2584,360 @@ line figure; and the rendition's length-residue paragraph, which now prints its 
 - docs/PROCESS-MEMOIR.md
 - docs/PROCESS-STE.md
 - docs/PROCESS.md
+
+## [J-architect_docs_lead-0063] 2026-08-18T02:29:00Z | task:none | The export unit stops being half a thing in one direction: the shell now carries all three volumes byte-identical, and the honest part of recording it is that a carried copy is a third copy bound by a sentence — the same defect condition (i) convicts, now holding two artifacts
+
+### Trigger
+
+Orchestrator dispatch, **dispatch-only** (§3's named class — no packet file at any
+commit, and this entry is where that is recorded). Expected head `9ba1138`, clean
+tree, no declared siblings. The commission: a small currency addition recording
+that the shell now carries this repository's handbook, landed in §6.0 of
+`docs/PROCESS.md` with the corresponding statements in the rendition and a ledger
+row in the companion.
+
+**Provenance of the landed fact, and why I did not take it on the dispatch's
+word.** The dispatch asserted the act, the pin and the shell commit. The dispatch
+is a relay, and §4.3's rule is that a receiving seat checks a relay against the
+source artifact rather than reasoning from the relay. The shell is on this machine
+at `/workspace/generic-agentic-fpga-org`, so the check was cheap and I ran it
+before writing a sentence: the shell's head, the carrying README's four claims,
+and — the one that matters — the byte-identity the whole addition rests on.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` — mandatory first
+  reads.
+- `docs/PROCESS.md` — §6.0 entire (export-unit framing, the inventory table and its
+  two preambles, *What this table asserts*, the precedence rule, the honest-scope
+  block, *How learning actually travels*, the two instruments, the two conditions);
+  the *Read this first* boundary block and the third-volume paragraph; §6.1's head.
+- `docs/PROCESS-STE.md` — the header derivation block, the *Departures* and length
+  residue blocks, and §6.0's rendition entire.
+- `docs/PROCESS-MEMOIR.md` — B.13, its refusals block and its probe-repairs block;
+  B.2 item 8.
+- `scripts/check_process_doc.sh` — read before running, to know what it does and
+  does not hold.
+- **The shell repository at `/workspace/generic-agentic-fpga-org`**, at its commit
+  `10d3aec`: `docs/handbook/README.md` in full, `docs/handbook/` file listing,
+  `README.md` and `docs/MANIFEST.md` at the sites naming the directory, and the
+  commit's own metadata and trailers.
+- The tail of this journal, for the next free entry id.
+
+### Reasoning
+
+**The verification first, because everything else in the round is a consequence of
+it.** The claim the addition makes is *byte-identical at `9ba1138`*, which is a
+claim nobody has to believe: it is a hash comparison. I ran it for all three
+volumes, origin-at-the-pinned-commit against shell-at-`10d3aec`, and all three
+match (Evidence 1). Had one differed, the correct sentence would have been a
+defect report rather than a currency note, and the difference between those two
+rounds is one command. **The pin is the whole content of the claim, so the pin is
+the thing to check.**
+
+**Where the paragraph goes, and why not into the kit table.** The dispatch left the
+placement to me and warned off restructuring the table. Two placements were
+available. The kit table is a table of *artifacts an adopter obtains instead of
+writing them, whose originals live in this repository* — and the carried handbook is
+not one of those. It is a copy of **the other half of the unit**, not a kit item, and
+a row for it would model the unit as containing itself. The export-unit framing at
+the head of §6.0 is the sentence the fact actually changes: *"This document is half
+of an export unit"* is the claim that just moved, and the paragraph belongs directly
+under it. **A fact that falsifies a section's opening sentence belongs under that
+sentence, not in a table three screens down.**
+
+**The one kit-table-neighbourhood touch I did make, and its argument.** *What this
+table asserts* ends by telling an adopter that the shell's contents *are not
+verifiable from here*, which was true of every artifact in the unit until this act
+and is now true of every artifact **but these three**. One sentence records the
+exception and scopes it hard — *for those three files and no others in the unit* —
+because the paragraph's warning is still right about the kit and would be weakened by
+a reader generalising the exception. That is a standalone sentence beside the table,
+not a row in it and not a restructure, which is the lighter of the two options the
+dispatch offered.
+
+**The claim I wrote and then convicted, in the same round.** My first draft said the
+carried copy *"closes the last ordinary way to hold half a unit."* It does not.
+There are two ways to hold half a unit and this closes one: an adopter reaching the
+shell but not this repository. The other — an adopter holding this document and
+unable to reach the shell — is untouched, is the case §6.2 exists for, and is **the
+only one of the two anybody has ever executed**, twice. Writing *the last* would have
+retired §6.2's entire reason for existing in a subordinate clause of a currency note.
+The corrected sentence names both directions and says which one has evidence behind
+it. **A symmetry claim is the cheapest place to overstate, because the symmetric
+sentence is always the better-sounding one.**
+
+**Why the residue clause is longer than the good news it follows.** The act is a
+genuine improvement and the honest accounting of it is unflattering: a carried copy
+is a **third** copy of these volumes, and what binds it to this one is the pin plus
+the re-carry duty — which is a sentence. That is **exactly the defect condition (i)
+convicts** about the doc–shell pair, now holding two artifacts instead of one, and
+the drift check that is owed for the first is the instrument class that would bind
+the second. So the same block that records the good news records that the unit's
+central open condition just got one artifact wider. What keeps this from being a
+confession with no repair attached is that the interim check is trivial and I said
+so in the text: **a diff of the carried directory against this repository at the
+pinned commit, expected empty, runnable by anyone holding both clones** — which is
+the thing I actually ran this round, and naming it converts an owed instrument into
+a procedure a reader can execute today.
+
+**The rendition, and the register it is written in.** Strict mode governs §6.0 and
+the header, so the additions are short single-claim sentences, no semicolons, each
+calibration carried at the source's strength — including a `Status.` line stating
+**review-enforced**, because the source's addition declares that posture and a
+rendition that dropped it would be stronger than its source. Both checks the
+dispatch named were re-run on what I added: semicolons **0**, unchanged; emphasis
+balance **0** unbalanced paragraphs in the rendition, unchanged (Evidence 4, 5).
+
+**The finding I did not go looking for: the rendition prints a self-measurement
+whose method I can only half reproduce.** My additions move the rendition's
+sentence population, so its printed length residue — 2,591 units, median 10, mean
+12.2, 264 past 25 words, longest 61 — had to be dealt with. I implemented the
+method the volume prints, in five steps as printed. **It reproduces two of the six
+figures exactly and none of the other four**: the over-25 count comes back **264**
+and the longest unit **61**, both dead on, while the unit count comes back 2,321
+against a printed 2,591. Two figures landing exactly is not coincidence, so the
+printed method is very nearly the implemented one and differs somewhere that splits
+only short units. I could not close that gap in this round.
+
+**So I did the one thing that is honest without being a re-derivation.** Three
+options: re-derive with my implementation and print figures under a method I know
+does not reproduce the printed ones (the exact defect `J-architect_docs_lead-0062`
+fixed); increment the count by the units I added (**the defect P5 convicts — a
+count carried by increment is stale on arrival**); or **scope the figures to their
+measurement act**, which is what B.13 row 11 already does for the
+thirty-seven-renderings figure and is this record's established move. I scoped
+them, in one short parenthetical, and used the half of the method that *does*
+reproduce to make the scoping load-bearing rather than an apology: **the two figures
+a reader actually uses — 264 past 25 words, longest 61 — I re-checked at this act
+and both are unmoved**, which the parenthetical states. The unit count, median, mean
+and percentage are declared older than the file by one act.
+
+That check then caught my own prose twice. My first parenthetical pushed the over-25
+count to **266** — two of my own sentences ran past the cap, in the block that
+measures the cap. Both were split, and the diff of over-25 units against `9ba1138`
+is now empty. **A self-measurement you re-run against your own edit is the only kind
+that can catch you writing the sentence it measures.**
+
+**The boundary block, re-measured because its own rule says so in the imperative.**
+The block was tightened one round ago from *per edition* to **per act**, and this is
+an act. All four figures moved and all four are re-derived, with the two derived
+qualifiers re-checked rather than carried: 6,115 / 1,445 = **4.23**, so *past four
+times* holds; 410,403 / 262,144 = **1.566**, so *roughly 55 per cent* → *roughly
+57*. The companion's margin inside the read-anchor moved from *under eleven
+thousand* to **under eight thousand bytes**, and I added the figure that makes that
+line do work: **this round's single addendum row consumed 2,440 of it**. The block
+already said the margin is *one repair round's worth*; a round that spends a quarter
+of it should say so in the same sentence, or the phrase stays a comfort. Three
+convergence passes, every substitution digit-count-neutral where possible.
+
+### Actions
+
+1. **§4.1 precheck**, output in Evidence. Head matched `9ba1138`, tree clean, one
+   worktree, no siblings declared and none found. **No git write command was run at
+   any point** — the only git commands in this round were `log`, `status`, `show`,
+   `worktree list` and `diff`, all read-only.
+2. **Verified the landed fact in the shell** before writing: head `10d3aec`, the
+   carrying README's four claims read in full, and the byte-identity of all three
+   volumes checked by hash against `9ba1138` (Evidence 1).
+3. **`docs/PROCESS.md`** — one paragraph added to §6.0's export-unit framing,
+   directly under the sentence it qualifies, carrying: the act and its date, both
+   commits, reference-not-law with the fork-contract route, the staleness contract,
+   and the residue with the interim check named. One standalone sentence added
+   beside *What this table asserts*, scoping the new exception to those three files.
+   The kit table is untouched.
+4. **`docs/PROCESS-STE.md`** — the header's derivation block gains the carried-copy
+   statement in Strict register; §6.0 gains the corresponding four blocks and a
+   `Status.` line at the source's posture; the length-residue block gains a scoping
+   parenthetical.
+5. **`docs/PROCESS-MEMOIR.md`** — B.13 gains a lettered addendum block after the
+   probe repairs, with one row **H1** (lettered, not numbered, because it is not a
+   probe finding), plus B.2 item 8's restatement of the core's line count.
+6. **Re-measured and updated every printed self-figure the round moved**, to
+   convergence over three passes.
+7. Ran `scripts/check_process_doc.sh`, the semicolon check, the emphasis-balance
+   check, the sentence-length derivation and the over-25 diff against `9ba1138`.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA; the shell-side commands need a
+clone of the shell repository at `10d3aec`.
+
+**§4.1 precheck**, at round open:
+
+```
+$ git log --oneline -1
+9ba1138 The probe's thirteen findings and four source residues repaired, none
+        declined - and the reconciliation target was itself stale: all ten frozen
+        seals carry committed verdicts, a figure two consecutive editions carried
+        instead of counting
+$ git status --porcelain
+(empty)
+$ git worktree list
+/home/user/agentic-fpga  9ba1138 [claude/fpga-hardcaml-agent-orchestration-37ceyf]
+```
+
+**1. The byte-identity the whole addition rests on**, origin at the pinned commit
+against the shell's carried copy (sha256, first 16 hex digits shown):
+
+```
+$ for f in PROCESS.md PROCESS-MEMOIR.md PROCESS-STE.md; do
+    git show 9ba1138:docs/$f | sha256sum
+    sha256sum /workspace/generic-agentic-fpga-org/docs/handbook/$f
+  done
+origin@9ba1138 PROCESS.md         6fdfd853a6998b23
+shell@10d3aec  PROCESS.md         6fdfd853a6998b23
+origin@9ba1138 PROCESS-MEMOIR.md  077b363ed5064c36
+shell@10d3aec  PROCESS-MEMOIR.md  077b363ed5064c36
+origin@9ba1138 PROCESS-STE.md     210f99174b4c35fa
+shell@10d3aec  PROCESS-STE.md     210f99174b4c35fa
+```
+
+**Three of three identical.** The shell's commit and its trailers, read rather than
+assumed:
+
+```
+$ git -C /workspace/generic-agentic-fpga-org log -1 --format='%H %ad%n%s%n%b' 10d3aec
+10d3aec9f69632df7d7c64ae8f91e9762983c3dd  Tue Aug 18 02:18:27 2026 +0000
+C48 - the shell carries its reasons: the origin's handbook lands as a pinned copy
+with a staleness contract, so a deployed copy explains itself even where the origin
+is unreachable
+Agent: orchestrator   Work-Order: none   Journal-Entry: J-orchestrator-0048
+```
+
+The carrying README states all four things the paragraph attributes to it — whose
+record the volumes measure, the pin at `9ba1138`, the staleness contract with the
+origin's file governing, and reference-not-law which a founded project may keep or
+delete — and the shell's `README.md` (two sites) and `docs/MANIFEST.md` point at the
+directory. This repository's pinned commit is timestamped `2026-08-18 01:58:25Z`
+and the shell's is `02:18:27Z`, which is where the companion's *twenty minutes*
+comes from.
+
+**2. Governance check, after all edits:**
+
+```
+$ bash scripts/check_process_doc.sh
+OK: process document invariants hold (sentinels, volumes, golden tally, fences)
+$ echo $?
+0
+```
+
+**3. Every printed self-figure, re-derived and byte-exact at this state:**
+
+```
+$ wc -l -c docs/PROCESS.md docs/PROCESS-MEMOIR.md docs/PROCESS-STE.md
+  6115  410403 docs/PROCESS.md
+  2618  254247 docs/PROCESS-MEMOIR.md
+  3484  207369 docs/PROCESS-STE.md
+```
+
+- `docs/PROCESS.md` boundary block prints **6,115 lines** and **410,403 bytes**.
+  Derived qualifiers re-checked rather than carried: 6,115 / 1,445 = **4.23**, so
+  *past four times* holds; 410,403 / 262,144 = **1.566**, so *roughly 55 per cent*
+  past the anchor moves to **roughly 57**.
+- The companion is printed at **254,247 bytes**, inside the 262,144 anchor by
+  **7,897** — stated as *under eight thousand*, down from *under eleven thousand*
+  one round ago, with this round's own 2,440-byte cost printed beside it
+  (254,247 − 251,807 = **2,440**, which is the B.13 addendum block exactly, since
+  the only other memoir edit is a digit-neutral substitution).
+- `docs/PROCESS-MEMOIR.md` B.2 item 8 prints the core at **6,115 lines**.
+
+Three convergence passes; substitutions chosen digit-count-neutral (`6,081`→`6,115`,
+`407,753`→`410,403`, `251,807`→`254,247`) so the loop terminates rather than
+oscillating.
+
+**4. Semicolon check on the rendition** (Strict mode bans the mark in prose; fences
+and table rows exempt):
+
+```
+docs/PROCESS-STE.md @ 9ba1138 : 0
+docs/PROCESS-STE.md @ this state: 0
+```
+
+**5. Emphasis-balance check**, per paragraph, fences excluded:
+
+```
+                          at 9ba1138   after
+docs/PROCESS.md                0          0
+docs/PROCESS-MEMOIR.md         1          1     (pre-existing, not mine)
+docs/PROCESS-STE.md            0          0
+```
+
+**6. Hedge grep on the rendition**, whole-word counts at `9ba1138` vs this state:
+`ensure(s)` 0/0, `guarantee(s)` 13/13 and 2/2, `always` 8/8, `never` 78 → **79**.
+The single added `never` is *"and never by possession"*, which is the source
+sentence's own word at the same site. **No promoted hedge, no new absolute.**
+
+**7. The rendition's length residue, and the method's partial reproduction.** The
+method as the volume prints it, implemented in five steps:
+
+```
+                        printed    my implementation @ 9ba1138
+units                     2,591               2,321
+median                       10                  11
+mean                       12.2                13.4
+past 25 words               264                 264   <- exact
+per cent                   10.2                11.4
+longest                      61                  61   <- exact
+```
+
+**Two of six exact, four not.** Re-run at this state: over-25 = **264**, longest =
+**61** — both unmoved by my additions, which is what the volume's new parenthetical
+claims. The diff of over-25 units between `9ba1138` and this state is **empty**; an
+intermediate draft of that same parenthetical put it at 266, and both offending
+sentences were split before this state.
+
+### Outcome
+
+**DoD met** against the dispatch, with two departures argued above. Delivered:
+`docs/PROCESS.md` §6.0 carries the carried-handbook fact with its date, both
+commits, the reference-not-law statement, the staleness contract and the residue;
+one scoping sentence sits beside *What this table asserts* and the kit table is
+untouched; `docs/PROCESS-STE.md` carries the corresponding statements in its header
+and at §6.0 in Strict register at source strength; `docs/PROCESS-MEMOIR.md` B.13
+carries lettered addendum row **H1**; every printed self-figure the round moved is
+re-derived; `scripts/check_process_doc.sh` is green.
+
+**Departures from the dispatch, both recorded rather than smoothed.** (1) The
+dispatch's framing that the act closes the half-unit problem was written into my
+first draft as *the last ordinary way to hold half a unit* and then corrected to
+*one of the two*, because §6.2's case is untouched and is the only one with
+execution evidence. (2) The dispatch scoped the re-measurement duty to
+`docs/PROCESS.md`'s boundary block; I extended it to the rendition's own printed
+length residue, by **scoping rather than re-deriving**, because my additions move
+that population and neither incrementing the count nor printing figures under a
+method I cannot fully reproduce was available.
+
+Handoff: back to the orchestrator for commit. No packet is owed and none is opened.
+
+### Open-questions
+
+1. **The doc–shell drift check now has a second subject and the same owner.** Until
+   it exists, three volumes in a second repository are bound to this one by a
+   sentence and a duty. The interim procedure is written into §6.0 and is one
+   command — *diff the carried directory against this repository at the pinned
+   commit, expect empty* — which I ran this round and which nothing runs on a
+   cadence. **The cheapest form of the owed instrument is now a three-line job in
+   this repository's continuous integration that needs the shell only as a fetch**,
+   and `scripts/` is not my scope, so this is named here for the seat whose it is.
+2. **The re-carry duty has no owner in this repository.** The staleness contract
+   says the copy is re-carried per edition or it is stale, but the party who
+   re-carries it is the shell's maintainer under the shell's own law, and nothing
+   here fires at an edition boundary to ask. **The next edition of this document is
+   the first test of whether that contract is a mechanism or a hope**, and the
+   honest prediction from this record's own history is that an unrouted duty is
+   discharged when somebody remembers it.
+3. **The rendition's printed length-method does not reproduce its own unit count**,
+   and a scoping parenthetical is a smaller repair than a printed method that
+   re-runs. Two of six figures reproduce exactly, so the gap is narrow and
+   findable; closing it is a re-derivation round's work, not a currency note's.
+4. Every open item carried at `J-architect_docs_lead-0062`'s tail stands: the
+   posture list is untouched for the eighth consecutive edition and **this round
+   makes that debt worse again**, adding unmeasured text beside stamped claims in
+   §6.0 — the boundary block's own subject, moving the unfavourable way for the
+   second act running.
+
+### Files-in-this-commit
+- docs/PROCESS-MEMOIR.md
+- docs/PROCESS-STE.md
+- docs/PROCESS.md

@@ -23,6 +23,14 @@ disagree, `docs/PROCESS.md` wins and this volume is the defect.
 carries an edition anchor in its head. If the source's edition moves and this file
 does not, treat this file as the older edition.
 
+**A pinned copy of this volume ships inside the shell.** The shell is the
+repository `generic-agentic-fpga-org`, the executable half of the export unit
+(§6.0). Since 2026-08-18 it carries this volume and its two companion volumes in
+its `docs/handbook` directory. The three files there are copied byte for byte from
+this repository at commit `9ba1138`. **That copy is stale when this file's edition
+moves.** **This file governs.** Where the carried copy and this file disagree, this
+file is current and the carried copy is old.
+
 **This volume restates no posture stamp.** The source marks each claim with a
 bracketed stamp — `[MC]`, `[RE]`, `[P1]`, `[PLANNED]`, `[CORRECTED]`,
 `[UNANCHORED]`, `[SF]`. Those stamps stay in the source. This volume states each
@@ -89,6 +97,14 @@ cent residue. Those figures came from a method this volume never printed and thi
 revision could not reproduce, so the figures above are re-derived and not carried, and
 the two sets are not comparable. **A self-measurement whose method is not printed is a
 figure nobody can re-run, including its author.**)*
+
+*(**Currency of the figures above.** They were measured at the revision that printed
+them. The currency addition of 2026-08-18 added units to this volume. That act did
+**not** re-derive them. A count carried by increment is stale on arrival, and one small
+act cannot re-run the whole method. **The two figures a reader uses were re-checked at
+that act. Both are unmoved.** 264 units run past 25 words, and the longest unit holds
+61 words. The unit count, the median, the mean and the percentage are older than this
+file by one act.)*
 
 ---
 
@@ -2568,6 +2584,36 @@ repository, which an adopter clones and starts from. It is the repository
 `generic-agentic-fpga-org`, at `github.com/renatom11/generic-agentic-fpga-org`. The
 name is a program noun, deliberately, because an identifier a reader cannot resolve is
 worth nothing.
+
+**The unit ships whole since 2026-08-18.** The shell carries a pinned copy of all three
+volumes of the source in its `docs/handbook` directory. The three files are
+byte-identical to this repository at commit `9ba1138`. They landed in the shell at the
+shell's commit `10d3aec`. **An adopter who can reach the shell, and not this repository,
+now gets the half that explains as well as the half that runs.** That case is the mirror
+of the shell-less fallback of §6.2. **The other direction stays open.** An adopter who
+holds the source document, and cannot reach the shell, still holds half a unit. §6.2 is
+the order written for that case, and it is the only one of the two cases that anybody
+has executed.
+
+**The carried copy is reference, and not law.** Every stamp, exhibit and figure in it
+measures **this program's** machinery at that commit. It states nothing about the shell,
+nothing about the copy, and nothing about a project founded from the shell. A program
+that adopts these volumes as its own law does that through the fork contract of §6.1,
+and never by possession.
+
+**The copy is re-carried at each new edition, or it is stale.** The file in this
+repository is the governing text. Where the two differ, the file here is current and
+the carried copy is old.
+
+**Status.** Review-enforced. Nothing checks that the carried copy is current.
+
+**The residue.** A carried copy is a **third** copy of these volumes. The pin and the
+re-carry duty are the only things that bind it to this repository. That is the same
+binding by sentence that condition (i) below convicts, and it now holds two artifacts
+instead of one. The **doc–shell drift check** is the instrument class that would bind it
+mechanically, and that instrument does not exist. Until it exists, the check is a diff
+of the carried directory against this repository at the pinned commit. **The expected
+result is an empty diff.**
 
 **The shell is FPGA-generic, and not domain-free.** Three independent readers fetched
 it and returned the same thing: its README opens *"A reusable AI-agent organization for
