@@ -2164,3 +2164,423 @@ closing.
 ### Files-in-this-commit
 - docs/PROCESS-STE.md
 - docs/PROCESS.md
+
+## [J-architect_docs_lead-0062] 2026-08-18T01:58:12Z | task:none | A cold probe of the rendition returns thirteen defects and four source residues behind them — and the one figure the dispatch told me to reconcile *to* turns out to be the stale side, because the eighth edition incremented a count instead of re-deriving it
+
+### Trigger
+
+Orchestrator dispatch, **dispatch-only** (§3's named class — no packet file at any
+commit, and this entry is where that is recorded). Work order at
+`/tmp/claude-0/-home-user-agentic-fpga/681e6e34-cd2f-5f3e-a4c3-42391e4d282b/scratchpad/wo-fidelity-repairs.md`
+— a scratchpad file, ephemeral, not in the repository, and named here as such
+(ADR-0003/F5). Expected head `d9ffeba`, clean tree, no declared siblings.
+
+**Provenance of the findings, stated because it decides how they were used.** The
+thirteen rendition defects and four source residues are **relayed by the
+orchestrator** from a **commissioned read-only cold probe of `docs/PROCESS-STE.md`**.
+The probe holds **no seat**; its report is **not a committed artifact** and is cited
+nowhere as evidence. Every finding below was **re-verified against the source before
+any repair**, per the source's own §4.3 rule that a receiving seat checks a relay
+against the source artifact rather than reasoning from the relay. The probe's word is
+a pointer; the record is the authority. That discipline earned its keep once this
+round — see the census finding in Reasoning.
+
+**What this round answers.** `J-architect_docs_lead-0061` closed with Open-question 4:
+*"No seat has read this volume against the source except its author, which is §5.7's
+root class sitting on a document about §5.7's root class... What would settle it is a
+cold reader given the rendition alone... an instrument this program already knows how
+to run, and one I cannot commission."* It was commissioned. This entry is what it
+returned.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` — mandatory first
+  reads.
+- The work order (above), read in full before any edit.
+- `docs/PROCESS.md` — §§1.1, 1.4, 3.3, 3.5, 3.8, 3.9, 3.10, 4.3, 4.5, 4.7, 5.9, 6.0,
+  6.2, Annex A.3, and the *Read this first* boundary block.
+- `docs/PROCESS-STE.md` — the whole volume's header, and every section named in a
+  finding.
+- `docs/PROCESS-MEMOIR.md` — B.13 and its refusals block; B.2 item 8.
+- `docs/process-golden-tally.json` — for the campaign population and the class-era
+  campaign list.
+- `scripts/check_process_doc.sh`, `scripts/check_journals.sh`, `scripts/agent_commit.sh`
+  — read to decide the *actual* posture of the two currency claims (A2, A4), rather
+  than to take the prose's word for it.
+- `agents/handoffs/*SEALED-predictions.md` (fourteen files) and their campaign packets
+  — the seal census, re-derived.
+- The tail of this journal, for the next free entry id.
+
+### Reasoning
+
+**Order of work, and why it is not arbitrary.** The source was repaired **first** and
+the rendition re-derived against the repaired sentences, in one commit. The reverse
+order produces a rendition faithful to a sentence that no longer exists, which is the
+same defect one hop down. Four of the thirteen rendition findings dissolve on contact
+with a repaired source, and two of them the probe had already classified correctly as
+faithful carriage rather than rendition defects.
+
+**The finding that cost the round its real work, and it was not on the list.** The
+dispatch's item A3 said §3.3's later-practice paragraph was stale beside the same
+section's census, and told me to reconcile the practice paragraph *to the census*, and
+to re-derive the census's own primary axis myself. I did re-derive it — and the axis
+held exactly: fourteen seals, four whose bytes differ from their introducing commit,
+ten byte-identical, and **the four that differ are exactly the four whose state line
+reads `UNSEALED`**. Then I checked the census's *other* half, the scored split, which
+nothing told me to check. It does not hold. The census printed *seven of the ten were
+scored, the remaining three are frozen and unscored*; **all ten frozen seals carry a
+committed verdict**, and I can name each one. The eighth edition took the seventh
+edition's *six of nine* and added one for the campaign it knew about, instead of
+re-counting. **A count incremented rather than re-derived is stale on arrival** — and
+the section it sits in is the section whose whole lesson is *the honest unit of
+measurement is the population, and the population is countable*. The defect arrived
+inside its own fix, for the second consecutive edition.
+
+**So I did not do what the dispatch said, at that one item, and here is the ground.**
+Reconciling the practice paragraph *to the census* would have propagated a false figure
+into two volumes under the authority of a repair round. The dispatch's own governing
+sentence is the one I followed instead: *re-verify each against the source yourself —
+the relay is a pointer, not the authority*. The same sentence that protects the round
+from a bad relay protects it from a bad instruction, and the two are the same object.
+Both figures are now the re-derived ones, in the source and in the rendition, with the
+previous printing quoted beside them rather than overwritten.
+
+**Why the source residues were repaired inside running lines rather than in a ledger
+row.** All four are figure/currency corrections inside an already-ruled rule — the
+dialect's *cure*, which owes no decision record. Each is dated 2026-08-18 in place and
+names the finder, because §5.9's own diagnosis is that **disclosure without repair is
+what lets this class survive**: a row in an annex is exactly the treatment that
+produced the three-edition-stale sentence the museum convicts. A correction a reader
+meets in the running line is a correction; one they would have to open an annex to
+find is a confession.
+
+**The two currency claims were checked against the scripts, not against the prose.**
+A2 said the hard threshold is *enforced on the commit surface only*; A4 said *nothing
+in this repository yet re-runs it*. Both are claims about machinery, so both were
+decided by reading the machinery. `scripts/agent_commit.sh:173-181` refuses above the
+hard threshold on the commit surface; `scripts/check_journals.sh:105-118` evaluates the
+same predicate over the same subject on the pushed-history surface and **warns**;
+`scripts/check_process_doc.sh:51-69` re-runs both tally identities and cross-checks the
+core's printed figures. So A2 is a split by limb and A4 is machine-checked on one limb
+of two. **The A4 repair is deliberately not a flat promotion**, and that is the part
+worth carrying: the check asks whether a figure appears *in the file*, not whether it
+appears *in the printed block*, so a hand-typed block sitting beside a correct data
+file still passes. Writing *machine-checked* without that clause would have replaced an
+understatement with an overstatement, which is the failure this whole round exists
+against.
+
+**The rendition's minor defects have one shape and it is worth naming once.** Nine of
+the ten minors are the same act: a compression that dropped the clause the sentence
+was carrying. Two truncations left their emphasis markup unclosed, which is how they
+survived — an unbalanced `**` renders as literal asterisks in a wall of bold prose and
+reads as a typo rather than as a missing half-sentence. **A markup imbalance at the end
+of a truncated sentence is a truncation detector**, and it is free: two of the thirteen
+findings are mechanically detectable, I checked the whole volume for the class, and the
+count at `d9ffeba` was exactly two. Both are closed, no new ones exist, and the check
+is three lines of Python. I have not proposed it as an instrument because
+`scripts/` is not my scope; it is named here so the next round can.
+
+**Three findings I repaired in the opposite direction from the obvious one.** *m9* said
+the header claims five *Kept long* sites where four markers exist; the tempting fix is
+to add a fifth marker. The item with no marker — the two-column rule for a tally — is
+rendered **inside** the caps, so marking it would mint a false claim to make a count
+true. The count moved instead. *m7* said §3.8 mints an *eight things* count; the fix is
+not seven, it is **no count**, because the source states none and the sub-clause the
+rendition promoted to a peer item is what made eight look right. *M1* is the same shape
+at §6.0: the source states no row count, its table has fifteen rows, and a rendition
+that prints a re-derived fifteen has still minted a claim its source does not make and
+that goes stale the next time a row lands. **Where a source states no count, the
+faithful rendition states no count** — and that rule is now written into all three
+sites rather than left as this round's taste.
+
+**The unrequested edits, three of them, each argued.** *One:* `docs/PROCESS.md`'s
+boundary block prints four self-measurements that my Part A edits falsified; the block
+states its own rule in the imperative — *re-measure it in the act that moves it* — so
+leaving them stale would ship the §5.9 defect inside the commit that repairs four
+instances of it. All four are re-derived, and the *roughly 54 per cent* qualifier moved
+to 55 with them, because the block's own margin says a qualifier is part of a
+measurement. *Two:* the block said *re-measured in each edition*; this round is a
+repair round and not an edition, so the rule was tightened from **per edition** to
+**per act** — otherwise the sentence licenses exactly the staleness it forbids. *Three:*
+`docs/PROCESS-MEMOIR.md` B.2 item 8 carried *4,919 lines, about three and a half times*
+against a core at 6,081 — already stale before this round, and it sits in the cell that
+declares the boundary block canonical. **Naming a canonical statement does not stop a
+restatement decaying**, which is the entire content of §5.9 and is now written at that
+cell.
+
+**And one measurement I could not reproduce, reported rather than carried.** The
+rendition's *Departures* section printed a sentence-length residue — 2,762 sentences,
+9-word median, 7.6 per cent past 25 words — derived by a method the volume described in
+prose and never printed. My edits moved the population, so the figure had to be
+re-derived, and **two attempts to reconstruct that method returned two different
+distributions, neither of them the printed one**. Rather than print a figure by one method
+under a claim measured by another — the exact thing the source's own §3.9 boundary
+forbids — the volume now prints **the method** in five imperative steps and the figures
+that method returns, with the previous printing quoted and marked non-comparable. The
+residue is worse than the volume claimed: 10.2 per cent past 25 words, not 7.6. **A
+self-measurement whose method is not printed is a figure nobody can re-run, including
+its author** — and the tell was that its author could not.
+
+### Actions
+
+1. **§4.1 precheck**, output in Evidence. Head matched `d9ffeba`, tree clean, one
+   worktree, no siblings declared and none found. No git write command was run at any
+   point.
+2. **Part A — four source residues in `docs/PROCESS.md`**, repaired first: §6.2
+   Step −1's sponsor bullet (five → four items); Annex A.3's live-residue note (the
+   size limb's split by limb, since 2026-08-12); §3.3's stale practice paragraph *and*
+   its census bullet, both re-derived; §3.9's worked-tally posture note (review-enforced
+   → machine-checked on one limb of two). Each dated in place with the finder named.
+3. **Part B — thirteen rendition defects in `docs/PROCESS-STE.md`**, repaired against
+   the repaired source, plus the two faithful-carry sites that went stale when the
+   source moved, plus the volume's derivation anchor and its cold-reading provenance.
+4. **Part C — `docs/PROCESS-MEMOIR.md` B.13** gains a *probe repairs* block: the
+   commission, the tally, and a nineteen-row disposition list. B.13 row 10 is left
+   **unedited**, keeping what the eighth edition measured, with the re-derivation
+   recorded beside it as row P5.
+5. **Re-measured and updated every printed self-figure the round moved**, to
+   convergence: the core's line and byte counts, its qualifier, the companion's byte
+   count, the memoir's own restatement of the core's line count, and the rendition's
+   length residue. Three convergence passes, each substitution digit-count-neutral so
+   the figures describe the state they sit in.
+6. Ran `scripts/check_process_doc.sh`, the hedge-grep, the semicolon check, the
+   emphasis-balance check and the sentence-length derivation.
+
+### Evidence
+
+Reproducible from a checkout at this commit's SHA.
+
+**§4.1 precheck**, at round open:
+
+```
+$ git log --oneline -1
+d9ffeba The handbook rendered in Simplified Technical English: half the bytes, every
+        calibration at source strength, no stamp restated - and the volume that
+        declares itself the defect wherever the two disagree
+$ git status --porcelain
+(empty)
+$ git worktree list
+/home/user/agentic-fpga  d9ffeba [claude/fpga-hardcaml-agent-orchestration-37ceyf]
+```
+
+**1. The seal census, re-derived — the round's one new measurement.** Method: for each
+seal file, find the commit that introduced it and diff the file between that commit and
+`HEAD`.
+
+```
+$ for f in agents/handoffs/*SEALED-predictions.md; do
+    intro=$(git log --diff-filter=A --format=%H -- "$f" | tail -1)
+    git diff --quiet "$intro" HEAD -- "$f" && st=UNCHANGED || st=CHANGED
+    echo "$st $(grep -o -m1 'UNSEALED\|FROZEN' "$f" | head -1) $f"
+  done
+CHANGED    UNSEALED  WO-0039_m03-mutation-campaign-...
+CHANGED    UNSEALED  WO-0041_family-d-mutation-campaign-...
+UNCHANGED  FROZEN    WO-0045_family-e-mutation-campaign-...
+CHANGED    UNSEALED  WO-0050_family-f-mutation-campaign-...
+CHANGED    UNSEALED  WO-0055_family-g-mutation-campaign-...
+UNCHANGED  FROZEN    WO-0058_m03-g7-h-mutation-campaign-...
+UNCHANGED  FROZEN    WO-0061_family-i-mutation-campaign-...
+UNCHANGED  FROZEN    WO-0063B_m03-i2-report-path-campaign-...
+UNCHANGED  FROZEN    WO-0066_family-bn-mutation-campaign-...
+UNCHANGED  FROZEN    WO-0073_family-l-mutation-campaign-...
+UNCHANGED  FROZEN    WO-0074_family-m-mutation-campaign-...
+UNCHANGED  FROZEN    WO-0076_family-j-mutation-campaign-...
+UNCHANGED  FROZEN    WO-0077_family-k-mutation-campaign-...
+UNCHANGED  FROZEN    WO-0084-SEALED-predictions.md
+```
+
+**Fourteen seals; four CHANGED and they are exactly the four reading `UNSEALED`; ten
+byte-identical to their introducing commit.** That is the axis the dispatch asked me to
+re-derive and it confirms the eighth edition exactly.
+
+**The scored half, which does not confirm it.** Criterion: a committed verdict quoting
+the seal's cells. Each of the ten frozen seals has one, named here so the claim is
+checkable rather than asserted — `RV-0045-VERDICT` (`J-dv_lead-0054`),
+`WO-0058-VERDICT` (`J-dv_lead-0080`), `WO-0061-VERDICT` (`J-dv_lead-0097`),
+`WO-0063B-VERDICT` (`J-dv_lead-0108`), `WO-0066-VERDICT` (`J-dv_lead-0117`),
+`WO-0073-VERDICT` (`J-dv_lead-0134`), `WO-0074-VERDICT`, `WO-0076-VERDICT`,
+`WO-0077-VERDICT`, and for the newest seal the act-4 row of
+`agents/handoffs/WO-0084_m04-mutation-campaign.md`'s Return/verdict log, dated
+2026-08-12 and reading **SCORED — THE SEAL IS UNFALSIFIED**, which also states the
+unseal there rather than by editing the seal. **Ten of ten scored, none unscored** —
+against a printed *seven scored, three frozen and unscored*. The four `UNSEALED` seals
+are scored too (`RV-0039-VERDICT`, `RV-0041-VERDICT`, `RV-0050-VERDICT`,
+`RV-0055-VERDICT`), so **all fourteen sealed campaigns are scored and ten of them
+without a byte of the seal being touched.**
+
+**2. The two currency claims, decided against the machinery.**
+
+```
+$ sed -n '173,181p' scripts/agent_commit.sh      # commit surface: REFUSES above H
+$ sed -n '105,118p' scripts/check_journals.sh    # pushed-history surface: WARNS
+$ sed -n '356,384p' scripts/check_journals.sh    # WARN-JOURNAL aggregation
+$ sed -n '51,69p'  scripts/check_process_doc.sh  # tally identities + figure presence
+```
+
+`docs/PROCESS.md` §2.6's second `R10` row and §2.5 already stated the split by limb;
+**only Annex A.3's residue note had not been told**, which is the §5.9 shape exactly —
+the amended rule landed, its restatements did not all follow.
+
+**3. Governance check, after all edits:**
+
+```
+$ bash scripts/check_process_doc.sh
+OK: process document invariants hold (sentinels, volumes, golden tally, fences)
+$ echo $?
+0
+```
+
+**4. Hedge-grep on the rendition** (the instrument named at
+`J-architect_docs_lead-0061`: grep for promoted hedges and verify each against the
+source):
+
+```
+ensures / ensure        0
+guarantees / guarantee  2 / 13   unchanged from the previous revision
+always                  8        unchanged; none added this round
+never                  87        86 + 1
+```
+
+The four `never` tokens this round adds are: the two departure-list entries
+(`has never run`, `has never happened` — both the source's own phrasings, both
+re-attributed to the correct sections this round), the restored §3.10 clause
+(`declared, and never omitted`, the source's own), and one new claim about this volume
+itself — *a method this volume never printed* — which is verified by inspection of the
+superseded paragraph. **No promoted hedge. No new absolute.**
+
+**5. Semicolon check** (the rule bans the mark in prose outright; fences and table rows
+exempt): **0**, unchanged.
+
+**6. Emphasis-balance check**, per paragraph, fences excluded — the instrument this
+round's own findings suggested:
+
+```
+                          at d9ffeba   after
+docs/PROCESS-STE.md            2          0     (the m4 and m5 truncations)
+docs/PROCESS.md                1          1     (pre-existing, not mine)
+docs/PROCESS-MEMOIR.md         1          1     (pre-existing, not mine)
+```
+
+The two rendition imbalances at `d9ffeba` are **exactly** the two truncated sentences
+the probe reported. Both closed; none introduced.
+
+**7. Every printed self-figure, re-derived and byte-exact at this state:**
+
+```
+$ wc -l -c docs/PROCESS.md docs/PROCESS-MEMOIR.md docs/PROCESS-STE.md
+  6081  407753 docs/PROCESS.md
+  2600  251807 docs/PROCESS-MEMOIR.md
+  3438  204404 docs/PROCESS-STE.md
+```
+
+- `docs/PROCESS.md` boundary block prints **6,081 lines** and **407,753 bytes** — both
+  the figures above. Derived qualifiers re-checked rather than carried: 6,081 / 1,445 =
+  **4.21**, so *past four times* holds; 407,753 / 262,144 = **1.554**, so the *roughly
+  54 per cent* past the anchor moved to **roughly 55**.
+- The companion is printed at **251,807 bytes** and is inside the 262,144 anchor by
+  **10,337 bytes**, stated in the block as *under eleven thousand* — a figure rather
+  than a comfort, because one repair round of this size is 7,700 bytes.
+- `docs/PROCESS-MEMOIR.md` B.2 item 8 prints the core at **6,081 lines, past four
+  times** the posture list's 1,445 — it had said 4,919 and *about three and a half*.
+- `docs/PROCESS-STE.md` prints **2,591 units, median 10, mean 12.2, 264 (10.2 per cent)
+  past 25 words, longest 61**, all returned by the method the volume now prints beside
+  them. The volume is **204,404 bytes**, inside Annex A.3's 262,144 anchor by 57,740.
+
+Three convergence passes were needed, because each figure edit moves the file it
+describes. Every substitution was chosen digit-count-neutral (`6,077`→`6,081`,
+`407,429`→`407,753`, `2,583`→`2,591`, `263`→`264`), so the printed figures describe the
+state they sit in exactly, and the loop terminates at pass three rather than oscillating.
+
+**8. The findings, quoted and dispositioned.** Each quotation below is the
+**orchestrator's relay** of the commissioned probe, re-verified against the source
+before repair. All seventeen repaired; **none declined.**
+
+| Relayed finding (orchestrator's relay of the probe) | Verified against | Repair |
+|---|---|---|
+| *"M1: STE §6.0 says 'thirteen-row table'; the source kit table has 15 rows and states no count."* | §6.0's table, 15 data rows, no count in the prose | count dropped; the no-count rule stated |
+| *"M2: STE §3.3 says 'nobody reopened the ten later seals' and drops 'the six of them that were scored record their unsealing in the campaign packet's verdict'"* | §3.3 census and practice paragraph | clause restored, and both sides re-derived — see the census finding |
+| *"M3: STE §3.9 says a governance check 're-runs the arithmetic on every push'; the source's §3.9 posture note still says 'nothing in this repository yet re-runs it'"* | §3.9 note vs §6.0 row vs the script | source note repaired first; rendition now cites it and carries its non-coverage limb |
+| *"m1: STE §1.4(d) adds 'Status. Review-enforced.' where the source states no posture"* | §1.4(d): only the exhibit is stamped `[UNANCHORED · C-24]` | Status replaced with the honest form |
+| *"m2: STE §3.10 drops 'or adopted locally by its own instrument'"* | §3.10's war-story sentence | restored |
+| *"m3: STE §3.5 drops the standing owed half"* | §3.5: *"This edition owes signatures too, and names them"* | restored, with Annex B located in the companion |
+| *"m4: STE §4.5 truncates 'Discarding and re-deriving costs a round'"* | §4.5's closing sentence | completed; emphasis closed |
+| *"m5: STE §6.2 Step 0 truncates 'You are inheriting a corrected document'"* | §6.2 Step 0's reason clause | completed; emphasis closed |
+| *"m6: STE §6.0 renders ... as 'the only order anybody has executed end to end without the shell — twice' (an added qualifier reshaping the claim)"* | §6.0's precedence bullet | source shape restored |
+| *"m7: STE §3.8 mints 'carries eight things'"* | §3.8's floor list; the anchor element's sub-clause | count dropped; sub-clause structure restored |
+| *"m8: STE §1.1 rule 3 carries no calibration in the Status block"* | §1.1: allocation is `[RE · C-08]` | calibration added |
+| *"m9: STE header claims five 'Kept long' sites; four markers exist"* | four markers, counted | count moved to four; the unmarked item left the list |
+| *"m10: STE header departures item 2 attributes 'has never run' to §4.3"* | §4.3 reads *It is owed. It has never happened.* | §4.3 moved to the *has never happened* item |
+| *"(A1) §6.2 Step −1 still says the sponsor's 'whole surface is five items'"* | §4.7 says four since 2026-08-17 | repaired, dated |
+| *"(A2) Annex A.3's residue note still says the hard threshold is commit-surface-only"* | the two scripts | repaired by limb, dated, ground carried |
+| *"(A3) §3.3's 'nine later seals / six of them' stale beside the same section's re-measured ten/seven"* | the census — **and the census** | all four sites reconciled to the re-derived figures, not to the census |
+| *"(A4) §3.9's posture note predates the landed governance check"* | `check_process_doc.sh` | repaired on two limbs, dated |
+| *"Faithful-carry notes ... STE reproduces both sides of A1 and A2 exactly as the source does."* | correct — carriage, not defect | both rendition sites re-derived once their sources moved |
+| **not relayed — found by re-deriving** | §3.3's census, scored half | *seven of ten scored / three unscored* → **ten of ten scored**; previous printing quoted beside it |
+
+### Outcome
+
+**DoD met** for a dispatch-only doc round. Three files staged, exactly as commissioned:
+`docs/PROCESS.md`, `docs/PROCESS-STE.md`, `docs/PROCESS-MEMOIR.md`. The governance
+check is green, the hedge-grep is clean, the semicolon check returns zero, the
+rendition's emphasis imbalances are closed and none introduced, and every printed
+self-figure is byte-exact at this state.
+
+**Nothing declined.** All thirteen rendition findings and all four source residues are
+repaired. One item was **executed against the dispatch's literal instruction and toward
+its governing one** — A3's reconciliation target — and that is argued in Reasoning and
+recorded in the memoir as row P5 rather than folded into the applied rows.
+
+**What moved that nobody asked for**, each argued above and listed here so the
+orchestrator can revert any of them without reading the whole entry: the boundary
+block's four figures and its *per edition* → *per act* rule; the memoir's B.2 item 8
+line figure; and the rendition's length-residue paragraph, which now prints its method.
+
+**Handoff**: to the orchestrator, for commit under `Agent: architect_docs_lead`,
+`Work-Order: none`.
+
+### Open-questions
+
+1. **The seal census's scored split was wrong for two consecutive editions and nothing
+   would have caught it.** The seventh edition measured it, the eighth incremented it,
+   and the ninth would have incremented it again. The instrument is cheap and it is not
+   mine: the campaign population, the flipped/frozen split and the scored split are all
+   derivable from committed files by the loop printed in Evidence, and
+   `scripts/check_process_doc.sh` is already the place a derived figure gets checked
+   against the document's text. **A clause asserting that §3.3's printed seal figures
+   equal what that loop returns would close this class permanently.** `scripts/` is the
+   orchestrator's scope, so this is an amendment candidate and not an act.
+2. **The emphasis-balance check is three lines and it caught two of this round's
+   thirteen findings before the probe's list was consulted.** Same routing: an unclosed
+   `**` in either volume is a render defect and, empirically, a truncation detector.
+   Offered as a fourth clause for the same script.
+3. **Still nothing binds the rendition to the source.** This round is **one cold
+   reading**, not an instrument, and both volumes now say so in terms. The core-to-shell
+   drift check has been owed for six editions; the core-to-rendition axis has now been
+   unbound for one, and it took thirteen defects and four residues to demonstrate it.
+   *A defect count is what an absent instrument returns when somebody finally looks.*
+4. **The rendition's length residue is worse than the volume claimed and I could not
+   reproduce the claim.** 10.2 per cent past 25 words against a printed 7.6. The
+   printed method is now in the volume, so the next revision has a baseline it can
+   actually compare against — but the previous figures are unrecoverable, and the
+   honest position is that the rendition has never been measured twice by one method.
+5. **B.13 row 10 now sits beside a row that corrects it.** That is the discipline §3.9
+   mandates for a campaign score — *the two facts are recorded side by side and never
+   folded into one* — applied to an edition record rather than to a campaign. If a
+   later reader is meant to read B.7–B.13 as frozen per-edition measurements, this is
+   the first row pair that tests it, and the convention should be stated somewhere
+   before a third one arrives.
+6. **Two pre-existing emphasis imbalances remain**, one in each of `docs/PROCESS.md`
+   (the fence-tracking parenthetical in the split block) and `docs/PROCESS-MEMOIR.md`
+   (B.2's numbered list). Both predate `d9ffeba`, neither is mine, and neither is
+   repaired here — a repair round that quietly widens its own diff is harder to review
+   than one that names what it left. Filed, not fixed.
+7. Carried unchanged from `J-architect_docs_lead-0061`: the volume is roughly half the
+   source by weight and the structural compression was never attempted; the posture list
+   is untouched for the eighth consecutive edition and this round makes that debt
+   slightly worse by adding unmeasured text beside stamped claims; and every open item
+   carried at `J-architect_docs_lead-0055`'s tail stands.
+
+### Files-in-this-commit
+- docs/PROCESS-MEMOIR.md
+- docs/PROCESS-STE.md
+- docs/PROCESS.md

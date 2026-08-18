@@ -236,7 +236,11 @@ the two disagree this file governs and the rendition is the defect** — the sam
 precedence idiom the companion volume and the facsimiles already carry. *(No
 posture row — added after the measurement. Posture: **review-enforced**; nothing
 checks that the rendition tracks this file, which is the doc–shell drift check's
-hazard one volume down.)*
+hazard one volume down. A commissioned cold probe read the rendition against this
+file once, on 2026-08-18, and returned thirteen fidelity defects in it and four
+currency residues in this file — repaired in that round's own commit, recorded at
+the companion's B.13. **One reading is not an instrument**, and the posture above
+is unchanged by it.)*
 
 **Do not import any statement in this document that a control is mechanically
 enforced. Check it in your own machinery before you repeat it.** A guarantee
@@ -375,10 +379,12 @@ before you read anything as evidence.** `[B.8·6]`
 
 > **The stamps do not cover this document. They cover the document it used to
 > be.** The posture list measured `docs/PROCESS.md` as it stood at one commit,
-> at **1,445 lines**. The text you are reading is **6,035 lines — past four
-> times that**, and the figure is *this* edition's, re-measured in the act
-> that moved it. *(The adjective moved with the figure: it read "nearly four
-> times" while the ratio was 3.8, and the ratio crossed four at this edition. **A
+> at **1,445 lines**. The text you are reading is **6,081 lines — past four
+> times that**, and the figure is re-measured in the act that moved it, which
+> at this state is the currency-repair round of 2026-08-18 rather than an
+> edition. *(The adjective moved with the figure: it read "nearly four
+> times" while the ratio was 3.8, and the ratio crossed four at the eighth
+> edition. **A
 > qualifier is part of a measurement and goes stale with it** — which is the
 > defect this block exists to name, committed by this block, and caught by
 > re-deriving the ratio instead of only the count.)* Well over half of it — everything the second edition
@@ -418,12 +424,14 @@ before you read anything as evidence.** `[B.8·6]`
 > program's file-size discipline to the largest file the agents' own reading tool
 > returns in one call — **262,144 bytes** — and §2.2 states the failure class in
 > terms: *a file that exceeds what a reader can load in one piece stops being
-> read at all.* **This file is 404,217 bytes.** It is past its own anchor
-> by roughly 54 per cent, in the runtime that produced it, and the
+> read at all.* **This file is 407,753 bytes.** It is past its own anchor
+> by roughly 55 per cent, in the runtime that produced it, and the
 > declared blank-slate executor of §6.2 **cannot load it in one call there**.
 > The discipline was applied to journals, which rotate, and never to this
 > document, which has no rotation story. The companion volume, at
-> 244,076 bytes, is inside the anchor.
+> 251,807 bytes, is inside the anchor — by under eleven thousand bytes, which
+> is one repair round's worth of margin and is stated as a figure rather than
+> as a comfort.
 >
 > **So fragment-reading is not merely possible here, it is forced — and what a
 > windowed reader should load first is stated rather than left to the window.**
@@ -439,11 +447,13 @@ before you read anything as evidence.** `[B.8·6]`
 > anchors, so jumping by reference is a scan, not a link — and the complete
 > repair is a smaller core, which is a later edition's act and not this one's.*
 >
-> *(Re-measured in each edition rather than carried. **A boundary claim about a
-> document's own coverage decays faster than any claim inside it** — every edit
-> moves the boundary and none of them touches the sentence — so the way to keep
-> it true is to re-measure it in the act that moves it. That now includes the
-> byte figure: it is the one this edition's own `wc -c` returned.)*
+> *(Re-measured in **every act that moves it**, and not once per edition. **A
+> boundary claim about a document's own coverage decays faster than any claim
+> inside it** — every edit moves the boundary and none of them touches the
+> sentence — so the way to keep it true is to re-measure it in the act that moves
+> it. That now includes the byte figure, and the rule was tightened from
+> *per edition* to *per act* on 2026-08-18, when a currency-repair round that was
+> not an edition moved all four figures in this block.)*
 
 What you can rely on, stated exactly:
 
@@ -2898,11 +2908,23 @@ the ten that followed them, which are the current practice:
   mutable line" sentence described. They are also **exactly** the four whose
   files differ from their introducing commit; the other ten are byte-identical
   to the day they were frozen.
-- **Ten carry a `FROZEN` state line that was never edited at all.** Seven of the
-  ten were scored, each with a committed verdict quoting its sealed cells; the
-  remaining three are frozen and unscored. **So of the eleven scored campaigns
-  in this record, seven were scored without one byte of their seal being
-  touched.**
+- **Ten carry a `FROZEN` state line that was never edited at all**, and **every
+  one of the ten has been scored**, each with a committed verdict quoting its
+  sealed cells — the newest of them on 2026-08-12, in its campaign packet's own
+  return log. **So of the fourteen campaigns in this record that have a
+  committed seal, all fourteen have been scored, and ten of them were scored
+  without one byte of their seal being touched.** *(**The scored split is
+  re-derived here on 2026-08-18, and not carried.** The previous edition printed
+  "seven of the ten were scored, the remaining three are frozen and unscored",
+  which is the seventh edition's "six of nine" with one increment added on top
+  instead of a re-count. **Re-derived at this commit against the committed
+  verdicts, no frozen seal is unscored**: each of the ten carries one. **A count
+  incremented rather than re-derived is stale on arrival**, which is the defect
+  this whole subsection exists to fix, arriving inside the fix. Found by a
+  commissioned cold fidelity probe of the derived rendition, which reported the
+  contradiction between this bullet and the practice paragraph below; the error
+  inside the bullet itself came out of re-deriving both sides rather than
+  adjudicating between them.)*
 - **The later practice records the unsealing in the campaign packet's own
   verdict, not in the seal.** The seal is written once and never opened for
   writing again.
@@ -2943,7 +2965,7 @@ measurement is the population, and the population is countable.
 
 **FACSIMILE — instance, not norm.** The seal's header, **re-transcribed
 verbatim from a real seal in this record, with project nouns replaced by
-function names and nothing else changed.** `[B.9·1]` **Transcribed from one of the nine later
+function names and nothing else changed.** `[B.9·1]` **Transcribed from one of the ten later
 seals — the current practice, whose state line is never edited — and not from
 the four early ones.** `[B.11·8]`
 
@@ -2981,7 +3003,7 @@ afterwards. Same discipline, made structural.
 seals the **reason** for the blind — that a seeder who knows the predicted kill
 set can choose a defect site that satisfies it, so an early read destroys the
 campaign's claim to be a test rather than a confirmation — is stated **in the
-seal's own opening block**. In the nine later ones it lives in the commissioning
+seal's own opening block**. In the ten later ones it lives in the commissioning
 packet's allowlist section instead, and the seal carries only the prohibition.
 Both are real practice; the earlier placement is the better one, and it is
 cheap: **the seat you are blinding is the seat that would open this file, so the
@@ -3006,10 +3028,13 @@ file** `[CORRECTED · C-80]`:
 Nothing in the file is ever edited: a wrong prediction is not amended, it is
 adjudicated, and it dies on the record `[RE · C-81]`. The append-only guarantee
 covers journals, not packets, so this one is carried by discipline — and in the
-current practice the discipline is total rather than scoped: **the nine later
-seals were never reopened for writing at all**, and the six of them that were
-scored record their unsealing in the campaign packet's verdict. The check is
+current practice the discipline is total rather than scoped: **the ten later
+seals were never reopened for writing at all**, and all ten of them, every one
+now scored, record their unsealing in the campaign packet's verdict. The check is
 therefore the flat one: `git diff` against the freezing commit, expected empty.
+*(Reconciled on 2026-08-18 to the census above, which this paragraph had
+contradicted since the eighth edition re-measured the population and left the
+practice paragraph at the seventh edition's figures.)*
 
 **Who authors the seal, when it freezes, who is blinded from it, and who scores
 it — four questions, one paragraph, because answering them in three places is
@@ -3842,9 +3867,17 @@ by function labels. **Every figure is derived from a committed data file rather
 than typed here**, so the two cannot silently disagree: `docs/process-golden-tally.json`,
 which carries the same tally with the program's own identifiers, each excluded
 class's evidence, and the two arithmetic checks. *(No posture row — added after
-the measurement. Posture: **review-enforced**; the closure below is arithmetic
-anybody can re-run, and nothing in this repository yet re-runs it — see the
-governance check named at §6.0.)*
+the measurement. Posture: **machine-checked since 2026-08-12, on one limb and
+not on the other.** The governance check named at §6.0 runs on every push and
+**refuses** if the data file's two arithmetic identities stop closing, or if any
+of its `sealed`, `seeded` and `killed` figures is nowhere in this document's
+text. What no instrument holds is that the block **below** is the rendering of
+those figures rather than a hand-typed neighbour of them: the check asks whether
+the number appears **in the file**, not whether it appears **here**. So the
+closure is re-run for you and the derivation is still a reviewer's act. Until
+2026-08-18 this note said **nothing in this repository yet re-runs it**, six days
+after the check landed — corrected on the finding of a commissioned cold fidelity
+probe of the derived rendition.)*
 
 ```
 ## Seeded-defect dispositions — one artifact, class-based era, ten campaigns
@@ -5449,8 +5482,13 @@ because each one's absence is discovered late and expensively:
   itself, and the founding gate stays open until an external party signs it. An
   adopter who reaches Step 5 alone discovers there that the order has no ending.
   **Recruit the human first.** Hand them the sponsor guide (§6.0's kit row) and
-  §4.7 — their whole surface is five items and one of them is a five-minute
-  platform setting.
+  §4.7 — their whole surface is four items and one of them is a five-minute
+  platform setting. *(This bullet said "five items" until 2026-08-18. The fifth
+  was retired on 2026-08-17 with the movement it gated and §4.7 has read "four"
+  since; this restatement site was missed by that amendment's own currency sweep,
+  and is corrected here on the finding of a commissioned cold fidelity probe of
+  the derived rendition — §5.9's class, committed by the very edition that
+  repaired instances of it.)*
 - **A hosting platform whose protections you have actually looked at.** You need
   force-push and deletion refusal on named branches with an **empty bypass
   list** (**Annex A.5**). If there is no reachable platform at all, that is a
@@ -5867,10 +5905,18 @@ open item in your founding gate.** An adopted figure that says it is adopted is 
 parameter; one that says nothing is a number somebody will defend later as if it
 had been measured. *(**Run two, HALT-08**.)* `[B.12·23]`
 
-*Note the live residue, in three parts.* In this program the hard threshold is
-enforced on the commit surface only (§2.2, §2.5); both thresholds are read from
-the **environment** and can be overridden per invocation on either surface, so
-the anchored numbers are defaults rather than constants; and **this document's own
+*Note the live residue, in three parts.* In this program the hard threshold's
+**refusal** is on the commit surface, and **since 2026-08-12 the size limb also
+runs on the pushed-history surface, as a designed warning rather than a refusal**
+(`ADR-0021` §3; §2.2, §2.5, and §2.6's second `R10` row state the split by limb).
+The ground for the asymmetry is recorded there and is worth carrying with the
+figure: history is immutable, so a permanent red is disproportionate to harm
+bounded by one file's readability. *(This note read "the commit surface only"
+until 2026-08-18, when a commissioned cold fidelity probe of the derived
+rendition found it standing six days after the limb landed — §5.9's class again,
+at an annex row the amendment's currency sweep did not reach.)* Both thresholds
+are read from the **environment** and can be overridden per invocation on either
+surface, so the anchored numbers are defaults rather than constants; and **this document's own
 core volume is past this anchor** — the boundary block in *Read this first*
 states its byte figure against the 262,144 above and says what a windowed reader
 should load first. The discipline was applied to journals, which rotate, and to

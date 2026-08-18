@@ -1,10 +1,20 @@
 # PROCESS-STE — the process handbook in Simplified Technical English
 
 **What this volume is.** This is a derived rendition of `docs/PROCESS.md`, eighth
-edition, as that file stands at commit `f84907b`. That commit is the parent of the
-commit that adds this file. This volume restates the handbook's rules in
-controlled English, so that an agent or a stranger can parse each rule without a
-human to resolve an ambiguity.
+edition. The first revision was derived from that file at commit `f84907b`, the parent
+of the commit that added this file. **This revision is derived from the source as the
+commit carrying this revision leaves it**, because that commit first repairs four
+currency residues in the source and then re-derives the rendition sites that carry
+them. This volume restates the handbook's rules in controlled English, so that an
+agent or a stranger can parse each rule without a human to resolve an ambiguity.
+
+**This revision answers a cold reading.** A commissioned read-only probe was given
+this volume and the source and asked to grade the rendition claim by claim. It
+returned three major and ten minor fidelity defects here, and behind four of them it
+surfaced residues in the source itself. All are repaired in the commit that carries
+this revision, and `docs/PROCESS-MEMOIR.md` §B.13 carries the finding-by-finding
+record. **Read that as one cold reading, and not as a standing check**: nothing binds
+this volume to the source, and the instrument that would is still owed (§6.0).
 
 **This volume is not law.** `docs/PROCESS.md` governs. Where the two files
 disagree, `docs/PROCESS.md` wins and this volume is the defect.
@@ -48,25 +58,37 @@ that the source's claim depends on. The keeps are listed here and nowhere else.
 1. **"has never existed"** — the escape ledger (§1.5, §3.8). The simple past says
    the file was absent at some past time. The source's claim is that the file is
    absent now and was absent at every commit.
-2. **"has never run"** — the recovery drill (§1.6), the relay-fidelity spot-check
-   (§4.3). The source's claim is that the act is still outstanding.
+2. **"has never run"** — the recovery drill (§1.6). The source's claim is that the
+   act is still outstanding.
 3. **"has never fired"** — escalation class E6 (§4.6). The source's claim is that
    the class remains untested now.
 4. **"no marked reference has ever been merged"** (§3.9). The source states a
    measured property of the whole history up to now.
-5. **"has never happened"** — an adoption run by an uncommissioned party (§6.0).
-   The source's claim gates a live warranty now.
+5. **"has never happened"** — the relay-fidelity spot-check (§4.3), and an adoption
+   run by an uncommissioned party (§6.0). At §4.3 the source's claim is that the act
+   is still outstanding. At §6.0 it gates a live warranty now.
 
 This volume also keeps sentences past the length caps where a shorter form drops a
-scope qualifier the source makes load-bearing. Five sites are marked **Kept long**:
-the placement of a negative control, the definition of a normative change, the
-evidence form for a defect that survived its own campaign, the two-column rule for a
-tally, and the disposition form for a campaign kill.
+scope qualifier the source makes load-bearing. **Four** sites are marked **Kept
+long**: the placement of a negative control, the definition of a normative change,
+the evidence form for a defect that survived its own campaign, and the disposition
+form for a campaign kill. *(This paragraph said "five" and listed the two-column rule
+for a tally as the fifth. That rule is rendered inside the caps and carries no marker,
+so the count is re-derived here against the markers themselves.)*
 
-**The length residue, measured rather than claimed.** Over 2,762 sentences the median
-is **9 words** and the mean is **11.1**. **210 sentences, or 7.6 per cent, run past 25
-words**, and the longest is 46. **That residue is a defect of this rendition and not a
-property of the source**, and a later edition should carry it down.
+**The length residue, measured rather than claimed — and the method printed, so a
+reader can re-run it.** **Method:** strip fenced blocks and table rows. Treat each
+heading and each list item as its own block. Join a paragraph's soft-wrapped lines.
+Replace each backticked span with one token, and drop the emphasis markers. Split each
+block at sentence-final punctuation followed by whitespace. **Result:** over **2,591
+units** the median is **10 words** and the mean is **12.2**. **264 units, or 10.2 per
+cent, run past 25 words**, and the longest is **61**. **That residue is a defect of
+this rendition and not a property of the source**, and a later revision should carry
+it down. *(The previous revision printed 2,762 units, a 9-word median and a 7.6 per
+cent residue. Those figures came from a method this volume never printed and this
+revision could not reproduce, so the figures above are re-derived and not carried, and
+the two sets are not comparable. **A self-measurement whose method is not printed is a
+figure nobody can re-run, including its author.**)*
 
 ---
 
@@ -200,6 +222,10 @@ repository (§6.0).
 - **The committing monopoly is a rule the seats keep.** No instrument binds who
   runs the version-control tool. What the machinery holds is narrower and real: no
   seat can commit outside its own write scope, whoever runs the tool.
+- **Rule 3 is review-enforced.** No instrument allocates a packet number or refuses
+  a duplicate one. What makes the numbering, the ordering and the attribution of the
+  whole record enforceable is that one seat commits, so allocation sits under one
+  authority.
 - **Rules 4 and 5 are machine-checked**, on the pushed-history surface.
 - **Rule 6 is held by no script anywhere.** The hosting platform's branch
   protection holds it, and nothing else does (§2.6, Annex A.5).
@@ -419,10 +445,14 @@ implementation is wrong.
 rule creates a check on a seat, route the check to some other seat. If the natural
 reviewer of an artifact is the party the artifact grades, that routing is a defect.
 
-**Status.** Review-enforced. **The exhibit that illustrates this separation could
-not be located in the committed record.** The source keeps it, marks it, and
-records that it owes an anchor or a removal. **The rule is independently
-anchored**, because the constitution codifies the same shape.
+**Status.** **The source states no posture for this separation**, and this volume
+states none for it. What the source does stamp is the **exhibit**, and it stamps it
+**unanchored**: the audit could not locate that episode in the committed record, so
+the source keeps the exhibit, marks it, and records that it owes an anchor or a
+removal. **The rule is independently anchored**, because the constitution codifies
+the same shape and it recurs as the first disguise in §5.7. **An unanchored exhibit
+is a different defect from an unanchored rule**, and collapsing the two is how good
+rules get deleted with their bad exhibits.
 
 **(e) The thing that grades is itself graded, against something the organization
 did not write.** A reference model may not judge an artifact until somebody has
@@ -1372,11 +1402,12 @@ comparing every seal file's current bytes against its bytes at the commit that
 introduced it. **Fourteen seals exist.** **Four — the earliest — flip their state
 line** when the campaign opens, and those same four are exactly the seals whose files
 differ from their introducing commit. **Ten carry a `FROZEN` state line nobody edited
-at all**, and are byte-identical to the day they were frozen. Seven of those ten were
-scored, each with a committed verdict quoting its sealed cells, and the remaining three
-are frozen and unscored. **Of the eleven scored campaigns in this record, seven were
-scored without one byte of their seal being touched.** The later practice records the
-unsealing in the campaign packet's own verdict, and not in the seal.
+at all**, and are byte-identical to the day they were frozen. **Somebody scored every
+one of those ten**, each with a committed verdict quoting its sealed cells. **Of the
+fourteen campaigns in this record that hold a committed seal, somebody scored all
+fourteen, and ten of them were scored without one byte of the seal being touched.**
+The later practice records the unsealing in the campaign packet's own verdict, and not
+in the seal.
 
 **The later form is strictly stronger, and it is the one to build.** A seal with a
 designed mutable line is an author-editable field inside a block whose whole value is
@@ -1403,7 +1434,9 @@ result, the other copy exposes the edit.**
 **Nothing in the seal file is ever edited.** A wrong prediction is not amended. It
 is adjudicated, and it dies on the record. **Status:** review-enforced. The
 append-only guarantee covers journals, and not packets. In the current practice the
-discipline is total: **nobody reopened the ten later seals for writing at all.**
+discipline is total: **nobody reopened the ten later seals for writing at all**, and
+all ten, each of them now scored, record their unsealing in the campaign packet's
+verdict.
 
 **Four questions, answered in one place.**
 
@@ -1522,7 +1555,11 @@ healthy review culture and is one where nothing that matters is ever examined.
 
 **Status.** Rule 1 is review-enforced. The record practises it for every
 constitutional amendment. **The record does not practise it for the source
-document**, whose first edition asserted the rule and landed unsigned.
+document**, whose first edition asserted the rule and landed unsigned. **The
+current edition owes signatures too, and it names them**: each seat whose
+discipline the source describes confirms the description of its own discipline.
+The source lists that owed traffic in its Annex B, which lives in
+`docs/PROCESS-MEMOIR.md`.
 
 **Where a countersignature physically lives.** It is written twice, in two places,
 by two different acts, and the duplication is the mechanism. **The authority is a
@@ -1693,17 +1730,19 @@ signed.**
 ### 3.8 Sign-offs, and why honest failures are preserved
 
 A **sign-off** is the verification line's verdict on one artifact. It states pass or
-fail and carries eight things.
+fail and carries the elements below. **The source states no count of them, and this
+volume states none.**
 
 1. The suite, named.
 2. The exact commands to reproduce the run.
 3. The requirement-to-test mapping, with the gaps declared.
 4. The stress-test results.
 5. The seeded-defect dispositions (§3.9).
-6. **The external anchor's disposition per stimulus class**, with what the anchor does
-   not cover named beside what it does.
-7. **No artifact-level claim assembled out of passing classes** (§1.4(e)).
-8. The open defects.
+6. **The external anchor's disposition per stimulus class.** Two conditions sit
+   inside this one element, and neither is a separate element: what the anchor does
+   **not** cover is named beside what it does, and **no artifact-level claim is
+   assembled out of passing classes** (§1.4(e)).
+7. The open defects.
 
 **This list is a floor, and not a description of any packet.** It is the least a
 sign-off may contain. A sign-off is a merge precondition, and a seat relays it
@@ -1950,9 +1989,16 @@ dangerous than a form you know to be partial.**
 instance of the block above — one artifact, class-based era, ten campaigns — derived
 from a committed machine-readable data file, with its two arithmetic identities
 closing in print and its unreachable set published beside it rather than inside it.
-**Read it at `docs/PROCESS.md` §3.9, and read the data file it is derived from.** A
-governance check in this repository re-runs the arithmetic on every push and checks
-that the printed figures appear in the source's own text.
+**Read it at `docs/PROCESS.md` §3.9, and read the data file it is derived from.**
+
+**Status of that block, on two limbs.** Since 2026-08-12 a governance check in this
+repository runs on every push and **refuses** if the data file's two arithmetic
+identities stop closing, or if any of its `sealed`, `seeded` and `killed` figures is
+nowhere in the source's text. **No instrument holds the other limb**: the check asks
+whether a figure appears **in the file**, and not whether it appears **in the block**.
+So the closure is re-run for you, and the derivation of the printed block from the
+data file is still a reviewer's act. **More:** `docs/PROCESS.md` §3.9's posture note,
+which states the same split.
 
 **One departure the source states rather than leaves to be discovered.** The sign-off
 packet in this record carries its era at a **different sealed figure**, computed under
@@ -2009,8 +2055,9 @@ noun of any kind, and it must teach a stranger to both the domain and the projec
 **Domain**: the statement may name domain nouns such as standards, algorithm
 families and encodings, may name no project noun, and must name the **domain pack**
 it belongs to. **Both grades are read with the provenance hidden.** Anything passing
-neither grade is recorded as a **war story**: kept, binding nowhere, re-offerable
-later. **A nil yield is declared, and never omitted.**
+neither grade is recorded as a **war story** — kept, binding nowhere, re-offerable
+later — **or it is adopted locally by its own instrument**. **A nil yield is
+declared, and never omitted.**
 
 **A domain pack** is a named bucket of rules holding for one domain and not
 universally. A domain-grade rule names its pack, so a later program pulls in only
@@ -2200,7 +2247,8 @@ immediately before the audit that produced the source's stamps.
 
 **Failure.** A half-applied change looks like a complete one, because nobody
 wrote the parts that would have contradicted it, so the resuming agent's review
-finds nothing wrong. **Discarding and re-deriving costs a round.
+finds nothing wrong. **Discarding and re-deriving costs a round. Resuming costs a
+defect nobody can date.**
 
 **More:** `docs/PROCESS.md` §4.5.
 
@@ -2558,9 +2606,12 @@ done. It is the shell's repository and not this one's.**
    program's picture of it. **Fetch before you rely on anything.** **A pin naming a
    digest nobody re-read is a stronger-looking claim and a weaker one.**
 
-**The kit inventory.** The source carries a thirteen-row table naming each artifact,
-what it is, where its original lives, and **what is known to diverge from current
-law**. Read the fourth column first if you are importing. **A kit whose originals are
+**The kit inventory.** The source carries a table naming each artifact, what it is,
+where its original lives, and **what is known to diverge from current law**. *(The
+source states no row count, and this volume states none. An earlier revision of this
+volume printed "thirteen-row", which was a count the source does not make and which
+did not match the table.)* Read the fourth column first if you are importing. **A kit
+whose originals are
 warranted to exist, and are not warranted to be current, is a kit that exports its
 owner's unpaid debts under the word *original*.**
 
@@ -2598,8 +2649,9 @@ minute one.
    is written from inside the artifact being installed, and where the two orders
    disagree about *what to do when*, it has the machinery in front of it.
 2. **§6.2 governs as the shell-less fallback, and as the reasons underneath either
-   order.** It is the only order anybody has executed end to end without the shell —
-   twice — and it is where every step's *why* is written.
+   order.** It is **the only order that anybody has ever executed end to end — twice,
+   and both times in worlds that could not reach the shell** — and it is where every
+   step's *why* is written.
 3. **Follow the shell's sequence, and read §6.2's grounds for each step.** Where the
    shell's order does something §6.2 warns against, check §6.2's warning rather than
    obeying it blindly.
@@ -2894,7 +2946,7 @@ them is a person. **Confirm all four items before Step 0.**
 1. **A human sponsor, recruited and willing.** Step 5 cannot close without them,
    because ratification is the one act §1.7 says an organization cannot perform for
    itself. **Recruit the human first.** Hand them the sponsor guide and §4.7: their
-   whole surface is five items, and one is a five-minute platform setting.
+   whole surface is four items, and one is a five-minute platform setting.
 2. **A hosting platform whose protections you have actually looked at.** You need
    force-push refusal and deletion refusal on named branches, with an **empty bypass
    list** (Annex A.5). If there is no reachable platform at all, that is a different
@@ -2943,7 +2995,7 @@ destroyed the map the step then required.
 
 **Reason for the step.** The program that wrote the source had never performed
 it, and performing it returned fifteen false claims. **You are inheriting a
-corrected document.
+corrected document. You are not inheriting the correction of your own copy.**
 
 **Kit consumed:** the self-test, the commit script, the policy module, the posture
 list, the inherited name map.
@@ -3210,8 +3262,12 @@ carry the measurement as an open item in your founding gate. **An adopted figure
 says it is adopted is a parameter. One that says nothing is a number somebody will
 defend later as if it had been measured.**
 
-**The live residue, in three parts.** In this program the hard threshold is enforced
-on the commit surface only (§2.2, §2.5). Both thresholds are read from the
+**The live residue, in three parts.** In this program the hard threshold's **refusal**
+is on the commit surface. **Since 2026-08-12 the size limb also runs on the
+pushed-history surface, as a designed warning and not as a refusal** (§2.2, §2.5, and
+§2.6's second `R10` row state the split by limb). The recorded ground for the
+asymmetry: history is immutable, so a permanent red is disproportionate to harm
+bounded by one file's readability. Both thresholds are read from the
 **environment** and either surface can override them per invocation, so the anchored
 numbers are defaults rather than constants. And **the source's own law volume is past
 this anchor**: its boundary block states its byte figure against the 262,144 above.
@@ -3372,3 +3428,11 @@ is the only place they exist.
 stamp and cites no posture-list row. **A Status line here is a rendition of the
 source's calibration, and not an independent measurement.** Nobody re-measured any
 claim in the act of writing this volume.
+
+**One exception, at this revision, and it is stated so the sentence above stays
+true.** Repairing the cold probe's findings required one measurement over this
+program's own record: the seal census of §3.3, re-derived seal by seal by comparing
+each seal file's current bytes against its bytes at the commit that introduced it,
+and each campaign's scored state against its committed verdict. **That measurement
+moved the source**, and this volume carries the moved figures. Every other Status line
+here remains a rendition of the source's calibration and nothing more.

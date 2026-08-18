@@ -1527,14 +1527,18 @@ They are named so the debt is countable; none is applied in this edition.
    agreed to it, which is §3.7's checklist-amending-the-constitution defect run
    from the other end.
 8. **The re-measurement of the posture list against the grown document.** The
-   list measured 1,445 lines; the core is now **4,919 lines, about three and a
-   half times that**, and the boundary block in *Read this first* carries that
-   figure and re-measures it in every act that moves it. *(This cell said
+   list measured 1,445 lines; the core is now **6,081 lines, past four times
+   that**, and the boundary block in *Read this first* carries that figure and
+   re-measures it in every act that moves it. *(This cell said
    "nearly three times" against a preamble saying "about three and a half" —
    two live figures for one measurement, in the passage governing the
    evidentiary boundary itself. Reconciled at the sixth edition;
    the core's boundary block is the canonical statement and this cell points
-   at it.)* `[B.11·20]` The re-measurement — new rows for every claim
+   at it. **The cell then went stale anyway**, carrying 4,919 lines and *about
+   three and a half times* while the core reached 6,072 — corrected on
+   2026-08-18. Naming a canonical statement does not stop a restatement decaying;
+   only re-deriving it in the act that moves it does, and that is §5.9's whole
+   subject.)* `[B.11·20]` The re-measurement — new rows for every claim
    added since, and a re-execution of the existing ones against the current
    machinery — is the **auditor's**, in the auditor's own artifact and scope.
    Named here because this document cites that artifact on every stamp and a
@@ -2371,6 +2375,55 @@ edition's own state.
    record says. *A figure re-derived by the method its carrier claims is this
    document's own rule, and it binds a dispatch's figures exactly as it binds an
    edition's.*
+
+**The probe repairs, 2026-08-18 — a cold reading of the derived rendition, and the
+four source residues behind it.**
+
+After the eighth edition shipped, the sponsor's Simplified Technical English
+rendition landed at `docs/PROCESS-STE.md`, and its own round closed with the
+objection that no seat but its author had read it against the source — §5.7's root
+class sitting on a volume about §5.7's root class. **A read-only cold probe was then
+commissioned to close exactly that**: it was given the rendition and the source and
+asked to grade the rendition claim by claim. Its report is **not a committed
+artifact** and it holds **no seat**; the orchestrator relayed its findings, and each
+was re-verified against the source before any repair, because a relay is a pointer
+and never the authority. It returned **three major and ten minor** defects in the
+rendition, and behind four of them it surfaced **four residues in the source itself**
+— every one a restatement site the eighth edition's currency sweep missed, which is
+§5.9's class committed by the very edition that repaired instances of it. **All
+seventeen are repaired in one commit, none declined.** The source was repaired first
+and the rendition re-derived against the repaired sentences, so no rendition site
+carries a sentence its source no longer holds.
+
+| # | Class | Site | Disposition |
+|---|---|---|---|
+| P1 | source residue | §6.2 Step −1, sponsor bullet | **Repaired.** *five items* → **four**; the fifth was retired 2026-08-17 with the movement it gated and §4.7 had said *four* since. Dated in place, with the finder named. |
+| P2 | source residue | Annex A.3's live-residue note | **Repaired.** The size limb has run on the pushed-history surface as a designed **warning** since 2026-08-12; the **refusal** stays commit-surface. The note had said *commit surface only* for six days. Split stated by limb, with the recorded ground for the asymmetry. |
+| P3 | source residue | §3.3's later-practice paragraph | **Repaired, and the census it was reconciled to moved as well** — see the row below. |
+| P4 | source residue | §3.9's worked-tally posture note | **Repaired.** It said *nothing in this repository yet re-runs it* six days after the governance check landed. Posture now stated on two limbs: the closure is machine-checked; that the printed block is the rendering of the data file is not, because the check asks whether a figure appears in the file and not whether it appears in the block. |
+| P5 | **not on the relayed list** — found by re-deriving | §3.3's seal census | **Applied, and this row exists so the correction is a decision rather than a drift.** The dispatch said to reconcile the stale practice paragraph *to the census sentence*. Re-deriving both sides instead showed **the census sentence was itself stale**: it printed *seven of the ten frozen seals scored, three unscored*, which is the seventh edition's *six of nine* with one increment added on top rather than a re-count. Re-measured at this commit: fourteen seals, four flippers (exactly the four whose bytes moved), **ten frozen and every one of them scored**, each with a committed verdict — so **all fourteen sealed campaigns are scored, ten of them without a byte of the seal being touched.** **B.13 row 10 keeps what the eighth edition measured, unedited, and this row records what the re-derivation returned.** *A count incremented rather than re-derived is stale on arrival* — the defect §3.3 was rewritten to fix, arriving inside the fix. |
+| P6 | rendition, major | STE §6.0 kit inventory | **Repaired.** *thirteen-row table* → no count. The source states none and the table holds fifteen rows; a rendition may not mint a count its source does not make. |
+| P7 | rendition, major | STE §3.3 | **Repaired.** Carries the repaired census, and the dropped companion clause — where the scored seals record their unsealing — is restored. |
+| P8 | rendition, major | STE §3.9 tally block | **Repaired.** True of the source after P4, and now cites it and carries its non-coverage limb, so no strengthening beyond the repaired source survives. |
+| P9 | rendition, minor | STE §1.4(d) | **Repaired.** The minted *Status: review-enforced* is removed. The source states no posture for that separation and stamps only its exhibit, **unanchored**; the honest form says so and keeps the rule's independent anchor. |
+| P10 | rendition, minor | STE §3.10 | **Repaired.** *or adopted locally by its own instrument* restored to the war-story disposition. |
+| P11 | rendition, minor | STE §3.5 | **Repaired.** The standing owed half restored: the current edition owes signatures too, and names them — each described seat confirms the description of its own discipline (Annex B). |
+| P12 | rendition, minor | STE §4.5 | **Repaired.** Truncated sentence completed — *resuming costs a defect nobody can date* — and the unclosed emphasis closed. |
+| P13 | rendition, minor | STE §6.2 Step 0 | **Repaired.** Truncated sentence completed — *you are not inheriting the correction of your own copy* — and the unclosed emphasis closed. |
+| P14 | rendition, minor | STE §6.0 precedence rule | **Repaired.** The added qualifier *without the shell* is removed and the source's sentence shape restored: **the only order that has ever been executed end to end — twice, and both times in worlds that could not reach the shell.** The qualifier reshaped a claim about the order into a claim about the worlds. |
+| P15 | rendition, minor | STE §3.8 | **Repaired.** The minted *carries eight things* is dropped, and the anchor element's two conditions are returned to sub-clauses of that element instead of standing as peer items. |
+| P16 | rendition, minor | STE §1.1 | **Repaired.** Rule 3's calibration added to the Status block: packet-number allocation is **review-enforced**, held by one seat committing and by no instrument. |
+| P17 | rendition, minor | STE header, *Kept long* census | **Repaired by re-counting the markers.** The claim said five; four markers exist. The count moves to four and the item that carried no marker — the two-column rule for a tally, rendered inside the caps — leaves the list. *A count over its own list must be derived from the list.* |
+| P18 | rendition, minor | STE header, departures item 2 | **Repaired.** §4.3's phrase is *It is owed. It has never happened.*, not *has never run*; §4.3 moves to the *has never happened* item and item 2 keeps §1.6 alone. |
+| P19 | faithful carry, now moot | STE §6.2 Step −1 and Annex A.3 | **Repaired with their sources.** The probe recorded that the rendition reproduced both sides of P1 and P2 exactly as the source did, which is faithful carriage and not a rendition defect. Repairing the source made both sites stale in the rendition, and both were re-derived in the same commit. |
+
+**What this round did not do.** It re-measured **one** thing — the seal census —
+because a repair required it. **No posture stamp is re-measured**, the posture list is
+untouched for the eighth consecutive edition, and the doc–shell drift check is still
+not built. **Nor is the core-to-rendition axis bound by anything**: the rendition's
+currency is still carried by a sentence, and this round is one cold reading rather
+than a standing check. *A cold reading that finds seventeen things is evidence about
+the instrument that was missing, not evidence that it now exists.*
 
 ---
 
