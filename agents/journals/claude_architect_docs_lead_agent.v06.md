@@ -1571,3 +1571,298 @@ current.
 ### Files-in-this-commit
 - docs/PROCESS.md
 - docs/PROCESS-MEMOIR.md
+
+## [J-architect_docs_lead-0060] 2026-08-18T00:14:00Z | task:none | ADR-0023 §7's last open row closes: the OPEN gate record stops quoting a transit that no longer exists, its four Part B boxes come back byte-identical to the amended block — and the completeness box is adjudicated against the landing entry that looks like it discharges it and does not
+
+### Trigger
+
+Orchestrator dispatch, one round, dispatch-only (no work-order packet). The
+commission: discharge **ADR-0023 §7 row 7** — the owed-restatement list's one
+row still open, `docs/gates/P1-module-ready-checklist.md`, an **OPEN** gate
+record whose §7.1 carried harvest 1's Part B against the shell. The row was
+minted by my own previous round (`J-architect_docs_lead-0058`) as one of two
+targets the dispatch had not named, owed *"to `architect_docs_lead`, on the next
+round that opens `docs/gates/`"*. This is that round.
+
+**§4.1 precheck, both outputs recorded** (PROCESS §4.1; the refusal branch was
+not taken because both matched the dispatch):
+
+- `git rev-parse --short HEAD` → `9f6336a` — the eighth-edition commit, exactly
+  what the dispatch said to expect.
+- `git status --porcelain` → **empty**. Clean tree, nothing staged, nothing
+  untracked.
+- **No declared siblings**, outward, and none appeared inward: HEAD did not move
+  during the round.
+
+One thing the precheck did not anticipate and the entry records rather than
+smooths: **the round crossed UTC midnight**. The law it re-quotes moved on
+2026-08-17 and this annotation lands on 2026-08-18, so every dated marker I
+wrote distinguishes the two — `[annotated 2026-08-18]` for the act, `2026-08-17`
+for the law. A record that dated its own annotations to the day of the thing it
+annotates would be claiming to have been faster than it was.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md` — my charter, in full, first.
+- `agents/PROTOCOL.md` — the constitution, in full. §7 (gates; the **Lessons
+  harvest** paragraph as amended at `0fe5f8c`), §4 (entry grammar), §6 (scopes).
+- `/tmp/.../scratchpad/wo-gates-requote.md` — the work order, in full.
+- `docs/adr/ADR-0023-the-retraction-mirrored-lessons-are-local.md` (688 lines) —
+  §§1–7 in full, D3, D4, D5, §5.1, §5.2, §6.1, §6.2, §6.3, and §7 row 7 with its
+  `G-7`-answered-by-retirement clause.
+- `docs/gates/lessons-harvest-block.md` as amended at `28c0707` — §1, §2, §2.1,
+  §3's block (the current Part B four), §4's transcriber notes.
+- `agents/handoffs/HT-01_first-harvest-transit.md` — §§1–5 and the appended **§6
+  disposition note** (`J-orchestrator-0306`).
+- `docs/LESSONS.md` at `5d2264d` — the travel-copy header, the **Landing H1**
+  front matter, the first seat section (form check only).
+- `agents/journals/claude_orchestrator_agent.v03.md` — `J-orchestrator-0306` in
+  full, at the journal, not from a summary; `J-orchestrator-0305` header.
+- `agents/handoffs/SO-xgmii_rx_64.md` §4.10 — the deferral line as the packet
+  froze it, read to verify this file quotes it accurately.
+- `docs/gates/P1-module-ready-checklist.md` — the subject, 555 lines, in full.
+- `docs/PROCESS.md` §4.1, §4.2 (the precheck and the sibling discipline).
+
+### Reasoning
+
+**The re-quote is not optional and the file says why itself.** §0.2 is this
+record's own constitution: *"this file states no condition its cited source does
+not contain"*, minted after `FINDING SO-5`, where a gate instrument quoted its
+source accurately and the source was wrong. On 2026-08-17 the sources moved
+under the file — PROTOCOL §7 at `0fe5f8c`, the block at `28c0707` — and §7.1
+went on stating four collation acts of which two no longer exist. Every box was
+unchecked and every signature cell empty, so nothing frozen was disturbed and
+the repair is cheap; the cost of not doing it is a collator arriving at this
+gate and being told to link a shell commit.
+
+**The governing distinction all round: what is a frozen measurement and what is
+live text.** Three artefacts here are dated records and were annotated, never
+rewritten — the packet's §4.10 deferral quote (frozen at `41fead6`), the packet's
+bound 10 (a measurement of what did not exist at `41fead6`), and the three
+transit-state bullets (true of 2026-08-11). Two are live conditions and were
+re-quoted — §7.1's and §7.3's Part B boxes, and §7.3's Yield caption and tier-3
+heading. **The test I used**: does the sentence assert something *about the past*
+or *require something of a future checker*? The first gets a dated bracket, the
+second gets the current law.
+
+**Where I went further than "annotate" and why.** My first pass replaced §7.1's
+four old boxes with the four new ones and kept only their gist in prose. Reading
+it back, the old box 9 carried a **ruling** — *"checked against the maintainer's
+returned mapping and against nothing else"* — that a reader of this record's
+history would have found gone with no trace. So the four superseded boxes and
+their `Reads` are now kept **verbatim inside a blockquote** beneath the live
+four, with a line saying in terms that they are quoted and not live, because
+four unchecked boxes in a gate file are a hazard if a checker cannot tell which
+set binds. §7.3's old Part B is the same four; it points at §7.1's copy rather
+than duplicating them, since two verbatim copies of a retired law in one file is
+one more than the record needs.
+
+**The completeness-box adjudication — the round's real decision.** Box 11 reads
+*"Harvest declared complete by the orchestrator: `J-orchestrator-NNNN`"*, and
+`J-orchestrator-0306` — the landing entry — says in its Outcome *"Part B of
+harvest 1 is DISCHARGED locally"*. It is the obvious candidate and it reads close
+enough to be mistaken for the discharge. **I ruled it does not discharge the
+box**, on three grounds, and wrote all three into the box's own `Reads` so the
+collator inherits the reasoning and not just the verdict:
+
+1. **Act versus harvest.** `-0306` declares an act performed; box 11 declares a
+   harvest complete. A harvest is complete when the boxes constituting it are
+   checked at the gate that ratifies it, and three of the four had never been
+   checked anywhere, because until the landing they could not be.
+2. **A2-D3's principle, which ADR-0023 D5 applies to this very landing.** A gate
+   inherits no box from another trigger; D5 says the landing discharges the
+   *obligation to land* and is *"re-verified at `P1-module-ready` exactly as
+   A2-D3 already provides"*. Evidence the boxes read, not the check itself.
+3. **The entry convicts itself, and this is the ground I would defend hardest.**
+   `-0306`'s own Outcome names *"the `P1-module-ready` checklist's own §7.1
+   re-quote"* as work still outstanding. An entry that records this gate's record
+   as still quoting a retired law cannot also be the entry that closes this
+   gate's last harvest box — it would be declaring complete a harvest whose gate
+   record it has just described as wrong.
+
+**The counter-reading is in the file too**, because an adjudication that hides
+the argument against it is an appeal record with a page torn out: a second
+declaration looks like ceremony. It is not, and the reason is content — the
+fresh entry asserts three boxes checked **against this record**, over a record
+that did not exist in this form when `-0306` was written, and it is the entry an
+auditor samples for this gate.
+
+**Two readings I supplied rather than settled, and one I opened.** Box 8's *"and
+nothing else"* meets a landing commit carrying four paths; I gave the collator
+the citation that resolves it (ADR-0023 §6.1 directs `HT-01`'s note into that
+same commit, §7 row 4 homes the board edit in the round, and R2 obliges the
+journal) and left the clause's reading where it belongs. Box 10's *"outcome
+recorded on its row"* meets a whole-set fact, because harvest 1 landed into a
+file the landing commit created — determinate over an empty set, and the last
+time this box is trivial, since harvest 2 checks against 353 entries. And
+**`G-12` is opened**: ADR-0023 D4 leaves the sponsor *"exactly one"* touchpoint,
+*"the gate signature they were already giving"*, and the block's standing line
+has the landing ride *"the gate-closing commits the sponsor already signs"* —
+but **PROTOCOL §7 gives `P<n>-module-ready` no sponsor signature at all**, which
+is the exact fact the retired sponsor-visibility box was constructed around
+(§7.2 explains it in the law it now quotes historically). Either the touchpoint
+is empty until `P1-phase-accept` or the standing line names a gate class this one
+is not in. §0.2 forbids me to settle that in this file's prose; it becomes an
+item with an owner and a closing event, which is what §0.2 asks for instead.
+
+**`G-7` is answered, and I refused the tidy version of the answer.** ADR-0023 §7
+supplies it — *"the moment question A2 left open had a shell commit for its
+subject, and there is no shell commit"* — and I recorded the ADR's answer in the
+finding's row rather than ruling it myself. But retirement answers the question
+as posed and leaves its local twin standing: **harvest 1's landing commit
+`5d2264d` did land before the gate that ratifies it.** That is answered too, and
+by an act rather than by silence — D5 performed the landing and provided for
+re-verification here — so the row says so. A finding closed by pointing at a
+retired noun, while the same question walks back in wearing the new one, is a
+closure that will be reopened by the first person who notices.
+
+**What I did not touch, deliberately.** `G-1` and `G-4(ii)` (they do not concern
+the transit); Part A's seven boxes, which I then checked mechanically to prove I
+had not moved them; `tasks/BOARD.md`, outside this round's write set and the
+orchestrator's in any case. And one thing I found and did **not** repair, which
+is in Open-questions: this file's §0.1 and §3 quote PROTOCOL clause (b) in a
+wording the constitution stopped using on the same day the file landed.
+
+### Actions
+
+Edited `docs/gates/P1-module-ready-checklist.md` only (555 → 798 lines), nine
+sites:
+
+1. **§2.3 bound 10** — bound kept as the packet measured it; **disposition
+   re-pointed** term by term (no `L-` id → ids landed unrenumbered; no shell
+   commit → none owed, D3; no sponsor sight → retired, D4; completeness → still
+   owed here), naming the landing, its commit and its entry.
+2. **§7 preamble** — A2-D5's old sentence kept in a dated blockquote; the
+   restatement quoted (one local landing commit per harvest); the retired
+   rationale clause named as not surviving.
+3. **§7.1 deferral** — the packet's frozen quote kept and labelled; the block's
+   current deferral line quoted beside it with `<gate>` filled, and the
+   four-for-four swap stated.
+4. **§7.1 transit state** — the three 2026-08-11 bullets kept and labelled
+   historical; a **State now** block added (PR #3 closed unlanded; the 353 landed
+   at `5d2264d`; the outbox frozen in place).
+5. **§7.1's four boxes** — re-quoted **verbatim** from the amended block, each
+   with a `Reads` giving the citation its checker reads; the four superseded
+   boxes and their `Reads` preserved verbatim in a blockquote beneath, with the
+   quoted/live distinction stated.
+6. **§7.2** — retitled to what it meant and what retired; the whole prior section
+   preserved verbatim in a blockquote as *the law until 2026-08-17*; D4's
+   retirement quoted; the block's standing line quoted; the angle it meets this
+   gate at recorded as `G-12`.
+7. **§7.3** — Yield caption and tier-3 heading re-quoted from the amended block;
+   Part B's four boxes replaced with the current four, each with a harvest-2
+   `Reads`; the block's standing line carried in beneath them.
+8. **§8** — the sponsor row annotated: the refusal retired, `G-12` named.
+9. **§9** — `G-6`'s closing event narrowed (the shell's independent screens are
+   gone; the gate-time hide test is the only instrument left); **`G-7` answered**
+   and marked CLOSED with its local analogue answered too; **`G-12` opened**.
+   §10 item 6 annotated so no checker miscounts the quoted boxes as live.
+
+No git write commands were run. No other file was touched.
+
+### Evidence
+
+All commands run from a clean checkout at `9f6336a` with only this file and this
+journal modified; they reproduce at the commit that carries this entry.
+
+- **Precheck**: `git rev-parse --short HEAD` → `9f6336a`;
+  `git status --porcelain` → empty (both recorded in Trigger).
+- **Part A boxes did not move** (A2.3's property, the one the partition rests
+  on): `diff <(sed -n '147,168p' docs/gates/lessons-harvest-block.md) <(sed -n
+  '609,630p' docs/gates/P1-module-ready-checklist.md)` → **two differences only**,
+  both pre-existing this round: the heading form (`#### Part A — mining …` vs
+  `### Checklist — Part A (mining)`) and one cross-reference (`(§2.1)` vs
+  `(block §2.1)`). **Every box line is byte-identical.**
+- **Both Part B instantiations are byte-identical to the amended block**: with
+  the box lines and their continuations extracted (`grep -E '^- \[ \]|^      '`)
+  from the §7.1 and §7.3 ranges and diffed against `sed -n '172,182p'
+  docs/gates/lessons-harvest-block.md` → **IDENTICAL** for both.
+- **Box counts**: `grep -c '^- \[ \]'` → **15** live (4 + 7 + 4, the 7/4
+  partition and §10's stated four-and-eleven); `grep -c '^> - \[ \]'` → **4**
+  quoted-historical; `grep -c '^- \[x\]'` → **0** — no box is checked by this
+  file's author.
+- **The sweep** (work order item 5), `grep -n -i
+  "shell\|inbox\|transit\|sponsor-refused\|FEDERATION"` → **38 hit lines**,
+  classified by line range: **4** in the historical transit bullets (§7.1, dated
+  2026-08-11 and labelled), **9** inside the quoted superseded boxes (§7.1's
+  blockquote), **7** inside §7.2's preserved *law until 2026-08-17* blockquote,
+  and **18** in annotations that name the retirement, in the §9 rows that record
+  it, or in the two `G-` rows whose question text is the retired mechanism.
+  **None is live text asserting the retired law**; every one is either
+  historical-labelled or part of the re-quote. *(The count rose from 28 at my
+  first pass to 38 when I decided to preserve the four superseded boxes verbatim
+  rather than in gist — the sweep number is a measure of preserved history here,
+  not of residue, which is why it is stated with its classes and not alone.)*
+- **The landing commit's shape** (box 8's `Reads`): `git show --stat 5d2264d` →
+  four paths — `docs/LESSONS.md` (new, 2816 lines), `tasks/BOARD.md`,
+  `agents/handoffs/HT-01_first-harvest-transit.md`, and the orchestrator's
+  journal.
+- **Quotation fidelity of the packet's deferral line**: `grep -n 'Part B —
+  collation, deferred' -A 8 agents/handoffs/SO-xgmii_rx_64.md` → the packet's
+  §4.10 text matches this file's quote word for word (line wrapping differs).
+- **Table integrity**: §9's table renders 4 columns on all 14 rows including the
+  new `G-12` (`awk` column count over the range).
+- **Line discipline**: no non-table line exceeds 90 characters.
+
+### Outcome
+
+**DoD met** for a dispatch-only doc round. ADR-0023 §7 row 7 is **discharged**:
+the OPEN gate record no longer states a condition its cited sources do not
+contain, and every act it now asks of the collator exists. `G-7` is answered and
+closed; `G-12` is opened in its place, which is a net of zero on the open set and
+an honest one — the question it names was previously hidden inside a box that has
+retired. Handoff: to the orchestrator, for commit; the collator inherits three
+checkable boxes, one adjudication and one new open item.
+
+**One board item, reported not touched** (work order item 6): the board's
+*"A2.4's five clerical edits"* owed-item, which ADR-0023 §7 row 7 named as
+sharing this carrier, **appears already applied** — the block at `28c0707`
+carries the amended tier lines, the Yield caption, the tier-3 heading and the
+Part B swap, and I found no unapplied clerical edit of that set left to make in
+the block or in this file. The board is the orchestrator's; I record the finding
+and do not act on it.
+
+### Open-questions
+
+1. **This file quotes PROTOCOL clause (b) in a wording the constitution stopped
+   using six days ago, and I did not repair it — out of commission, reported
+   here.** §0.1 quotes the `P<n>-module-ready` row **verbatim** as *"auditor's
+   seeded mutations all killed by the DV suite"*; the row now reads *"the
+   auditor's seeded mutations **dispositioned per Mutation record** below"*. §3
+   quotes PROTOCOL §10's *"every PASS reports kills N/N (N ≥ 3 …)"*, which §10
+   now states as *"the disposition of every seeded mutation, each non-kill named
+   and dispositioned"*. **Measured**: this file landed at `61e0c76`
+   (2026-08-11T04:06Z); the constitution's clause-(b) rewrite landed at `a76e485`
+   (2026-08-11T19:21Z), fifteen hours later. So both quotes have been stale since
+   the day the file was written, and **`G-1` — whose entire premise is that
+   *"clause (b) says all killed"* — may already be answered, or reshaped, by
+   ADR-0020's Mutation record.** I did not touch it because a second amendment's
+   restatement riding this round would make it impossible to tell which round
+   moved the gate's central mutation condition, and because `G-1`'s owners are
+   the auditor and dv_lead. **It wants its own commissioned round**, and it is
+   exactly the defect PROCESS §5.9 exists to catch — minted by an amendment whose
+   own owed-restatement list did not include this file.
+2. **`G-12` may be a defect in the block rather than a question about this
+   gate.** The standing line ADR-0023 §5.2 put beneath Part B assumes a gate the
+   sponsor signs, and two of this programme's four gate classes are not that.
+   If the reading settles as *"the touchpoint arrives at the next sponsor-signed
+   gate"*, the block's line wants a clause saying so — my scope, not this round's
+   write set. I have not proposed the wording, because proposing it while also
+   holding the pen on the file that would carry it is how a question becomes an
+   answer without anyone deciding.
+3. **The block's box 9 still spells the landed id `L-`, and no `L-` id exists.**
+   Ids land seat-qualified and **unrenumbered** (A2-D6/D7), so the landed id is
+   the minted `LC-`/`LD-` id and the pairing is an identity. The reading is safe
+   because it rests on the box's own unrenumbered clause, but the spelling is a
+   vestige of the retired fence's numbering and will confuse the next collator.
+   A clerical pass on `docs/gates/lessons-harvest-block.md` is owed; it is inside
+   my scope and outside this round's write set.
+4. **Box 10 has never been exercised against a non-empty file**, and harvest 2 is
+   the first time it will be. Everything the dedup box protects against — a drop
+   performed silently, a composition dressed as a dedup — is unobservable in a
+   landing that dropped nothing into a file that held nothing. The first real
+   test of that box is also the first gate at which two harvests land, which is
+   not the order I would have chosen for it.
+
+### Files-in-this-commit
+- docs/gates/P1-module-ready-checklist.md

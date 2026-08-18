@@ -182,7 +182,7 @@ Every cell cites the packet; nothing here is a signature.
 | 7 | Co-simulation **Stage 3 is refused**; REQ-901's (g)/(h) reduce what the lane can anchor | **NOT A GATE ROW** — no gate condition names Stage 3; it is an input to `G-10` |
 | 8 | The traceability matrix is **34 of 110** populated; 76 empty, 97 `OPEN` | **OPEN GATE ITEM `G-4`** — REQ-904 and charter §6 both bind currency to this gate |
 | 9 | **Five findings unrepaired**, carriers unopened: `SO-2`, `SO-3`, `SO-4`, `M-4`, `P-1`'s residue | **OPEN GATE ITEM `G-8`** |
-| 10 | **The harvest's collation has not happened** — no `L-` id, no shell commit, no sponsor sight, no completeness declaration at `41fead6` | **GATE ROW — this gate is the named carrier** (§7.1) |
+| 10 | **The harvest's collation has not happened** — no `L-` id, no shell commit, no sponsor sight, no completeness declaration at `41fead6` | **GATE ROW — this gate is the named carrier** (§7.1). *[annotated 2026-08-18] The bound stands as the packet measured it at `41fead6` and is not rewritten; three of its four terms name a mechanism the law retired on 2026-08-17, so the **disposition** is re-pointed to the current Part B (ADR-0023 D3, D5; block as amended). The collation **has now happened, locally**: `docs/LESSONS.md` landing H1, commit `5d2264d`, collator's entry `J-orchestrator-0306`. Term by term — the landed ids are the candidates' own, seat-qualified and **unrenumbered**, so no separate `L-` id is awaited; **no shell commit is owed** (D3); **sponsor sight retires with the transit it gated** (D4); the **completeness declaration is still owed here** (§7.1, box 11). What this gate re-verifies is the **landing and the dedup record**, per A2-D3 and D5* |
 | 11 | `OBSERVATION SO-O1` — two of eighteen candidates in one seat's note carry a version-control tool noun under a stated `LH2-g` | **OPEN GATE ITEM `G-6`**, routed to the collator's hide test at gate-time transcription |
 | 12 | **Thirty of forty `tb_writer` entries carry no harvest note** (`-0001 … -0020`, `-0031 … -0040`) | **OPEN GATE ITEM `G-5`** — it lands on box 1's tiling claim for the worker row |
 
@@ -302,9 +302,27 @@ input to `G-3`; it does not re-home any row.
 
 **Two harvests are ratified at this gate**, and this is the first time in the
 programme that a gate carries more than one. A2-D5 fixes the consequence in
-advance: *"They are transcribed as several commits, one per harvest, in harvest
-order"* — never one commit per gate, because the sponsor's review stays one diff
-**per harvest**.
+advance. **What this paragraph said until 2026-08-17, kept as written**:
+
+> A2-D5 fixes the consequence in advance: *"They are transcribed as several
+> commits, one per harvest, in harvest order"* — never one commit per gate,
+> because the sponsor's review stays one diff **per harvest**.
+
+*[annotated 2026-08-18] A2-D5 was **restated, not deleted**, on 2026-08-17
+(ADR-0023 D3), and this paragraph is re-quoted to the restatement here.* The
+**count** and the **ordering** survive; the **site** moves inside this
+repository; and the rationale clause —
+the sponsor's per-harvest diff — does not survive at all, because the review it
+named retires with the transit it reviewed (D4). **A2-D5, as restated**:
+
+> **one local landing commit per harvest, in this repository — never one per
+> gate.** Several harvests ratified at one gate land as several commits, one per
+> harvest, in harvest order.
+
+**The property the count buys is unchanged, and it is the reason the count was
+fixed**: the record reads as a **list of harvests** rather than as a stream of
+edits. Harvest 1's landing commit is **`5d2264d`**; harvest 2's is owed and
+unlanded.
 
 | # | Harvest | Trigger | Part A | Part B |
 |---|---|---|---|---|
@@ -318,15 +336,35 @@ A2.8's first named failure mode.
 
 ### 7.1 Harvest 1 — `SO-xgmii_rx_64`, Part B (the four collation boxes)
 
-Deferred here by name at `SO-xgmii_rx_64.md` §4.10:
+Deferred here by name at `SO-xgmii_rx_64.md` §4.10 — **quoted as the packet froze
+it at `41fead6`, and left unedited because a signed packet is a dated record**:
 
 > **Part B — collation, deferred to `P1-module-ready`.** Shell transcription, the
 > `LC-`/`LD-` → `L-` pairing, sponsor visibility and the completeness declaration
 > are the collator's acts at the gate that ratifies this harvest (ADR-0018 §4.2,
 > §4.4, D6; A2.2).
 
-**Transit state at this file's landing**, read at source and not carried from a
-summary — `agents/handoffs/HT-01_first-harvest-transit.md` is **EXECUTED**:
+*[annotated 2026-08-18] Two of those four acts no longer exist.* The deferral line's
+current form is `docs/gates/lessons-harvest-block.md` §3 **as amended**
+(ADR-0023 §5.2), and it is the form **this gate owes**, because a gate
+instantiates the block **as it stands at the gate** and not as it stood at the
+deferral (block §1, A2-D2). Quoted with the block's `<gate>` field filled with
+this gate's name, which is instantiation and not an edit:
+
+> **Part B — collation, deferred to `P1-module-ready`.** The local landing, the
+> `LC-`/`LD-` → `L-` pairing, the dedup record and the completeness declaration
+> are the collator's acts at the gate that ratifies this harvest (ADR-0018 §4.2,
+> A2.2; ADR-0023 D1, D3).
+
+**The count is unchanged at four and exactly one act is swapped**: *shell
+transcription* becomes *the local landing*, and *sponsor visibility* — a power
+over a movement that no longer happens — is **retired outright**, its seat taken
+by *the dedup record* (ADR-0023 D4, §5.2). **Not one Part A box moves** (A2.3),
+and Part A is not re-checked here in any case (§7 above, A2-D3).
+
+**Transit state at this file's landing (2026-08-11), kept as written and now
+historical** — read at source and not carried from a summary,
+`agents/handoffs/HT-01_first-harvest-transit.md` was **EXECUTED**:
 
 - The collation is committed at `HT-01` — census of seven minting chains,
   extraction byte-verified per chain with an independent 14-of-14 fidelity sample,
@@ -343,61 +381,210 @@ summary — `agents/handoffs/HT-01_first-harvest-transit.md` is **EXECUTED**:
   candidate**: the maintainer stages, screens, transcribes with fence-allocated
   final ids, merges by hand, and closes the PR.
 
-**The four boxes, wording unchanged from the block, each with what it reads here.**
+*[annotated 2026-08-18] The three bullets above are true of 2026-08-11 and stay as the
+record of what happened; the second and third describe a mechanism retracted
+before it landed anything anywhere.* **State now**, read at source — `HT-01` §6,
+the packet's own appended disposition note, and ADR-0023 D5:
 
-- [ ] **Shell transcription: exactly one commit**, containing the admissible
-      candidates — general and domain — with permalinked provenance, and nothing
-      else. Commit: `<link>`
-  - *Reads*: this repo's side is the outbox commit `7fb2c99`. **The shell's side
-    is counted at the shell** — whatever protocol-conforming commits its
-    maintainer lands under its own law, since the foreign PR is never merged.
-    One harvest, one shell commit; harvest 2 gets its own (A2-D5).
+- **PR #3 is closed unlanded** by the shell's maintainer, citing the shell's own
+  ADR-0018. **The maintainer's id-mapping table the old box 9 waited for will
+  never arrive**, and no shell commit is owed by this harvest or any other
+  (ADR-0023 D3 — the `HT-` form is retired as a class and no `HT-02` will exist).
+- **The 353 candidates landed locally** on 2026-08-17 as landing **H1** of
+  [`docs/LESSONS.md`](../LESSONS.md) — the travel copy — seeded **verbatim** from
+  the frozen outbox packet, A2-D8's no-statement-edited bar applied unchanged.
+  Landing commit **`5d2264d`**, collator's entry **`J-orchestrator-0306`**.
+- **The outbox file stays frozen in place** as the record of the one delivery
+  ever performed (ADR-0023 §6.3); this repository deletes nothing it did.
+
+**The four boxes, wording taken verbatim from the block as amended (ADR-0023
+§5.2), each with what it reads here.** No box is checked by this file's author
+and no evidence field is filled by it (§0.3); what is supplied below is the
+citation each box's checker reads.
+
+- [ ] **Local landing: exactly one commit**, transcribing this harvest's
+      admissible candidates — general and domain — into `docs/LESSONS.md`, and
+      nothing else. Commit: `<sha>`
+  - *Reads*: **`5d2264d`**, collator's entry `J-orchestrator-0306` — **checkable
+    now**, and the first Part B box in this programme's history whose evidence is
+    in this repository. One commit, one harvest: it carries H1's 353 and nothing
+    of harvest 2's, whose landing is owed separately (A2-D5 as restated, §7
+    above). **The "and nothing else" clause is about what is transcribed, not
+    about the commit's file list**, and the citation for that is the amending
+    record itself: `5d2264d` also carries `tasks/BOARD.md` and `HT-01`'s
+    disposition note, and ADR-0023 §6.1 directs that note into *"the same commit
+    as … the one that seeds the file"* while §7 row 4 homes the board's
+    re-pointing in the same round (the fourth path is the collator's own journal,
+    which R2 obliges). A collator meeting a four-path commit reads the clause
+    against the file's contents, where what it excludes is another harvest's
+    candidates. *(The box this one replaced, and its `Reads`, are kept verbatim
+    beneath the four — nothing here is erased.)*
 - [ ] **`LC-`/`LD-` → `L-` pairs recorded** in the Yield table's Disposition
-      column, so each shell entry is traceable back to the note that minted it.
-  - *Reads*: the shell's `FEDERATION.md` §8.1 step 5 has the maintainer close the
-    PR with the landing commits **and the id-mapping table**
-    (`LC-nn → L-Xnn`, `LD-nn → <PREFIX>-nn`). **While the PR is open there is no
-    `L-` id to pair to**: final ids are allocated at the landing fence (§4, §8.1
-    step 4), and `HT-01` §4's `L-H1-` scheme is demoted by its own appended
-    correction to this repo's **local provisional index**, appearing in no
-    shell-bound artefact. **This box is checked against the maintainer's returned
-    mapping and against nothing else** — a pairing invented on this side would be
-    a second name for something the fence has not yet named.
-- [ ] **Sponsor-visible**: the harvest table and the shell diff were surfaced at
-      this gate. Refusals, if any, are recorded as `sponsor-refused` above.
-  - *Reads*: §7.2.
+      column, with **ids local, seat-qualified and unrenumbered** (A2-D6,
+      A2-D7), so each landed entry is traceable back to the note that minted it.
+  - *Reads*: the pairing is an **identity**, and the box's own clause is why —
+    ids land *unrenumbered*, so a candidate's landed id **is** its minted id
+    (`LC-SO-xgmii_rx_64-7` landed as `LC-SO-xgmii_rx_64-7`; `docs/LESSONS.md`
+    states in its own front matter that these *"are this file's landed local
+    ids"*). Traceability is therefore carried by the id itself plus each seat
+    section's header, which cites the minting note and its span. **The site of the
+    record is off-file, exactly as it was before**: harvest 1's Yield table is the
+    packet's, frozen at signing, so this box has always read an authority outside
+    this file — it read the maintainer's promised mapping, and it now reads the
+    landed file. **A pairing invented on this side is still barred**; what changed
+    is that nothing needs inventing. *The box's `L-` spelling is the retired
+    fence's naming and is vestigial under the identity — the reading rests on the
+    unrenumbered clause, not on the prefix.*
+- [ ] **Dedup against the file recorded**: every candidate checked against what
+      `docs/LESSONS.md` already holds, and the outcome recorded on its row.
+      Dedup is clerical — a drop carries its reason; composition is selection
+      and is never performed (A2-D8, §4.1).
+  - *Reads*: harvest 1 is the **first** landing and the file it landed into was
+    **created by the landing commit**, so *what the file already holds* is the
+    empty set and the outcome is one whole-set fact rather than 353 distinct
+    ones: **353 landed, none deduped, none dropped**, against the file's own
+    stated baseline (*"Baseline: none inherited"*) and census. **The four merge
+    pre-judgments are the one place a drop could have hidden and did not**:
+    `HT-01` §3.3 judged four candidates as merging to seeded entries of the
+    **shell's** corpus, and those partners live in a repository this programme
+    inherits nothing from — so all four landed as ordinary entries carrying the
+    pre-judgment as a **recorded annotation**, reason stated (ADR-0023 §6.2).
+    **What the collator checks is whether the whole-set form answers a box
+    written for per-row outcomes**; over an empty file the answer is determinate
+    either way, and this is both the first exercise of this box and the last
+    trivial one — harvest 2 lands against a file holding 353 entries (§7.3).
+    *This box took the retired* **Sponsor-visible** *box's seat; that box, its
+    `Reads` and the whole reading behind it are kept — beneath the four, and at
+    §7.2.*
 - [ ] **Harvest declared complete** by the orchestrator: `J-orchestrator-NNNN`.
-  - *Reads*: the collator's declaration, by definition not the miner's.
+  - *Reads*: **the declaration is owed at this gate, and `J-orchestrator-0306`
+    does not discharge it.** Adjudicated here rather than left implicit, because
+    the landing entry is the obvious candidate and reads close enough to be
+    mistaken for one. Three grounds. **(i)** `J-orchestrator-0306` declares
+    *"Part B of harvest 1 is DISCHARGED locally"*, which is a statement about the
+    **act**; box 11 is a declaration about the **harvest**, and a harvest is
+    complete only once the boxes constituting it are checked at the gate that
+    ratifies it. **(ii)** A2-D3's principle — a gate inherits no box from another
+    trigger — is why a landing is *evidence the boxes read* and not the check
+    itself; ADR-0023 D5 says exactly this of exactly this landing, discharging
+    the obligation to land and providing that it is *"re-verified at
+    `P1-module-ready` exactly as A2-D3 already provides"*. **(iii)**
+    `J-orchestrator-0306`'s own Outcome names *"the `P1-module-ready` checklist's
+    own §7.1 re-quote"* as work still outstanding — **an entry recording this
+    gate's record as still quoting a retired law cannot be the entry that closes
+    this gate's last harvest box.** What is owed: a **fresh orchestrator entry,
+    written at the gate**, declaring harvest 1 complete in the collator's own
+    words and citing the landing entry and the three boxes above. *(The
+    counter-reading, recorded because it was weighed: a second declaration adds
+    ceremony to an act already performed. It is rejected because the second
+    declaration has content the first cannot have — it asserts three boxes
+    checked **against this record**, and it is the entry the auditor samples for
+    this gate.)*
 
-**Box 8 and box 9 are not the same box, and the PR being open is why.** A2.8's
-second failure mode is *"a gate record whose Part B is checked with no shell
-commit linked"*; the inverse — a shell commit linked with no pairing recorded — is
-the same defect from the other side. Both stay unchecked until their own evidence
-exists.
+**The four boxes as this file rendered them from 2026-08-11 to 2026-08-18, kept
+verbatim and superseded in place** — a live gate record annotates and never
+erases, and the second of these carried a ruling (*"checked against the
+maintainer's returned mapping and against nothing else"*) that a later reader of
+this record's history may need to see as it stood:
 
-### 7.2 Sponsor visibility — what "surfaced at this gate" means here
+> - [ ] **Shell transcription: exactly one commit**, containing the admissible
+>       candidates — general and domain — with permalinked provenance, and nothing
+>       else. Commit: `<link>`
+>   - *Reads*: this repo's side is the outbox commit `7fb2c99`. **The shell's side
+>     is counted at the shell** — whatever protocol-conforming commits its
+>     maintainer lands under its own law, since the foreign PR is never merged.
+>     One harvest, one shell commit; harvest 2 gets its own (A2-D5).
+> - [ ] **`LC-`/`LD-` → `L-` pairs recorded** in the Yield table's Disposition
+>       column, so each shell entry is traceable back to the note that minted it.
+>   - *Reads*: the shell's `FEDERATION.md` §8.1 step 5 has the maintainer close the
+>     PR with the landing commits **and the id-mapping table**
+>     (`LC-nn → L-Xnn`, `LD-nn → <PREFIX>-nn`). **While the PR is open there is no
+>     `L-` id to pair to**: final ids are allocated at the landing fence (§4, §8.1
+>     step 4), and `HT-01` §4's `L-H1-` scheme is demoted by its own appended
+>     correction to this repo's **local provisional index**, appearing in no
+>     shell-bound artefact. **This box is checked against the maintainer's returned
+>     mapping and against nothing else** — a pairing invented on this side would be
+>     a second name for something the fence has not yet named.
+> - [ ] **Sponsor-visible**: the harvest table and the shell diff were surfaced at
+>       this gate. Refusals, if any, are recorded as `sponsor-refused` above.
+>   - *Reads*: §7.2.
+> - [ ] **Harvest declared complete** by the orchestrator: `J-orchestrator-NNNN`.
+>   - *Reads*: the collator's declaration, by definition not the miner's.
 
-ADR-0018 §4.4, in its own words: *"At gates the sponsor does not personally sign,
-the harvest table is in the checklist and the shell diff is one commit —
-ratification means the sponsor **may refuse a candidate**, and a refusal is
-recorded in the gate record's disposition column."*
+**The boxes above are quoted, not live**: they are inside a blockquote precisely
+so that no reader and no checker can mistake them for the instantiation, and the
+four live boxes are the four unquoted ones. Box 11 is the one box common to both
+renderings, and its `Reads` moved from a sentence to an adjudication.
 
-**PROTOCOL §7 names no sponsor signature at `P<n>-module-ready`** — sponsor
-approval is E1 and it lands at `P<n>-phase-accept`. So box 10 is discharged by
-**surfacing**, not by a signature, and concretely it is:
+**Box 8 and box 9 are not the same box, and they now fail apart rather than
+together.** A2.8's second failure mode is *"a gate record whose Part B is checked
+with no shell commit linked"*; the inverse — a landing linked with no pairing
+recorded — is the same defect from the other side. Both are now satisfiable from
+evidence inside this repository, which is itself new: until 2026-08-17 neither
+could be checked at all, because both waited on a party that owed this programme
+nothing.
 
-1. **The harvest table** — §7.1's four boxes and §7.3's tables, in this file.
-2. **The shell diff, one per harvest** (A2-D5). For harvest 1 the diff the sponsor
-   sees is the inbox PR's one file (PR #3) and, once the maintainer lands it, the
-   shell's own landing commits.
-3. **The refusal, exercisable candidate-by-candidate before shell history moves.**
-   `HT-01` records this as the reason the transit took PR form at all; the
-   orchestrator's ruling is at `J-orchestrator-0236`. A refusal is recorded as
-   `sponsor-refused` in the Disposition column of the harvest it belongs to.
+### 7.2 Sponsor visibility — what "surfaced at this gate" meant, and what retired
 
-**What a refusal converts a candidate into is parked** (ADR-0018 §13, unamended by
-A2). If a refusal happens at this gate, that question becomes live and is `G-7`'s
-neighbour, not a thing this file may answer.
+*[annotated 2026-08-18] **This section states the law until 2026-08-17.** The
+power it describes was retired that day by ADR-0023 D4 and its box is gone from
+Part B; this annotation is the gate record catching up. The section
+is kept, quoted whole and unedited below, because a live gate record annotates
+and never erases, and because §8's sponsor row, `G-7` and `G-12` all point here.*
+
+**The law until 2026-08-17, kept verbatim:**
+
+> ADR-0018 §4.4, in its own words: *"At gates the sponsor does not personally sign,
+> the harvest table is in the checklist and the shell diff is one commit —
+> ratification means the sponsor **may refuse a candidate**, and a refusal is
+> recorded in the gate record's disposition column."*
+>
+> **PROTOCOL §7 names no sponsor signature at `P<n>-module-ready`** — sponsor
+> approval is E1 and it lands at `P<n>-phase-accept`. So box 10 is discharged by
+> **surfacing**, not by a signature, and concretely it is:
+>
+> 1. **The harvest table** — §7.1's four boxes and §7.3's tables, in this file.
+> 2. **The shell diff, one per harvest** (A2-D5). For harvest 1 the diff the sponsor
+>    sees is the inbox PR's one file (PR #3) and, once the maintainer lands it, the
+>    shell's own landing commits.
+> 3. **The refusal, exercisable candidate-by-candidate before shell history moves.**
+>    `HT-01` records this as the reason the transit took PR form at all; the
+>    orchestrator's ruling is at `J-orchestrator-0236`. A refusal is recorded as
+>    `sponsor-refused` in the Disposition column of the harvest it belongs to.
+>
+> **What a refusal converts a candidate into is parked** (ADR-0018 §13, unamended by
+> A2). If a refusal happens at this gate, that question becomes live and is `G-7`'s
+> neighbour, not a thing this file may answer.
+
+**What retired, and why it is a retirement rather than a reduction** — ADR-0023
+D4, in its own words: the refusal power *"existed to gate what **left** the
+program. Nothing leaves. A refusal power over a movement that does not happen is
+not a reduced power, it is a power over nothing, and keeping it as a ceremony
+would be worse than retiring it: it would put a human signature on a decision
+with no object."* Concretely, each of the three items above loses its object:
+there is no shell diff to surface, the block's Disposition column no longer
+offers a `sponsor-refused` value (ADR-0023 §5.1), and PR #3 — the vehicle the
+refusal was exercisable against — is closed unlanded.
+
+**What stands in its place**, quoted from the block as amended:
+
+> **The landing rides the gate-closing commits the sponsor already signs**, which
+> is the sponsor's whole lessons touchpoint: nothing leaves this repository, so
+> there is no diff to surface for refusal and no refusal column to fill
+> (ADR-0023 D4).
+
+**And that standing line meets this gate at an angle, which this file records
+rather than resolves** (§0.2): **PROTOCOL §7 gives `P<n>-module-ready` no sponsor
+signature at all** — the very fact the quoted passage above was constructed
+around, and the reason the retired box discharged by *surfacing* instead. So for
+the two harvests ratified here, either the touchpoint is empty until the next
+gate that carries a sponsor signature, or the standing line names a gate class
+this one is not in. **This file takes neither reading**; it is `G-12`.
+
+**What a refusal converts a candidate into stays parked** (ADR-0018 §13,
+unamended by A2) — and is now parked with its subject: no refusal can be
+exercised, so the question cannot become live here. Like `G-7`, it is answered by
+the retirement of the thing it was about rather than by a ruling.
 
 ### 7.3 Harvest 2 — `P1-module-ready`'s own harvest
 
@@ -435,9 +622,14 @@ declared next opening that differs is a prediction that *"consumes nothing"*
 
 ### Yield — tiers 1 and 2
 
-`LC-` = tier 1, general, to the shell's universal set. `LD-` = tier 2, domain, to
-the named pack. The two prefixes number independently; ids are seat-qualified,
-`LC-<seat>-H<k>-<n>` (A2-D6), and **no landed id is renumbered** (A2-D7). Each
+`LC-` = tier 1, general, to the lessons file's general sections. `LD-` = tier 2,
+domain, to a domain-titled section of the same file, grade noted on the entry.
+*[re-quoted 2026-08-18: the two sentences above are taken from the block as
+amended on 2026-08-17; until this round they read "to the shell's universal set"
+and "to the named pack" (ADR-0023 §5.1). The prefixes, their independence and
+the id scheme below are unchanged.]* The two prefixes number independently; ids
+are seat-qualified, `LC-<seat>-H<k>-<n>` (A2-D6), and **no landed id is
+renumbered** (A2-D7). Each
 seat mints under its **own** ordinal, so the seats may sit at different `H<k>` at
 one gate: the four seats whose only harvest is their first mint `H2` here
 whatever their grandfathered range looks like, and dv_lead — whose second harvest
@@ -447,7 +639,14 @@ already minted `LC-dv_lead-H2-<n>` — mints `H3`.
 |---|---|---|---|---|---|---|---|
 | | | | | | | | |
 
-### Tier 3 — war stories and local accretions (not transcribed to the shell)
+### Tier 3 — war stories and local accretions (not transcribed to the lessons file)
+
+*[re-quoted 2026-08-18: the heading read "(not transcribed to the shell)" until
+this round and is taken from the block as amended on 2026-08-17 (ADR-0023 §5.1).
+**Tier 3's substance does not move** — only the destination it excludes them
+from; the fork it names,
+war story kept and re-offerable / local accretion bound by its own artefact, is
+untouched.]*
 
 | Candidate | Mined by | Failed | Why | Tier-3 disposition |
 |---|---|---|---|---|
@@ -478,14 +677,53 @@ already minted `LC-dv_lead-H2-<n>` — mints `H3`.
 
 ### Checklist — Part B (collation)
 
-- [ ] **Shell transcription: exactly one commit**, containing the admissible
-      candidates — general and domain — with permalinked provenance, and nothing
-      else. Commit: `<link>`
+*[re-quoted 2026-08-18: the four boxes below are taken verbatim from the block as
+amended on 2026-08-17 (ADR-0023 §5.2). Until this round this section rendered
+the same four boxes §7.1 did, and they are **kept verbatim at §7.1** rather than
+copied twice —
+"Shell transcription: exactly one commit … with permalinked provenance",
+"`LC-`/`LD-` → `L-` pairs recorded … so each shell entry is traceable",
+"Sponsor-visible … refusals recorded as `sponsor-refused`", and the completeness
+declaration. **The partition is still
+7 / 4 and this gate still instantiates eleven boxes**: no Part A box moved, in
+wording or in site, and within Part B the sponsor-visibility box retired and the
+dedup box took its seat.]*
+
+- [ ] **Local landing: exactly one commit**, transcribing this harvest's
+      admissible candidates — general and domain — into `docs/LESSONS.md`, and
+      nothing else. Commit: `<sha>`
+  - *Reads*: **harvest 2's own landing commit, owed and unlanded.** It is not
+    `5d2264d` — that commit is harvest 1's, and A2-D5 as restated makes two
+    harvests ratified at one gate two commits, in harvest order (§7).
 - [ ] **`LC-`/`LD-` → `L-` pairs recorded** in the Yield table's Disposition
-      column, so each shell entry is traceable back to the note that minted it.
-- [ ] **Sponsor-visible**: the harvest table and the shell diff were surfaced at
-      this gate. Refusals, if any, are recorded as `sponsor-refused` above.
+      column, with **ids local, seat-qualified and unrenumbered** (A2-D6,
+      A2-D7), so each landed entry is traceable back to the note that minted it.
+  - *Reads*: the Disposition column of the Yield table above, which for this
+    harvest **is rendered in this file** — unlike harvest 1's, whose table is the
+    packet's (§7.1).
+- [ ] **Dedup against the file recorded**: every candidate checked against what
+      `docs/LESSONS.md` already holds, and the outcome recorded on its row.
+      Dedup is clerical — a drop carries its reason; composition is selection
+      and is never performed (A2-D8, §4.1).
+  - *Reads*: **the first non-trivial exercise of this box in the programme.**
+    Harvest 1 landed into an empty file; harvest 2 is checked against the **353**
+    entries H1 landed, so a drop is now possible and each one carries its reason
+    on its row. The bar is A2-D8's and unamended: **dedup is clerical,
+    composition is selection.**
 - [ ] **Harvest declared complete** by the orchestrator: `J-orchestrator-NNNN`.
+  - *Reads*: this harvest's own declaration, distinct from harvest 1's (§7.1) —
+    two harvests, two declarations, neither standing in for the other.
+
+**The landing rides the gate-closing commits the sponsor already signs**, which
+is the sponsor's whole lessons touchpoint: nothing leaves this repository, so
+there is no diff to surface for refusal and no refusal column to fill
+(ADR-0023 D4).
+
+*[added 2026-08-18: the standing line above is the block's, carried into this
+instantiation because the block carries it beneath Part B — it replaced a box and
+is not one, so it is checked nowhere and read everywhere. **At this gate it has
+no object**, PROTOCOL §7 giving `P<n>-module-ready` no sponsor signature: `G-12`,
+and §7.2 for what the retired box did in its place.]*
 
 ---
 
@@ -502,7 +740,7 @@ transcription is clerical and commits under `Agent: orchestrator` (PROTOCOL §7)
 | **auditor** | The mutation N/N record per module (charter §3), plus any finding that blocks | its committed `docs/reports/audit/**` artefact, transcribed under ADR-0003's exception | M03's record supplied at §3.1; **`G-1`'s reading is not supplied** |
 | **architect_docs_lead** | **No gate signature.** PROTOCOL §7 names an architect countersignature at `P<n>-spec-freeze` and **none here**, and this file does not invent one. What is owed is content: §5's traceability split, §6's eight deferral rows | its journal entries | this file is the first payment |
 | **orchestrator** | The gate's passage; every transcription; the harvest collation and box 11's completeness declaration | its own journal entry | gate OPEN |
-| **sponsor** | **Nothing at this gate.** Sponsor approval is E1 at `P<n>-phase-accept`; here the sponsor is a **viewer with a refusal**, §7.2 | — | — |
+| **sponsor** | **Nothing at this gate.** Sponsor approval is E1 at `P<n>-phase-accept`; here the sponsor is a **viewer with a refusal**, §7.2. *[annotated 2026-08-18] The refusal retired on 2026-08-17 with the transit it gated (ADR-0023 D4): **a viewer, and nothing else**. Whether the amended law's "gate signature already given" touchpoint is satisfied at a gate PROTOCOL §7 gives no sponsor signature is `G-12`* | — | — |
 
 ---
 
@@ -519,12 +757,13 @@ by this file** (§0.2); each is a question the record already poses.
 | `G-3` | **The `P1-spec-freeze` ledger's open set at gate time.** Several rows close on `SO-` packets by name; the gate reads the residue as an input and re-homes nothing | architect_docs_lead | the ledger's own rows closing on their named artefacts |
 | `G-4` | **Traceability currency, in two halves that are different claims.** (i) The matrix is 34 of 110 populated, 76 empty, 97 `OPEN`; charter §6 binds *"every REQ-### has a matrix row before its module's `P<n>-module-ready` gate"*. (ii) **REQ-904's own instrument is unbuilt** — the CI set-equality script its verification column commissions does not exist, and `traceability.md`'s REQ-904 row records that by carrying an empty `Test(s)` cell. **A gate condition whose check has never run is not a satisfied condition** | architect_docs_lead (the matrix, and the script is a `WO-` request since `tools/` is dv-scoped); dv_lead (the test-side rows and the script) | each module's rows landing with its `SO-`; the script landing and going green; the split ruling at §5 |
 | `G-5` | **Thirty of forty `tb_writer` entries carry no harvest note** (`-0001 … -0020`, `-0031 … -0040`) — found real at the lead-level pass and not closed there. It lands on box 1's tiling claim for the worker row | dv_lead (commissioning lead, ADR-0018 §3.3) | a lead-mined worker span covering them, or a declared and reasoned gap in the note |
-| `G-6` | **`OBSERVATION SO-O1`** — two of eighteen candidates in the orchestrator's note carry a version-control tool noun under a stated `LH2-g`. Recorded, owned by the miner, **not charged**: re-grading another miner's statement makes the reader a selector (A2-D4) | orchestrator (miner); collator (the hide test at transcription); A1.4's later-harvest regrade is the instrument | the gate-time hide test recording a verdict either way — the shell's own leak/LH screens also run it independently |
-| `G-7` | **May a shell commit land before the gate that ratifies it?** A2-D5 fixed the **count** and left the **moment** open (ADR-0018 §4.4, §12). The question is now live rather than theoretical: `HT-01` executed the transit before this gate, on the sponsor's standing in-session direction for this specific first harvest, and the shell's own `FEDERATION.md` §7 defers an `SO-`'s outer hop to the next sponsor-signed gate by default | orchestrator as collator; sponsor on the refusal half | this gate ratifying harvest 1, or an ADR item |
+| `G-6` | **`OBSERVATION SO-O1`** — two of eighteen candidates in the orchestrator's note carry a version-control tool noun under a stated `LH2-g`. Recorded, owned by the miner, **not charged**: re-grading another miner's statement makes the reader a selector (A2-D4) | orchestrator (miner); collator (the hide test at transcription); A1.4's later-harvest regrade is the instrument | the gate-time hide test recording a verdict either way — the shell's own leak/LH screens also run it independently. *[annotated 2026-08-18] **The second instrument is gone**: PR #3 closed unlanded and the shell's screens with it, so this row's closing event narrows to one — **the gate-time hide test is now the only instrument**. Two facts it does not close: the landing recorded 353/353 clean on a **mechanical project-noun scan** (`docs/LESSONS.md` landing H1, `HT-01` §3.4), which is not this row's verdict; and the disposition that let the two candidates travel as general was reasoned partly on the **shell corpus's own vocabulary** (`J-orchestrator-0236`), a ground the local destination removes. Grades stay the miner's as minted; A1.4's later-harvest regrade is still the instrument* |
+| `G-7` | **May a shell commit land before the gate that ratifies it?** A2-D5 fixed the **count** and left the **moment** open (ADR-0018 §4.4, §12). The question is now live rather than theoretical: `HT-01` executed the transit before this gate, on the sponsor's standing in-session direction for this specific first harvest, and the shell's own `FEDERATION.md` §7 defers an `SO-`'s outer hop to the next sponsor-signed gate by default. **ANSWERED BY RETIREMENT — ADR-0023 §7 (2026-08-17), recorded here 2026-08-18** — the answer is the ADR's, recorded in the finding's own row and not ruled here: *"the moment question A2 left open had a shell commit for its subject, and there is no shell commit."* The transit is retired as a class, PR #3 is closed unlanded, and A2-D5's count is now a count of **local landing commits** (D3). **The local analogue is answered too, and by an act rather than by silence**: harvest 1's landing commit `5d2264d` landed **before** this gate, on ADR-0023 D5's own direction, which provides that the landing is *"re-verified at `P1-module-ready` exactly as A2-D3 already provides"* — so a local landing may precede the gate that ratifies it, and what the gate holds is the **re-verification**, not the permission. The refusal half retired with the power (D4, §7.2) | orchestrator as collator; sponsor on the refusal half | ~~this gate ratifying harvest 1, or an ADR item~~ — **CLOSED by ADR-0023 §7 (2026-08-17), recorded 2026-08-18**; nothing is owed on either half |
 | `G-8` | **Five findings unrepaired with carriers unopened** — `SO-2` (census producer domain), `SO-3` (the 22-assertion figure does not reproduce; measured 7 of 29), `SO-4` (`AP-M03` §7 row (b), 24 vs 17), `M-4` (141 contaminated vs 139 honest), `P-1`'s residue (1 of 49 citations false). None is closed by being inside a `PASS` | dv_lead | each finding's own carrier opening |
 | `G-9` | **Five landed green assertions are unreachable by any mutation** (`U-1` … `U-5`, `DECLARATION WO-0074-D1`), and *"a coverage claim counting such an assertion has counted one observation twice."* It bounds any N/N reading built at `G-1` | auditor (the reading); dv_lead (the register) | `G-1`'s settlement, which must state whether unreachable assertions count |
 | `G-10` | **The charter §3 external anchor is undischarged at module level.** PROTOCOL §10 requires a golden model to agree with an external anchor before it may judge RTL; the differential co-simulation anchors classes, one of them, and Stage 3 is refused. Whether that binds at `P1-module-ready` or at `P1-phase-accept` is unstated | architect_docs_lead (the reading); dv_lead (the evidence) | a ruling before the gate convenes, or the anchor discharging |
 | `G-11` | **The §1.1 ceiling tightening.** SPEC-M20 §11.3: eleven of REQ-006's twenty-four cycles are unspent and *"the right moment to tighten §1.1 is after the first `P1-module-ready`"* — so this gate's passage opens it, and it moves numbers in three documents together | architect_docs_lead | a spec diff after this gate, or an explicit decision to leave the allocation |
+| `G-12` | **[opened 2026-08-18] The sponsor's harvest touchpoint at a gate that carries no sponsor signature.** ADR-0023 D4 retires the candidate-by-candidate refusal and leaves *"exactly one: the gate signature they were already giving"*; the block's standing line has the landing *"ride the gate-closing commits the sponsor already signs"*. **PROTOCOL §7 gives `P<n>-module-ready` no sponsor signature** — sponsor approval is E1 at `P<n>-phase-accept`, which is the very fact the retired sponsor-visibility box was constructed around (§7.2). So for the two harvests ratified here the touchpoint is either **empty until `P1-phase-accept`**, or the standing line is written for a gate class this one is not in. **This file takes neither reading** (§0.2), and records that the previous law covered the same gap by *surfacing* — an act that retired with the diff it surfaced | orchestrator as collator (the reading); architect_docs_lead (the block's wording, if it moves) | the next sponsor-signed gate carrying these harvests, or an ADR item settling which gate class the standing line names |
 
 ---
 
@@ -542,6 +781,11 @@ The gate passes when, and only when:
    four and §7.3's eleven (PROTOCOL §7, A2-D2). *A gate is not passed while any
    box is unchecked*, and this is the whole of that sentence: it binds gates, and
    the file that once said it also bound sign-offs has been repaired (§0.2).
+   *[annotated 2026-08-18] The counts are unchanged — four and eleven, the
+   partition still 7 / 4 — and they count the **live** boxes. §7.1 additionally
+   keeps the four boxes it rendered until this round inside a blockquote: those
+   are record, not
+   conditions, and a checker counting them has counted a retired law twice.*
 7. Every `G-` item above is closed, or is explicitly carried with the sentence
    naming what carries it.
 
