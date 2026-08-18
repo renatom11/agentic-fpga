@@ -226,6 +226,18 @@ epistemology — how to read its stamps, and what they do and do not cover — a
 it is worth reading before you cite anything here, and skippable if you only
 need to act. `[B.9·7]`
 
+**And a third volume exists, for a reader who has to parse a rule without a human
+to resolve an ambiguity.** `docs/PROCESS-STE.md` is a **derived rendition of this
+file in Simplified Technical English** — the rules as short single-claim
+sentences, each carrying its calibration in words rather than as a stamp, with
+the essays, exhibits and facsimiles left here as pointers. **It is not law**: it
+is re-derived per edition or marked stale, it restates no `C-nn` row, and **where
+the two disagree this file governs and the rendition is the defect** — the same
+precedence idiom the companion volume and the facsimiles already carry. *(No
+posture row — added after the measurement. Posture: **review-enforced**; nothing
+checks that the rendition tracks this file, which is the doc–shell drift check's
+hazard one volume down.)*
+
 **Do not import any statement in this document that a control is mechanically
 enforced. Check it in your own machinery before you repeat it.** A guarantee
 inherited from someone else's document and never verified is the failure of
@@ -363,7 +375,7 @@ before you read anything as evidence.** `[B.8·6]`
 
 > **The stamps do not cover this document. They cover the document it used to
 > be.** The posture list measured `docs/PROCESS.md` as it stood at one commit,
-> at **1,445 lines**. The text you are reading is **6,023 lines — past four
+> at **1,445 lines**. The text you are reading is **6,035 lines — past four
 > times that**, and the figure is *this* edition's, re-measured in the act
 > that moved it. *(The adjective moved with the figure: it read "nearly four
 > times" while the ratio was 3.8, and the ratio crossed four at this edition. **A
@@ -406,7 +418,7 @@ before you read anything as evidence.** `[B.8·6]`
 > program's file-size discipline to the largest file the agents' own reading tool
 > returns in one call — **262,144 bytes** — and §2.2 states the failure class in
 > terms: *a file that exceeds what a reader can load in one piece stops being
-> read at all.* **This file is 403,384 bytes.** It is past its own anchor
+> read at all.* **This file is 404,217 bytes.** It is past its own anchor
 > by roughly 54 per cent, in the runtime that produced it, and the
 > declared blank-slate executor of §6.2 **cannot load it in one call there**.
 > The discipline was applied to journals, which rotate, and never to this
