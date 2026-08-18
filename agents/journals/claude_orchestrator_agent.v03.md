@@ -2277,3 +2277,57 @@ docs/gates/ round, ADR-0023 §7 row 7).
 - docs/LESSONS.md
 - tasks/BOARD.md
 - agents/handoffs/HT-01_first-harvest-transit.md
+
+## [J-orchestrator-0307] 2026-08-18T00:32:00Z | task:none | The round closes on the board: one stale debt measured closed, three fresh ones opened with owners, and every restatement row of ADR-0023 SS7 dispositioned
+
+### Trigger
+Closing act of the retraction-mirror round. The architect's two rounds
+landed (9f6336a the eighth edition, dbbee41 the gate re-quote); the board
+must stop carrying a debt the record shows paid and must carry the three
+the re-quote round surfaced. Dispatch-only. Precheck (SS4.1): tree held
+only the board edit in flight at dbbee41; no siblings.
+
+### Inputs
+- J-architect_docs_lead-0060 (the re-quote round's findings: A2.4 measured
+  already-applied; the ADR-0020 stale-quote finding with its fifteen-hour
+  provenance; G-12).
+- ADR-0023 SS7 (the owed-restatement list, now fully dispositioned:
+  rows 1-6 discharged this round, row 7 at dbbee41).
+- tasks/BOARD.md WO-0078 row and P1-module-ready gate row.
+
+### Reasoning
+SS5.9's discipline both ways: a debt measured paid is closed on the
+ledger that carried it (A2.4's five edits were found applied in the block
+at 28c0707 - the owed row was stale, and a stale owed row teaches the
+next reader to re-do paid work); and a debt found is rowed with owner and
+carrier before the round that found it closes. The three new rows each
+name both. G-1's possible reshaping by the ADR-0020 wording is deliberately
+left to G-1's owners - adjudicating it here would be the orchestrator
+ruling on a finding routed to other seats.
+
+### Actions
+- tasks/BOARD.md: WO-0078 row's A2.4 owed item annotated closed-as-stale;
+  P1-module-ready gate row updated (SS7.1 re-quote DISCHARGED at dbbee41)
+  and three OWED rows added: the ADR-0020 stale-quote restatement (owners
+  auditor + dv_lead, architect as re-quoter, carrier: the round that next
+  opens G-1); the block's box-9 L- spelling (architect's next docs/gates/
+  clerical pass); G-12's sponsor-touchpoint gap (owners orchestrator +
+  architect, carrier: the gate's closing round).
+
+### Evidence
+- Both board replacements asserted single-site before writing.
+- ADR-0023 SS7 rows, dispositions at this commit: 1 = 0fe5f8c; 2 = 28c0707;
+  3 and 6 = 9f6336a; 4 = 5d2264d and this commit; 5 = 5d2264d; 7 = dbbee41.
+  Every row closed inside the round that opened the list.
+
+### Outcome
+The retraction-mirror round is complete on this repository: law, landing,
+record, handbook, and gate all speak the post-retraction world, and the
+board's debts are current. Remaining from this round's findings: the three
+owed rows above, each with a named carrier that is not this round.
+
+### Open-questions
+- none
+
+### Files-in-this-commit
+- tasks/BOARD.md
