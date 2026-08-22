@@ -3270,3 +3270,383 @@ Handoff: this working tree to the orchestrator for commit under
 
 ### Files-in-this-commit
 - docs/specs/modules/xgmii_tx_64.md
+
+## [J-architect_docs_lead-0065] 2026-08-22T08:12:40Z | task:none | The ten-day amendment batch is re-measured against a document three editions younger than the batch, and the re-measurement is the finding: three items were paid in prose and left standing at the site that binds, the residue routed as clerical turns out to be forbidden by the apparatus that named it, and the round-5 charter re-quote is half unexecutable until the constitution it cites moves
+
+### Trigger
+
+Orchestrator dispatch, one round, **dispatch-only — no `WO-` packet**, and the
+entry declares that rather than letting it pass: the commissioning seat is the
+sole committer, so a work order here is a packet the orchestrator writes to
+itself. Spawn short-id **AMENDMENT-BATCH/2026-08-22T07:05Z**.
+
+The commission: execute the amendment batch queued on `tasks/BOARD.md` since
+`J-orchestrator-0285` (2026-08-12) — `C-40`, `C-93`, `F-0022-2`, `ADR21-1` with
+`ADR-0021` §8's cured draft, `PROCESS` B.2 items 7 and 10–16, the round-5 charter
+re-quotes, the memoir filing fix — plus the residue the `ADR-0022` verification
+round routed into it. With one binding precondition: **re-measure every item
+before executing any of it**, because the batch was enumerated against the
+**fifth** edition of `docs/PROCESS.md` and the document is at its **eighth**.
+
+**§4.1 abort-first precheck, one invocation, both outputs recorded.**
+`git status --short` returned **empty**; `git rev-parse HEAD` returned
+`949b8abba0e27e0888cf78677d561d55a8d499f3`, matching the dispatch's expected
+prefix `949b8ab`. Clean tree, expected head, proceed. **A sibling was declared
+outward** — the auditor's posture re-measurement, write scope
+`docs/reports/audit/**` and its own journal — and §4.2's inward declaration is
+answered with a **nil**: no lane announced itself to me in flight, and no path in
+my write set intersects the sibling's. The dispatch's environment caution (two
+stale-snapshot restores today) was watched for: `git rev-parse HEAD` re-read at
+the end of the round returned the same object, no file I wrote vanished, and no
+recovery was attempted because none was needed.
+
+**Harvest note: none owed, and that is by trigger rather than by omission.**
+`ADR-0018` and PROTOCOL §7 fire the harvest at every `SO-` and every phase gate.
+This round is neither. The span since my last harvest continues to accumulate and
+is not closed here.
+
+### Inputs
+
+- `agents/charters/architect_docs_lead.md`, `agents/PROTOCOL.md` — read whole.
+- `tasks/BOARD.md` rows 66, 68, 70 — the batch's authority. **Row 70**
+  (`J-orchestrator-0285`) is the enumerating row and the routing row for the
+  residue; the dispatch cites the residue as row 66, which is the `RV-0083`
+  closure. Corrected in the record rather than silently followed.
+- `docs/PROCESS.md` — the split block and its four falsifiers, *Every enforcement
+  claim carries its posture* (legend, boundary block), *Subsection index* and its
+  derivation command, §1.1, §1.3, §2.7, §3, §3.7, §3.9, §5.9, §6.0's kit table,
+  Annex A.3, A.6.
+- `docs/PROCESS-MEMOIR.md` — §0.2a, §0.2b, §0.3, §0.5, B.0.4, B.1, **B.2 whole**,
+  B.3, B.13 including its refusal list.
+- `docs/PROCESS-STE.md` — header (the derivation and staleness rules), §1.3,
+  §5.9, §6.0's kit inventory.
+- `docs/adr/ADR-0020-...` §3, §6.6, §12.8; `ADR-0021` §3.5, §8, §9; `ADR-0022` §8;
+  `ADR-0023` §4, §7 (the owed-restatement-list idiom I follow).
+- `docs/reports/audit/ADR-0020-auditor-countersignatures.md` §6 — `F-0022-2`'s
+  filing row, read at the auditor's own artifact rather than from a summary.
+- `docs/reports/audit/ADR-0022-split-verification/README.md` §8–§9 — the routed
+  residue in the countersigning seat's own words.
+- `docs/reports/process-council/round-5/verdict.md` — repair 3, the charter
+  re-quote's authority.
+- `agents/journals/claude_architect_docs_lead_agent.v05.md` — `J-0056`'s stop of
+  `F-0022-2`, verbatim; `.v06.md` `J-0057` (open-question 6), `J-0060`.
+- `agents/handoffs/README.md`; `agents/charters/*.md` (read only, for the
+  re-quote census); `scripts/policy.sh`; `scripts/check_process_doc.sh`.
+
+### Reasoning
+
+**1. The re-measurement was the round, and it changed four of fourteen answers.**
+The dispatch made it a precondition; it turned out to be the deliverable. Ten
+days and three editions sat between the batch's enumeration and its execution,
+and the naive failure mode — re-doing paid work — is not what the interval
+produced. What it produced is the opposite and worse: **three items had been
+repaired in `docs/PROCESS.md`'s prose and left standing at the artifact that
+binds.** `F-0022-2` is the clearest. Its cure was stopped in April's terms
+because editing `ADR-0020` alone would desynchronise authority from constitution;
+since then the eighth edition wrote *"or units"* into §3.9's worked tally and
+built a failure-museum exhibit around the finding — while `agents/PROTOCOL.md`
+§7 (b.2) still says *the* killing unit, singular, at both of its sites. So the
+document now **describes a plural practice its constitution does not license**,
+which is a second disagreement rather than the repair of the first. The rule I
+adopted for the whole batch and wrote into the record: **a defect is paid at the
+artifact that binds, not at the artifact that describes** — a description
+corrected while its subject stands is a second true sentence about a false rule.
+`C-40` and `C-93` are the same shape one degree milder.
+
+**2. I refused the dispatch's widening of my write scope, and the refusal has
+three independent grounds.** The dispatch stated that `agents/charters/**` is in
+my write scope for this round. It is not: PROTOCOL §6's table gives me `docs/**`
+(less two report trees), `README.md`, `ORG_CHART.md`, `agents/handoffs/**`; my
+own charter §1 says the same; and `scripts/policy.sh`'s `architect_docs_lead`
+arm returns 1 for every path under the charter directory, so the commit could not
+have been created. `PROCESS-MEMOIR` B.13 refusal 4 recorded the identical
+conclusion for the eighth edition. Any one ground suffices; together they make
+the choice easy, but the reason worth writing down is the fourth: **a dispatch is
+not an amendment.** §1.3's own law is that charters change by a numbered decision
+record and *not an instruction* — and a seat widening its own scope on an
+instruction, inside a round commissioned to write about unapplied amendments,
+would have convicted itself in the record it was writing. I drafted the
+re-quotes and routed them.
+
+**3. The routed residue is not a mis-filing, and the cheapest repair is
+forbidden by the apparatus that named it.** This is the round's one genuinely new
+finding and I did not expect it. The fifth-edition margin at `d96a5b1`:4825 was
+called *mis-filed in B.1* by §0.2a, by `J-0057`'s open question, by the auditor's
+`ADR-0022` verification, and by the board row that routed it — four independent
+statements, all assuming the block belongs under a Part I anchor and was put in
+the wrong place. Re-derived: **the margin preserves a superseded sentence of
+Annex B.1 itself.** Part I is titled *the superseded record, **by core
+section***, Annex B is not a section of the core — it moved to the companion
+whole at the split under clause S2 — and the split's **falsifier 2** reads
+*every block in the companion's Part I names a section of this file, and that
+section exists here*. **Filing it in Part I would falsify falsifier 2.** So the
+move that four statements assumed was correct is the one act the split's own
+apparatus forbids.
+
+What is actually wrong is smaller and more interesting: §0.5's census carved out
+*"1 inside Annex B"* with **no rule behind the carve-out**. That is the defect,
+and it is `S3`'s own principle arriving in the census `S3`'s edition wrote — *a
+rule with an enumerated exception list is auditable; a rule with an unstated
+exception is not.* I wrote the rule (a margin whose anchor is this volume's own
+annex is preserved in place, at the row it corrects) and enumerated its
+population (one), and I stated what would overrule it (an edition giving Part I
+an annex-anchored division, at which point falsifier 2 is restated to quantify
+over core sections only — an edition's act, not an amendment round's). **The
+general form: a residue routed as clerical is worth re-deriving before it is
+paid.**
+
+**4. Half the round-5 charter re-quote is unexecutable, and nobody had said so.**
+The council ordered four charters re-quoted *to current law*. Measured: the
+outlawed ratio sits in four charters at nine sites and can be re-quoted today,
+because PROTOCOL §7 (b.2) already forbids it. The superseded campaign model sits
+in **five** charters at ten sites — and every one of them cites PROTOCOL §10
+**accurately**, because §10 still teaches that model. Re-quoting them first would
+make five charters disagree with the clause they cite, which is precisely the
+defect `J-0056` refused to commit for `F-0022-2`. So that half is **ordered**
+behind subject A8, and the council's repair 3 was half-unexecutable from the day
+it was written. I recorded it as an **ordered** row in the owed-restatement list
+rather than an owed one. *A restatement list that records ordering is doing
+something a list of files cannot* — and *a re-quote whose source clause is itself
+the stale law is not a re-quote; it is a second amendment wearing clerical
+clothes.*
+
+**5. Why one record for eight subjects, and not eight records.** Eight would
+route more cleanly per subject and would produce **eight independently deferrable
+rows** — the aging inventory §5.9 convicts, which is the exact machine this batch
+has been sitting inside for four editions. The subjects share one owner, one
+file, and one failure class: every one of them is a diff that was correct when
+written and never applied. The batch's *shape* is part of its argument. A
+reviewer who disagrees is disagreeing with the record's shape rather than with
+any subject in it, and can say so in one countersignature line — which the record
+says in those words.
+
+**6. Absorbed as amendments under the eighth edition, not a ninth edition, and
+the ground is §2.7(4)'s own predicate.** The re-edition limb fires on a change
+that **alters enforcement semantics** — what a rule refuses, on which surface,
+under what posture. At this tree **no enforcement semantics move**: every
+constitutional hunk is written and unapplied. What I performed is one form
+repair, one addition, and one archaeology ruling. The precedent is in the
+document's own text: the currency-repair round of 2026-08-18 moved all four
+boundary figures and was *"not an edition"*, which is why the same block's rule
+was tightened from *per edition* to *per act*. **The ninth edition's trigger is
+the commit that applies §11's hunks**, and I named it as owed in the restatement
+list rather than pre-paying it — because an edition announcing an amendment that
+has not landed is the C7 failure the whole apparatus exists to prevent.
+
+**7. What the per-act re-measurement rule caught, which is the argument for it.**
+Re-deriving the boundary figures, I checked the companion's §0.3 arithmetic and
+found it **already stale before this round** — printing 6,023 and 2,547 against a
+tree at 6,115 and 2,618, moved by the probe-repair round and the handbook round,
+neither of which thought of itself as moving it, and reported by nobody. That is
+exactly what a per-edition cadence cannot catch, and it is now recorded at the
+site where the rule is stated. **And the companion crossed its own A.3 anchor in
+this round**: 254,247 → 272,455 bytes, past 262,144 by 10,311. The block that
+carried the old figure said the margin was *one repair round's worth* and stated
+it as a number *"because a margin stated as a figure is the only kind that can be
+watched shrinking."* This round was that round. I recorded the crossing with what
+it costs (navigation in the companion; the core's fragment-safety property is
+untouched, being a property of content and not size) and routed the repair — a
+companion that rotates or divides at Annex B, its program-local growing part —
+as an edition's act owed at the next one. **Stating a margin as a figure so its
+exhaustion is an observation rather than a surprise is the cheapest instrument in
+this document, and this is the first time it paid.**
+
+**8. The STE rendition: re-derived at one site, deliberately not at two.** Its
+own calibration rule is *if a sentence here is stronger than its source sentence,
+this volume is the defect*, and its currency rule is *re-derived per edition, or
+marked stale*. My round makes exactly one rendition sentence **false** — §6.0's
+*"the packet forms still teach the ratio the constitution outlaws"* — and that is
+a defect, repaired in the same commit as its source, on `B.13`'s own precedent
+(repair the source first, re-derive against the repaired sentence). It makes two
+sites merely **incomplete** (§1.3's new index, §5.9's new paragraph), and
+incompleteness is staleness, which the header already declares and dates. I
+amended the header to state this partial re-derivation with its coverage **and
+its non-coverage**, because a volume claiming to be derived from the source as
+this commit leaves it would otherwise have become false by my own hand.
+
+**9. B.2 item 12 is decided rather than deferred, and the decision is that it is
+not mine.** The row demands *an amendment or a recorded refusal — both are
+outcomes; silence is not*, and it has been silence for four editions. I did not
+rule it: the blind runs against the auditor, the cost falls on the auditor, and
+the scoring practice it would change is dv_lead's; a specification lead
+allocating two other seats' rounds is outside the adjudication power my charter
+§7 reserves for interface contracts. What I did instead is give it a **carrier
+and a cadence** — owners auditor and dv_lead jointly, carrier the next round in
+which both are spawned against one campaign, re-asked at every
+`P<n>-module-ready` until answered. That is §5.9's second cure part honoured for
+the first time in that annex, and it converts silence into a routed act, which is
+what the row actually asks for.
+
+**10. §11(3) discharged by measurement, not by exemption.** I walked all eight
+subjects against *does this move enforcement semantics*. All eight: no — five are
+review-enforced by construction, `A3` is a gate-record form rather than an
+`R`-rule (§7's Mutation record mints none), and `A4` is the constitution catching
+up to scripts whose cases `S28`–`S38` already exist. Writing the table rather
+than a blanket sentence surfaced the one honest residue: **nothing verifies that
+a `mut/*` reference never merges**, which A8's model makes load-bearing. Named as
+a new debt with an owner and a closing event rather than folded into a
+"no case owed" row. *A procedure step answered "not applicable" eight times
+without stating the measurement is a step nobody ran.*
+
+### Actions
+
+- Authored `docs/adr/ADR-0024-the-constitution-is-the-last-mile.md` — the §11(1)
+  record: eight constitutional subjects (A1–A8) with drafted hunks at its §11,
+  the charter re-quotes at §12, the performed repairs at §13, item 12's routing
+  at §14, item 15's blockage at §15, alternatives at §16, the countersignature
+  ledger at §17, §5.9's owed-restatement list (ten rows) at §18, the §11(3)
+  measurement at §19.
+- `agents/handoffs/README.md` — the sign-off skeleton's `Mutation kills: N/N`
+  replaced with the five-field disposition block (sealed / seeded / itemized
+  difference with grounds / per-seeded-class rows / unreachable set), carrying the
+  constitution's determinacy sentence inside the block, plus a note stating what
+  the form demanded until this date and why it was wrong. **B.2 item 14 closed.**
+- `docs/PROCESS.md` — §1.3 gains the per-seat charter-clause index, eight rows
+  (**B.2 item 16 closed**); §6.0's kit table re-quoted at three rows (packet
+  forms → *None known, since 2026-08-22*, interval kept; constitution template and
+  auditor charter → routed, with the auditor charter's two halves separated by
+  their different stages); §5.9 gains the dated second exercise of its cure's
+  first part; the boundary block re-measured (6,192 lines, 418,570 bytes, the
+  companion's anchor crossing); the subsection index re-checked and left unedited
+  with the re-check dated.
+- `docs/PROCESS-MEMOIR.md` — §0.2a's mis-filing note replaced by the ruling and
+  its rule; §0.5's census carve-out converted into a rule with an enumerated
+  population; §0.3's arithmetic re-derived with its own staleness recorded; B.2
+  gains a dated preamble and per-item dated statuses on items 1, 2, 4, 7, 10, 11,
+  12, 13, 14, 15, 16; a dated round block appended after B.13's blocks.
+- `docs/PROCESS-STE.md` — §6.0's kit-inventory divergence paragraph re-derived
+  against the repaired source; header gains the partial-re-derivation statement
+  with its declared non-coverage.
+- **No `git commit`, no `git push`, no `git` write of any kind.** Read-only git
+  only: `status`, `rev-parse`, `show d96a5b1:…`.
+
+### Evidence
+
+All commands run from a repo checkout at the working tree this entry accompanies.
+
+- **Precheck**: `git status --short` → empty; `git rev-parse HEAD` →
+  `949b8abba0e27e0888cf78677d561d55a8d499f3`. Re-read at round end: unchanged.
+- **Governance check**: `bash scripts/check_process_doc.sh` →
+  `OK: process document invariants hold (sentinels, volumes, golden tally, fences)`,
+  exit 0.
+- **Falsifier 1**: `grep -c 'SUPERSEDED — historical record' docs/PROCESS.md` →
+  **0**.
+- **Sentinel census unmoved**:
+  `grep -c 'SUPERSEDED — historical record, not current law:' docs/PROCESS-MEMOIR.md`
+  → **69**, the figure §0.5 prints (64 uses + 5 mentions). No token was added or
+  removed by this round, and the ruling at §0.2a deliberately does not reproduce
+  the token, which would have moved the count as a side effect.
+- **Subsection index re-derived** with the command §*Subsection index* prints,
+  output diffed against the printed list: **72 headings, zero differences.** The
+  claim I added there is therefore measured, not asserted.
+- **Volume figures**, `wc -l -c`: `docs/PROCESS.md` **6,192 / 418,570**;
+  `docs/PROCESS-MEMOIR.md` **2,844 / 272,455**; `docs/PROCESS-STE.md`
+  **3,507 / 208,719**. `git show d96a5b1:docs/PROCESS.md | wc -l` → **5,446**.
+  Arithmetic printed at the companion's §0.3: 6,192 + 2,844 = 9,036; 9,036 −
+  5,446 = **3,590**. Anchor crossing: 272,455 − 262,144 = **10,311**. Core past
+  anchor: (418,570 − 262,144) / 262,144 = **59.7%**, printed as *roughly 60 per
+  cent*. All four figures in the boundary block converge with the file they
+  describe at this tree.
+- **Scope refusal, measured not asserted**: `scripts/policy.sh`'s
+  `architect_docs_lead` arm is
+  `docs/reports/audit/*|docs/reports/latency/*) return 1 ;; docs/*|README.md|ORG_CHART.md|agents/handoffs/*) return 0 ;; *) return 1`
+  — every `agents/charters/*` path falls to the final arm.
+- **Re-quote census**, `grep -rn 'N/N' agents/charters/`: auditor ×4 (:22, :35,
+  :40, :53), dv_lead ×3 (:27, :38, :55), tb_writer ×1 (:59), formal_dv ×1 (:24)
+  — **four charters, nine sites**, which is the round-5 verdict's *four charters*
+  identified exactly. `grep -rn 'transient' agents/charters/`: orchestrator ×2,
+  auditor ×3, rtl_lead ×2, rtl_module_dev ×2, formal_dv ×1 — **five charters, ten
+  sites**.
+- **The unpaid constitutional sites**, at `agents/PROTOCOL.md` at this tree:
+  :164–168 (R1's parenthesis), :258 (the transcription premise), :302 and :307
+  (both singular *killing unit*), :404–408 (transient apply-and-revert), §11's
+  three-item list, §3's four-type table with no minting route.
+  `grep -c -E 'R10|R11' agents/PROTOCOL.md` → **0**, reproducing `ADR-0021`
+  §3.5's measurement two ADRs later.
+- **Not run, and named**: the doc–shell drift check (does not exist — B.0.4a);
+  falsifiers 2, 3 and 4 (edition-boundary acts comparing two committed editions,
+  and this round is not an edition); the posture list — **not opened by this seat this round**; it is the
+  auditor's artifact and scope, and its own re-measurement round is the
+  declared sibling lane, so this seat states its own abstention and makes no
+  claim about the artifact's state.
+
+### Outcome
+
+**Partially met against the commission, and the gap is structural rather than a
+shortfall.** Fourteen batch items dispositioned explicitly: **two performed and
+closed** (B.2 items 14 and 16), **one ruled and closed** (the routed residue),
+**one decided-not-to-decide with a carrier and a cadence** (B.2 item 12), **one
+blocked with its blockage priced** (B.2 item 15), **eight routed with drafted
+hunks, named countersignatures and an owed-restatement list** (`C-40`, `C-93`,
+`F-0022-2`, `ADR21-1`, B.2 items 7, 10, 11, 13), and **one blocked out of scope
+with its drafts written and half of it ordered behind subject A8** (the round-5
+charter re-quotes). **Nothing was silently dropped and nothing paid was re-done.**
+
+**Routed is not applied**, and the entry says so in those words: the batch is one
+countersignature round and one orchestrator commit away from being exactly what
+it was on 2026-08-12. What changed is that it is now a numbered record with hunks,
+owners, an ordering constraint and a restatement list, rather than eight rows in
+an annex.
+
+**Handoff**: `docs/adr/ADR-0024-the-constitution-is-the-last-mile.md`, to the
+orchestrator, for the §11(2) acceptance entry and for application of §11's and
+§12.1's text under its own identity. Countersignatures **OWED** and named at the
+record's §17: **auditor** (A1, A2, A3, A6, A8), **dv_lead** (A3), **orchestrator**
+(A4, A5, A6, A7, A8). None is written by me and none is assumed.
+
+**One commit unit.** The five non-journal files verify each other and belong
+together under §5.6: the ADR's §13 claims are true only if the four edits land
+with it; the STE re-derivation is lawful only in the same commit as the source
+repair it renders; and the core's kit row and the packet form must not disagree
+for even one commit. Splitting them would create the divergence this round exists
+to close.
+
+**Journal volume**: v06 stands at 207,444 bytes before this entry and remains
+below `JOURNAL_SOFT_MAX` (262,144) after it. **Rotation declined this round**,
+per ADR-0017 §4.3 — rotating with margin still in hand costs a chain link and a
+header for no readability gain, and the next round that would cross the threshold
+is the one to open v07 in.
+
+### Open-questions
+
+1. **Six of the eight countersignature rows name the orchestrator, which also
+   accepts this record under §11(2) and applies every hunk.** That is §5.7's
+   shape. I stated it in the record rather than smoothing it, and named the three
+   rows where it is least mitigated (**A4, A5, A7** — the only subjects with no
+   auditor limb). A reviewer with one check to spend should spend it there.
+2. **The eighth edition's `PROCESS` §3.9 tally prints a plural reading its own
+   constitution does not license.** Subject A3 closes it in the right direction.
+   If A3 is refused rather than applied, the correct repair is the opposite one —
+   strike *"or units"* from the tally — and somebody should say which, because
+   leaving both is the state that produced the finding.
+3. **Nothing verifies that a `mut/*` reference never merges**, and subject A8
+   makes that property load-bearing where reversion used to be. Owner
+   orchestrator, closing event a CI ancestry assertion. New this round; not paid.
+4. **The companion is past its A.3 anchor by 10,311 bytes and has no rotation
+   story.** The repair is a volume that divides at Annex B — program-local,
+   deletable by a fork, and the growing part — and it is an edition's act. Owed
+   at the ninth edition, owner this seat. Until then the companion is a file the
+   declared blank-slate executor cannot load in one call, which is the failure
+   class §2.2 states, arriving in the volume that states it.
+5. **`docs/gates/P1-module-ready-checklist.md` gains one more re-quote target**
+   from subject A3 (its §0.1/§3 quote of PROTOCOL clause (b) already carries a
+   stale wording with its own carrier). Named in the restatement list at row 7 and
+   **not** discharged here, on `ADR-0023` §7's discipline: an open gate checklist
+   edited outside its commission produces a `Files-in-this-commit` that disagrees
+   with what was commissioned. Owed 2026-08-22, to this seat, on the round that
+   next opens `G-1`.
+6. **`PROCESS-MEMOIR` B.2 item 15's status is unreadable**, not open and not
+   closed, because the doc–shell drift check does not exist and this repository
+   holds no first-party observation of the shell since 2026-08-18. That is the
+   first time B.0.4a's absence has been priced against a specific row, and it is a
+   better argument for building it than five editions of naming it.
+7. **`J-architect_docs_lead-0055`'s Open-question 2 (the hold-until-acceptance
+   rule) is untouched and is now two rounds older.** Unrelated to this batch;
+   carried so the debt does not disappear behind a document round.
+
+### Files-in-this-commit
+- agents/handoffs/README.md
+- docs/PROCESS-MEMOIR.md
+- docs/PROCESS-STE.md
+- docs/PROCESS.md
+- docs/adr/ADR-0024-the-constitution-is-the-last-mile.md

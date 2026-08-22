@@ -23,6 +23,19 @@ disagree, `docs/PROCESS.md` wins and this volume is the defect.
 carries an edition anchor in its head. If the source's edition moves and this file
 does not, treat this file as the older edition.
 
+**One partial re-derivation, 2026-08-22, with its coverage and its non-coverage
+stated.** An amendment round changed the source without moving its edition. That
+round re-derived **one** site here — the §6.0 kit inventory's divergence
+paragraph, whose sentence about the packet forms the round made **false**. It did
+**not** re-derive the sites the round made merely **incomplete**: §1.3 gained a
+per-seat charter-clause index in the source and has no row here, and §5.9 gained
+a dated paragraph. **The split is this volume's own calibration rule read
+strictly.** A sentence here that is stronger than its source sentence is a defect
+and is repaired at once. A sentence the source has grown past is staleness, which
+the rule above already declares and which the next edition's re-derivation
+closes. **Treat every section other than §6.0 as derived from the source before
+2026-08-22.**
+
 **A pinned copy of this volume ships inside the shell.** The shell is the
 repository `generic-agentic-fpga-org`, the executable half of the export unit
 (§6.0). Since 2026-08-18 it carries this volume and its two companion volumes in
@@ -2661,14 +2674,24 @@ whose originals are
 warranted to exist, and are not warranted to be current, is a kit that exports its
 owner's unpaid debts under the word *original*.**
 
-**Three divergences are named there, and they are live.** **The constitution
-template** enumerates **nine of the eleven** rule numbers its own scripts refuse by
-(§2.6), and its campaign clause mandates the **transient apply-and-revert** model,
-which no campaign in this record used. **The packet forms** still teach the ratio the
-constitution outlaws, so copy §3's facsimile instead until somebody re-quotes the
-original. **The anonymized auditor charter** obliges the outlawed ratio at four sites
-and teaches the superseded mutation model, so import the mechanism list §1.5
-enumerates and re-quote the clauses against your own constitution.
+**Two divergences are named there and are live. A third closed on 2026-08-22.**
+
+**The constitution template** enumerates **nine of the eleven** rule numbers its own
+scripts refuse by (§2.6). Its campaign clause also mandates the **transient
+apply-and-revert** model, which no campaign in this record used. Both are now routed
+with drafted text in a decision record. **Routed is not applied**: the divergence
+stays live until the seat that owns the file commits the text.
+
+**The anonymized auditor charter** obliges the outlawed ratio at four sites and
+teaches the superseded mutation model. The ratio half is drafted and can be applied
+now. **The mutation-model half cannot be applied first**, because the charter cites
+the constitution correctly and the constitution still teaches that model. Import the
+mechanism list §1.5 enumerates, and re-quote the clauses against your own
+constitution.
+
+**The packet forms** taught the ratio the constitution outlaws until **2026-08-22**.
+The original is now re-quoted to the itemized disposition block. Copy either the
+original or §3's facsimile. They agree.
 
 **Read that column with its measured scope.** Every cell describes **this repository's
 originals**, and the shell's copies are a different set of files. The first party ever

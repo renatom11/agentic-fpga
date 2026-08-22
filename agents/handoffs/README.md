@@ -34,10 +34,34 @@ the sole committer the sole numbering authority (PROTOCOL §3).
 - **Suite**: <test names, how to run — exact commands>
 - **Coverage vs spec**: <requirement → test mapping; gaps declared>
 - **Line-rate stress**: <back-to-back min-frame result, rx-path modules>
-- **Mutation kills**: <auditor-seeded mutations killed: N/N>
+## Seeded-defect dispositions
+- **Sealed**: <every class the manifest sealed, nothing removed for any reason>
+- **Seeded**: <the subset rendered against the module as sealed, and run — the
+  gate clause reads this number, not the one above>
+- **The difference, itemized**: <each class in sealed-and-not-seeded, by name,
+  with its ground: never rendered | unscoreable | negative control | <other>>
+  <!-- All grounds sit in `sealed`, none in `seeded`, each named here with its
+       ground. A negative control is rendered and run and still does not enter
+       `seeded`. Drop this line and the two definitions above contradict each
+       other. -->
+- **Per seeded class**: <one row each — killed, with the killing unit or units
+  named and present-and-green at the gate SHA; or not killed, with its
+  disposition in the evidence form PROTOCOL §7 (b.2) requires. No non-kill is
+  folded into a kill.>
+- **Unreachable set**: <published beside the dispositions, never inside them>
 - **Open defects**: <BUG refs or none>
 - **Signed**: J-dv_lead-NNNN
 ```
+
+> **Why this block is five fields and not one number.** `PROTOCOL` §7 (b.1)–(b.4)
+> forbids the ratio in terms — *no ratio stands in for the dispositions*, *no
+> `N/N` figure is read as coverage* — and this skeleton demanded
+> `Mutation kills: N/N` until **2026-08-22**, so an adopter copying the form
+> committed, on first use, the thing the constitution beside it prohibits
+> (`ADR-0024` §13.1; `docs/PROCESS-MEMOIR.md` Annex B.2 item 14). The one
+> sign-off in this record refused the ratio and reported columns instead; the
+> form now says what that seat did. A filled instance with real figures and its
+> closure arithmetic is at `docs/PROCESS.md` §3.9.
 
 ## Bug packet (`BUG-`) — dv_lead → rtl_lead (VERBATIM relay)
 

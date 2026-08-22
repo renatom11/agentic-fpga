@@ -379,10 +379,10 @@ before you read anything as evidence.** `[B.8·6]`
 
 > **The stamps do not cover this document. They cover the document it used to
 > be.** The posture list measured `docs/PROCESS.md` as it stood at one commit,
-> at **1,445 lines**. The text you are reading is **6,115 lines — past four
+> at **1,445 lines**. The text you are reading is **6,192 lines — past four
 > times that**, and the figure is re-measured in the act that moved it, which
-> at this state is the currency-repair round of 2026-08-18 rather than an
-> edition. *(The adjective moved with the figure: it read "nearly four
+> at this state is the **amendment round of 2026-08-22** rather than an edition.
+> *(The adjective moved with the figure: it read "nearly four
 > times" while the ratio was 3.8, and the ratio crossed four at the eighth
 > edition. **A
 > qualifier is part of a measurement and goes stale with it** — which is the
@@ -424,16 +424,31 @@ before you read anything as evidence.** `[B.8·6]`
 > program's file-size discipline to the largest file the agents' own reading tool
 > returns in one call — **262,144 bytes** — and §2.2 states the failure class in
 > terms: *a file that exceeds what a reader can load in one piece stops being
-> read at all.* **This file is 410,403 bytes.** It is past its own anchor
-> by roughly 57 per cent, in the runtime that produced it, and the
+> read at all.* **This file is 418,570 bytes.** It is past its own anchor
+> by roughly 60 per cent, in the runtime that produced it, and the
 > declared blank-slate executor of §6.2 **cannot load it in one call there**.
 > The discipline was applied to journals, which rotate, and never to this
-> document, which has no rotation story. The companion volume, at
-> 254,247 bytes, is inside the anchor — by under eight thousand bytes, which
-> is one repair round's worth of margin and is stated as a figure rather than
-> as a comfort. *(It was under eleven thousand one round ago, and this round's
-> single addendum row took 2,440 of it. **A margin stated as a figure is the
-> only kind that can be watched shrinking.**)*
+> document, which has no rotation story.
+>
+> **And the companion has now crossed the anchor as well, on the round that was
+> watching it happen.** It stood at 254,247 bytes — *inside the anchor by under
+> eight thousand, which is one repair round's worth of margin, stated as a figure
+> rather than as a comfort* — and the amendment round of 2026-08-22 was that
+> round. **It is now 272,455 bytes, past the anchor by 10,311.** Two consequences,
+> both stated rather than absorbed. *The prediction held*: the margin was
+> published as a number precisely so that its exhaustion would be an observation
+> and not a surprise — **a margin stated as a figure is the only kind that can be
+> watched shrinking**, and this is what it looks like when the watching pays off.
+> And *the split's promise is untouched in the direction that matters*: what
+> makes fragment-reading safe here is that **no fragment of the core can contain
+> a superseded claim**, which is a property of content and not of size. What the
+> crossing costs is navigation in the companion, where a windowed reader must now
+> enter by its Part 0 manifest or by an annex heading rather than by loading the
+> file. **The repair is a companion that rotates or divides** — its Annex B is
+> the growing part and is program-local by construction, which makes it the
+> natural seam — and that is an edition's act, owned by this document's seat and
+> owed at the next one. *A threshold crossed in the act that crossed it is a debt
+> with a date; one noticed later is an audit finding.*
 >
 > **So fragment-reading is not merely possible here, it is forced — and what a
 > windowed reader should load first is stated rather than left to the window.**
@@ -455,7 +470,11 @@ before you read anything as evidence.** `[B.8·6]`
 > sentence — so the way to keep it true is to re-measure it in the act that moves
 > it. That now includes the byte figure, and the rule was tightened from
 > *per edition* to *per act* on 2026-08-18, when a currency-repair round that was
-> not an edition moved all four figures in this block.)*
+> not an edition moved all four figures in this block. **Its second exercise, on
+> 2026-08-22, is the one that argues for the rule**: the same round's
+> re-derivation of the companion's own line arithmetic found that block stale by
+> two figures, unreported, moved by rounds that had not thought of themselves as
+> moving it — which is exactly what a per-edition cadence cannot catch.)*
 
 What you can rely on, stated exactly:
 
@@ -717,6 +736,15 @@ row is cited again in the sentence naming the later act that moved its world:
 §2.2, §2.4, §2.6 and §5.1. **A currency edition raises the seam count without
 raising the coverage**, which is the column's own limit arriving as an example:
 it counts citations, not claims.)*
+
+*(**Re-checked 2026-08-22**, after the amendment round moved §1.3, §5.9 and
+§6.0: **72 headings, and not one seam count moved.** The round added no
+`##`-level structure and — deliberately — cited no posture row in any text it
+added, since a citation added for decoration would have moved a derived figure as
+a side effect of an unrelated repair. **The index below therefore stands
+unedited, and that is a measurement rather than an omission**: a derived aid left
+alone because it was re-derived and agreed is a different object from one left
+alone because nobody looked.)*
 
 ```
 awk '/^[`][`][`]/ { fence = !fence; next }
@@ -1155,6 +1183,36 @@ directory: the nine are identical across every seat, worker roles included.)*
 9. **Context and references** — the sources it works from, and the read
    restrictions it operates under **stated as unenforceable where they are**
    (§1.4(c), Annex A.4).
+
+**The nine sections are the shape; they are not the contents — and this document
+leans on clauses inside them that the nine-section list does not regenerate.**
+An adopter authoring charters at act 1c from that list alone writes nine correct
+headings and puts **none** of the duties below in, after which the controls that
+route to them die silently, because a control routed to a charter that does not
+carry it is routed to nobody (§1.1). So the index: **one row per seat, naming
+every clause this document relies on that seat's charter to carry.** Its use is
+at the act that writes the charters — read it as a completeness check there, not
+as prose to copy.
+
+| Seat (function name) | Clauses this document relies on its charter to carry | Where this document leans on it |
+|---|---|---|
+| **auditor** | the **cadenced duties**, each with its interval — the review-enforced tier's *how often* lives here and nowhere else; the **DV-escape ledger** as a mandatory owned artifact and a checked definition-of-done item; the **relay-fidelity spot-check** on the protected classes; the **canary information rule**; **no direct worker interface**; **falsifiable evaluation criteria**; and the **seeder-never-operates-the-repository** clause | §1.1's summed residue table (every interval); §1.4(d); §1.5 whole; §3.9; §4.3 |
+| **verification lead** | the **external-anchor ordering precondition** — the agreement with the anchor is committed *before* the first verdict the model issues — stated as a precondition rather than as a practice, which is what makes it auditable from the record's order | §1.4(e); §3.8's element list |
+| **specification lead** | the **gate countersignature** duty; the **dispute-adjudication** power and its limit (rulings land as a specification diff plus a decision record, never as agreement); the **process-description re-edition-or-waiver** obligation of §2.7(4) | §2.7; §3.5; §3.7 |
+| **routing-and-committing seat** | **sole spawner**, **sole committer**; the **campaign-window operator** duty with its sequencing (after review acceptance, before sign-off) and the no-graded-line-running rule; **packet-number allocation**; **verbatim onward relay** of the protected classes | §1.1; §3.9; §4.3 |
+| **builder seats** (implementation lead and its workers) | the **report, never repair a suspected seeded defect** clause — the safety net for a sequencing error, and the only thing standing between a mis-sequenced campaign and a repaired mutant | §3.9 |
+| **bench-authoring seat** | the **do not read the artifact under test** restriction, stated **as unenforceable** in the same clause that states it | §1.4(c); Annex A.4 |
+| **every seat** | **refusal is a first-class outcome**, including the refusal of an instruction arriving outside the routed channel; and the obligation to record a refusal **with its grounds** in that seat's own log | §4.8 |
+| **fused seats** (where a small program merges two functions) | the per-artifact form of *never authors the evidence it is asked to judge* — a property of a seat becomes a rule applied per artifact when the seats merge, and it must be written into the fused seat's charter or it is forgotten at the first gate | §1.2's fusion table |
+
+*Two properties of this index, so it is not over-read.* It is **derived from this
+document's own reliance sites**, not from any charter — a charter that omits a row
+is the defect the index is for, and the index does not know whether one does. And
+it carries **no posture stamps**: each row's posture is stated where the document
+leans on it, and repeating them here would create a second decaying copy of a
+measurement, which is the class §5.9 collects. *(No posture row — added after the
+measurement. Posture: **review-enforced**; nothing checks that a charter carries
+its rows.)*
 
 Charters change only by the amendment procedure (§2.7) — a numbered decision
 record, not an instruction `[RE · C-18]`. What holds mechanically is narrower:
@@ -4820,6 +4878,25 @@ instrument or by refusing it with grounds**, and this round closed one owed
 instrument each way (§2.4). *A ledger that recognizes only the first terminal
 state teaches its keepers that naming is cheaper than deciding.*
 
+**Part one's second exercise, 2026-08-22, and it convicts this section's own
+exhibit list.** An amendment round opened against the batch this section
+describes — eight constitutional subjects, every one of them a diff written and
+never applied — and its owed-restatement list came back **ten rows**, of which
+**three could not be discharged in the round that wrote them** and **one is
+*ordered* rather than merely owed**: the charters teaching the superseded
+campaign model cannot be re-quoted before the constitutional clause they cite
+moves, so applying that row early would manufacture the disagreement it exists to
+remove. *A restatement list that records ordering is doing something a list of
+files cannot*, and the ordering was invisible until somebody wrote the list.
+**And the honest half**: nothing in this section's exhibit is *repaired* by that
+round. Every subject is **routed with drafted text and named countersignatures**,
+which is one step further than an annex row and one step short of a landed
+amendment — so the correct reading of this paragraph is that the class survived
+its own diagnosis for a sixth edition, and the thing that would falsify that
+reading is a commit to the constitution, by the seat that owns it, citing the
+record. *A round that converts eight ledger rows into eight drafted hunks has
+moved the queue and not the machine.*
+
 **Without it:** the organization runs two rules, the record's and the artifacts',
 and the one a working seat obeys is whichever artifact is nearest to hand — which
 is reliably the stale one, because the stale ones are the operational files and
@@ -5019,15 +5096,15 @@ observation rather than a standing check.
 | **The policy module** | The scope table as executable data, plus the journal-path carve-out and the size parameters of **Annex A** | this repository, same directory | **The dormant contingent seat's row is un-narrowed**: it shares a scope arm with the line it would split, so the sub-domain narrowing §2.3's facsimile shows exists only as a plan in a charter. Both size thresholds are read from the **environment** and are override-able per invocation on both surfaces (**Annex A.3**, **A.7**) |
 | **The enforcement self-test** | One scenario per rule, each constructing a violation and asserting the refusal names that rule (§2.7) | this repository, same directory | **None known** |
 | **The continuous-integration workflow** | What runs the re-check, on every push, over the whole history | this repository, workflow directory | see the history re-check's row |
-| **The constitution template** | §2's rules as a document a program can amend, with the posture declarations already in the clauses | this document's companion constitution | **Two divergences, both live.** It enumerates **nine of the eleven** rule numbers its own scripts refuse by (§2.6); and its campaign clause mandates the **transient apply-and-revert** model, which no campaign in this record used — right for an adopter who can run the suite locally (**Annex A.6**) and wrong as a description of the program that wrote it |
+| **The constitution template** | §2's rules as a document a program can amend, with the posture declarations already in the clauses | this document's companion constitution | **Two divergences, both live, and both now routed with drafted text rather than only named.** It enumerates **nine of the eleven** rule numbers its own scripts refuse by (§2.6) — `ADR-0024` subject A4, carrying `ADR-0021` §8's cured draft; and its campaign clause mandates the **transient apply-and-revert** model, which no campaign in this record used — `ADR-0024` subject A8, which keeps the transient form as the lawful and preferred one for an adopter who can run the suite locally (**Annex A.6**) and stops it being a description of the program that wrote it. *Routed is not applied: both stay live until the seat that owns the file commits them* |
 | **The charter template** | §1.3's fields, one file per seat | this repository, charter directory | **None known** as to the nine sections. See the auditor-charter row for the bodies |
 | **The launcher prompts** | The spawn-time text bound to one seat: seat name, capability tier, and the obligation making charter-reading and the §4.1 precheck that seat's first acts (*The dialect*, **launcher**) | this repository, in a **per-tool hidden directory** whose path is a substrate parameter, named in this program's constitution rather than here (**Annex A.8**) — one file per roster row | **No facsimile exists here**, deliberately: the content is per-seat and domain-loaded, and the shape is the four obligations in the middle column. The location is the one kit pointer that is substrate-specific rather than repository-relative — **measure it in your own runtime before Step 1** |
-| **The packet forms** | The taxonomy of §3, as skeletons with their required sections | this repository, packet directory | **The sign-off skeleton still teaches the ratio the constitution outlaws** — *kills N/N* — which §3's facsimile was corrected precisely because of. An importer copying the form from the normative source imports the outlawed shape; copy §3's facsimile instead until the original is re-quoted |
+| **The packet forms** | The taxonomy of §3, as skeletons with their required sections | this repository, packet directory | **None known, since 2026-08-22.** For six editions the sign-off skeleton taught the ratio the constitution outlaws — *kills N/N* — and an importer copying the form from the normative source imported the outlawed shape. **Re-quoted at the original** to the two-column, per-class disposition block §3's facsimile prints (`ADR-0024` §13.1). *The row is kept rather than deleted because the interval it names is the useful part: the divergence was disclosed here for six editions and repaired in the seventh round that opened the file* |
 | **The sponsor guide** | §4.7's surface, in the sponsor's language, including the spot-check steps and the one-time platform setup | this repository, sponsor file | **None known** |
 | **The chain verifier** | The fifth enforcement script: the whole journal chain walked from a bare checkout with no history — gapless volumes, back-links, digests, contiguous ids — so the property is checkable by a stranger holding only a clone (§2.2) | this repository, enforcement directory | **None known** |
 | **The posture list** | The claim-by-claim measurement every `C-nn` stamp in this document cites: one row per enforcement or event claim, its posture, and the evidence that decided it | this repository, `docs/reports/audit/PROCESS-claims-posture.md` | **It measures a document three and a half times smaller than this one.** Its re-measurement against the grown text is **owed, and six editions running** — a count re-derived at this edition, the *three* having been carried unchanged from the fifth edition through the seventh; the boundary block in *Read this first* is the complete statement of what that costs a reader |
 | **The golden tally** | The machine-readable original of §3.9's worked seeded-defect tally: every excluded class with its ground and its evidence, the survivor with its replay identifiers, the unreachable set, and the two arithmetic checks — the file §3.9's printed block is derived from | this repository, `docs/process-golden-tally.json` | **None known.** It carries the record's own carried era figure beside the amended one and names the re-statement still owed by the verification lead |
-| **The anonymized auditor charter** | The one charter whose mechanisms this document leans on and cannot delegate: cadenced duties, the escape ledger, the canary information rule, no direct worker interface, falsifiable evaluation criteria (§1.5) | this repository, charter directory | **Its body contradicts current law in two places**: it obliges the outlawed *N/N* ratio at four sites, and it teaches the superseded transient mutation model. Import the **mechanism list** §1.5 enumerates; re-quote the clauses against your own constitution |
+| **The anonymized auditor charter** | The one charter whose mechanisms this document leans on and cannot delegate: cadenced duties, the escape ledger, the canary information rule, no direct worker interface, falsifiable evaluation criteria (§1.5) | this repository, charter directory | **Its body contradicts current law in two places, and the two are now at different stages.** It obliges the outlawed *N/N* ratio at four sites — **re-quote drafted and owed to the seat that owns the directory** (`ADR-0024` §12.1), applicable with no precondition. And it teaches the superseded transient mutation model — **which the constitution still teaches too**, so that half cannot be re-quoted until the constitution moves (`ADR-0024` §12.2, subject A8) and re-quoting it early would make the charter disagree with the clause it cites. Import the **mechanism list** §1.5 enumerates; re-quote the clauses against your own constitution |
 | **The shell's own bootstrap order** — `BOOTSTRAP.md` | A *second* adoption order, written from the shell's side and **rewritten on 2026-08-17** with the retraction: founding is **one hop** — clone the shell, push to a new empty repository, land the identity-recording founding commit on the default branch, get CI green, and the founding gate opens; the platform protections sit **inside** that gate rather than before it, and the federation namespaces it used to stage are gone. **It is still a second order**, with its own stages and its own intake rows, and it is the one a reader with the shell in hand executes | the shell repository, top level | **Never audited by this program.** What it has now is one execution: the third adoption run followed it end to end and logged where it under-determined. The run's own finding about the pair is the one to carry — **the two orders' real relationship is coverage, not conflict**: they are different kinds of procedure over mostly disjoint steps, and the precedence rule below is silent about that |
 
 **What this table asserts, and what it does not.** Every artifact above **exists,

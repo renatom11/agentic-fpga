@@ -197,16 +197,42 @@ of a block as the absence of margins.
 | 4455 | §6.2 *(new block)* | the uncomputable case-count equation | — |
 | 4643 | A.7 *(new block)* | the threshold called *stated* and stated nowhere | — |
 
-**One more block was preserved and mis-filed rather than lost**, and it is
-recorded here because a restoration table that only counts losses will let the
-next mis-file through: the fifth edition's line 4825 margin (*the sentence said
-"this edition" and would have been false the moment an edition succeeded it*)
-sits in **B.1** rather than under a Part I anchor. It is in the volume, so S4
-holds for it; it is not under the section it was anchored to, so S1 does not.
-Left where it is, named here, because moving it would edit a row three editions
-of readers have cited. *The general form worth carrying: **a warranty with two
-clauses needs two checks**, and the sixth edition's single falsifier tested only
-the weaker one.*
+**One more block was preserved and filed outside Part I**, and it is recorded
+here because a restoration table that only counts losses will let the next one
+through: the fifth edition's line 4825 margin (*the sentence said "this edition"
+and would have been false the moment an edition succeeded it*) sits in **B.1**
+rather than under a Part I anchor. It is in the volume, so S4 holds for it.
+
+**Ruled 2026-08-22, and the ruling is that it stays — on a ground the seventh
+edition did not have.** `[ADR-0024 §13.3]` The seventh edition called it
+*mis-filed* and left it on a prudential ground (moving it would edit a row three
+editions of readers have cited); the `ADR-0022` verification round carried that
+forward as a residue and routed it to the amendment batch. Re-derived there, the
+prudential ground turns out to be the weaker of two, and the stronger one
+forbids the move outright: **this margin preserves a superseded sentence of
+Annex B.1 itself**, Part I is *the superseded record **by core section***, and
+Annex B is not a section of the core — it moved here whole at the split under
+clause S2. A Part I block for it would have to name a section this volume's own
+**falsifier 2** requires to exist in the core, and none does. *The cheapest
+repair was forbidden by the apparatus that named the defect*, which is the fact
+worth carrying out of the item.
+
+**So it is not a mis-filing; it is an unstated exception**, and the repair is to
+state the rule and enumerate its population rather than to move the block. The
+rule, adopted here and applied at §0.5's census: **a preserved margin is filed
+under the core section it was anchored to; a margin whose anchor is this volume's
+own annex is preserved in place, at the row it corrects, and the census counts it
+as such.** Population: **one**, this block, and any later member is named at
+§0.5. *A rule with an enumerated exception list is auditable; a rule with an
+unstated exception is not* — S3's own principle, arriving in the census that S3's
+edition wrote. **What would overrule this**: an edition that gives Part I an
+annex-anchored division, at which point the enumerated population moves there as
+a set and falsifier 2 is restated to quantify over core sections only. That is an
+edition's act and not an amendment round's.
+
+*The general form the seventh edition already banked here, unchanged and still
+right: **a warranty with two clauses needs two checks**, and the sixth edition's
+single falsifier tested only the weaker one.*
 
 #### 0.2b — The eighth edition's moved passages
 
@@ -275,15 +301,24 @@ version uses **three states a reviewer can check out and nothing else**:
 
 ```
 git show d96a5b1:docs/PROCESS.md | wc -l     fifth edition, committed    5,446
-wc -l docs/PROCESS.md                        eighth edition, this commit 6,023
-wc -l docs/PROCESS-MEMOIR.md                 this volume, this commit    2,547
+wc -l docs/PROCESS.md                        the core, this commit       6,192
+wc -l docs/PROCESS-MEMOIR.md                 this volume, this commit    2,844
                                                                        --------
-                     the pair, this commit                              8,570
+                     the pair, this commit                              9,036
                      less the fifth edition                            −5,446
                                                                        --------
-     net lines added across three editions of repair, one split
-     and one currency pass                                              3,124
+     net lines added across three editions of repair, one split,
+     one currency pass, two repair rounds and one amendment round        3,590
 ```
+
+*(**Re-derived 2026-08-22, and the re-derivation is the point of the entry rather
+than the figures.** The block printed **6,023** and **2,547** — the eighth
+edition's own measurement — and both were already stale at the state before this
+round, by 92 and 71 lines, because the probe-repair round and the handbook round
+moved the volumes without moving the edition. **Nobody reported that; re-deriving
+found it.** The middle row's label also moves from *eighth edition* to *the
+core*: an act that is not an edition still moves the file, and a row labelled by
+edition cannot say so. `[ADR-0024 §13]`)*
 
 **What that figure is and is not.** It is the net growth of the two volumes over
 the fifth edition, produced by the sixth edition's repairs, the split's own front
@@ -364,7 +399,14 @@ which is an edition-boundary operation rather than a per-push one.*
   this volume, not an assertion that its text is current. `[B.10·5]`
 - **Census at this edition: 64 preserved passages carry the token** — **63 in
   Part I and 1 inside Annex B** (B.1's own note on the third edition's
-  unrowed claims). Re-derivable by
+  unrowed claims). **That second figure is a rule with an enumerated population,
+  since 2026-08-22, and not a carve-out**: a preserved margin is filed under the
+  core section it was anchored to, and *a margin whose anchor is this volume's
+  own annex is preserved in place, at the row it corrects*, because Part I is
+  organized by core section and **falsifier 2 refuses a Part I block naming a
+  section the core does not contain**. Population of the exception: **one**, the
+  block named at §0.2a. A later member is named here or it is a defect.
+  Re-derivable by
   `grep -c 'SUPERSEDED — historical record, not current law:' docs/PROCESS-MEMOIR.md`,
   **which returns 69**: the other **5** are mentions of the token rather than
   uses of it — **4 in this Part 0** (clause S1, falsifier 1, and this entry's
@@ -1472,6 +1514,22 @@ Each is an edit to a file outside the
 specification lead's write scope, or an amendment requiring its own instrument.
 They are named so the debt is countable; none is applied in this edition.
 
+> **The amendment round, 2026-08-22 — read this before the rows.** The batch these
+> rows have been feeding since the fourth edition was executed as a `PROTOCOL` §11
+> round, and its record is **`ADR-0024`**. Every row below now carries a dated
+> status, and **three distinct terminal states appear where previously there was
+> one**: *routed with a drafted hunk and named countersignatures* (items 1, 2, 4,
+> 7, 10, 11, 13 — eight subjects in one record, awaiting the seat that owns the
+> file); *performed* (items 14 and 16, both of which named this seat as owner and
+> a commissioned round as the closing event, and this was that round); and
+> *decided rather than deferred* (item 12, converted from silence into a routed
+> question with a carrier and a cadence). **Routed is not applied**, and the rows
+> say so in those words rather than in the word *progress*: a hunk in a record is
+> a hunk in a record until the constitution's own file moves. `ADR-0024` §2 is the
+> item-by-item re-measurement, made against the **artifact** in every case and
+> never against a document's description of it — which is what found that three of
+> these had been *repaired in prose and left standing at the site that binds*.
+
 1. **The constitution's own honesty note on one-agent-per-commit** carries the
    same false disjointness premise corrected at §2.1 (`PROTOCOL` §5 R1). Amendment
    candidate; joins the next §11 batch.
@@ -1479,6 +1537,17 @@ They are named so the debt is countable; none is applied in this edition.
    directory *because scopes forbid it* (`PROTOCOL` §7) — the same false premise
    corrected at §3.7, found in the fourth edition's round. Amendment candidate,
    same batch.
+
+   **ROUTED, 2026-08-22** — items 1 and 2 are `ADR-0024` subjects **A1** and
+   **A2**, hunks at its §11, an auditor countersignature owed on each. The
+   re-measurement sharpened both. Item 1's parenthesis is false because the scope
+   table's rows are **not disjoint**: `agents/handoffs/**` sits inside eight
+   seats' scopes by deliberate design, so what makes such a commit single-agent
+   is the coupling rule's one journal append — which **assigns attribution
+   rather than refusing the mixture**. Item 2's premise is false for **exactly
+   one** of the gate-signing seats, this one, and true for the other two; a count
+   is the form the cure takes, because *"signers cannot"* over a set with one
+   exception is the same defect as item 1's, one table over.
 3. **Narrowing the specification lead's scope** to carve out `docs/gates/**` in
    `scripts/policy.sh`, which would convert §3.7's convention into a refusal.
    Orchestrator scope; option, not recommendation — the residue declaration is
@@ -1487,6 +1556,17 @@ They are named so the debt is countable; none is applied in this edition.
    plural killing units) remains stopped and owed, as recorded in the round that
    stopped it; it joins the same amendment batch, and §3.9's third exhibit is its
    anonymized form.
+
+   **ROUTED, 2026-08-22 — and the row was half-stale in the direction that
+   matters least.** `ADR-0024` subject **A3**, countersignatures owed from the
+   auditor (its filing) and the verification lead (the seat the width falls on).
+   The re-measurement found the eighth edition had **paid it in description and
+   not at the site that binds**: §3.9's worked tally prints *"or units"* and §5
+   carries the exhibit, while the constitution's own clause is still singular —
+   so the document now describes a plural practice its constitution does not
+   license. *A description that runs ahead of its rule creates the drift it was
+   written to close*, which is the sharpest thing this batch's re-measurement
+   returned and the reason `ADR-0024` measures every item at the artifact.
 5. **Two cures the auditor filed against its own artifact** at `J-auditor-0025`,
    recorded here because this document cites that artifact on every stamp and a
    debt is only enforceable where a later reader is obliged to see it (§5.5).
@@ -1526,8 +1606,16 @@ They are named so the debt is countable; none is applied in this edition.
    would be a document declaring a constitutional duty for seats that never
    agreed to it, which is §3.7's checklist-amending-the-constitution defect run
    from the other end.
+
+   **ROUTED, 2026-08-22** — `ADR-0024` subject **A5**, orchestrator
+   countersignature owed. This is the route that ends the standing objection: a
+   numbered record, proposed by the seat that wants the duty, accepted by the
+   seat that owns the file, so nothing is declared for a seat that never agreed
+   to it. The hunk keeps **both limbs** — re-edition *or* logged waiver — because
+   a duty dischargeable only by editing a six-thousand-line document is a duty
+   discharged by not invoking it.
 8. **The re-measurement of the posture list against the grown document.** The
-   list measured 1,445 lines; the core is now **6,115 lines, past four times
+   list measured 1,445 lines; the core is now **6,192 lines, past four times
    that**, and the boundary block in *Read this first* carries that figure and
    re-measures it in every act that moves it. *(This cell said
    "nearly three times" against a preamble saying "about three and a half" —
@@ -1593,6 +1681,17 @@ They are named so the debt is countable; none is applied in this edition.
     "how often" one. **Filed in the fourth edition, applied nowhere** — enacting
     it
     here would bind a seat that never agreed to it.
+
+    **ROUTED, 2026-08-22** — `ADR-0024` subject **A6**, countersignatures owed
+    from the orchestrator and the auditor, which are exactly the two seats
+    **B.1**'s §1.1 row already names for this subject. The hunk puts the cadence
+    where the spawning power is and states its falsifiable consequence: §1.1's
+    table gains a **next due** column instead of a *how often* one, and a control
+    whose next-due cell is empty is unscheduled. *This is the item with the
+    largest ratio of consequence to text in the batch, and therefore the one most
+    likely to be accepted in principle and left unapplied* — which is why its
+    restatement row names `docs/PROCESS.md` §1.1 as a target file rather than as a
+    follow-up.
 11. **The packet-type minting rule** (§3's blockquote). Proposed by this
     document and stated in no binding artifact of this program: the constitution
     defines four types and no minting route, and every extension form in the
@@ -1601,6 +1700,19 @@ They are named so the debt is countable; none is applied in this edition.
     propose it — after which §3's blockquote takes a posture and stops being a
     proposal. Until then the blockquote carries the marker and binds nobody.
     *(Filed in the fourth edition, on an independent record audit's finding.)*
+
+    **ROUTED, 2026-08-22 — and the routing round became the row's own exhibit.**
+    `ADR-0024` subject **A7**, orchestrator countersignature owed. That round
+    needed to carry charter re-quotes to a seat that owns the charter directory;
+    the natural carrier is a packet, **no defined type fits**, and minting one
+    inside a record convicting unminted types would have been the defect
+    committing itself. The re-quotes travel as drafted hunks in the record
+    instead — the established idiom — which is the right answer *and* is a
+    measurement of what the missing route costs: one workaround per round that
+    needs it. The hunk is deliberately minimal (a type is minted by a numbered
+    record naming token, writer, consumer, relay class and retirement condition;
+    the §3 table gains a row) and mints **no registry file**, because a registry
+    is a second copy of the table.
 12. **Scoring a seeded-defect campaign by the independent seat rather than by
     the seat that froze the seal** (§3.3). The blind runs against the seeder and
     is discharged the moment every diff is committed, so the seeder could score
@@ -1611,6 +1723,19 @@ They are named so the debt is countable; none is applied in this edition.
     meanwhile. It belongs to the seats that would carry it. Closing event: either
     an amendment routing the scoring act, or a recorded refusal with grounds —
     **both are outcomes; silence is not.**
+
+    **DECIDED NOT TO DECIDE, 2026-08-22, which is the third outcome and is not
+    silence.** `ADR-0024` §14 declines to rule it and says why: the blind runs
+    against the auditor, the cost falls on the auditor, and the scoring practice
+    it would change is the verification lead's — a specification lead allocating
+    two other seats' rounds is outside the adjudication power its charter
+    reserves for interface contracts. What the record does instead is give the
+    question a **carrier and a cadence**, which is what this row has lacked for
+    four editions: **owners** auditor and verification lead jointly; **carrier**
+    the next round in which both are spawned against the same campaign;
+    **cadence** re-asked at every `P<n>-module-ready` until answered. *§5.9's
+    second cure part asks rows to carry a cadence and this is the first row in
+    this annex that does.*
 13. **The constitution's transient-mutation clause is false against the record,
     and until this edition it was the only disclosed constitutional falsehood
     with no route.** `[B.11·21]` `PROTOCOL` §10 still prescribes that the
@@ -1630,6 +1755,24 @@ They are named so the debt is countable; none is applied in this edition.
     stated as its ground, accepted by a seat that did not propose it. *Filed by
     the fourth council's record audit; routed here rather than performed,
     because the constitution is not this seat's file to stage.*
+
+    **ROUTED, 2026-08-22, and it turns out to gate half of another item.**
+    `ADR-0024` subject **A8**, countersignatures owed from the auditor (manifest
+    author) and the orchestrator (the seat whose described practice is the false
+    one). The hunk preserves everything the transient model was *for* — mutated
+    artifacts never reach the mainline, no graded-line seat runs while a manifest
+    is live, the campaign sits between review acceptance and sign-off — and
+    changes only the mechanism, with the **never-merge property replacing
+    reversion** as the guarantee, and the transient form kept as lawful and
+    preferred wherever an adopter's substrate can run the suite locally.
+    **The sequencing consequence, which nobody had stated**: five charters teach
+    the transient model, each citing this clause **accurately**, so they cannot
+    be re-quoted to current law until this clause moves. The round-5 council's
+    charter re-quote was unexecutable in that half from the day it was written.
+    *A re-quote whose source clause is itself the stale law is not a re-quote; it
+    is a second amendment wearing clerical clothes.* One new debt the subject
+    creates and does not pay: **nothing verifies that a marked reference never
+    merges** — owner orchestrator, closing event a CI ancestry assertion.
 14. **The kit's packet-forms original still teaches the ratio the constitution
     outlaws.** `[B.11·22]` The core's §6.0 kit table points an adopter at this
     program's packet-form skeletons as the original of "the packet forms". The
@@ -1647,6 +1790,19 @@ They are named so the debt is countable; none is applied in this edition.
     refusal with grounds (§4.8), not a quiet widening of the round. **Owner:
     this seat. Closing event:** the skeleton's disposition line replaced with
     the itemized form, in a round commissioned for it.
+
+    **PERFORMED AND CLOSED, 2026-08-22.** The amendment round was that
+    commissioned round. `agents/handoffs/README.md`'s sign-off skeleton no longer
+    carries `Mutation kills: N/N`; it carries the five-field disposition block —
+    **sealed**, **seeded**, the itemized difference with each ground, the
+    per-seeded-class rows, and the unreachable set beside them — with the
+    constitution's determinacy sentence in the block rather than beside it, and a
+    note stating what the form demanded until this date and why it was wrong.
+    The core's §6.0 kit row is re-quoted from *"still teaches the ratio… until
+    the original is re-quoted"* to **None known, since 2026-08-22**, with the
+    six-edition interval kept in the cell — *the interval is the useful part of a
+    closed divergence row, and deleting it would delete the measurement of how
+    long a disclosed defect survived disclosure.* `[ADR-0024 §13.1]`
 15. **The shell's core-plus-domain-pack refactor**, which converts the export
     unit's one materially false sentence into its architecture. `[B.11·23]` The
     core's §6.0 now states the true sentence — the shell is FPGA-generic, not
@@ -1660,6 +1816,17 @@ They are named so the debt is countable; none is applied in this edition.
     shell release whose core carries no domain noun and whose FPGA surfaces are
     a named pack — at which point §6.0's sentence changes again, in the other
     direction, and this row closes.
+
+    **BLOCKED, 2026-08-22, and the reason it cannot be measured is itself an
+    entry against `B.0.4a`.** `ADR-0024` §15 re-measured it and returned **no
+    measurement**: this repository holds no first-party observation of the shell
+    later than the handbook pin (`9ba1138` here, `10d3aec` there, 2026-08-18),
+    and the instrument that would say whether this row has moved is the
+    **doc–shell drift check** — `B.0.4a`, unbuilt at six editions. So the row is
+    unchanged, the owner is unchanged, and *the honest statement is that this
+    volume does not know, rather than that the item is open.* **A row whose
+    status cannot be read is a second cost of the missing instrument**, and it is
+    the first time that cost has been priced against a specific row.
 16. **A per-seat index of the charter clauses the core relies on elsewhere.**
     `[B.11·24]` The core exports the auditor's charter mechanisms in prose and
     routes the artifact to the kit, which is the right split. But it leans on
@@ -1673,6 +1840,21 @@ They are named so the debt is countable; none is applied in this edition.
     carry, so completeness is checkable at the act that writes them. **Owner:
     this seat. Closing event:** the index landing in the core's §1.3 or as a kit
     row. *Filed by the fourth council's adoption lens.*
+
+    **PERFORMED AND CLOSED, 2026-08-22, at the first of the two named closing
+    events.** The index is in the core at **§1.3**, between the nine-section list
+    and the amendment sentence: eight rows — auditor, verification lead,
+    specification lead, routing-and-committing seat, builder seats,
+    bench-authoring seat, every seat, and fused seats — each naming the clauses
+    this document leans on that charter to carry and the sections where it leans.
+    Two properties recorded with it: it is **derived from the core's own reliance
+    sites and not from any charter**, so a charter that omits a row is the defect
+    the index exists to find; and it carries **no posture stamps**, because each
+    row's posture is stated where the document leans on it and a second copy of a
+    measurement is §5.9's class. *(It also carries no `C-nn` token, deliberately:
+    the subsection index's seam column counts those, and an index row citing one
+    would have moved a derived figure as a side effect of an unrelated repair.)*
+    `[ADR-0024 §13.2]`
 
 ### B.3 — Instruments named in the text and not in force
 
@@ -2442,6 +2624,50 @@ finding.
 | # | Class | Site | Disposition |
 |---|---|---|---|
 | H1 | the shell's own act, sponsor-directed | §6.0 export-unit framing; §6.0's *what this table asserts* paragraph; both the rendition's header and its §6.0 | **Applied, and stated as a change of shape rather than as an improvement.** The unit now ships whole: an adopter who can reach the shell and not this repository receives the explaining half, which is the mirror of §6.2's shell-less fallback and closes **one of the two** ways to hold half a unit — the other, an adopter who cannot reach the shell, is unchanged and is the only one of the two that anybody has executed. Recorded with both commits — this repository's `9ba1138`, the shell's `10d3aec` — with the carried set stated as **reference and not law** (its marks measure this program at that commit; §6.1's fork contract governs any adoption of them as law), with the **staleness contract** (re-carried per edition or stale, the file here governing), and with the residue named rather than smoothed: **a carried copy is a third copy**, bound to this one by the pin and the re-carry duty alone, which is condition (i)'s binding-by-sentence now holding two artifacts instead of one. Until the **doc–shell drift check** exists the whole check is a diff of the carried directory against this repository at the pinned commit, **expected empty**. *A copy that explains itself is worth more than one pointing at an explanation it cannot reach, and worth exactly nothing more than the discipline that re-carries it.* |
+
+**The amendment round, 2026-08-22 — the queue this annex has been feeding for
+four editions, executed.**
+
+Not an edition, and the block is lettered rather than numbered for the reason the
+one above it is: it records a **round**, not a revision, and folding it into
+`B.13`'s table would claim the eighth edition did something it did not. The
+batch's authority is `tasks/BOARD.md` at `J-orchestrator-0285` (2026-08-12),
+restated at `J-orchestrator-0309`; its record is **`ADR-0024`**; its dispositions
+are written into the `B.2` rows above rather than duplicated here.
+
+**What the round is, in one sentence each.** Eight `PROTOCOL` subjects drafted
+and routed with named countersignatures and none applied, because the
+constitution is not this seat's file. Two `B.2` items **performed** at their own
+stated closing events — the packet forms' outlawed ratio, and the per-seat
+charter-clause index. One item **decided rather than deferred**, with a carrier
+and this annex's first cadence. One item **blocked with its blockage priced**
+against `B.0.4a`. One routed residue **ruled**, and ruled the opposite way from
+the direction it was routed in.
+
+| # | Class | Site | Disposition |
+|---|---|---|---|
+| A1 | re-measurement, before any byte moved | the whole batch | **Performed, and it is the act that made the round honest.** The batch was enumerated on 2026-08-12 against the **fifth** edition; the document is at its **eighth**, with a companion and a rendition, and three of the fourteen items had been *repaired in prose* by editions six to eight. **Not one was paid at the artifact that binds.** The rule the round adopted and states here as this annex's own: **a defect is paid at the artifact that binds, not at the artifact that describes** — a description corrected while its subject stands is a second true sentence about a false rule. |
+| A2 | the batch's own commission | `tasks/BOARD.md` row citation | **Corrected in passing.** The dispatch cited the routed residue as board row 66; it is at row **70**. One sentence, recorded because a citation resolving to the wrong row is the class this program spends most of its review budget on. |
+| A3 | scope | `agents/charters/**` | **Refused, three times over.** The dispatch described the charter directory as inside this seat's write scope. It is not — by the constitution's own scope table, by this seat's charter, and mechanically by the policy module, which returns *no* for every path under it. **A dispatch is not an amendment**, and a round that took one as such would have convicted itself in the record it was writing about unapplied amendments. The re-quotes are drafted at `ADR-0024` §12 and owed to the seat that owns the directory. |
+| A4 | ordering, discovered | the charter re-quotes | **The round's one genuinely new finding.** The round-5 council ordered four charters re-quoted *to current law*; five charters teach the superseded campaign model **citing the constitution accurately**, so that half was unexecutable from the day it was ordered and stays unexecutable until subject A8 lands. The restatement list carries it as an **ordered** row rather than an owed one. |
+| A5 | the routed residue | `§0.2a`, `§0.5` | **Ruled, and the ruling reverses the routing's premise.** The margin is not mis-filed: Part I is organized **by core section**, its anchor is this volume's own annex, and a Part I block for it would falsify **falsifier 2**. So the repair is to state the rule and enumerate its population — one member — rather than to move the block. *The cheapest repair was forbidden by the apparatus that named the defect.* |
+| A6 | the rendition | `docs/PROCESS-STE.md` §6.0 | **Re-derived at the one site this round makes false**, and deliberately not at the sites it makes merely incomplete. The rendition's own calibration rule is *if a sentence here is stronger than its source sentence, this volume is the defect*: a **false** sentence is a defect, a **missing** one is staleness, which its header already declares and dates. The §1.3 index has no rendition row and is owed to the ninth edition's re-derivation. |
+
+**What this round did not do, stated so the absences are decisions.** It applied
+**no** constitutional hunk and **no** charter re-quote — every one of the eight
+subjects and both re-quote sets is written and unapplied, awaiting the seat that
+owns those files, and the whole batch is therefore **one countersignature round
+and one commit away from being exactly what it was on 2026-08-12**. It bumped
+**no edition**: `§2.7(4)`'s re-edition limb is triggered by a change that alters
+enforcement semantics, and at this tree none moved — what it did instead is
+re-measure the boundary block's figures in the act that moved them, per the rule
+the eighth edition tightened from *per edition* to *per act*. **No posture stamp
+was re-measured**, and the posture list was **not opened by this seat** — it is
+the auditor's artifact and scope, and a re-measurement round of its own was
+declared live in a sibling lane while this round ran, so this volume states its
+own abstention and makes no claim about that artifact's state. And the **doc–shell drift check is still not built**, which this round can
+say costs something specific rather than something general: `B.2` item 15's status
+is now unreadable because of it.
 
 ---
 
