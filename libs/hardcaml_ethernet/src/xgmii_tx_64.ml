@@ -296,7 +296,7 @@ let create (scope : Scope.t) (i : Signal.t I.t) : Signal.t O.t =
      no gap is ever shortened. *)
   let gap_left = wire 6 in
   let gap_words terminate_lane =
-    let sum = uresize i.cfg_ifg 10 +: uresize terminate_lane 10 +:. 7 in
+    let sum = of_int ~width:10 12 +: uresize terminate_lane 10 +:. 7 in
     uresize (srl sum 3) 6
   in
   let term_here = in_body &: (d_term >=+. 0) &: (d_term <=+. 7) in
