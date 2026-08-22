@@ -631,3 +631,73 @@ things a reader of this file should carry forward from the later one:
 **This file remains the measurement of `6c02f5b`.** The measurement of the eighth
 edition is the other file, and neither supersedes the other: they measure
 different states, which is the whole point of pinning one.
+
+### Note 7 — 2026-08-22 — `C-109`: the cure of the row this seat convicted itself of, in the form Note 1 established
+
+Written at `2a4a5bc`, in the `ADR-0024` countersignature round
+(`J-auditor-0031`), paying the self-routed half of **`F-0030-2`** (filed at
+`J-auditor-0030`, `PROCESS-claims-posture-2.md` §5). Note 6 item 3 disclosed
+the conviction; this note is the repair, and per this file's own protocol the
+cell above stands unedited and this note is where the correction lives.
+
+**The row's evidence cell says** *"Zero spot-checks in the program's history."*
+**That sentence was false when the row was frozen (2026-08-11), and the
+refuting artifact sits in this same directory.**
+`docs/reports/audit/AUD-0002-g0-reverification.md` §3.4 (:126–152), dated
+2026-08-01, performs a relay-fidelity diff of a verbatim-class relay — the
+transcription of the auditor's own G0 verdict into `WO-0001`'s Return log,
+protected class by `PROTOCOL` §3 (*"all auditor findings"*) — table row by
+table row, eight claims, and **convicts one**: a findings tally relayed as
+*"1 CRITICAL, 6 MAJOR, 6 MINOR, 4 NOTE"* against a source reading 1/7/7/2,
+filed as **`AUD-0002-N1` (MAJOR)** at :574. One spot-check was performed, and
+it caught a defect.
+
+**The corrected evidence sentence, replacing the cell's for any future
+reader**: one relay-fidelity spot-check has been performed (2026-08-01, on the
+verbatim-class transcription of the auditor's verdict); **none has ever been
+performed on any `SO-` or `BUG-` packet**, of which five exist at the frozen
+date (`SO-xgmii_rx_64.md`, `BUG-0001`–`BUG-0004`). The **PLANNED posture
+stands for that unexercised limb**; the word *never* is withdrawn. The row's
+own citations show the mechanism of the error: the cell quotes `AUD-0001`:247
+and the journal — both saying the control *could not yet* run — and never
+searched the successor report in which it did.
+
+**Boundary of this note**: the register cell that inherited the word
+(`docs/PROCESS.md` — :975 at `949b8ab`, :1003 at `2a4a5bc`, same sentence) is
+the architect's half of `F-0030-2` and is not this seat's to repair.
+`PROCESS-claims-posture-2.md` did **not** inherit it — its §3 `C-109` row
+carries the corrected form — so no note is owed there.
+
+### Note 8 — 2026-08-22 — `C-11`/`C-27`: *"Nothing since"* counts cycles, and the reader needs firings
+
+Written at `2a4a5bc`, same round, paying the self-routed half of **`F-0030-3`**
+(filed at `J-auditor-0030`). Cells unedited, per protocol.
+
+**`C-11`'s evidence cell says** *"**Nothing since**: entries
+`J-auditor-0004`…`-0018` are all mutation-seeding rounds … The residue has been
+uncovered for the entire build phase"*, and **`C-27`'s says** *"Not repeated
+since."* Both are true on the measure of a **commissioned audit cycle whose
+subject is the orchestrator** — once, `AUD-0001-g0-retro.md` §6–§7,
+2026-08-01 — and false on the measure a reader uses these rows for, which is
+whether the audits-the-orchestrator control is **dormant**:
+**`FINDING WO-0074-A1` (MAJOR)** was filed by this seat against the
+orchestrator's own dispatches and ruled **ACCEPTED by the orchestrator on
+2026-08-10** — `ADR-0019`:3–5 (the rule in force since `J-orchestrator-0218`),
+:21, :80; `claude_auditor_agent.v02.md`:27, :269, :438. The control fired
+**inside the very entry span the cell characterizes as "all mutation-seeding
+rounds"** — the seeding round is where the finding arose, which is what the
+cell's counting rule made invisible.
+
+**The corrected statement**: audit *cycles* with the orchestrator as subject —
+one (2026-08-01). Accepted findings against the orchestrator's conduct — two
+by this list's freeze date (2026-08-01; 2026-08-10), with further instances
+since (`F-0030-1`, `F-0030-7`). *"Nothing since"* and *"Not repeated since"*
+are withdrawn; **PERFORMED-ONCE stands for the cycle measure**, now stated as
+the measure it counts.
+
+**Boundary of this note**: the register cell (`docs/PROCESS.md` — :982 at
+`949b8ab`, :1010 at `2a4a5bc`, *"Audit of the orchestrator | Once, at
+ratification"*) is the architect's half of `F-0030-3` and is not touched.
+`PROCESS-claims-posture-2.md` did not inherit either sentence — its §3
+`C-11 / C-27` row draws the cycle/firing distinction in terms — so no note is
+owed there.

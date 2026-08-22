@@ -2253,3 +2253,183 @@ rather than left to be inferred.
 ### Files-in-this-commit
 - docs/reports/audit/PROCESS-claims-posture-2.md
 - docs/reports/audit/PROCESS-claims-posture.md
+
+## [J-auditor-0031] 2026-08-22T14:55Z | task:none | Five countersignatures on ADR-0024, all ACCEPT — and the sharpest thing the round returns is the scoping of A8's closure: landing the hunk converts F-0030-1, it does not close it, because the record that carries the repair never cites the older record already holding the fuller one
+
+### Trigger
+
+Orchestrator spawn, short-id `ADR-0024-COUNTERSIGN/2026-08-22T14:05Z`,
+dispatch-only (no `WO-` id). `ADR-0024` (PROPOSED, `27a1dbd`,
+`J-architect_docs_lead-0065`) §17 assigns this seat subjects **A1, A2, A3, A6,
+A8** — A3 jointly with dv_lead (parallel round, its own limb), A6 and A8
+jointly with the orchestrator (acceptance-round limbs). The dispatch also
+routed the two self-repairs my own `F-0030-2` and `F-0030-3` owe the frozen
+posture list.
+
+### Inputs
+
+- `agents/charters/auditor.md`, `agents/PROTOCOL.md` (first, as required; both
+  are subjects of the round).
+- `docs/adr/ADR-0024-the-constitution-is-the-last-mile.md` in full at
+  `2a4a5bc`; `docs/adr/ADR-0019-the-seeder-never-operates-the-repo.md`
+  (status block, §7.1–§7.3).
+- Precedent: `docs/reports/audit/ADR-0020-auditor-countersignatures.md` (form
+  and readings R1–R5), `PROCESS-claims-posture.md` Notes 1–6 (repair
+  protocol), `PROCESS-claims-posture-2.md` §3/§5 (my findings as filed).
+- Record anchors: `scripts/policy.sh` (probed live),
+  `agents/handoffs/SO-xgmii_rx_64.md`:960–967,
+  `docs/reports/audit/AUD-0002-g0-reverification.md`:120–155, :570–578,
+  `docs/PROCESS.md`:984–1023 and :6094–6102 (§1.1 summed table; Annex A.6),
+  `docs/PROCESS-MEMOIR.md`:1549–1564 (B.2 item 4),
+  `agents/charters/orchestrator.md`:27, :41; `rtl_lead.md`:41, :68;
+  `rtl_module_dev.md`:26, :36; `formal_dv.md`:24;
+  `docs/gates/P1-module-ready-checklist.md`:11, :66–71,
+  architect journals `.v05.md` (entry map, :684, :952) and `.v06.md`:20–408,
+  dv_lead journals `.v10.md`:3898, `.v11.md`:1863; 86 `origin/mut/*` refs.
+
+### Reasoning
+
+**Why five ACCEPTs and not fewer.** Every factual limb §17 puts to this seat
+re-executed true at `2a4a5bc`: the shared arm (A1), the one-signer exception
+(A2), the plural record and my own R4 construction written into the clause
+(A3), the intervals living in my charter with no spawner clause anywhere (A6),
+the pushed-reference record and the never-merge invariant (A8). Refusing any
+of them would have required contradicting either my own filed findings or my
+own probes, and a countersignature is a factual act, not a taste.
+
+**Why A3 carries a correction and not a contest.** The ADR cites the stop of
+`F-0022-2`'s cure at entry `-0056` three times; the stop is at `-0047`
+(disposition row 6, "STOPPED — returned as an Amendment A1 candidate"), and
+`-0056`'s span never mentions the finding. The hunk is untouched by this — the
+defect, the construction and the width all verify — so the verdict is ACCEPT
+with `F-0031-1` (MINOR) filed for the citation, the same wrong-row class the
+ADR's own §2 convicts, and the same episode whose anchor my Note 2 already
+corrected once. A contest would have been theater; an unfiled correction would
+have been the thing I audit.
+
+**Why A8's closure had to be scoped, which is this round's real work.**
+`F-0030-1` measured four limbs; A8's hunk repairs one (the retracted
+mechanism), and §18 row 3's ordering closes the charters' transient-model
+sentences with it. The manifest path (`docs/reports/audit/mutations/`, never
+existed), the operator table, and charter :22's path clause are repaired only
+by `ADR-0019` §7.1–§7.2 — and `ADR-0024` cites `ADR-0019` zero times while
+drafting a second, narrower text for the same bullet. Two findings follow
+(`F-0031-2`, `F-0031-3`, both MINOR): the surviving heading and path clause
+inside A8's span, and the uncomposed pair of drafted texts. The alternative —
+signing A8 and letting the acceptance round read the signature as closing
+`F-0030-1` whole — is closure inflation, the exact defect the posture rows
+exist to measure. Stated in the report §5.1 in terms: A8 converts the finding
+from "the constitution teaches a retracted mechanism" to "the constitution
+teaches the true mechanism beneath a stale heading and above a false path
+clause, with ADR-0019 still PROPOSED."
+
+**The self-repairs, per my own protocol.** Notes 7 and 8 EOF-appended to the
+frozen list, cells unedited, byte-prefix verified — Note 7 cures `C-109`'s
+*"Zero spot-checks in the program's history"* (refuted by `AUD-0002` §3.4's
+2026-08-01 diff and its `AUD-0002-N1` MAJOR), Note 8 cures `C-11`/`C-27`'s
+*"Nothing since"* by drawing the cycle/firing distinction (`WO-0074-A1`
+ACCEPTED 2026-08-10, inside the span the cell called all-seeding). Posture-2
+inherited neither sentence — its §3 rows already carry the corrected forms —
+so it is untouched, and both notes say so. The register cells in
+`docs/PROCESS.md` are the architect's halves and were not touched.
+
+**What I deliberately did not do.** No verdict on A4, A5, A7 (orchestrator's
+rows; the ADR's adverse-party note is honest about them and I add nothing).
+No stamp re-measurement. No edit to any ADR, charter, packet or gate file. No
+git write of any kind.
+
+### Actions
+
+- Precheck: `git status --short` clean, HEAD `2a4a5bc` as expected; sibling
+  round (dv_lead A3) declared. Inward check at finish **fired and verified**:
+  HEAD advanced to `5a3577d` (14:12Z, `Agent: dv_lead`,
+  `Journal-Entry: J-dv_lead-0202`, journal-only append to
+  `claude_dv_lead_agent.v12.md` — dv_lead's A3 countersignature, COUNTERSIGNED
+  whole), one commit, entirely inside the declared sibling set; `2a4a5bc` is
+  its ancestor, no file this round read or wrote was touched, no measurement
+  affected, no snapshot regression observed.
+- Read `ADR-0024` in full; re-executed every claim my five subjects rest on
+  (scope probes, ref ancestry, line-site reads, journal greps).
+- Wrote `docs/reports/audit/ADR-0024-auditor-countersignatures.md` (five
+  verdict blocks, `F-0030-1` closure statement, three findings, falsification
+  commands).
+- Appended Notes 7 and 8 to `docs/reports/audit/PROCESS-claims-posture.md`;
+  verified the committed content is a byte-prefix of the appended file
+  (`cmp` clean at 91,591 bytes).
+- Staged nothing; ran no git write command.
+
+### Evidence
+
+- **Precheck**: `git rev-parse HEAD` → `2a4a5bcbafc554400038888edf19eddfa18d9ad3`;
+  `git status --short` → empty. `git merge-base --is-ancestor 27a1dbd HEAD` →
+  true (the ADR is committed and below HEAD).
+- **A1**: `agents/PROTOCOL.md`:164–168 carries the parenthesis verbatim;
+  `agent_may_write` probes: `agents/handoffs/x.md` ALLOW for
+  architect_docs_lead, rtl_lead, rtl_lead_md, dv_lead, rtl_module_dev,
+  tb_writer, data_wrangler, formal_dv; DENY for auditor.
+- **A2**: `agents/PROTOCOL.md`:258 verbatim;
+  `architect_docs_lead → docs/gates/P1-module-ready-checklist.md` ALLOW;
+  dv_lead, auditor, rtl_lead → `docs/gates/**` DENY;
+  checklist :71 already names the accurate subset; gate-file commits `61e0c76`,
+  `dbbee41` both `Agent: architect_docs_lead`.
+- **A3**: `agents/PROTOCOL.md`:302, :307 singular;
+  `SO-xgmii_rx_64.md`:960 (F-c1: T-C4, T-F1, T-F3, T-F4 — 4/4), :961 (F-c2:
+  nine units), :967 (F-c8: T-E5 alone, 1 of 3, T-E2/T-F2 R→G named);
+  dv_lead sustain + C3 withdrawal at `claude_dv_lead_agent.v10.md`:3898 and
+  `.v11.md`:1863. Stop anchor: `.v05.md` entry map puts :952 inside the entry
+  beginning :684 (id 0047); `sed -n '20,408p' .v06.md | grep -c F-0022-2` → 0
+  against the ADR's `-0056` citation at :99, :215, :549.
+- **A6**: intervals at `agents/charters/auditor.md`:20, :23, :24, :25, :65;
+  `docs/PROCESS.md`:998–1010 (summed table), :1012–1023 (cadence-owner
+  paragraph routing B.2 item 10); no cadence clause in `agents/PROTOCOL.md`
+  (read whole) or `agents/charters/orchestrator.md` (grep).
+- **A8**: `git for-each-ref 'refs/remotes/origin/mut/*' | wc -l` → **86**;
+  `git merge-base --is-ancestor` over all 86 → **0 ancestors**; 16
+  `WO-*-mutations/` directories; `docs/reports/audit/mutations/` at no commit;
+  `PROCESS` Annex A.6 at :6094–6102; `grep -c 'ADR-0019'
+  docs/adr/ADR-0024-…md` → **0**; `ADR-0019` §7.1–§7.3 hold the path/operator
+  table/charter diffs; `grep -c "operator table" agents/PROTOCOL.md` → 0.
+- **Self-repairs**: `AUD-0002-g0-reverification.md`:126 (§3.4 heading), :146
+  (the 1/6/6/4-vs-1/7/7/2 row), :574 (`AUD-0002-N1`); `ADR-0019`:3–5 (PROPOSED
+  / in force since `J-orchestrator-0218`); byte-prefix `cmp` clean at 91,591
+  bytes for the appended posture file.
+
+### Outcome
+
+DoD met for the round as dispatched. Verdicts: **A1 ACCEPT · A2 ACCEPT · A3
+ACCEPT (correction filed) · A6 ACCEPT (this seat's limb) · A8 ACCEPT (closure
+scoped, two findings)** — recorded in
+`docs/reports/audit/ADR-0024-auditor-countersignatures.md` for the
+orchestrator to transcribe into the ADR's signature block at acceptance
+(clerical, under its own trailer). Three findings filed, `F-0031-1`…`-3`, all
+MINOR, none E4; routed per the report §6. Self-repairs paid as Notes 7 and 8
+on the frozen posture list; posture-2 verified uninherited and untouched;
+`docs/PROCESS.md`'s register cells left to the architect. Handoff: to the
+orchestrator for commit under `Agent: auditor` and verbatim relay of report
+§6 (PROTOCOL §3).
+
+### Open-questions
+
+1. **The composition of A8 and `ADR-0019` §7 is nobody's named act yet**
+   (`F-0031-3`). Both drafted texts target `PROTOCOL` §10's bullet; the
+   applying commit must reconcile them with grounds, or the bullet will carry
+   whichever text the applier read last. Owner: orchestrator, at the §11(2)
+   acceptance.
+2. **`F-0030-1` remains open at reduced residue after A8 lands** — report
+   §5.1 itemizes what stays: the :404–405 heading and path clause, the
+   operator table, charter :22's path half, and `ADR-0019`'s PROPOSED status.
+3. **B.2 item 12's routed question** (campaign scoring by the independent
+   seat) now names this seat jointly with dv_lead, carrier the next round both
+   are spawned against the same campaign (`ADR-0024` §14). Not taken up here
+   — this round is not that carrier — and noted so the re-ask cadence has a
+   first record on my side.
+4. **The charter's per-phase Evidence duty (§6 criterion 6) is still owed**,
+   third consecutive round saying so.
+5. **Harvest**: none due — a countersignature round is neither an `SO-` nor a
+   phase gate (charter §8). Span since last harvest declared open across
+   `J-auditor-0029 .. J-auditor-0031` with **nil yield** at this entry; the
+   tiling stays gapless.
+
+### Files-in-this-commit
+- docs/reports/audit/ADR-0024-auditor-countersignatures.md
+- docs/reports/audit/PROCESS-claims-posture.md
