@@ -1601,3 +1601,316 @@ visible gap and this declaration is what keeps it one interval.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0199] 2026-08-22T05:52Z | task:WO-0085 | The cfg_ifg axis is ACCEPTED and the coverage debt is discharged in the suite rather than only in the plan — and the same review finds a fourth site of the struck claim that a site list enumerated on its figure could not reach, then rules the class-11 re-run a disposition check and IC-10 un-re-runnable because it never ran
+
+### Trigger
+
+Orchestrator spawn `WO-0085-REVIEW/2026-08-22T05:15Z`. `WO-0085` — my own packet,
+drafted at `J-dv_lead-0197` — RETURNED by tb_writer at `J-tb_writer-0047`,
+landing `a0cf4dd`. The review verdict is owed by the issuing lead. The dispatch
+additionally asks for two named judgment calls to be ruled explicitly, for the
+`dune` edit to be adjudicated for necessity and scope, for the byte-identity
+claim to be established by measurement rather than by the worker's word, and for
+the seal §10.6 re-run mechanics to be ruled from the campaign's sealing and
+scoring seat.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3 packets and relay class,
+  §4 journal grammar, §5 R1–R9, §6 write scopes, §7 Mutation record (b.1)–(b.4),
+  §10 independence, evidence and R-SEAL-1).
+- `agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md` in full, including the
+  RETURNED log.
+- The diff under review, read line by line:
+  `git show a0cf4dd -- test/xgmii_tx_64/bench.ml test/xgmii_tx_64/bench.mli test/xgmii_tx_64/dune test/xgmii_tx_64/test_m04_f.ml`,
+  plus `git show --stat a0cf4dd` and `git show --name-only --format="" a0cf4dd`.
+- **Specification, as the sole basis for every expected value I checked**:
+  `docs/specs/modules/xgmii_tx_64.md` §6.1 (the gap paragraph, the identity
+  `g = ⌈(cfg_ifg + t)/8⌉` and gap `8g − t`, and the cycle-by-cycle table), §9
+  (the abort word, its terminate character, and *"the gap is then served from
+  that terminate character"*), §10.
+- `test/attack_plans/AP-xgmii_tx_64.md`: rows `M04-F1`, `M04-F2`, `M04-F3`,
+  `M04-F6`, `M04-F7` (row text as the contract), §1's status vocabulary, §5 item
+  12's three rejections, §6.1's homing census and its command, §7 items `T-2`,
+  `T-3`, `T-8`, §9's change log.
+- Bench and instrument sources, all inside `test/**` and none of them RTL:
+  `test/xgmii_tx_64/bench.ml`, `bench.mli`, `dune`, `test_m04_f.ml`,
+  `test/xgmii/tx_decoder.mli` and `tx_decoder.ml` (the latter read to settle
+  whether `ifg` can reach anything `wire_frames` returns).
+- `agents/handoffs/WO-0084-SEALED-predictions.md` §6 (IC-10 worked in full), §10
+  item 6, §11; `agents/handoffs/WO-0084_m04-mutation-campaign.md` Return log rows
+  1, 3 and 4 (the operator's procedure, the step-6-not-job rule, the act-4 tally
+  and the class-11 survivor evidence form).
+- `.github/workflows/build.yml`, to establish what the cited CI run actually
+  executed rather than assuming it.
+- **RTL exposure, disclosed under charter §8.** I opened
+  `docs/reports/audit/WO-0084-mutations/class-11-gap-ignores-ifg.diff` — an audit
+  artifact, not RTL source, but one that quotes six context lines of
+  `libs/hardcaml_ethernet/src/xgmii_tx_64.ml`. **Why**: the dispatch requires me
+  to name the predicted killing unit of that exact diff, which cannot be done
+  without reading the rendering. **When**: after I had already re-derived every
+  expected value in both new units from §6.1's identity and checked them against
+  the code, so no test expectation in this round is contaminated by it. **No
+  file under `libs/`, `top/`, `bin/` or `rtl_snapshots/` was opened**, and
+  nothing I saw in that diff is used to justify any assertion, any row, or the
+  ACCEPT.
+
+### Reasoning
+
+**Why ACCEPTED and not BOUNCED, when the return does carry a miss.** The four
+deliverables are met against the row text, which is the contract, and the
+arithmetic is right at all eight members by my own derivation before I read the
+worker's table. The one substantive miss I found — a fourth site restating the
+claim `WO-0084-S1` struck — sits **outside the deliverable as I wrote it**:
+Deliverable 4 enumerated the sites *"that quote `16 is one octet from
+conformant`"*, and the surviving banner paraphrases the claim without the figure.
+A bounce would charge the worker for the scope of my own instruction. The
+correct disposition is therefore ACCEPT, file the miss as my finding, and correct
+it myself — the file is in my write scope, the correction is two lines of
+comment, and a respawn would cost a round for text no assertion depends on. I
+weighed the opposite risk, that a reviewer editing the reviewed artifact blurs
+the review boundary, and answered it with disclosure rather than with
+abstention: the correction is named in the verdict row, in the `M04-F6` row and
+here, and it is in the same diff the auditor will read.
+
+**Why the two judgment calls are upheld on different grounds than the worker
+gave, and why that distinction is worth the words.** On `wire_frames`, the
+worker's third argument — *every driven gap this round is ≥ 12* — is true and
+**contingent**, and a ruling resting on it would have to be re-established by
+every future round. The invariant ground is that `Tx_decoder`'s `ifg` feeds the
+REQ-204 `violate` branch alone and `wire_frames` returns `frames` while reading
+neither `report` nor `is_clean`, so **no value it yields can depend on `ifg`**
+at any driven gap, conformant or not. That converts a per-round check into a
+stated precondition, which I recorded at `T-8`: the hardcode goes live the moment
+a consumer reads that instance's report. On the stall shape, the worker cited
+rejection **(c)**, which rejects *widening `M04-F6`* and says nothing about
+`M04-F7`'s stimulus. The reuse is right for reasons (c) does not supply: the row
+names the same family-G stimulus; §9 fixes `t = 1` for **every** abort, so no
+other stall shape reaches a terminate lane the identity does not already cover;
+and holding the shape fixed makes `cfg_ifg` the sole varying quantity, which is
+what makes a red attributable. Citing a rule that does not say what you need is
+a defect even when the conclusion is right, because the next round inherits the
+citation and not the reasoning.
+
+**The `dune` edit is the case where the packet is not the only source of
+obligation.** Nothing in Deliverables names `dune`. The file's own header rule
+does — *"When a packet adds rows, add its line"* — written in with the incident
+that taught it. A reviewer who marked the edit out-of-scope because the packet
+did not name it would be teaching workers that a directory's standing rules
+yield to a packet's silence. Scope is satisfied (`test/**`), risk is measured
+(the hunk is comment lines; the `(library …)` stanza is byte-unchanged), so the
+edit is necessary, in scope, and correct to have made.
+
+**Why the byte-identity claim had to be re-established rather than accepted.**
+The worker could not run `dune runtest` (opam blocked, ADR-0005) and said so
+honestly; its substitute was parse-only checks plus hand-derivation. That is not
+execution evidence, and a default path claimed byte-identical by the seat that
+changed it is exactly the claim a review exists to test. I took three
+independent measurements instead: no `[%expect]` line is removed or edited
+anywhere in the diff; the other seven `test_m04_*.ml` files are untouched; and CI
+at this SHA ran `dune runtest` **and** `git add -A && git diff --cached
+--exit-code`, the second being the DoD's own check in a stronger form. Because
+every unit here asserts by raising into an **empty** expect block, a perturbed
+default has only two exits and both are green. That is as far as the claim goes,
+and I wrote its limit into the verdict: **CI green is the first and only
+execution evidence for these two units anywhere.**
+
+**Why the §10.6 item is two obligations and not one, and why saying so is the
+ruling.** Seal §10.6 item 6 reads *"the day M04-F3 lands, IC-10 must be re-run,
+not re-quoted"*. It was written before act 3, when the seal still expected IC-10
+to be rendered. It was not: the act-4 tally puts IC-10 in `sealed` and not in
+`seeded`, and PROTOCOL §7 (b.1) says such a class *"is not a seeded mutation the
+suite failed to kill but a mutation that does not exist"*. **You cannot re-run
+what never ran**, and the honest ruling is to say that rather than to dress a
+first measurement in the word "re-run". What *is* redeemable, and is owed before
+`P1-module-ready`, is `class-11`: it ran, it survived, its disposition under §7
+(b.2) has exactly one evidence form, and the axis that was the sole cause of its
+survival has now landed. So the item discharges as one mandatory disposition
+check plus one optional first measurement, and I separated them in the verdict so
+that a later reader cannot satisfy the first by gesturing at the second.
+
+**Why I decline to render IC-10 myself, including in the softened form the
+dispatch offered.** A mutant chosen by the seat that commissioned the bench tests
+only whether my bench catches the defect my own hand wrote. The parent campaign's
+own title is *defects that do not know the predictions*; substituting a
+dv-authored rendering would convert an independent measurement into a self-test
+and put verification in the position of grading itself, which PROTOCOL §1 exists
+to prevent. The auditor is the only seat that may author a manifest (PROTOCOL
+§10) and the only seat that may stage `docs/reports/audit/**` (§6), so the
+question of *who renders* has one answer and it is not me. I also fixed where it
+may **not** go: a new directory under its own WO, never an addition to
+`WO-0084-mutations/`, because a closed campaign's manifest set is part of a
+frozen measurement and growing it later would let the campaign's denominator move
+after its score was published.
+
+**Why this is a qualification check and not a new sealed campaign.** I concur
+with the framing and did not take it on faith: R-SEAL-1 attaches to a claim that
+a result exists and is withheld, and I withhold nothing — the predicted
+disposition, its mechanism and its killing unit are written out in the open,
+before any run. A prediction published is not a seal. And the (b.2) form is a
+disposition check against a frozen measurement, not a re-measurement of it, so
+`WO-0084`'s tally is untouched and the new result is recorded beside it.
+
+**What I deliberately did not do.** No Status cell moved: this plan records a
+discharge in its change log and its Status cells carry the six values §1 fixes
+and no annotation — minting a discharge marker now, in the notation §6.1's census
+selects, is precisely what `FINDING AP-6-2` forbids. No `SO-` is opened or
+offered; the module's mutation-disposition limb is unrun and my charter's own
+review-time spot-check is not executable in this container, which I wrote into
+the verdict rather than leaving as an implied strength. `BAR T1` stays shut and
+REQ-206's coverage claims stand where they were — I looked for a reason to move
+them and found none: `M04-F7` reaches one point of §9's stream-effect cell and no
+other REQ-206 obligation.
+
+### Actions
+
+1. Precheck: `git status --short` (empty) and `git rev-parse HEAD` (`a0cf4dd…`)
+   in one invocation, as dispatched.
+2. Read the packet in full, then the four-file diff line by line; re-derived
+   every gap, start-cycle and run-length figure at all eight sweep members from
+   SPEC-M04 §6.1's identity and checked them against the code and against the
+   landed `M04-F2` / `M04-F6` figures at the `cfg_ifg = 12` control members.
+3. Settled the `wire_frames` question by reading `test/xgmii/tx_decoder.ml`'s
+   REQ-204 arm and confirming `ifg` reaches only `violate`.
+4. Verified both CI run ids against the run records (not against the dispatch's
+   word) and read `.github/workflows/build.yml` to establish what the green
+   actually covers.
+5. Found the fourth `M04-F6` site by a multiline search (`one\s+octet`), which a
+   single-line grep misses because the phrase wraps — filed
+   `FINDING WO-0085-R1` and corrected
+   `test/xgmii_tx_64/test_m04_f.ml:392–393`.
+6. Wrote the ACCEPTED verdict as a new row in the packet's Return / verdict log
+   and flipped the packet's State header to `ACCEPTED` with this entry's id, per
+   the convention `WO-0082` and `WO-0083` set.
+7. Attack-plan bookkeeping: `M04-F6`'s Kills cell records the second site closed
+   and the fourth site found; §7 `T-8`'s DOES-NOT-EXIST measurement is marked
+   **now false**, dated, kept rather than overwritten, re-measured at the
+   producer, and extended with the two limits of the discharge; §6.1's census
+   re-run and quoted at its new date; a new §9 change-log row absorbs the round.
+8. Re-ran both of the plan's own censuses **after** every edit, to confirm my
+   annotations did not join the notation they are measured by.
+
+### Evidence
+
+Commands are runnable from a checkout at this commit; run ids are externally
+verifiable (ADR-0003/F5). **No ephemeral artifact is cited.**
+
+- Precheck: `git status --short` → empty; `git rev-parse HEAD` →
+  `a0cf4ddd258123d6e382a72efd8d80a7c10100db`.
+- **No `[%expect]` block is removed or edited by the round under review**:
+  `git show a0cf4dd -- test/ | grep '^-' | grep -i expect` → **no output**.
+- **The commit's changed paths** (`git show --name-only --format="" a0cf4dd`):
+  `agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md`,
+  `agents/journals/workers/claude_tb_writer_agent.v03.md`,
+  `test/xgmii_tx_64/bench.ml`, `test/xgmii_tx_64/bench.mli`,
+  `test/xgmii_tx_64/dune`, `test/xgmii_tx_64/test_m04_f.ml` — the other seven
+  `test_m04_*.ml` files are absent from that list, which is the regression
+  witness the `dune` header claims.
+- **CI at the reviewed SHA**, both re-verified at review from the run records:
+  build run **32553311119** — `conclusion: success`, `head_sha
+  a0cf4ddd258123d6e382a72efd8d80a7c10100db`,
+  `https://github.com/renatom11/agentic-fpga/actions/runs/32553311119`;
+  journal-check run **32553311111** — `conclusion: success`, same head SHA,
+  `https://github.com/renatom11/agentic-fpga/actions/runs/32553311111`. Per
+  `.github/workflows/build.yml`, the green `build` job includes
+  `opam exec -- dune runtest` (step *Run tests*) and
+  `git add -A && git diff --cached --exit-code` (step *Verify nothing was left
+  unpromoted or non-deterministic*).
+- **The identity, checked per member** (SPEC-M04 §6.1, `g = ⌈(cfg_ifg + t)/8⌉`,
+  gap `8g − t`): `M04-F3`, `t = 0` — `cfg_ifg` 12/13/16/20/255 → `g`
+  2/2/2/3/32 → gap **16/16/16/24/256**, next start at `C + 10 + g` =
+  **C+12/C+12/C+12/C+13/C+42**. `M04-F7`, `t = 1` — `cfg_ifg` 12/16/24 → `g`
+  2/3/4 → gap **15/23/31**, next start at `A + g` with `A = C+6`. The `12`
+  members reproduce `M04-F2`'s landed `p1 = 60` row (gap 16, `C+12`) and
+  `M04-F6`'s landed figures (gap 15, `C+8`) exactly.
+- **Run-length bounds re-derived** with `g_max ~ifg = (ifg + 14)/8`:
+  `cycles_for_run` → 51/51/51/53/111; `cycles_for_scheduled_run` at the round's
+  stall → 47/47/49. Each is an upper bound with tens of cycles of slack, and each
+  collapses at `ifg = 12` onto the pre-round `+4` / `max 3 hold` arithmetic.
+- **The plan's own censuses, re-run at this tree after my edits** (§0.1(i):
+  measured, never carried forward):
+  - status-cell pass over every row table → **83 row lines, 83 distinct ids;
+    ASSERT 59, NO-ASSERT 12, NO-STIMULUS 6, STRUCTURAL 5, GAP 1, RULING 0** —
+    unchanged, this round adding, converting and striking no row.
+  - §6.1's quoted homing command → **`83 83 []`**.
+  - Discharged **39 → 41** by the four prior absorption rows' own declared counts
+    (13 + 12 + 6 + 8 = 39) plus this round's 2; outstanding **44 of 83 → 42 of
+    83**.
+- **The fourth `M04-F6` site**, found and corrected:
+  `test/xgmii_tx_64/test_m04_f.ml:392–393` read *"The gap after an abort: 15
+  octets from the /T/ in lane 1 — the one octet that separates conformant from
+  not."* A single-line `grep -rn "one octet" test/` returns **no hit in
+  `test/xgmii_tx_64/`** because the phrase wraps; the multiline search
+  `rg -U "one\s+octet"` finds it. That is why the site list built from the
+  string missed it and why the tool that found it is named here.
+- **`wire_frames`' hardcode is inert by construction**: `grep -n ifg
+  test/xgmii/tx_decoder.ml` → `ifg` occurs at the record field, at `create`, and
+  at lines 136–146 only, which are the REQ-204 `violate` branch; `wire_frames`
+  (`test/xgmii_tx_64/bench.ml:478–482`) returns `Tx_decoder.frames d` and reads
+  neither `report` nor `is_clean`.
+- **Predicted disposition of the owed `class-11` re-run** (published here before
+  the run, withholding nothing — R-SEAL-1 does not attach): **KILL**, first at
+  `M04-F3` unit `U28` member `cfg_ifg = 20`, raising at
+  `assert_instruments_clean_n` through the standing decoder's REQ-204 arm
+  (recorded 16 against `~ifg:20`) and independently at that member's exact
+  `= 24`; `M04-F7` unit `U29` predicted to redden at `cfg_ifg = 16` (15 against
+  23). Procedure, seats and the not-closed criterion are in the verdict row,
+  item 9.
+
+### Outcome
+
+**DoD vs the work order: MET.** `M04-F3` and `M04-F7` are asserted and green
+under CI's `dune runtest`; the unpromoted/non-deterministic check is clean at the
+same SHA; the `cfg_ifg = 12` path is unperturbed for every pre-existing unit by
+three independent measurements; the `M04-F6` message is corrected; the worker
+journal entry is appended with the spawn short-id; no doc impact beyond
+`test/**`. **Verdict: ACCEPTED**, shipped as a row in the packet's own Return /
+verdict log with the State header flipped (`RV-0085-VERDICT`), per the convention
+`WO-0082` and `WO-0083` set — the verdict is a committed artifact, not a chat
+message.
+
+**Owed and named, not closed here**: (1) the `class-11` re-run, the orchestrator's
+to operate, mandatory before `P1-module-ready` under PROTOCOL §7 (b.2); (2) my
+charter's review-time hand-mutation spot-check, which that re-run discharges and
+which no seat can execute in this container; (3) IC-10's first rendering, the
+auditor's if it is taken at all, optional because an unrendered class supports no
+claim in either direction. **No `SO-xgmii_tx_64.md` is opened or offered; `BAR
+T1` stays SHUT; REQ-206's coverage claims are unchanged; no `BUG-` is opened** —
+nothing in this round is a divergence of design from spec.
+
+**Harvest**: **none due, declared rather than omitted.** PROTOCOL §7 and
+ADR-0018 attach the harvest to every `SO-` and every phase gate; this is a
+worker-return review, neither, so the span since my last harvest stays open and
+continues to tile through this entry. **One candidate is banked for it**, with
+its three admissibility limbs already met so the next harvest need not
+reconstruct them: *when a false claim is struck from a document, enumerate the
+sites to correct by the claim, not by the string that expressed it* — **LH1**
+this commit and `a0cf4dd`; **LH2-g**, no proper noun of any kind in the rule;
+**LH3** without it the corrected document keeps teaching the struck claim
+wherever it was paraphrased, and a search built from the struck string cannot
+find those sites by construction.
+
+### Open-questions
+
+1. **The `class-11` re-run is owed and is not mine to run.** The orchestrator is
+   the operator seat (ADR-0019, PROTOCOL §10). If it comes back **step-6
+   SUCCESS**, that is a CRITICAL finding against this ACCEPT and against me and
+   the round reopens — the criterion and its three near-miss shapes are item
+   9(iii) of the verdict row.
+2. **IC-10's first rendering needs an auditor spawn, or an explicit decision not
+   to take it.** I have ruled it optional at `P1-module-ready` and ruled out
+   authoring it myself. The orchestrator decides whether to commission it; if it
+   does, I will draft the WO to the auditor rather than the manifest.
+3. **`WO-0084-S3` remains routed to the auditor and unanswered here** — class-03
+   is a non-compiling manifest and IC-2 is untested. Unchanged by this round,
+   restated so it is not read as closed by the S2 close.
+4. **No escalation.** No E1 (I supply evidence, I request no approval), no E2
+   (no scope, requirement or row moves), no E3, no E5 (no lead dispute — the two
+   rulings are mine to make as the packet's issuing and the campaign's scoring
+   seat), no E6.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md
+- test/attack_plans/AP-xgmii_tx_64.md
+- test/xgmii_tx_64/test_m04_f.ml

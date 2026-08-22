@@ -389,8 +389,13 @@ let%expect_test
 ;;
 
 (* ---- U26: M04-F6 (WO-0083 §4, §6.6) ----------------------------------------- *)
-(* The gap after an abort: 15 octets from the /T/ in lane 1 — the one
-   octet that separates conformant from not. One elaboration, run length
+(* The gap after an abort: 15 octets from the /T/ in lane 1 — the WHOLE
+   WORD that separates conformant from not (corrected 2026-08-22, review
+   of WO-0085, FINDING WO-0085-R1: this banner paraphrased WO-0084-S1's
+   struck "one octet" claim without quoting its figure, so the round that
+   corrected the three sites carrying the figure did not reach it; the
+   defect this unit kills is a recorded gap of 7 or 23, every abort gap
+   being 8k - 1 octets). One elaboration, run length
    47 cycles (WO-0083 §10). A second run at nearly the same stimulus as
    the neighbouring family-G unit that also drives an abort ahead of a
    second frame, deliberately: the two units assert disjoint things on
