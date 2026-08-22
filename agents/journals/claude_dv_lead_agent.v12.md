@@ -2703,3 +2703,548 @@ outstanding and has now missed **four** consecutive M04 rounds.
 ### Files-in-this-commit
 - agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md
 - test/attack_plans/AP-xgmii_tx_64.md
+
+## [J-dv_lead-0202] 2026-08-22T14:20Z | task:none | ADR-0024 subject A3 COUNTERSIGNED — ACCEPT: the plural is the construction I already operate at twenty landed citations, the repair strictly tightens the frozen-kill limb instead of loosening it, and no landed seal or adjudication moves; three constructions stated, one placement recommended non-blocking, and one owed-restatement in my own scope that the record's list does not carry
+
+### Trigger
+
+Orchestrator spawn `ADR-0024-A3-COUNTERSIGN/2026-08-22T14:05Z`. `ADR-0024`
+(`docs/adr/ADR-0024-the-constitution-is-the-last-mile.md`, **PROPOSED**, landed at
+`27a1dbd`) carries eight constitutional subjects; its §17 matrix owes subject
+**A3** a countersignature from **the auditor *and* me**, on *"the plural reading,
+and that the wider construction (every named unit present and green) is the one
+both seats operate"*, on the ground that I am *"the seat its width falls on"* and a
+constrained party. The auditor's limb runs in a parallel round with its own write
+scope; this entry is the DV-side limb and speaks for no seat but mine.
+
+**A3's subject**: `agents/PROTOCOL.md` §7 (b.2) says *killing unit* in the
+**singular** at two sites — `:302` (the **survivor** limb's rehabilitation form)
+and `:307` (the **frozen-kill** limb) — against a record whose kills are plural.
+`F-0022-2` (MAJOR, auditor,
+`docs/reports/audit/ADR-0020-auditor-countersignatures.md`:247) convicted it; I
+sustained it at `J-dv_lead-0186` and **withdrew my own competing construction C3**
+in the same act. The cure was stopped at `J-architect_docs_lead-0056` on the ground
+that curing the record alone would leave authority and constitution disagreeing;
+`ADR-0024` §5 is that stop's redemption.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (whole; §7 (b.1)–(b.4) and
+  §10 read line-by-line; the two subject sites at `:302`, `:307`, plus `:308`'s
+  *"catches a killing unit deleted or disabled since its campaign"*).
+- `docs/adr/ADR-0024-the-constitution-is-the-last-mile.md` — §0, §2 row 3, **§5
+  whole** (the A3 subject), **§11 A3** (the drafted hunk), §12.1 (my charter's
+  three ratio sites), §17 (the matrix and the adverse-party note), §18 rows 1, 4,
+  7 (the owed-restatement list), §19 (A3 owes no `test_protocol.sh` case), §20.
+- `docs/reports/audit/ADR-0020-auditor-countersignatures.md`:239–251 — the finding
+  table, `F-0022-2` at `:247` read verbatim with its neighbours `F-0022-1`,
+  `F-0022-4`, `F-0022-5`.
+- **My own practice, as the exhibits this seat is asked about**:
+  `agents/handoffs/WO-0084-SEALED-predictions.md` §0 / `:46` / §3.1 (`:404`–`:419`,
+  the per-class *"killing unit(s), BY NAME"* column) and §3.2;
+  `agents/handoffs/WO-0084_m04-mutation-campaign.md` `:43`, `:95`–`:97` (the act-3
+  operator row and the act-4 scoring row, including its **FROZEN-KILL limb**
+  sentence); `agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md` `:474`–`:570`
+  (`RV-0085-VERDICT` items 9(i)–(iii)) and `:589`–`:631` (the orchestrator's
+  **RE-RUN RECORD**, `J-orchestrator-0309`);
+  `agents/handoffs/SO-xgmii_rx_64.md` `:860`–`:1030` (§2.2-D whole: the
+  thirty-class disposition table, D.3's evidence grades, **D.5's plural naming**,
+  D.6's four disclaimers) and `:289`/`:362` (the packet's `FAIL` token).
+- `agents/journals/claude_dv_lead_agent.v10.md`:4279–4311 — my own
+  `J-dv_lead-0186` block: the C3 withdrawal, the adopted construction, the
+  non-blocking cure *"the named killing unit **or units**"*, and `FINDING REC-7`.
+- `agents/journals/claude_dv_lead_agent.v12.md` — `J-dv_lead-0199` (`:1605`–`:1917`,
+  the class-11 predicted disposition at `:1852`–`:1859`) and `J-dv_lead-0201`
+  (`:2318`–`:2705`, Open-question 5).
+- `agents/handoffs/README.md`:30–60 — the `SO-` skeleton **as repaired at
+  `27a1dbd`**, whose *"Per seeded class"* line at `:47` already prints *"the
+  killing unit **or units** named"*.
+- `docs/PROCESS.md`:3871, :3877, :3892, **:3964** (the worked tally's *"or units"*),
+  :4071, :4088–:4089 (§5's museum exhibit); `docs/PROCESS-STE.md`:1971, :1974,
+  :2010; `docs/PROCESS-MEMOIR.md`:1564 — read as **description**, cited for the
+  disagreement they create, never as authority.
+- `test/attack_plans/AP-xgmii_tx_64.md`:1049 — my own plan's change-log row,
+  which quotes (b.2)'s **singular** form as a forward instruction.
+- `tasks/BOARD.md` row 70. Commit log `2a4a5bc` … `8ab9d70` for the ordering
+  claims below.
+- **No RTL was opened.** Nothing in this round derives from
+  `libs/hardcaml_ethernet/src/**`, and nothing in it needed to: the subject is a
+  clause about how a disposition cites its instruments.
+
+### Reasoning
+
+**§1. What the hunk actually changes, restated in my own words before I judge it.**
+`ADR-0024` §11 A3 makes three moves, and they are not one move:
+
+1. `:302`, the **survivor** limb — *"with the **killing unit named**"* becomes
+   *"the killing unit **or units** named"*.
+2. `:307`, the **frozen-kill** limb — *"together with the named killing unit,
+   present and green at the gate SHA"* becomes *"together with the killing unit or
+   units named, **each** present and green at the gate SHA"*.
+3. One sentence added **after the second**: *"The referent is the campaign record's
+   own naming, at whatever cardinality it named: where a class was killed by
+   several units, every one of them is the disposition's subject and every one must
+   be present and green — a disposition may not select the most durable member."*
+
+Move 3 is the load-bearing one and I want that on the record before anything else.
+**"Or units" alone is ambiguous** between the wide reading (*all named units are
+subjects*) and the selective one (*name a unit, or if you prefer name several*) —
+and the selective reading is precisely the relief `J-dv_lead-0186` refused when it
+withdrew C3. My own proposed cure at `J-0186` was the bare *"or units"*, and
+measured now against the two readings **my cure was the weaker instrument**: it
+repairs the grammar and leaves the selection open. The ADR's third sentence is what
+converts it into the wide construction. **A signature that accepted moves 1–2 while
+treating move 3 as prose would accept a repair that does not repair.** So: I sign
+all three, and I sign move 3 as **operative text, not commentary**.
+
+**§2. Check (i) — does the drafted plural match how my seals actually cite killers?**
+Answered by measurement over the three artifacts the dispatch names, not by
+impression.
+
+*(a) The frozen `WO-0084` seal.* Its per-class column is headed, in the frozen
+text, **`killing unit(s), BY NAME`** (`:404`), and `:46` binds the second copy in
+`J-dv_lead-0195` to reproduce *"its killing unit(s) by name"*. Of the **7** classes
+that were seeded and killed (`IC-1, IC-3, IC-4, IC-5, IC-7, IC-8, IC-13` — the
+reconciliation is the act-4 row), **two name more than one unit**: `IC-3` names
+**three** (`U6`, `U7`, `U10`) and `IC-13` names **two** (`U16`, `U21`). Two more
+(`IC-1`, `IC-5`) name several **rows inside one unit**. Under `:307` as it stands,
+`IC-3` and `IC-13` have **no unique referent** and a literal application fails at
+both — the identical failure `F-0022-2` measured at `WO-0050`, now reproduced in a
+campaign of my own that post-dates the finding. Under the repaired text both are
+lawful citations, and the seal needs no re-wording: the frozen text already speaks
+the repaired constitution's language. **Answer: yes, and the seal is the older of
+the two documents.**
+
+*(b) The `WO-0085` class-11 re-run record.* This is the sharper instance and it
+lands on the **survivor** limb, not the frozen-kill one — a distinction `ADR-0024`
+§5 does not foreground. `class-11` **survived** its own campaign (step-6 SUCCESS,
+run `31581478422`), so its (b.2) disposition is `:302`'s form: unmodified committed
+diff, replayed against the bench as it stands, at a run id, with the killing unit
+named. That replay was operated at `6f165bd` and recorded in the packet
+(`:589`–`:622`): ref `mut/wo-0085-class-11-rerun` = `5c0c568`, base `23ff121`, run
+`32554521276`, job `96986499711`, **step 6 FAILURE read at source**, and **two**
+units are named with their quoted failure text — `M04-F3` (`U28`) at `cfg_ifg = 20`
+and `M04-F7` (`U29`) at `cfg_ifg = 16`. **Under `:302` as it stands, that record
+cannot be cited as written**: it names two, the clause presupposes one, and the
+only way to comply literally is to name `U28` and drop `U29` — which is *"select
+the most durable member"* performed on my own live evidence, in the exact shape C3
+was withdrawn for. Under the repaired text it is lawful as written and `U29` cannot
+be dropped. **Answer: yes — and this record is the reason A3 is not academic for
+my seat.**
+
+*(c) The landed `SO-`.* `SO-xgmii_rx_64.md` §2.2-D disposes thirty classes; §2.2-D.5
+states the construction in terms — *"the phrase points at the campaign record's own
+naming, plural where the record is plural, never a gate-time selection"* — and
+counts the shapes: **17** rows plural (two units up to twenty-eight at `I-c10`),
+**8** singular *"because the record is singular, not because a set was narrowed"*,
+**3** plural-sealed/singular-killed with the `R→G` cells *"named beside the killing
+unit, never folded into it"*. That table was written to the ADR's drafted reading
+**before the ADR existed**, and it says so.
+
+**The tally over the whole record: 17 (M03 frozen-kill) + 2 (M04 frozen-kill) + 1
+(the class-11 rehabilitation, two units) = twenty landed citations whose cardinality
+the constitution's grammar forbids.** That is the answer to check (i), and it is
+the answer the ADR predicts.
+
+**§3. Check (ii) — is the FROZEN-KILL limb weakened?** No: it is **strictly
+tightened**, and I say why in the clause's own terms rather than by assurance.
+
+The limb's job, stated at `:308`, is to catch *"a killing unit deleted or disabled
+since its campaign"*. Today's singular grammar forces exactly one referent, and
+where the record names several the citer supplies the referent by **choosing** —
+so a class killed by three units discharges on whichever one survived, and the
+death of the other two is invisible. The repaired text quantifies with **"each"**
+over the record's whole naming, so the same class now discharges only if **all
+three** stand. **The set of facts a disposition must establish grows; it does not
+shrink.** Measured on my own record: `IC-3`'s disposition goes from one unit to
+three, `IC-13`'s from one to two, and class-11's rehabilitation from `U28` to
+`U28` **and** `U29`. Three of my forthcoming gate rows get harder, none easier.
+
+The floor the dispatch asks about — *a kill must still name at least one unit
+present and green* — survives, and it survives **structurally** rather than
+lexically. Two limbs, one construction each:
+
+- **The antecedent carries it.** `:304`–`:307` govern *"a class killed in its own
+  campaign"*. A class no unit killed is not in that set: (b.2)'s **survivor** limb
+  governs it, and the landed precedent is `SO-xgmii_rx_64` row `G-c4` — *"none — no
+  unit killed it … **NOT a frozen-kill row**"*. So cardinality zero cannot reach
+  the frozen-kill limb at all.
+- **The definite description carries it.** *"The killing unit or units named"*
+  presupposes a non-empty naming; with an empty one there is nothing for *"each …
+  present and green"* to quantify over and the limb would discharge on the campaign
+  record alone, which is the thing `:302`'s *"anything weaker lets a survivor be
+  argued dead"* exists to forbid.
+
+I state that as **Construction A**, below, so the floor is not left to inference —
+because *"at whatever cardinality it named"*, read on its own and hard, admits
+zero, and a clause read hard is how this program's last four MAJOR findings were
+made. **Answer: not weakened — tightened; and the ≥1 floor holds on the antecedent
+and the definite description, which I sign under as Construction A.**
+
+**§4. Check (iii) — does any landed seal or adjudication become retroactively
+non-compliant?** No. Enumerated exhaustively over the sites `grep -rn "killing
+unit"` returns outside journals, because a check answered by sampling is not
+answered:
+
+1. **`SO-xgmii_rx_64.md` §2.2-D, twenty-eight frozen-kill rows** — written to the
+   wide construction and compliant *a fortiori*. Today it complies with the
+   constitution's singular only **through** the sustained construction; after the
+   repair it complies **literally**. The repair moves this artifact from
+   construction-dependent to text-conformant, which is the opposite of retroactive
+   non-compliance.
+2. **The three plural-sealed/singular-killed rows** (`F-c8` 1-of-3, `GH-c4` 1-of-2,
+   `I-c8` 1-of-2). These are the rows a careless reading of move 3 would break: if
+   *"the campaign record's own naming"* were read as **the seal's predicted set**,
+   the sealed-but-green `R→G` cells (`T-E2`, `T-F2`, `T-H1`, `T-I6`) would acquire a
+   present-and-green duty they never had, and three landed dispositions would go
+   retroactively short. It is not that reading: move 3's own second half scopes it —
+   *"where a class was **killed** by several units"* — to the units that **killed**.
+   `R→G` cells are named beside the kill and are not its subjects. **Construction
+   B**, below, so no later reader can take the wider swing.
+3. **`I-c10`'s derived 28-of-35 row** (`D` grade, complement method, two exact
+   checks). Lawful under the repair; under the singular it has no unique referent at
+   the highest cardinality in the record. Its own rule — *a falsified derivation is a
+   disposition failure until re-derived* — is untouched by A3.
+4. **`G-c4`'s survivor row** (killing unit `M03-G8`, run `30852220315`). Singular,
+   and *"unit or units"* accommodates one. Unmoved.
+5. **`WO-0084`'s act-4 FROZEN-KILL sentence.** Its prose is singular (*"its
+   seal-named killing unit"*) over a referent that is plural at `IC-3` and `IC-13` —
+   but its **evidence is set-wide and performs no selection**: presence by
+   `test/xgmii_tx_64/` byte-identical `6d92bf9`→HEAD, green by step-6 SUCCESS at run
+   `31577965739` on the byte-identical base. A set-wide measurement satisfies *"each"*
+   for every member at once. Compliant. Its wording is a closed campaign's frozen
+   measurement, which `ADR-0024` §18 declines to rewrite by its own rule, and I
+   agree — **a campaign's score is not edited to match a later clause**.
+6. **`RV-0085-VERDICT` §9(i)'s *"Both are named; the class is the unit of record and
+   one kill disposes of it."*** This is a **scoring** sentence — it says one red
+   suffices to score the class KILLED rather than SURVIVED — and not a citation
+   rule. Under the repair it stays true and does **not** license naming `U28` alone
+   at the gate. **Construction C**, below, states the split, because the sentence is
+   one clause away from reading as the selection A3 forbids, and I would rather
+   convict my own wording here than have it quoted at me at the gate.
+7. **No landed `SO-` PASS exists.** `SO-xgmii_rx_64.md` §8 carries **`FAIL`**; no
+   `SO-xgmii_tx_64.md` is opened. So **no gate arithmetic, no tally column and no
+   published figure moves anywhere in the record.** A3 changes what a future
+   disposition must say and re-describes nothing already said.
+8. **`agents/handoffs/README.md`:47** — the `SO-` skeleton repaired at `27a1dbd`
+   **already prints** *"the killing unit or units named"*. That is the **third**
+   descriptive site running ahead of its rule, after `PROCESS` §3.9's tally and §5's
+   museum exhibit, and it is the one that reaches my seat directly: **the template my
+   next sign-off instantiates now teaches a form the constitution does not
+   license.** §13.1 of the same ADR convicts exactly that shape from the other
+   direction (a kit whose first use commits what the constitution prohibits). It is
+   not a defect in the skeleton — the skeleton is right and the constitution is late
+   — but it converts A3 from a tidy-up into **a precondition of my next `SO-` being
+   authored from a lawful form**, and that is the strongest DV-side ground I have
+   for accepting rather than contesting.
+
+**Answer: no landed artifact becomes non-compliant; two move from
+construction-dependent to text-conformant, three are protected by Construction B,
+one by Construction C, and none has a figure that moves.**
+
+**§5. What I contest, and what I merely recommend.** Nothing blocking. One
+recommendation and one gap, kept apart so the orchestrator can act on the first
+without a redraft round:
+
+- **Placement (non-blocking recommendation).** Move 3 is drafted *"after the
+  second"* occurrence — i.e. inside the **frozen-kill** limb — but it defines *the
+  referent of the phrase*, and the phrase appears in **both** limbs. My one live
+  plural disposition (class-11) is a **survivor-limb** rehabilitation, so as
+  drafted the sentence that makes *"or units"* mean the wide reading sits after the
+  limb my live instance does not use. I do **not** contest the subject over this:
+  the hazard is materially weaker at `:302`, where the replay is contemporaneous and
+  there is no durable member to select toward. But the cheapest cure is one word —
+  place the sentence so it reads across (b.2) as a whole, or open it *"In both
+  limbs, the referent is …"*. I sign either way, and **Construction A** records that
+  I read it as governing both.
+- **An owed restatement in my own scope that §18's list does not carry.**
+  `test/attack_plans/AP-xgmii_tx_64.md`:1049 quotes (b.2) as a **forward
+  instruction** — *"PROTOCOL §7 (b.2) gives a survivor exactly one disposition form
+  — the unmodified committed diff replayed against the bench as it stands at the
+  gate SHA, at a run id, with the **killing unit named**"* — and that quote goes
+  **stale** on the day the hunk lands. `ADR-0024` §18 is declared *"exhaustive over
+  live text"*; its row 7 names the gate checklist and nothing names
+  `test/attack_plans/**`, which is **mine and no other seat's**. It sits in a dated
+  change-log row, so a fair reading could file it with journals and ADR bodies as
+  historical and leave it — but its sentence is an **instruction to the gate**, not a
+  description of a past day, and the class-11 disposition it instructs is still
+  outstanding. **I do not take the historical exemption.** Owner: **dv_lead**.
+  Closing event: **the commit that applies §11's A3 hunk**, in the same round or the
+  next one my seat is spawned for. Dated 2026-08-22. Not performed here — the rule
+  has not landed, and re-quoting a clause to a form the constitution does not yet
+  carry is `J-architect_docs_lead-0056`'s refused move run from my side of the
+  house. **I am not touching `test/**` this round**, by the dispatch and by that
+  ground.
+
+**§6. Why ACCEPT rather than REFUSE, stated as a choice and not as a default.**
+Refusal was available: §17 says a contested subject is redrafted before acceptance,
+and the placement point above is a real, if small, drafting defect. I decline to use
+it. Three grounds. **(1)** The subject repairs a MAJOR finding **I sustained against
+my own withdrawn construction**; contesting the cure of a finding I lost on, over a
+sentence's position, would be litigating the win. **(2)** The cure has been stopped
+once already for a correct reason, has aged past two ADRs, and the record now
+carries **three** descriptive sites teaching the plural against **one** binding site
+teaching the singular — every day of delay widens a disagreement the repair exists
+to close, and one of those sites is the template my next `SO-` is authored from.
+**(3)** The hunk is the **wider** of the two available readings, and the ADR says so
+in terms (*"a counting rule loosened at a gate is a counting rule that stops
+counting"*). A constrained party asked to sign a clause that **raises** the bar on
+itself, refusing over placement, would be asking for a cheaper rule while sounding
+like a stickler. My constructions go on the record instead, which is what a
+countersignature is for.
+
+**§7. The formal countersignature.** Reproduced as a block so the orchestrator
+transcribes it into `ADR-0024`'s signature site verbatim and nothing is
+paraphrased into it:
+
+> **COUNTERSIGNATURE — dv_lead — `ADR-0024` subject A3 (the singular *killing
+> unit*, `F-0022-2`) — `J-dv_lead-0202`, 2026-08-22.**
+>
+> **I SIGN A3: ACCEPT.** I sign the plural reading and I sign the **wider**
+> construction — *every unit the campaign record names as having killed the class is
+> the disposition's subject, and every one must be present and green at the gate
+> SHA* — as the construction **this seat already operates**, adopted at
+> `J-dv_lead-0186` when I withdrew my own competing C3, and executed at
+> `SO-xgmii_rx_64.md` §2.2-D across twenty-eight frozen-kill rows. **All three moves
+> of the §11 A3 hunk are signed, move 3 included and signed as operative text**: the
+> bare *"or units"* — which was my own `J-0186` cure — repairs the grammar and
+> leaves the selection open, and it is move 3's sentence that forecloses it.
+>
+> **I CONTEST NOTHING.** One **non-blocking** recommendation: move 3 is placed after
+> the frozen-kill occurrence, while the phrase it defines appears in **both** limbs
+> and this seat's one live plural disposition is a **survivor-limb** rehabilitation
+> (class-11, `U28` and `U29`, run `32554521276`). Placing it to read across (b.2) as
+> a whole, or opening it *"In both limbs …"*, costs one clause and no signature. I
+> sign either form.
+>
+> **Three constructions I sign under**, stated so a later reader is not left to
+> infer them:
+> **A — the floor, and the reach.** *"At whatever cardinality it named"* is
+> **cardinality ≥ 1** in the frozen-kill limb: a class no unit killed is not *"killed
+> in its own campaign"* and falls to the survivor limb (landed precedent: `G-c4`,
+> *"none — no unit killed it … NOT a frozen-kill row"*). A campaign record naming
+> zero killers never discharges a kill. And the definition **reaches both limbs**,
+> `:302` as well as `:307`.
+> **B — the subjects are the killers, not the seal's predicted set.** Where a seal
+> made several cells REQUIRED and one killed, the sealed-but-green (`R→G`) cells are
+> **named beside the kill and are not its subjects**; they acquire no
+> present-and-green duty. This preserves `F-c8` (1 of 3), `GH-c4` (1 of 2) and
+> `I-c8` (1 of 2) exactly as landed, and it is move 3's own scoping — *"where a class
+> was **killed** by several units"*.
+> **C — scoring and citing are different acts.** *"One kill disposes of it"*
+> (`RV-0085-VERDICT` §9(i)) scores the **class** KILLED rather than SURVIVED; it does
+> **not** license citing one of several observed killers at the gate. Under A3, the
+> class-11 disposition at `P1-module-ready` carries **`M04-F3`/`U28` and
+> `M04-F7`/`U29` both**, and dropping either is the selection A3 forbids.
+>
+> **The three checks the dispatch put, answered:**
+> **(i) Does the drafted plural match how my seals cite killers? YES.** The frozen
+> `WO-0084` seal's column is headed *"killing unit(s), BY NAME"*; of its 7
+> seeded-and-killed classes, `IC-3` names three units and `IC-13` two, so **two have
+> no unique referent under the present text**. The `WO-0085` class-11 re-run record
+> names **two** units with quoted failure text. **Both are lawful citations under the
+> repaired text and neither is lawful, as written, under the singular** — the class-11
+> record could comply today only by naming `U28` and dropping `U29`. Landed plural
+> citations across the record: **17 + 2 + 1 = twenty**.
+> **(ii) Is the FROZEN-KILL limb weakened? NO — it is strictly tightened.** *"Each
+> present and green"* quantifies universally over a naming the singular grammar
+> previously let a citer collapse by choosing; `IC-3` goes from one unit to three,
+> `IC-13` from one to two, class-11 from one to two. **Three of my own forthcoming
+> gate rows get harder and none gets easier.** The *at-least-one* floor survives on
+> Construction A.
+> **(iii) Does any landed seal or adjudication become retroactively non-compliant?
+> NO.** Eight sites enumerated (`SO-` §2.2-D's 28 rows including the three
+> plural-sealed/singular-killed and `I-c10`'s derived 28-of-35; `G-c4`; `WO-0084`
+> act-4, whose evidence is set-wide and selects nothing; `RV-0085-VERDICT` §9(i);
+> the `SO-` skeleton; and the absence of any landed `SO-` PASS — §8 carries `FAIL`).
+> **No figure, tally column or gate row moves.** Two artifacts move from
+> construction-dependent compliance to text conformance, which is the repair's point.
+>
+> **One addition to `ADR-0024` §18's owed-restatement list, in my scope and not on
+> it**: `test/attack_plans/AP-xgmii_tx_64.md`:1049 quotes (b.2)'s singular as a
+> **forward instruction to the gate**. Owner **dv_lead**; closing event **the commit
+> that applies A3**; dated 2026-08-22; **not performed here**, because re-quoting to a
+> clause the constitution does not yet carry is the move `J-architect_docs_lead-0056`
+> refused, from my side of the house.
+>
+> **Scope of this signature.** A3 only. I sign no other subject of `ADR-0024`, and
+> **A6's dv-adjacent cadence and A8's campaign model are not reached by anything
+> here** even though my seat operates inside both. This signature is the DV limb of
+> A3's two; the auditor's limb is its own act and I neither anticipate nor speak for
+> it.
+
+**§8. Harvest.** **None due, declared rather than omitted.** `PROTOCOL` §7 and
+`ADR-0018` attach the harvest to every `SO-` and every phase gate; this is a
+countersignature round and neither, so the span since my last harvest stays open and
+continues to tile through this entry, exactly as `J-dv_lead-0199`, `-0200` and
+`-0201` recorded. **One candidate is banked** with its three limbs already
+discharged so the next harvest need not reconstruct them: *when a counting rule is
+repaired from singular to plural, the repair is incomplete until it also says
+whether the plural is a set every member of which binds or a menu the citer picks
+from* — **LH1** this entry and the `J-0186` withdrawal it cites; **LH2-g**, no
+proper noun of any kind in the rule statement; **LH3** without it the grammar is
+fixed and the selection hazard the singular created survives the fix, which is the
+defect wearing a repair's clothes.
+
+### Actions
+
+- Ran the precheck in one invocation: `git status --short` (**empty**) and
+  `git rev-parse HEAD` → `2a4a5bc…`, matching the dispatch's expected prefix.
+  Proceeded on a clean tree; the sibling auditor round's declared scope
+  (`docs/reports/audit/**`, `agents/journals/claude_auditor_agent.*`) had staged
+  nothing at my precheck and I touched neither.
+- Read `ADR-0024` §5 and §11 A3 in full, then the `F-0022-2` row at its source, then
+  the three first-party exhibits (the `WO-0084` seal's §3.1 column, the `WO-0085`
+  RE-RUN RECORD, and `SO-xgmii_rx_64` §2.2-D) and my own `J-0186` block.
+- **Counted rather than recalled** the cardinalities: the seal's 7 seeded-and-killed
+  classes by unit; the `SO-`'s 28 frozen-kill rows by D.5's three shapes; the
+  class-11 record's two named units.
+- Enumerated **every** `killing unit` site in the repository outside journals and
+  dispositioned each against the repaired text (§4 above).
+- Rendered the countersignature as a transcribable block (§7) and stated three
+  constructions and one non-blocking placement recommendation.
+- **Declined to write a packet-side note**, on a stated ground — see Outcome.
+- **Wrote no file but this journal.** No `docs/**`, no `test/**`, no
+  `agents/handoffs/**`, nothing of the auditor's, no git write of any kind.
+
+### Evidence
+
+All commands run from a checkout at `2a4a5bc` and reproducing there.
+
+- **Precheck.** `git status --short` → empty; `git rev-parse HEAD` →
+  `2a4a5bcbafc554400038888edf19eddfa18d9ad3`.
+- **The two subject sites.** `grep -n "killing unit" agents/PROTOCOL.md` → **three**
+  hits: `:302` (*"**killing unit named**"*, the survivor limb), `:307` (*"together
+  with the named killing unit, present and green at the gate SHA"*, the frozen-kill
+  limb), `:308` (*"catches a killing unit deleted or disabled since its campaign"*,
+  narrative, not a citation site). The hunk reaches the first two; the third needs no
+  change and the ADR does not touch it.
+- **The finding at its source.**
+  `awk 'NR==247' docs/reports/audit/ADR-0020-auditor-countersignatures.md` → *"…
+  `WO-0050`: `F-c1` names four units, `F-c2` nine, `F-c8` one of three required;
+  **3 of 8 classes** with no unique referent."*
+- **The seal's plural column.**
+  `sed -n '404,419p' agents/handoffs/WO-0084-SEALED-predictions.md` → header
+  `| class | disposition | killing unit(s), BY NAME | kills |`; `IC-3` →
+  `M04-C1, M04-C6 (U6); M04-C2 (U7); M04-C5 (U10)`; `IC-13` → `M04-G9 (U16);
+  M04-G10 (U21)`. `sed -n '46p'` → the second-copy clause *"its killing unit(s) by
+  name"*. Seal immutability is unaffected by this round and untested here; it was
+  last verified at act 4 (`git diff 9dba6d5 8b3ec95 -- <seal>` empty).
+- **The class-11 record naming two units.**
+  `sed -n '589,622p' agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md` → run
+  `32554521276`, job `96986499711`, step 6 FAILURE read at source, with both quoted
+  assertions: `M04-F3 (cfg_ifg=20): … gap of 16 octets … below the 20 cfg_ifg
+  requires` and `M04-F7 (cfg_ifg=16): … gap of 15 … below the 16`. Both `cfg_ifg =
+  12` controls green. **This is a citation of an existing committed record, not a
+  re-run**: I operated nothing, and no ref was pushed by me at any point.
+- **The landed construction.** `sed -n '991,1012p' agents/handoffs/SO-xgmii_rx_64.md`
+  → §2.2-D.5's three shapes with their counts (17 / 8 / 3) and the sentence *"not one
+  row selects"*. `sed -n '958p;971p;989p'` → the table header naming *"killing
+  unit(s)"*, `G-c4`'s *"none — no unit killed it … NOT a frozen-kill row"*, and
+  `I-c10`'s 28-of-35 derivation.
+- **No landed PASS.** `grep -n 'SC-14' agents/handoffs/SO-xgmii_rx_64.md` → *"§8
+  carries **`FAIL`** and nothing else"*; `ls agents/handoffs/SO-*.md` → one file.
+- **The three descriptive sites ahead of the rule.**
+  `grep -rn "or units" docs/PROCESS.md agents/handoffs/README.md` →
+  `docs/PROCESS.md:3964` (the worked tally) and `agents/handoffs/README.md:47` (the
+  `SO-` skeleton, repaired at `27a1dbd`); `docs/PROCESS.md:4088` carries §5's museum
+  exhibit *"The killing unit that had no unique referent"*.
+- **The site census behind check (iii).**
+  `grep -rc "killing unit" --include=*.md . | grep -v ':0$'`, with journals and
+  `ADR-0024` itself excluded → **59 matching lines over 16 files**:
+  `agents/PROTOCOL.md` **3**; `agents/handoffs/SO-xgmii_rx_64.md` **9**,
+  `WO-0085…` **4**, `WO-0084-SEALED-predictions.md` **3**,
+  `WO-0084_m04-mutation-campaign.md` **2**, `README.md` **1**, `WO-0083…` **1**;
+  `docs/PROCESS.md` **10**, `docs/PROCESS-STE.md` **4**,
+  `docs/PROCESS-MEMOIR.md` **2**; `docs/adr/ADR-0020-…` **12**,
+  `docs/reports/audit/ADR-0020-auditor-countersignatures.md` **4**,
+  `docs/reports/audit/WO-0041-mutations/README.md` **1**,
+  `docs/reports/process-council/round-4/sal-framework.md` **1**;
+  `tasks/BOARD.md` **1**; **`test/attack_plans/AP-xgmii_tx_64.md` 1** (`:1049`).
+  **Dispositioned by class**: the 20 lines under `agents/handoffs/` are the
+  first-party DV artifacts enumerated one by one at §4; the 18 under
+  `docs/adr/**` and `docs/reports/**` are **ADR bodies, audit reports and a council
+  report — §18's declared non-rewrite class**; the 16 under `docs/PROCESS*` are the
+  description whose owner is `architect_docs_lead` and whose closing event §18 row 4
+  already names; `tasks/BOARD.md` is the orchestrator's row; `agents/PROTOCOL.md` is
+  the subject. **That leaves exactly one line in my own write scope**, and it is the
+  one §18's list does not carry.
+- **Ordering, for the class-11 claim.** `git log --format='%h %ai %s'` shows
+  `23ff121` (the ACCEPT) → `6f165bd` (the re-run record) → `95ffb34`
+  (`J-dv_lead-0201`) → `27a1dbd` (`ADR-0024`) → `2a4a5bc` (HEAD). So the
+  rehabilitation record pre-dates the ADR and was not written to fit it.
+- **No test suite was run and none is claimed.** This round executes no bench,
+  promotes no expect block and measures no design; every figure above is a count over
+  committed text, and the commands that produce them are the greps and `sed`s named
+  here. **`dune runtest` remains unrunnable in this container (ADR-0005, opam
+  proxy-blocked) and was not attempted.**
+
+### Outcome
+
+**DoD: met**, for a countersignature round. **Verdict: `ACCEPT` — `ADR-0024`
+subject **A3** is COUNTERSIGNED by dv_lead**, whole, with three constructions
+(A, B, C at §7) and one **non-blocking** placement recommendation. **Nothing is
+contested**; no redraft is requested; the subject is ready for the orchestrator's
+§11(2) acceptance and for application of the §11 A3 hunk as drafted.
+
+**The three checks the dispatch put are answered explicitly at §7 and derived at
+§2–§4**: (i) **YES** — the drafted plural is exactly how my seals cite killers, and
+both named exhibits are lawful citations under the repaired text while the class-11
+record is **not** lawful as written under the singular; (ii) **NO, not weakened —
+strictly tightened**, with the at-least-one floor holding on Construction A;
+(iii) **NO** — eight sites enumerated, nothing retroactively non-compliant, no
+figure or tally column anywhere in the record moves.
+
+**No packet-side note is written, and the decline is on a ground rather than on
+convenience.** `agents/handoffs/**` is in my scope and I considered a
+countersignature packet there. It would be a **fifth packet type minted by use** —
+which is the defect **subject A7 of this same record** convicts, and §9 of the ADR
+already names itself as that defect's exhibit. Writing one inside the round that
+countersigns the record would be the record's own conviction executed by its
+signer. §17 specifies the carrier — *"a journal entry of the signing seat"* — and
+this entry is it; the orchestrator transcribes §7's block, as `PROTOCOL` §7's
+signature-transcription rule and the auditor exception already do for every
+signature in this program.
+
+**Handoff**: this entry to the orchestrator for commit under my seat, journal-only.
+**Nothing is routed to any worker**, no `RV-` is owed, no spawn is requested, **no
+`SO-` is opened or offered**, `BAR T1` stays **SHUT**, and no attack-plan row, tally
+column or Status cell moves anywhere.
+
+### Open-questions
+
+1. **The A3 hunk's application is the orchestrator's act and my `AP-` re-quote rides
+   it.** `test/attack_plans/AP-xgmii_tx_64.md`:1049 quotes (b.2)'s singular as a
+   forward instruction; it goes stale the day the hunk lands. **Owner: me. Closing
+   event: the commit applying A3, or the next round my seat is spawned for after
+   it.** Named here because `ADR-0024` §18's list — declared exhaustive over live
+   text — does not carry it, and a debt nobody wrote down is a debt nobody owes.
+2. **Placement of move 3 across both limbs of (b.2)** — recommended, non-blocking,
+   the orchestrator's to take or leave at application. If it is left as drafted, my
+   **Construction A** is the record that this seat reads the definition as reaching
+   `:302` as well as `:307`.
+3. **The class-11 disposition at `P1-module-ready` carries two units, not one.**
+   The `6f165bd` rehabilitation was taken at base `23ff121` and `RV-0085-VERDICT`
+   §9(i) says a gate-SHA run supersedes it if the suite moves; when that run is
+   operated, its citation names **`M04-F3`/`U28` and `M04-F7`/`U29`**. Operator: the
+   orchestrator (`ADR-0019`). **Under the present singular text that citation has no
+   unique referent — which is this subject, live, on my own next gate row.**
+4. **`B.2` item 12 — campaign scoring by the independent seat — is routed to the
+   auditor and me jointly** (`ADR-0024` §14), re-asked at every `P<n>-module-ready`
+   until answered. **This round does not answer it and does not silently start it**:
+   it is a different subject with a different carrier, and A3's matrix does not
+   reach it. Recorded so the joint debt is visibly still open at the round where both
+   seats were spawned against the same record.
+5. **`DVC-1a` is still unbuilt**, so every count in this entry is again a hand count
+   over committed text. **The counters do not move this round and I decline to
+   increment them**: `J-dv_lead-0201` recorded *fifth consecutive M04 round* and
+   `M04-G4` at *four missed*, and this is a constitutional countersignature round,
+   not an M04 engineering round — an interval that counts rounds it did not run is
+   the arithmetic this seat files findings about. `T-2` is still unbuilt. All mine.
+6. **No escalation.** No E1, E2, E3, E5 or E6; **no finding is filed against any
+   seat by this round**, and none is warranted: the drafted hunk is correct, the one
+   improvement I offer is a placement, and the one gap I found in the record's own
+   restatement list falls on my own scope.
+
+### Files-in-this-commit
+- (none)
