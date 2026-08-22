@@ -5,8 +5,13 @@
   `22c60fb`, committed under a placeholder id at `7f55848`; **numbered and
   ISSUED** by the orchestrator at `afbc813` (allocation commit) plus the spawn
   `WO-0083/2026-08-12T03:33Z`; **RETURNED** by tb_writer at `J-tb_writer-0046`,
-  landed `91f005d`. No prior revision, no bounce. **One revision is owed and is
-  not this one** — see `RV-0083-VERDICT` §5.
+  landed `91f005d`. ~~No prior revision, no bounce. **One revision is owed and is
+  not this one** — see `RV-0083-VERDICT` §5.~~ **AMENDED at Revision B
+  (`J-dv_lead-0200`, 2026-08-22): no bounce, and one revision — this one. The
+  eleven items `RV-0083-VERDICT` §5 routed to "this packet's NEXT revision" are
+  applied to THIS packet here, item by item, with each item's disposition stated
+  at §21. A correction filed only into an unwritten successor is a promise rather
+  than a repair** (`WO-0082` Revision B's ruling, inherited).
 
   > ~~**DRAFT.** Not issued. **Issuing is the orchestrator's act — commit plus
   > spawn — and only after my return and its verification.** Nothing below is
@@ -24,6 +29,24 @@
   > three state transitions went unrecorded here. The struck words are kept
   > rather than deleted because the ruling convicts them. `RV-0083-VERDICT` §4.2
   > states the convention that replaces them.
+- **REVISION REGISTER** — added at **Revision B**, dv_lead, `J-dv_lead-0200`:
+
+  | Rev | What it is | Grounds | State |
+  |---|---|---|---|
+  | **A** | The packet as issued at `afbc813`, executed by tb_writer at `J-tb_writer-0046`, landed `91f005d`, adjudicated **ACCEPT** at `RV-0083-VERDICT` / `J-dv_lead-0194`. **Every term stage 2 was executed and judged under is Revision A's** | — | **CLOSED. Nothing at Revision B reopens it** |
+  | **B** | **A post-acceptance corrections revision, staging no test and commissioning no row.** The **eleven** items `RV-0083-VERDICT` §5 routed here — six from architect_docs_lead's independent §4 read (`J-architect_docs_lead-0055`, landed `8ceb973`), three findings of my own (`WO-0083-1`, `-2`, `-3`), one kept-as-written ruling, and one spec-defect countersignature that is **not mine to discharge** — each dispositioned at §21. **Plus six sites of a claim struck after Revision A landed** (`WO-0084-S1`, `J-dv_lead-0196`/`0197`), found here by the site rule `J-dv_lead-0199` banked | `RV-0083-VERDICT` §5 items (a)–(k); `J-architect_docs_lead-0055`; `J-dv_lead-0196` §S1; `J-dv_lead-0199` `FINDING WO-0085-R1` | **The text stage 3 inherits** |
+
+  **Revision discipline, inherited verbatim from `WO-0082` Revision B and
+  restated because a discipline cited is not a discipline carried.** Every
+  passage Revision B changes is left **visible and struck** (`~~…~~`) with the
+  replacement beside it and its ground cited; nothing is overwritten and no
+  section is deleted. **Revision B alters no term stage 2 was executed under, and
+  reverses no bar, verdict or disposition** — every bar that passed at Revision A
+  passed against Revision A's text, and re-reading it against this one would be
+  reading a rule backwards onto work that could not have known it. In particular
+  **`M-21` is re-phrased for its next consumer and its Revision-A pass stands**
+  (§21 item i). The corrections bind the **next** consumer of this text: the
+  stage-3 packet, and the seat that executes it.
 - **PACKET NUMBER — placeholder, deliberately.** PROTOCOL §3: *"the
   orchestrator — as sole committer — allocates the next `NNNN` per prefix
   when a packet is first committed; drafts circulating before commit use a
@@ -91,8 +114,11 @@
 - **REQ ids this round touches**: **REQ-206** (family G's whole subject — and
   see §9.8: this round moves REQ-206 a long way and **does not close it**),
   **REQ-207** (the already-accepted words reach the wire — `M04-G5`'s and
-  `M04-G1`'s content claims), **REQ-204** (`M04-F6`'s 15-octet gap, the one
-  octet that separates conformant from not), **REQ-201** (`M04-A4`'s three
+  `M04-G1`'s content claims), **REQ-204** (`M04-F6`'s 15-octet gap, ~~the one
+  octet that separates conformant from not~~ **CORRECTED at Revision B: the
+  *word* in which the next start character falls — a recorded gap of 7 or 23
+  rather than 15, never a one-octet difference; `WO-0084-S1`, `J-dv_lead-0196`,
+  site rule `FINDING WO-0085-R1`**), **REQ-201** (`M04-A4`'s three
   preamble words), **REQ-008** and **REQ-802**-adjacent conservation
   (`M04-G8`), REQ-202/REQ-203/REQ-305 through `M04-G6`'s second frame.
 - **Deliverables**: **six staged files** — two extended
@@ -151,6 +177,17 @@
 | 18 | Your return |
 | 19 | What this round does NOT carry, and what I owe after it |
 | **20** | **What the spawn prompt must quote at its head — `BM17`'s arming condition (a)** |
+| **21** | **REVISION B — the eleven owed items, each dispositioned, and the six struck-claim sites** |
+
+**Revision B's changes are at**: the `State` bullet and the revision register
+(head); §1's REQ-id line and §2's `M04-F6` index row (struck-claim sites); §4.2
+facts 1, 5, 7 and 8; §4.3's two additions; §4.4's broader ground; §5.3(2') and
+§5.3(5)'s `ST-2`; §5.3(3)'s `cfg_ifg` warning and §5.4's first bullet (overtaken
+by `WO-0085`); §6.6's `U26` assertion 3, §14's `T13` and §15's class-`D2` disposition
+(struck-claim sites);
+§12's `M-21`; §17's preamble, §17.1's new governing clause and items 4 and 5;
+§20 item 3; and **§21, which is new**. **Nothing else moves, and every changed
+passage is struck in place rather than overwritten.**
 
 ---
 
@@ -227,7 +264,7 @@ its derived oracle** — and rides exactly the rows that capability reaches.
 | **`M04-G3`** | Four consecutive withheld cycles producing **exactly one** pulse. A design pulsing once per missing cycle is invisible to a single-cycle stall, and the impossible case (two underflows on one frame) is not driven — this row drives the stimulus that *looks* like it should produce two |
 | **`M04-G6`** | REQ-206's *"and that the next frame transmits correctly"*. A design whose CRC register is not re-seeded after an abort produces a second frame with the right length, the right pad and the right terminate lane, and **only the REQ-305 oracle comparison speaks** |
 | **`M04-G8`** | Obligation 3's conservation rule at the one class of frame this module can lose, **and the concrete demonstration of why the rule is keyed on the first accepted word**: under `Resume` the withheld frame's `tlast` word *is* accepted, and it closes the **tail**-frame, not the aborted one (§4.3, trap **T24**). A monitor keyed on `tlast` counts one where two frames reached the wire |
-| **`M04-F6`** | The gap after an abort — `t = 1`, `g = 2`, **15** octets. The wrong design is **one octet** from conformant (measuring from the `/E/` at lane 0 rather than from the `/T/` at lane 1) and **passes every `≥ cfg_ifg` check**, so the observable is the exact placement and never the minimum |
+| **`M04-F6`** | The gap after an abort — `t = 1`, `g = 2`, **15** octets. ~~The wrong design is **one octet** from conformant (measuring from the `/E/` at lane 0 rather than from the `/T/` at lane 1) and **passes every `≥ cfg_ifg` check**~~ **CORRECTED at Revision B (`WO-0084-S1`, `J-dv_lead-0196`; site found by the claim rather than by its figure, `FINDING WO-0085-R1`, `J-dv_lead-0199`): the wrong design is a whole WORD out, never one octet. `Tx_decoder.gaps` counts from the wire terminate character and every start character is in lane 0, so every abort gap it can record is `8k − 1` (`≡ 7 (mod 8)`) and 16 is not in that set; at this row's `cfg_ifg = 12` the `/E/`- and `/T/`-readings place the start character in the SAME word and the decoder records 15 either way, so the row cannot see that design at all — its real kill is a recorded 7 or 23, and the `/E/`-vs-`/T/` coverage is re-homed to `M04-F7` (`J-dv_lead-0197`). What survives unchanged: the wrong design still passes every `≥ cfg_ifg` check**, so the observable is the exact placement and never the minimum |
 | **`M04-A4`** | The preamble word after three different predecessors — `clear`, a normal frame, and an **underflowed** frame — compared byte for byte and control bit for control bit. A design whose preamble content or control marking is a function of how the previous frame ended is the state-bit reuse an all-clean-frames bench never reaches, **and this round is the first in which the third predecessor exists at all** |
 
 ### 1.4 What does NOT ride, why, and where it goes
@@ -402,6 +439,45 @@ first frame of a run, where `S_j = C + 1`: `R = C + m`, which is the acceptance
 cadence §6.1's table shows and which `M04-G5`'s own row states (*"the word
 required at cycle `C + 1`"* for `m = 1`).
 
+> **CITATION UPGRADED at Revision B — item (a), ground
+> `J-architect_docs_lead-0055` (landed `8ceb973`), which disputed no fact and
+> moved no expected value.** The upgrade is at **the boundary case**, `m = 1`,
+> where `R = C + 1` **is the preamble cycle itself** — `M04-G5`'s whole row and
+> the earliest withholding REQ-206's condition can reach. §4.4 admitted `word =
+> 1` on **REQ-206's opening clause** (*"on any cycle after the transmitter has
+> emitted a frame's start character"*), and **that clause is ambiguous at exactly
+> the cycle the row lives on**: the start character is emitted **on** `C + 1`,
+> and *"after … has emitted"* does not say whether the emitting cycle is inside.
+> **It is the weakest of the available grounds and the only ambiguous one.**
+> Three unambiguous ones sit in SPEC-M04 and are the grounds this fact and §4.4
+> now stand on:
+>
+> 1. **§6.1's storage sentence** — *"M04 requires a word on every cycle it
+>    asserts `tx_tready` during a frame, and a missing one is an underflow on
+>    that cycle"* — which carries **no after-the-start-character qualifier at
+>    all**, with `Preamble` unarguably *during a frame* since §6.2 enters it on
+>    the first word's acceptance.
+> 2. **§6.2's `Preamble` row**, which pins `tx_tready` = 1 there.
+> 3. **Decisively, §7's C-16 consequence 1**, which calls `C + 8` *"the one cycle
+>    in a frame's life where `tx_tready` = 1 with `tx_tvalid` = 0 means nothing
+>    at all"* — **a uniqueness claim that is false if the preamble cycle is a
+>    second such cycle**.
+>
+> **Why the upgrade matters and is not editorial**: a design author reading
+> REQ-206 alone can reach the other answer, and `U22`'s red would then be
+> **arguable rather than dispositive**. A row whose ground is the weakest of
+> three available clauses inherits every argument that clause admits.
+>
+> **Ground 2 is used at the FIRST frame only, and that is why item (g)'s pending
+> spec defect does not stale this upgrade.** §6.2's `Preamble` row says *"keeps
+> `tx_tready` = 1"* **unconditionally**, and §7's C-16 consequence 4 says it is
+> **0** on the preamble cycle of a **back-to-back** frame whose word 0 was
+> accepted at the post-`tlast` cycle (§21 item g). `M04-G5` withholds word 1 of
+> the run's **first** frame, where no C-16 acceptance has happened and the
+> qualification cannot bite; grounds 1 and 3 are independent of the row in either
+> case. **When the spec diff lands, this citation is unaffected** — which is
+> stated here so that a later seat re-reads it rather than re-deriving it.
+
 **Fact 2 — the strobe.** SPEC-M04 §9, *Strobe cycle, pinned*: `error_underflow`
 pulses **for exactly one cycle**, on **`R`** — *"the cycle the word was required
 and not presented — the earliest cycle the condition is decidable"*. **The
@@ -434,11 +510,53 @@ conformant** — trap **T21**.
 
 **Fact 5 — the terminate lane, and the gap.** The terminate character is the
 `/T/`, **at lane 1**, and REQ-204 counts the gap *from the terminate character
-inclusive* (§6.1, §0.3). So **`t = 1`**, `g = ⌈(12 + 1)/8⌉ = ⌈13/8⌉ = **2**`
-words, and the actual gap is **`8g − t = 16 − 1 = 15`** octets. **The `/E/` in
-lane 0 is not part of the gap and is not the terminate character** — that is
-`M04-F6`'s one-octet hazard, stated in the plan's own Kills cell, and it is the
-whole content of that row.
+inclusive* (§6.1, §0.3). So **`t = 1`**, ~~`g = ⌈(12 + 1)/8⌉ = ⌈13/8⌉ = **2**`
+words, and the actual gap is **`8g − t = 16 − 1 = 15`** octets.~~ **RESTATED at
+Revision B — item (b), ground `J-architect_docs_lead-0055`: the LAW first, its
+value second, because §4's own preamble says this section is written to be
+QUOTED by later rounds and a later round at another `cfg_ifg` that quotes the
+value quotes a falsehood.**
+
+> **The law**: `g = ⌈(cfg_ifg + t)/8⌉` **words**, actual gap `8g − t` **octets**
+> (SPEC-M04 §6.1's inter-frame-gap paragraph, with §0.3's inclusive convention).
+> At an abort `t = 1` **for every `cfg_ifg`**, so `g = ⌈(cfg_ifg + 1)/8⌉` and the
+> gap is `8g − 1` — **always `≡ 7 (mod 8)`**.
+>
+> **Its value at this round's configuration**, `cfg_ifg = 12` (§6.0(g) holds it
+> fixed for every unit here, which is why nothing at Revision A was exposed):
+> `g = ⌈13/8⌉ = **2**` words, gap `16 − 1 = **15**` octets.
+>
+> **The substitution is now named at the site rather than performed silently**,
+> and the third citation the fact was missing is added: §9's stream-effect row
+> says in its own words *"the gap is then served from that terminate
+> character"* — **the clause that fixes WHICH character in the abort word starts
+> the count**, which §6.1 and §0.3 (the convention) do not supply.
+>
+> **OVERTAKEN IN PART, and the citation is the point** (dispatch rule for this
+> revision): the `cfg_ifg` axis this restatement was written against **has since
+> landed** — `WO-0085`, tb_writer `J-tb_writer-0047` at `a0cf4dd`, accepted at
+> `J-dv_lead-0199`, with `M04-F7` driving `cfg_ifg ∈ {12, 16, 24}` at this exact
+> abort shape and measuring gaps **15, 23, 31** by this law. The law form is
+> therefore **no longer prospective**: a landed unit now quotes it at three
+> members, and the value-only form would have been falsified by the first of
+> them. Revision A's own text is unchanged in what it *asserted* — 15 at 12 is
+> right and is landed twice over.
+
+**The `/E/` in lane 0 is not part of the gap and is not the terminate
+character.** ~~That is `M04-F6`'s one-octet hazard, stated in the plan's own
+Kills cell, and it is the whole content of that row.~~ **CORRECTED at Revision B
+(`WO-0084-S1`, `J-dv_lead-0196`; this site found by the claim and not by its
+figure, per `FINDING WO-0085-R1`, `J-dv_lead-0199`): there is no one-octet
+hazard, and the plan's Kills cell that said so is struck in its own document.**
+A design measuring from the `/E/` (`t = 0`) computes `g = ⌈cfg_ifg/8⌉`; the
+**decoder always counts from the wire's `/T/`**, so what it records is `8g − 1`,
+never `8g`. At `cfg_ifg = 12` the two readings give the **same** `g = 2` and the
+decoder records **15 either way** — the defect is **byte-identical** here, not
+one octet away — and the class separates only at `cfg_ifg ≡ 0 (mod 8)`, by a
+**whole word** (at 16: conformant 23 against the defect's 15). `M04-F6`'s real
+kill is the **word count** — a recorded 7 or 23 — via its exact `= 15`
+assertion; the `/E/`-vs-`/T/` coverage is re-homed to **`M04-F7`**
+(`J-dv_lead-0197`) and is landed at `a0cf4dd`.
 
 **Fact 6 — the §0.6 window, and why `M04-G2` is the row that makes the case for
 obligation 5.** §0.6's fourth reference-word clause gives this strobe its
@@ -459,9 +577,36 @@ monitor checks the pin against it, which is a check on the **specification**) an
 **Fact 7 — the next start character.** §6.2: `Abort → Gap`, `Gap → Idle` *"when
 the gap is satisfied"*, and `Idle → Preamble` *"on the cycle a first source word
 is accepted"*. §7's C-14.1 bullet pins `tx_tready` = **1 on the last cycle of the
-gap**, which by fact 5 is cycle **`A + g − 1` = `A + 1`**, and §7's handshake
-bullet holds the source's word stable until acceptance. **Two branches, both
-derived:**
+gap**, which by fact 5 is cycle **`A + g − 1` = `A + 1`**, and ~~§7's handshake
+bullet holds the source's word stable until acceptance~~ **the presenter holds
+its word stable until acceptance — see the ground correction below.** **Two
+branches, both derived:**
+
+> **GROUND CORRECTED at Revision B — item (c), `J-architect_docs_lead-0055`,
+> which confirmed the fact in both branches and disputed its ground.** §7's
+> handshake bullet says something **narrower and different**: *"Field stability
+> is the source's for the cycle of acceptance **only**; M04 registers what it
+> accepts."* The hold-until-acceptance rule appears **once** in SPEC-M04 — in
+> §7's **reset** bullet, in a parenthetical that attributes it to the handshake
+> bullet — and SPEC-M01 §7 delegates field stability to *"the specification
+> declaring [the port]"*, which is M04 §7. **So no document in this programme
+> obliges a source at M04's source port to keep offering until accepted.** The
+> hold across the offer-to-acceptance window is a property of **this round's own
+> presenter** (§5.3(2'): the cursor advances only on acceptance, so the same word
+> is re-offered every cycle until taken), not of the specification.
+>
+> **What moves and what does not.** No expected value in §6 moves and no unit is
+> affected: a round whose own driver guarantees the premise may rely on it, and
+> this one's does, by construction. **What the correction forbids is quoting
+> branch (a) at a round whose presenter does not hold** — precisely the risk a
+> section *"written to be quotable"* runs. **The fact must say which document
+> guarantees it, and the answer is this packet's §5.3, not SPEC-M04 §7.**
+> Whether the rule belongs at SPEC-M04 §7 as a source obligation at this port, or
+> is a programme convention that ADR-0008's header-handshake discipline should
+> state for frame streams, is an adjudication owed **jointly** with
+> architect_docs_lead (`J-architect_docs_lead-0055` Open-question 2) and is **not
+> settled here**: every transmit-path source in the chain relies on it
+> implicitly, so it is wider than this packet.
 
 - **(a)** If the source offers a word at or before `A + 1`, it is accepted no
   later than `A + 1`, and **the next start character is at `A + 2 = S_j + w + 3`**
@@ -486,6 +631,36 @@ character is available because it is pinned by REQ-204's rounding; the
 acceptance cycle behind it is not. This is `ST-4`'s second exclusion (§5.3(5))
 and trap **T22**.
 
+> **KEPT AS WRITTEN at Revision B — item (f), and the reason is on the record
+> rather than in my head.** `J-architect_docs_lead-0055` confirmed fact 8 **as a
+> rule** and disputed its ground **in the safe direction**: *"unconstrained"*
+> **understates** the specification, because REQ-204 and §6.2 together pin
+> non-acceptance at `R`, `R + 1` and `A`. §6.2's `Idle` row enters `Preamble`
+> *"on the cycle a first source word is accepted"*, so an acceptance at any of
+> those three cycles would put the start character no later than `A + 1`,
+> leaving at most **7** octets of gap from the `/T/` at lane 1 — which REQ-204's
+> 12-octet minimum refuses. The one carve-out that lets a word be accepted
+> **without** entering `Preamble` is C-16's post-`tlast` early acceptance, and
+> fact 8 itself already observes that an aborted frame never reaches that cycle.
+> The architect's own honest ground is *"under-determined between §6.3 item 3's
+> `tready` freedom and §6.2's acceptance restriction, and pinned shut through the
+> start character by REQ-204"*.
+>
+> **The ruling — mine, and it is to keep the weaker claim.** The strengthening
+> was ruled my call, and I decline it. A `NO-ASSERT` that costs this round
+> nothing is cheaper than a pin I would have to defend at every later round: the
+> observable that would catch an early acceptance is **the start character at
+> `A + 2`**, which fact 7(a) asserts anyway, so the stronger reading buys **no**
+> observable and adds one more sentence a future design dispute can attack.
+> **Trap `T22` stays and `ST-4`'s exclusion stays**: no unit asserts an
+> acceptance cycle in `[R, A + 1)`, and none needed to. **Cost of the weaker
+> ground: nil, stated as measured rather than assumed.**
+>
+> **One editorial defect, corrected here**: *"the closed interval `[R, A + 1)`"*
+> is **half-open in its own brackets**. Read the enumeration that follows it —
+> *"at `R`, `R + 1` or `A`"* — which is the authority; `A + 1` is **outside**,
+> being the gap's last cycle where C-14.1 pins `tx_tready` = 1.
+
 ### 4.3 The tail-frame law — the frame nobody put in the contents list
 
 **Under `Resume` the source presents the withheld word again. SPEC-M04 §7's
@@ -495,12 +670,26 @@ after an abort is the dead frame's tail rather than a new frame's head.** It is 
 new frame, and it is well formed:
 
 - **its content is the SUFFIX of the contents element**, octets `8w … P_j − 1` —
-  **`P' = P_j − 8w` octets**;
+  **`P' = P_j − 8w` octets**, and **`P' ≥ 1` is GUARANTEED, not hoped** (added at
+  Revision B — item (e), `J-architect_docs_lead-0055`): §4.4's `w ≤ W_j − 1`
+  gives `P' = P_j − 8w ≥ P_j − 8(W_j − 1) ≥ 1`, so requirements.md §0.7's
+  zero-octet class **never arises here** and the tail always has an encoding.
+  **Stated because *"could `P'` be 0"* is the first question a reader of this
+  section asks**, and a law that leaves it to be re-derived invites a unit built
+  around a case that cannot occur;
 - **its word list is words `w … W_j − 1` of the original**, all full but the
   last, `tlast` on the last: **a legal frame by SPEC-M01 §6.1, with no
   construction of its own**;
 - `F' = max(P', 60) + 4`; **padded to 60 if `P' < 60`**, the pad covered by the
-  FCS (REQ-203); **its FCS is the REQ-305 oracle over its own padded content**;
+  FCS (REQ-203); **its FCS is the REQ-305 oracle over its own padded content**
+  — **and the clause that makes that true rather than hopeful is §6.2's
+  `Preamble` row re-seeding the CRC register to `0x00000000` on entry** (added at
+  Revision B — item (e), `J-architect_docs_lead-0055`). **A design carrying the
+  aborted frame's running CRC into the tail fails exactly there**, and `U23` and
+  `U24` both assert against that dependency while §4.3 as issued did not cite it.
+  Note the dependency's direction: the tail's FCS is its own **because a new
+  frame's CRC starts at the seed**, so the assertion is a REQ-305-oracle
+  comparison and never a residue check;
 - its start character `S'` is fact 7's, branch (a) or (b) according to the hold;
 - its terminate character is at `S' + 1 + ⌊F'/8⌋`, lane `F' mod 8` (§4.1);
 - its own gap follows §4.1's rule at its own `t`.
@@ -565,6 +754,32 @@ it belongs to a frame after the first:**
   measured the `C + 8` acceptance and the `C + 11` second-word acceptance at four
   members and is green at `65ba148`. **A legality rule resting on a measured
   fact is stated as resting on one.**
+
+  > **BROADER GROUND added at Revision B — item (d),
+  > `J-architect_docs_lead-0055`, which confirmed the bound and found the stated
+  > ground too narrow to reach the case that matters.** The ground above is
+  > C-16's **continuous-source** branch, and C-16 consequence 4 has **two**. In
+  > the other branch — no word accepted at the post-`tlast` cycle — word 0 is
+  > accepted at the gap's last cycle and word 1 at the **preamble** cycle, where
+  > §7 says `tx_tready` **may** be 1: **a permission, not a pin.** So at a frame
+  > that is not the run's first, **word 1's required-ness is DESIGN-DEPENDENT**,
+  > which is a second and independent reason to exclude it — and it is the
+  > **broader** one, because it does not need a continuous source to hold.
+  >
+  > **Why broader matters here rather than being a nicety.** The frame that
+  > follows an **abort** is issued into an **idle** transmitter (fact 7 branch
+  > (b), §4.3's tail-frame), so **the continuous-source premise fails outright**
+  > at exactly the frame this round's own stimulus creates. A rule grounded only
+  > in the continuous-source branch would be silent about the tail frame — the
+  > one frame after the first that every `Resume` schedule produces. **For a
+  > section written to be quoted, that is the ground to state.**
+  >
+  > **And one corollary the rule does not state, which falls out cleanly**: at
+  > `W_j = 1` the two bounds are **empty** (`1 ≤ w ≤ 0`), which is the right
+  > answer — a single-word frame has no word that can be withheld after its start
+  > character and before its `tlast` acceptance. That case is `BUG-0004`'s
+  > territory, not this schedule's, and the runner's `failwith` naming the rule
+  > is what keeps it from being driven by accident.
 
 ### 4.5 The OCaml-notation gloss — READ THIS BEFORE YOU TRANSLITERATE ANYTHING
 
@@ -731,7 +946,11 @@ assumption the bench made.
 **The bench keeps its own INTENTION RECORD**: for every cycle, whether the
 schedule intended a word to be offered. **`ST-2` compares that record against
 `offered.tvalid`**, and it is that comparison, not a re-reading of the schedule,
-that makes the check total.
+that makes the check total. **[Revision B, item (k): the comparison is TOTAL but
+not LIVE — both sides are computed from the same expression in the same branch,
+so it is a regression tripwire rather than a check on this driver. The stronger
+count-and-position form is stated at §5.3(5)'s `ST-2` bullet and is stage 3's to
+commission.]**
 
 **(3) `cycles_for_scheduled_run` — the allowance, derived here because
 `WO-0082` §20.8 states in terms that it does not carry over.**
@@ -766,8 +985,17 @@ cycles_for_scheduled_run contents stall
 - **`frame_words` stays unexported and `⌊F/8⌋` stays in exactly one
   expression.** Bar **M-8**. Units take their expected values from §6's tables,
   never from this helper.
-- **A round that changes `cfg_ifg` must re-derive all of it** — that round is
-  stage 3 and this sentence is its warning.
+- **A round that changes `cfg_ifg` must re-derive all of it** — ~~that round is
+  stage 3 and this sentence is its warning.~~ **OVERTAKEN at Revision B: that
+  round was `WO-0085`, not stage 3, and the warning was redeemed rather than
+  inherited.** `J-tb_writer-0047` at `a0cf4dd` landed `g_max ~ifg = (ifg + 14)/8`
+  and re-derived both allowances against it — `cycles_for_run` → 51/51/51/53/111
+  at `cfg_ifg ∈ {12,13,16,20,255}` and `cycles_for_scheduled_run` → 47/47/49 at
+  {12,16,24} — **and each collapses at `ifg = 12` onto this section's `+ 4` and
+  `max 3 hold` arithmetic**, which is the check a generalisation owes its own
+  special case (`J-dv_lead-0199`, verified member by member at review). **The
+  warning stands for the next round that moves the value; what is no longer true
+  is that no producer can move it** (`AP-M04` §7 `T-8`).
 
 **(4) `underflow_event` — the window rule in exactly one expression.**
 
@@ -819,6 +1047,38 @@ checks cannot return the other's.
   assertion downstream becomes a green statement about a stimulus that never
   happened. **Its failure message says, in those words, that everything
   downstream of it is void.**
+
+  > **`ST-2` IS WEAKER THAN THIS TEXT READS — a design item recorded at Revision
+  > B (item (k), `RV-0083-VERDICT` §5), charged NOWHERE NEAR the execution.** As
+  > specified here and as implemented at `91f005d`, the bench's **intention
+  > record** and `offered.tvalid` are computed from **the same expression in the
+  > same branch of the driver**, so **`ST-2` cannot fire against the driver as
+  > written**. It is a **regression tripwire** — it catches a *later* edit that
+  > desynchronises the two — and it is **not** the live check this bullet's own
+  > sentence claims: *"a driver that quietly failed to withhold"* is precisely
+  > the defect a self-comparison cannot see, because the failure moves both sides
+  > together. The worker implemented the design §5.3 fixed and told it not to
+  > re-open, so **nothing here is chargeable to the execution**; the defect is in
+  > the design, which is mine.
+  >
+  > **The stronger form, for stage 3 to commission**: a **count-and-position**
+  > check — **the number of withheld cycles equals `hold`, and the first of them
+  > is the cycle the cursor reached the target**. Both quantities come from the
+  > **schedule** (`hold` is its own field; the target is `(frame, word)`), and
+  > both are read from the **drive record**, so the check compares two things
+  > that a driver defect moves **independently**: a driver that failed to
+  > withhold produces zero withheld cycles against a `hold` of `n`, and a driver
+  > that withheld at the wrong cursor produces the right count at the wrong
+  > first cycle. That is falsifiable against a driver defect in a way the present
+  > comparison is not, and it stays design-independent — every term is the
+  > bench's own.
+  >
+  > **Status at Revision B: RECORDED, NOT IMPLEMENTED.** Implementing it edits
+  > `test/xgmii_tx_64/bench.ml`, which is a commissioned round with a CI-executed
+  > result, not a packet revision. **A design flaw noticed at a green round and
+  > not written down is a design flaw rediscovered at a red one** — this note is
+  > the writing-down, and `AP-M04` §7 `T-3` carries the same limit at the
+  > machinery's own home so a stage-3 drafter meets it there too.
 - **`ST-3` — accountability, which is what `SP-2` was reaching for.** The number
   of accepted samples equals `Σ_k W_k − abandoned`, where **`abandoned` is the
   schedule's own declared count** — `W_frame − word` under `Abandon`, **0** under
@@ -913,7 +1173,13 @@ placement primitive was already there, and the oracle is §4.** What it does
 **not** build:
 
 - **No `cfg_ifg` or `cfg_tx_enable` parameterisation.** `M04-F3`'s and family
-  K's, `BM5`.
+  K's, `BM5`. **[Revision B — OVERTAKEN in its `cfg_ifg` half only: `WO-0085`
+  landed the `?ifg` knob on `create` / `run_stream` / `run_scheduled` at
+  `a0cf4dd` and discharged `M04-F3` and `M04-F7` with it. `cfg_tx_enable`
+  remains unbuilt and family K remains its consumer. `BM5` was a term of
+  Revision A and is untouched — a bounce condition binds the round it was
+  written for, and this note is for the reader of the text, not for that
+  round.]**
 - **No handover-release scheduler.** `T-7`'s still-missing half, whose consumers
   are family H's rows, `BM5`.
 - **No conservation monitor.** `AP-M04` §7 `T-2` is still unbuilt; the bench
@@ -1244,9 +1510,19 @@ size class.
 2. **`Tx_decoder.gaps` has exactly one entry** — asserted as its own statement —
    **and it is exactly 15.**
 3. **The exactness is the row, and the comment must say so in the row's own
-   terms**: `15` is asserted, **not** `>= 12`. A design measuring the gap from the
-   `/E/` in lane 0 rather than from the `/T/` in lane 1 produces **16**, is **one
-   octet from conformant**, and **passes every `>= cfg_ifg` check**.
+   terms**: `15` is asserted, **not** `>= 12`. ~~A design measuring the gap from
+   the `/E/` in lane 0 rather than from the `/T/` in lane 1 produces **16**, is
+   **one octet from conformant**, and **passes every `>= cfg_ifg` check**.~~
+   **CORRECTED at Revision B (`WO-0084-S1`, `J-dv_lead-0196`; site found by the
+   claim and not by its figure, `FINDING WO-0085-R1`): that design produces
+   **15** here, not 16 — the decoder counts from the wire's `/T/` whatever the
+   design counted from, so what it records is `8g − 1` and `⌈12/8⌉ = ⌈13/8⌉ = 2`
+   makes the two readings byte-identical at `cfg_ifg = 12`. **What the exact
+   `= 15` really kills is a design placing the next start character in the WRONG
+   WORD — a recorded 7 or 23** — and it still passes every `>= cfg_ifg` check,
+   which is why the minimum is never the observable. The `/E/`-vs-`/T/` class is
+   invisible at this row's configuration by construction and is `M04-F7`'s,
+   landed at `a0cf4dd`.**
 4. **The terminate character is at lane 1** of the abort word, read directly
    from `samples`' own raw `wire` at `C + 6` **as well as** through the decoder's
    `terminate_lane`. **Two readings of the same fact, deliberately**: this round
@@ -1662,7 +1938,7 @@ is mine.
 | **M-18** | worker | file search for `print`/`printf`/`print_s`/`Stdio`/`Stdlib.print` across `test/xgmii_tx_64/`, then Read every hit | **10** occurrences, **all in `test_m04_d.ml`**, of which **exactly one is a call site**: `Stdlib.print_string` at `:362`. The other nine are that unit's own comment and title prose | **unchanged: still exactly one printing call site in the whole directory, and it is not yours.** This round prints nothing (§6.0(d)) |
 | **M-19** | worker + **dv** | Read `bench.mli`'s 16 landed values back and compare to the base file | **16** exported values (`grep -c '^val '`) | **19** plus the `Stall` module; **every existing signature byte-identical**; the only changes are the additions and their docstrings. dv re-checks by diff |
 | **M-20** | worker | Read your scheduled-run precondition code back and quote it | — | **`ST-1`, `ST-2` and `ST-3` present; no contiguity check anywhere in the scheduled path; no acceptance-cycle claim for any word offered at or after the withheld cycle**; and `P-ACCEPT` and `SP-2` still present and reachable on their own paths. **State in one sentence why `SP-2` would fail a conformant M04 here** (§4.2, §5.3(5)) |
-| **M-21** | worker + **dv** | file search for `not_before`/`not_after` across `test/xgmii_tx_64/` | **0** occurrences | **exactly two occurrences, both inside `underflow_event`'s single expression.** No unit computes a window, and **no unit asserts that a pulse lies inside one** (§6.0(e), `BM20`). **Quote the function** |
+| **M-21** | worker + **dv** | file search for `not_before`/`not_after` across `test/xgmii_tx_64/`, **then Read every hit** | **0** occurrences | ~~**exactly two occurrences, both inside `underflow_event`'s single expression.**~~ **RE-PHRASED at Revision B (item (i), `FINDING WO-0083-2`, MINOR, mine) as an EXPRESSION bar, the way `M-17` already is: the subject is whether any unit **computes** a window. Pass condition: **exactly one expression computes a `not_before`/`not_after` pair, and it is `underflow_event`'s**; occurrences in a docstring, comment, title or string literal naming the record's fields are **legitimate and must not convict**. **Read every hit** and classify it before counting it.** No unit computes a window, and **no unit asserts that a pulse lies inside one** (§6.0(e), `BM20`). **Quote the function** |
 | **M-22** | worker | Read every `assert_instruments_scheduled` call site you wrote and quote its `~underflowed` argument | — | **every one is a list of positions, never a count, and never `[]` where a frame aborted.** U27's is `[1]` and not `[0]` — state that you checked which frame aborted rather than that one did (§5.3(6) check 4) |
 
 ---
@@ -1801,8 +2077,14 @@ is mine.
   appear on the wire.
 - **T13 — the gap is measured from the terminate character INCLUSIVE**, and for
   an aborted frame the terminate character is the **`/T/` at lane 1**, not the
-  `/E/` at lane 0. Measuring from the `/E/` gives 16 instead of 15 and passes
-  every `≥ cfg_ifg` check. `M04-F6`'s whole content.
+  `/E/` at lane 0. ~~Measuring from the `/E/` gives 16 instead of 15 and passes
+  every `≥ cfg_ifg` check. `M04-F6`'s whole content.~~ **CORRECTED at Revision B
+  (`WO-0084-S1`; site rule `FINDING WO-0085-R1`): a BENCH measuring from the
+  `/E/` would compute 16 and be wrong by one octet — that is the trap, and it is
+  live — but a DESIGN measuring from the `/E/` is not visible at all at
+  `cfg_ifg = 12`, because the decoder counts from the wire's `/T/` and records 15
+  either way. Keep the trap for what it traps (the bench's own arithmetic);
+  `M04-F6`'s kill is the WORD count, and the design class belongs to `M04-F7`.**
 - **T14 — a green silence on a run that is not the stimulus is not a result.**
   `ST-2` is the general defence; every unit inherits it.
 - **T20 — the contents element is a legal frame and the SCHEDULE truncates the
@@ -1876,10 +2158,27 @@ decoder on frames that terminated normally. **This round runs three of its paths
 in anger for the first time** — the abort recognition on live design output, the
 `underflowed` field on live output, and the gap that begins at an abort's
 terminate character — and the third of those has no unit-suite coverage at all
-(the row above states exactly what was read to establish that). **A `M04-F6`
+(the row above states exactly what was read to establish that). ~~**A `M04-F6`
 failure at 16 instead of 15 is as likely to be the decoder as the design**, and
 routing it to a `BUG-` without separating them would be a finding against me, not
-against rtl_lead.
+against rtl_lead.~~
+
+**CORRECTED at Revision B (`WO-0084-S1`; sixth site, found by the claim rather
+than by its figure — `FINDING WO-0085-R1`) — and the correction makes this class
+STRONGER, not weaker.** A `M04-F6` failure **reported as 16** is not *as likely*
+to be the decoder as the design: **it can only be the instrument or the bench.**
+`Tx_decoder.gaps` counts from the wire terminate character and REQ-201 fixes
+every start character in lane 0, so **every gap this decoder can record after an
+abort is `8k − 1` — `≡ 7 (mod 8)`, i.e. {7, 15, 23, …} — and 16 is not in that
+set at any `cfg_ifg`.** A reading of 16 therefore convicts the decoder's own
+arithmetic (class **D2**) or the unit's, and **never** the design; the readings a
+**design** defect can produce here are **7** and **23**, and those are the ones
+that need the two-instrument separation before any `BUG-`. **The disposition
+survives with its subject corrected**: a family-G-shaped gap reading is separated
+at the instrument before it is routed, because this round is the first to measure
+a gap whose terminate character comes from an aborted frame — and routing an
+unseparated reading to a `BUG-` would still be a finding against me, not against
+rtl_lead.
 
 **class D5 is the class several rounds of this chain were actually decided by**,
 each by a defect in my instructions rather than in the work. **§4 is the largest
@@ -1974,6 +2273,17 @@ chain's first zero-lapse result. `WO-0082` Revision B added the plumbing clause
 and the `date -u` carve-out.** This packet carries **that five-item form,
 inherited verbatim**, because it worked.
 
+> **AND THE VERBATIM INHERITANCE IS WHERE IT FAILED — Revision B, item (h),
+> `FINDING WO-0083-1`.** The five items worked; the **placement** of their
+> governing principle did not. The boundary those carve-outs instance was stated
+> at **item 3 only**, and *"inherited verbatim"* carried that asymmetry forward
+> intact into this packet, where it cost a worker two disclosures and me a
+> finding. Revision B lifts the boundary out of item 3 and states it **once, as a
+> clause over the whole list**, then attaches it **explicitly** at items 4 and 5.
+> **The next packet in this chain inherits the corrected form, and inherits this
+> note with it** — so that a passage declared *inherited verbatim* is never again
+> trusted to carry its own principle to every item it governs.
+
 > **The one substitution, marked rather than made silently.** Item 2's text
 > reads *"the seven paths §11.2 names"* in the source it is inherited from, and
 > **this packet's §11.2 names six**. The numeral is the only change, it is marked
@@ -1982,6 +2292,49 @@ inherited verbatim**, because it worked.
 > the class of defect this chain has convicted twice; marking it costs one line.
 
 ### 17.1 The allow-list
+
+> **THE PLUMBING BOUNDARY — stated ONCE, as a clause governing EVERY sanctioned
+> invocation in the list below. Added at Revision B: item (h), `FINDING
+> WO-0083-1` (MINOR, mine).** At Revision A this boundary was stated **inside
+> item 3 and nowhere else**, and the five items were declared *"inherited
+> verbatim"* — so **the verbatim inheritance is exactly what propagated the
+> asymmetry**. Two compositions the boundary admits (`git status --short && echo
+> "---HEAD---" && git rev-parse HEAD`, and `date -u; echo "EXIT:$?"`) therefore
+> read as outside the list, were disclosed by the worker against its own
+> interest, and had to be ruled in at the `RV-` on the boundary's own principle
+> rather than on the list's letter (`RV-0083-VERDICT` §4.3). **A carve-out list
+> whose principle is stated at one item and inherited verbatim by the rest
+> propagates its own asymmetry.**
+>
+> **The clause.** For **every** invocation this list sanctions — items 3, 4 and 5
+> alike — the following are **inside** the permission that sanctions it:
+>
+> - **(i) observing that invocation's own exit status** (`; echo "EXIT:$?"` or
+>   any equivalent);
+> - **(ii) redirecting that invocation's own streams** (`2>&1`);
+> - **(iii) repeating that invocation over the file set a bar names** (a `for`
+>   loop over those files);
+> - **(iv) sequencing the sanctioned invocations of a single mandated step with
+>   `&&` or `;`, each run the number of times its own item permits, and emitting
+>   a constant separator you supplied yourself** (`echo "---HEAD---"`).
+>   **`&&` makes a precheck stricter, not looser**: the second command runs only
+>   if the first succeeded, which is abort-first behaviour and the precheck's
+>   entire purpose.
+>
+> **The test, which is the clause and not an example**: *a composition is inside
+> this boundary iff it **observes nothing about this repository that the
+> sanctioned invocation did not itself produce**.* Exit status, stream
+> redirection, repetition and constant separators observe nothing; they are
+> plumbing around a sanctioned invocation.
+>
+> **Still outside, and unaffected by this clause**: any pipeline that
+> **transforms, searches, filters or reads repository content** — `| grep`,
+> `| wc`, `cat`, `find`, `ls`, `sed`, `awk` — **regardless of which command it is
+> attached to**. That prohibition exists so a bar phrased as a search is executed
+> with the file-search tool and by **reading the hits**, leaving your reads
+> visible. **And the closing rule below still binds**: a seat that thinks it
+> needs a further instrument **stops and says so**, and does not derive a
+> permission from the shape of this clause.
 
 Your permitted instruments are, in full:
 
@@ -2013,6 +2366,15 @@ Your permitted instruments are, in full:
    `git status --short` and `git rev-parse HEAD`.** Each **once**, at the head of
    your round, **before anything is read**, with their output quoted in your
    journal's Trigger section.
+
+   **The governing clause applies here explicitly (added at Revision B, item
+   (h))**: you may **sequence these two with `&&` or `;` as one invocation**, may
+   **emit a constant separator of your own** between them, may **observe their
+   exit status**, and may **redirect their streams** — each command still running
+   **exactly once**. None of that observes anything about this repository that
+   `git status --short` and `git rev-parse HEAD` did not themselves produce.
+   **What is still forbidden is a third `git` subcommand, a second `status`, and
+   any pipeline that reads the tree.**
 5. **`date -u`, once, at the moment you author your journal entry's header
    stamp** (`J-dv_lead-0189`'s ruling; `J-dv_lead-0191` §6 item 1). Record the
    reading in your journal's Evidence section as the command and its output.
@@ -2026,6 +2388,15 @@ Your permitted instruments are, in full:
    plumbing clause above. **An estimated stamp remains honest and remains
    creditable** — the carve-out removes the need for one, it does not convict the
    rounds that made one.
+
+   **The governing clause applies here explicitly (added at Revision B, item
+   (h)) — and this is the question Revision A left a worker to disclose rather
+   than to look up**: `date -u; echo "EXIT:$?"` is **inside** this item. `$?` is
+   the exit status **of `date -u` itself** and `echo` emits it; `date -u`
+   observes nothing about this repository at all, so no composition of it can.
+   **`RV-0083-VERDICT` §4.3 answered this YES on the boundary's own principle; it
+   is written into the item here so the next seat reads a permission instead of
+   filing a disclosure.**
 
 **Everything else is forbidden**: every **other** `git` subcommand — `diff`,
 `show`, `log`, `add`, `stash`, and `status` a **second** time — `dune` (every
@@ -2212,12 +2583,158 @@ of this chain paid for its absence:**
    comparison against a stated expectation rather than a reading with nothing to
    compare to.
 
+   **AMENDED at Revision B — item (j), `FINDING WO-0083-3` (MINOR, mine).**
+   Revision A said *"the head SHA"* and said neither **how it must be produced**
+   nor **what a mismatch obliges**, and the dispatch of this very round then
+   stated `afbc813e` against a measured `afbc813b39c5a83289e81b4fae2784ecb3f5811d`
+   — agreeing through `afbc813`, **git's own default abbreviation length**, and
+   diverging at the eighth character, **which was not copied from anything**. Two
+   rules, and the second codifies the judgement this round's worker exercised
+   correctly and unaided:
+
+   - **(a) The SHA is QUOTED, never typed.** It is **copied** from a command's
+     output at a **stated length** — the full 40 characters, or git's own 7 — and
+     never a hand-extended prefix. **A packet may not demand more precision than
+     its own dispatch discipline guarantees**, and a digit nobody measured is
+     exactly that.
+   - **(b) The worker's rule on a disagreement, explicit.** A disagreement
+     **within the first 7 characters is a hard STOP** — it is a different commit,
+     and no amount of care makes the round's substrate the intended one. A
+     disagreement **beyond the first 7, with those 7 agreeing, is
+     REPORT-AND-PROCEED**: disclose it in the Return log **and** the journal, and
+     continue, because the stop condition this packet actually names is the
+     **dirty-path overlap** (§20's own precheck) and an expectation that cannot
+     be satisfied **because it was invented** cannot convict the seat that
+     measured against it (`RV-0080-VERDICT` §6's principle).
+
+   **Disclosure is credited in full under both branches**, exactly as `BM17`'s
+   own text credits it — the branch changes what the worker does next, never the
+   value of saying what it saw.
+
 **And one thing the spawn prompt must NOT carry**: any path from §8's forbidden
 set, in any form — quoted, excerpted, or summarised. `BM15` charges the worker
 for such a path appearing in its `Inputs`; a path that arrived in the dispatch
 would be a violation the worker could not have avoided, which is the exact shape
 `RV-0080-VERDICT` §6 ruled worse than the violation. **This packet's `Context
 provided` is the complete list of what the round needs, and it contains no RTL.**
+
+---
+
+## 21. REVISION B — the eleven owed items, each dispositioned
+
+**Added at Revision B, dv_lead, `J-dv_lead-0200`, 2026-08-22, at head
+`6f165bd`.** `RV-0083-VERDICT` §6 closed with *"Routed to tb_writer: nothing.
+Routed to my own next revision: eleven items, enumerated at §5."* **This is that
+revision.** The eleven are reproduced here **by their §5 letters**, so a reader
+can diff this list against the verdict's rather than trust a summary of it, and
+**each carries a disposition, a site, and a ground.**
+
+**Three dispositions are used and their meanings are fixed before the list**:
+**DONE** — the packet's own text is changed at the named site, this round;
+**OVERTAKEN** — events since the item was written have discharged it or moved its
+subject, **named with the citation** rather than skipped silently;
+**BLOCKED** — the item cannot be discharged at this seat, **with the reason and
+the carrier**. *(No item is DEFERRED: an item put off without a carrier is the
+failure this section exists to prevent.)*
+
+### 21.1 The six from architect_docs_lead's independent §4 read
+
+`J-architect_docs_lead-0055`, landed `8ceb973` — **a reading that disputed no
+fact and moved no expected value**, which is why none of these touches a landed
+assertion or reopens a bar.
+
+| # | Item, as §5 states it | Disposition | Site of the change |
+|---|---|---|---|
+| **(a)** | Fact 1's citation upgraded — from §6.1's storage sentence alone to §6.1's storage sentence **plus** §6.2's `Preamble` row **plus** C-16 consequence 1's uniqueness | **DONE** | §4.2 fact 1, blockquote. The upgrade is at the **boundary case** `m = 1`, where `R` is the preamble cycle itself; REQ-206's opening clause is ambiguous exactly there, and a design author reading it alone can reach the other answer, which would make `U22`'s red **arguable rather than dispositive**. The note also records **why item (g)'s pending spec defect does not stale the upgrade**: ground 2 is used at the **first** frame, where C-16 consequence 4's qualification cannot bite |
+| **(b)** | Fact 5 states the **law**, not the instance — `g = ⌈(cfg_ifg + 1)/8⌉` quoted as the rule with `⌈13/8⌉ = 2` as its value at `cfg_ifg = 12` | **DONE**, and its ground is now **live rather than prospective** | §4.2 fact 5. The law is stated first and the value second, with §9's *"the gap is then served from that terminate character"* added as the citation that fixes **which** character starts the count. **Partly overtaken and cited as such**: `WO-0085` landed the `cfg_ifg` axis at `a0cf4dd` and `M04-F7` now quotes this law at three members (gaps 15, 23, 31), so the value-only form would have been falsified by the first of them |
+| **(c)** | Fact 7's stability ground is **the DRIVER's**, not the specification's | **DONE** | §4.2 fact 7, blockquote. §7's handshake bullet is **acceptance-cycle-only**; the hold-until-acceptance rule appears once in SPEC-M04, in the **reset** bullet, attributed to a bullet that does not state it, and SPEC-M01 §7 delegates field stability to M04 §7 — so **no document in this programme obliges a source at this port to keep offering until accepted**. The fact stands on **this packet's §5.3(2')**. The wider question (where the rule belongs) is named as owed **jointly** with architect_docs_lead and is not settled here |
+| **(d)** | §4.4's `word ≥ 2` bound wants the **broader** ground — the one that reaches the frame **after an abort** | **DONE** | §4.4, blockquote. C-16 consequence 4 has **two** branches and Revision A quoted only the continuous-source one; in the other, word 1's required-ness is **design-dependent** (*"may be 1"* is a permission, not a pin). Broader matters because the frame after an abort is issued into an **idle** transmitter, where the continuous-source premise **fails outright** — and that is the frame every `Resume` schedule produces. The `W_j = 1` corollary (both bounds empty) is recorded with it |
+| **(e)** | Two §4.3 additions — `P' ≥ 1` is **guaranteed**; the tail's **own FCS depends on §6.2's `Preamble` row re-seeding the CRC** | **DONE** | §4.3, bullets 1 and 3. `P' = P_j − 8w ≥ P_j − 8(W_j − 1) ≥ 1`, so §0.7's zero-octet class never arises; and the re-seed clause is what makes *"its FCS is the REQ-305 oracle over its own padded content"* **true rather than hopeful** — a design carrying the aborted frame's running CRC into the tail fails exactly there, which `U23` and `U24` both assert against and which §4.3 as issued did not cite |
+| **(f)** | Fact 8 — **kept as written**, with the reason on the record | **DONE as a recorded ruling** (the text of the fact does not move) | §4.2 fact 8, blockquote. The architect found the specification pins **more** than the packet claims (REQ-204 + §6.2 pin non-acceptance shut through the start character). **I decline the strengthening**: the observable that would catch an early acceptance is the start character at `A + 2`, which fact 7(a) asserts anyway, so the stronger reading buys **no observable** and adds a sentence to defend at every later round. `T22` stays; `ST-4`'s exclusion stays. One **editorial** defect corrected: *"the closed interval `[R, A + 1)`"* is half-open in its own brackets, and the enumeration that follows is the authority |
+
+### 21.2 The one item this seat cannot discharge
+
+| # | Item | Disposition | Reason, carrier, and what would close it |
+|---|---|---|---|
+| **(g)** | The SPEC-M04 §6.2 `Preamble`-row defect: *"keeps `tx_tready` = 1"*, **unconditionally**, against §7's C-16 consequence 4 (*"`tx_tready` is 0 on the preamble cycle C+12"*). **My countersignature is owed when the spec diff is written** | **BLOCKED — and re-measured at this head rather than assumed** | **The defect still stands**: `docs/specs/modules/xgmii_tx_64.md:300` carries the unconditional row and the C-16 consequence is unchanged; **SPEC-M04 §13's change log has no row for it**, so no diff exists to countersign. It is not mine to fix — `docs/**` is architect_docs_lead's scope (PROTOCOL §6) — and it is not a bounce, a `BUG-` or an escalation: **reachability at this round remains nil**, because §4.4's `word ≥ 2` rule forbids the only stimulus that would reach it, which is why the rule written to avoid the hazard is what surfaced the defect. **Carrier**: filed as a carry-forward in the architect's own document (`J-architect_docs_lead-0055`, Reasoning and Open-question 1, which also records that the repair's *shape* is undecided — the narrow C-14.2-style exception, or the wider question of whether §6.2 rows should carry `tx_tready` values at all now that §7 pins them in four places). **What closes it**: an architect spec-diff round, then my countersignature as a `J-dv_lead-NNNN` entry. **Recorded here as a debt with a carrier rather than an item falling between two seats** |
+
+### 21.3 The four from my own review
+
+| # | Item | Disposition | Site of the change |
+|---|---|---|---|
+| **(h)** | `FINDING WO-0083-1` — §17.1's plumbing boundary stated **once, as a clause governing every sanctioned invocation**, with its own test, and the exit-status and stream-redirection permissions attached to items 4 and 5 explicitly | **DONE** | §17's preamble (why *inherited verbatim* is where it failed) and §17.1's new governing clause, plus explicit attachments at items 4 and 5. The clause states the boundary **(i)–(iv)** and its test — *observes nothing about this repository that the sanctioned invocation did not itself produce* — and re-states what stays outside (any pipeline that reads the tree) and that the closing **stop-and-say-so** rule still binds. **A carve-out list whose principle is stated at one item and inherited verbatim by the rest propagates its own asymmetry** |
+| **(i)** | `FINDING WO-0083-2` — `M-21` is miscounted as a bar; re-phrase it as an **expression** bar the way `M-17` already is | **DONE** | §12's `M-21` row. Pass condition is now *exactly one expression computes a `not_before`/`not_after` pair, and it is `underflow_event`'s*, with docstring, comment, title and string-literal hits **legitimate and non-convicting**, and *"read every hit"* in the instrument column. **Revision A's `M-21` pass stands**: the bar was met at `91f005d` and re-reading it against this text would be reading a rule backwards onto work that could not have known it. The cost of the defect was real and is recorded — the worker **rewrote correct documentation to satisfy a miscounted bar** |
+| **(j)** | `FINDING WO-0083-3` — the `State` field's shape and flip discipline, and §20 item 3's head-SHA rule | **DONE, in both halves** | **Half 1 (the `State` field)**: applied at the `RV-` itself (`RV-0083-VERDICT` §4.2 — one bare lifecycle token plus a one-line provenance, each seat flipping the field in the commit carrying its own act, the flip clerical and never a re-issue, a load-bearing struck state kept struck). The head block of this packet already reads that way and Revision B extends it with the register above. **Half 2 (§20 item 3)**: amended here — **(a)** the SHA is **quoted at a stated length**, never hand-extended; **(b)** a disagreement **within the first 7** characters is a **hard STOP**, and beyond them with the first 7 agreeing is **report-and-proceed**. That is the judgement this round's worker exercised unaided, **codified so the next seat does not have to exercise it** |
+| **(k)** | `ST-2` is weaker than §5.3(2') reads — a **design** item, not an execution defect | **DONE as a recorded design item; NOT implemented, and the difference is stated rather than blurred** | §5.3(2') (pointer) and §5.3(5)'s `ST-2` bullet (the full note), with the same limit recorded at `AP-M04` §7 `T-3` so a stage-3 drafter meets it at the machinery's own home. The intention record and `offered.tvalid` are computed from **the same expression in the same branch**, so `ST-2` **cannot fire against the driver as written**: it is a regression tripwire, and §5.3(5)'s *"a driver that quietly failed to withhold"* is not caught by it. **The stronger form for stage 3**: count-and-position — the number of withheld cycles equals `hold`, and the first of them is the cycle the cursor reached the target — both terms from the schedule, both read from the drive record, and moved **independently** by a driver defect. **Implementing it edits `test/xgmii_tx_64/bench.ml` and is a commissioned round with a CI-executed result, not a packet revision** |
+
+### 21.4 The debts §5 restated with their carriers, re-measured at this head
+
+**Unchanged in substance, and re-measured rather than recopied** — none of them is
+one of the eleven, and none is closed here:
+
+- **`M04-G4`** — still the cheapest outstanding row at this module and still needs
+  nothing built. Held back for one round at `WO-0083`; **two M04 rounds have
+  passed since** (`WO-0084`'s campaign follow-ups, `WO-0085`'s `cfg_ifg` axis)
+  and it rode neither. **Mine; it should ride the next M04 packet whatever that
+  packet's axis is.**
+- **`DVC-1a`** — the M04 row-status census in `tools/dv_checks.sh`. **Still
+  unbuilt, and now wanted by four documents.** Every M04 count in this revision's
+  own journal entry is again a **hand count with its method stated**. **It should
+  land before any `SO-` quotes an M04 coverage fraction.** Mine, `tools/**`.
+- **`T-2`, the transmit-side conservation monitor** — still unbuilt; §4.3's
+  tail-frame remains a **live** instance of the `tlast`-keying defect, so the case
+  is stronger than when the item was written. Mine, `test/monitors/**`.
+- **The three `BAR T1` work orders** — vendoring the transmit reference at a pin,
+  a transmit harness and canonical form, REQ-901's divergence classes.
+  **Orchestrator, as scheduling.** `BAR T1` stays **SHUT**.
+
+### 21.5 The five struck-claim sites — not one of the eleven, and found by applying a rule this chain banked
+
+**`WO-0084-S1`** (`J-dv_lead-0196`, absorbed at `J-dv_lead-0197`) struck a claim
+from `AP-M04`'s `M04-F6` Kills cell: that a design measuring the abort gap from
+the `/E/` produces **16** and is *"one octet from conformant"*. **The figure is
+arithmetically unreachable** — the decoder counts from the wire's `/T/`, so every
+abort gap it can record is `≡ 7 (mod 8)` — and at `cfg_ifg = 12` the defect is
+**byte-identical** to conformant, not one octet from it.
+
+**`FINDING WO-0085-R1`** (`J-dv_lead-0199`) then found a **fourth** site in the
+bench that a site list built from the string `16` could not reach, because it
+**paraphrased** the claim without quoting its figure, and banked the general
+rule: **when a false claim is struck from a document, enumerate the sites to
+correct by the claim, not by the string that expressed it.**
+
+**This revision applies that rule to this packet — the document stage 3 inherits
+its text from — and finds SIX sites**, of which **only one quotes the figure
+`16`** in the form the earlier sweeps searched for:
+
+| # | Site | What it said | Quotes `16`? |
+|---|---|---|---|
+| 1 | §1's REQ-id line (`REQ-204`) | *"the one octet that separates conformant from not"* — the same paraphrase as the bench site `R1` caught | no |
+| 2 | §2's `M04-F6` index row | *"The wrong design is **one octet** from conformant"* | no |
+| 3 | §4.2 fact 5's closing sentence | *"that is `M04-F6`'s one-octet hazard, stated in the plan's own Kills cell"* — **a citation of the struck cell itself** | no |
+| 4 | §6.6 `U26` assertion 3 | *"produces **16**, is **one octet from conformant**"* | **yes** |
+| 5 | §14 trap `T13` | *"Measuring from the `/E/` gives 16 instead of 15"* | **yes**, in a sentence about the **bench** |
+| 6 | §15's class-`D2` disposition | *"A `M04-F6` failure at 16 instead of 15 is as likely to be the decoder as the design"* | **yes**, and it is the site the strike **strengthens** |
+
+**All six are corrected in place, struck rather than overwritten, each with its
+ground.** Two of the corrections are worth reading twice:
+
+- **Site 5 — the trap survives and the claim attached to it does not.** A
+  **bench** that measured from the `/E/` would compute 16 and be wrong by one
+  octet, which is exactly what a trap is for; what is struck is the **design**
+  -side claim sharing its sentence. **A false claim and a true one were sharing a
+  sentence, which is how it survived three sweeps.**
+- **Site 6 — the correction makes the disposition STRONGER.** A `M04-F6` reading
+  of **16** cannot come from the design at all: every gap this decoder can record
+  after an abort is `≡ 7 (mod 8)`, so a 16 convicts the **instrument or the
+  bench**, never rtl_lead. The readings a design defect can produce here are **7**
+  and **23**, and those are the ones that need the two-instrument separation
+  before any `BUG-`. **A struck claim can leave a disposition weaker than the
+  truth, not only wronger than it — which is a second reason to sweep by claim.**
+
+**No assertion, expected value, bar or verdict moves at any of the six sites.**
+`M04-F6`'s landed `= 15` is right, is unchanged, and is green at `91f005d` and at
+`a0cf4dd`.
 
 ---
 

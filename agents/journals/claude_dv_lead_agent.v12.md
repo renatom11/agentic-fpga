@@ -1914,3 +1914,403 @@ find those sites by construction.
 - agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md
 - test/attack_plans/AP-xgmii_tx_64.md
 - test/xgmii_tx_64/test_m04_f.ml
+
+## [J-dv_lead-0200] 2026-08-22T06:02Z | task:WO-0083 | The stage-2 revision I owed myself is executed: eleven items dispositioned by letter — nine DONE, one blocked on a spec diff that is not mine to write, one law form overtaken into liveness by the axis that landed since — and the sweep that closes it finds six more sites of a struck claim in my own packet, one of which was leaving a disposition weaker than the truth
+
+### Trigger
+
+Orchestrator spawn `WO-0083-STAGE2-REV/2026-08-22T06:05Z` (copied verbatim; my
+`date -u` stamp reads 06:02Z, three minutes before the token the dispatch minted
+— I record the skew rather than adjusting either figure, the stamp being my
+clock's reading and the short-id being the orchestrator's own token).
+
+The round is **my own owed work**, not a review of anyone else's:
+`RV-0083-VERDICT` §6 closed with *"Routed to tb_writer: nothing. Routed to my own
+next revision: eleven items, enumerated at §5."* The board has carried it as the
+engineering queue's next item since `J-orchestrator-0285`, and `J-dv_lead-0197`
+declined to fold it into the `WO-0085` carrier precisely so it would stay
+countable as its own round. `WO-0085` closed ACCEPTED this morning; this is the
+queue head.
+
+Precheck, one invocation as dispatched: `git status --short` → empty;
+`git rev-parse HEAD` → `6f165bd323309cbb29a4097dd10da16e06914987`, matching the
+dispatch's stated prefix `6f165bd` **within git's own default abbreviation
+length** — which is the rule this very round codifies at §20 item 3 (item (j)),
+and the first time it has been applied to a dispatch to me rather than by a
+worker to mine.
+
+### Inputs
+
+- `agents/charters/dv_lead.md` and `agents/PROTOCOL.md` — both in full, first,
+  per my launcher. §3 (packet classes and the participant-updates-its-own-packet
+  rule), §4 (entry grammar, `Files-in-this-commit` set-equality), §5 (R1–R9,
+  and R3's pure-EOF-append), §6 (write scopes), §7 (Mutation record, lessons
+  harvest), §10 (independence, evidence, R-SEAL-1).
+- **The owed list, read from the record and not from memory** —
+  `agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md`, the
+  `RV-0083-VERDICT` §5 block in full, which is where the eleven live as items
+  **(a)–(k)**; plus §6's closing count that says there are eleven.
+- My own journal, `agents/journals/claude_dv_lead_agent.v12.md`:
+  `J-dv_lead-0194` (the `RV-0083` ACCEPT that routed them), `J-dv_lead-0195`,
+  `J-dv_lead-0196` (the act-4 scoring that struck `M04-F6`'s figure),
+  `J-dv_lead-0197` (the S1/S2 closes and the carrier decision that kept this
+  round separate), `J-dv_lead-0199` (the `WO-0085` ACCEPT, `FINDING WO-0085-R1`,
+  and the banked site rule this round applies).
+- **`J-architect_docs_lead-0055`** (in `claude_architect_docs_lead_agent.v05.md`,
+  landed `8ceb973`) — the independent §4 read in full, because six of the eleven
+  are its items and **the verdict's one-line summaries are not their grounds**.
+  Reading the source is what produced the boundary-case reasoning at item (a),
+  the two-branch C-16 reading at item (d) and the *"editorial: the closed
+  interval is half-open in its own brackets"* correction at item (f) — none of
+  which survives in the one-line form.
+- **Specification, as the only basis for every clause this revision now cites**:
+  `docs/specs/modules/xgmii_tx_64.md` (SPEC-M04) §6.1's storage sentence and
+  inter-frame-gap paragraph, §6.2's `Preamble`/`Frame`/`Idle` rows, §7's C-14.1
+  bullet and C-16's four consequences read individually, §7's handshake and reset
+  bullets, §9's stream-effect row, §11's deferred-item table and **§13's change
+  log in full** (to establish, rather than assume, that item (g)'s defect is
+  still unfixed).
+- `test/attack_plans/AP-xgmii_tx_64.md` — §0.1's three standing rules, §6.1's
+  homing census and its quoted command, §7 items `T-2`, `T-3`, `T-8`, §9's change
+  log in full.
+- `agents/handoffs/WO-0082_tb-m04-two-frame-presenter-and-g10.md` — its head
+  block only, for the **revision form**: the register table, the strike-in-place
+  discipline, and the sentence that a revision alters no term the executed round
+  was judged under.
+- `tools/dv_checks.sh` (the docs-citation check's extraction function) and
+  `.github/workflows/build.yml`, read to establish what CI will actually do with
+  the two files I touched rather than to assume it does nothing.
+- **NOT read**: `libs/**`, `top/**`, `bin/**`, `rtl_snapshots/**`. No RTL was
+  opened at this or any commit for this work, and nothing in this round needed
+  any: every correction is a document's own text against a specification clause.
+
+### Reasoning
+
+**Why the items are dispositioned by their §5 letters and reproduced in the
+packet.** The verdict enumerated them (a)–(k); a revision that silently applies
+"most of them" is unfalsifiable. §21 reproduces the eleven **by letter with the
+verdict's own wording**, so a reader diffs two lists instead of trusting a
+summary, and each carries **disposition + site + ground**. I fixed the
+disposition vocabulary before writing the list — **DONE**, **OVERTAKEN** (with
+the citation, per the dispatch), **BLOCKED** (with reason and carrier) — and
+deliberately did not mint a *DEFERRED*: an item put off without a carrier is the
+exact failure `J-dv_lead-0187` convicted my seat for, three debts carried across
+rounds because their permissions never reached their artifacts. Here the
+permissions reach: `agents/handoffs/**` and `test/**` are mine.
+
+**The one item I cannot discharge, and why it is BLOCKED rather than carried.**
+Item (g) is my countersignature on SPEC-M04 §6.2's `Preamble` row — *"keeps
+`tx_tready` = 1"*, unconditionally — against §7's C-16 consequence 4, which says
+it is **0** on the preamble cycle of a back-to-back frame whose word 0 was
+accepted at the post-`tlast` cycle. I **re-measured the defect at this head
+rather than assuming it survived**: the row is still at
+`docs/specs/modules/xgmii_tx_64.md:300`, consequence 4 is unchanged, and §13's
+change log carries **no row** for it. So there is no diff to countersign, and a
+countersignature is an act on a diff. `docs/**` is architect_docs_lead's scope
+(PROTOCOL §6), so I could not write it even if I judged the shape — and the shape
+is genuinely open: the architect's own Open-question 1 asks whether the repair is
+the narrow C-14.2-style exception or the wider question of whether §6.2's rows
+should carry `tx_tready` values at all now that §7 pins them in four places. **A
+value stated twice is a value that can disagree with itself, and this is the
+second time it has.** What I can do is make the debt legible with its carrier,
+which §21.2 does.
+
+**Item (a) is the one whose interaction with (g) had to be worked out rather than
+noticed.** The citation upgrade routes fact 1 and §4.4 onto three grounds, and
+**one of them is the very `Preamble` row item (g) says is defective**. That looks
+circular until the frames are separated: C-16 consequence 4's qualification bites
+only at a **back-to-back** frame whose word 0 was accepted at the post-`tlast`
+cycle, and `M04-G5` — the row the upgrade exists for — withholds word 1 of the
+run's **first** frame, where no such acceptance has happened. Grounds 1 (§6.1's
+storage sentence, which carries no after-the-start-character qualifier at all)
+and 3 (C-16 consequence 1's **uniqueness** claim, false if the preamble cycle
+were a second *"means nothing at all"* cycle) are independent of the frame
+either way. So the upgrade **survives the spec diff whenever it lands**, and I
+wrote that sentence into the packet so the next seat re-reads it instead of
+re-deriving it. The upgrade matters because REQ-206's opening clause is
+**ambiguous at exactly the cycle the row lives on** — the start character is
+emitted *on* `C + 1`, and *"after … has emitted"* does not say whether the
+emitting cycle is inside — and a row resting on the weakest of three clauses
+makes `U22`'s red **arguable rather than dispositive**.
+
+**Item (b) is where the dispatch's overtaken-rule bit, and it bit in the
+strengthening direction.** The item asks for the **law** with the value as its
+instance. When it was written that was prophylactic: §6.0(g) pinned `cfg_ifg = 12`
+for every unit and no producer could drive anything else (`T-8`'s
+DOES-NOT-EXIST measurement). **`WO-0085` has since landed the axis** — the `?ifg`
+knob at `a0cf4dd`, `M04-F7` sweeping {12, 16, 24} at this exact abort shape and
+measuring 15, 23, 31 by this very law. So the item is not overtaken *away*; the
+**ground under it changed from prospective to live**, and the value-only form
+would have been falsified by the first member past 12. I dispositioned it DONE
+with the citation attached, and marked two neighbouring passages **OVERTAKEN** in
+place for the same reason: §5.3(3)'s *"a round that changes `cfg_ifg` … is stage
+3 and this sentence is its warning"* (that round was `WO-0085`, not stage 3, and
+the warning was **redeemed** — `g_max ~ifg` collapses onto this section's `+ 4`
+arithmetic at 12, which is the check a generalisation owes its own special case),
+and §5.4's *"no `cfg_ifg` parameterisation"* (overtaken in its `cfg_ifg` half
+only; `cfg_tx_enable` is still unbuilt and family K is still its consumer).
+**`BM5` I deliberately did not touch**: a bounce condition binds the round it was
+written for, and re-reading it against later events is reading a rule backwards.
+
+**Item (f) is a decision to keep, and the reason belongs on the record more than
+the decision does.** The architect confirmed fact 8 as a rule and disputed its
+ground **in the safe direction**: *"unconstrained"* understates the
+specification, because REQ-204's 12-octet minimum plus §6.2's `Idle`→`Preamble`
+entry pin non-acceptance shut at `R`, `R + 1` and `A`. I decline the
+strengthening, and the ground is arithmetic rather than caution: **the observable
+that would catch an early acceptance is the start character at `A + 2`, which
+fact 7(a) already asserts** — so the stronger reading buys **no new observable**
+and costs one more sentence to defend at every later round. A `NO-ASSERT` that
+costs this round nothing is cheaper than a pin I would have to defend forever.
+
+**Item (k) is recorded and not implemented, and I refuse to blur that.** `ST-2`
+compares the bench's intention record against `offered.tvalid`, and both are
+computed **from the same expression in the same branch** of the driver — so it
+**cannot fire against that driver**. It is a regression tripwire; the defect its
+own text claims to catch (*"a driver that quietly failed to withhold"*) is
+exactly the one a self-comparison cannot see, because the failure moves both
+sides together. The stronger form is **count-and-position**: the number of
+withheld cycles equals `hold`, and the first of them is the cycle the cursor
+reached the target — both terms from the schedule, both read from the drive
+record, moved **independently** by a driver defect. **Implementing it edits
+`test/xgmii_tx_64/bench.ml`, which is a commissioned round with a CI-executed
+result; a packet revision can record a design item and must not pretend to land
+one.** I homed it in two places for one reason: the packet is what a stage-3
+drafter inherits text from, and `AP-M04` §7 `T-3` is where a seat looks for the
+machinery's state — and `T-3` is marked **DISCHARGED**, so a limit recorded only
+in a superseded packet would be invisible at the place the discharge is read.
+**The discharge is not withdrawn and no state cell moves**; what moves is that
+the limit is now written where it will be met.
+
+**Why I swept for the struck claim at all, and why the sweep is not scope
+creep.** `J-dv_lead-0199` banked a candidate rule with its three limbs already
+met: *when a false claim is struck from a document, enumerate the sites to
+correct by the claim, not by the string that expressed it.* This round opens the
+one document in the chain that stage 3 inherits its text from, and I had just
+finished writing that a fourth site was missed because a site list was built from
+a figure. **Not sweeping here would have been the same failure with a better
+excuse** — and the sweep is cheap, one multiline search plus a read of every
+`M04-F6` mention. It found **six** sites in `WO-0083` and a **seventh** in
+`AP-M04`'s own change-log row for the `WO-0083` absorption. **Only three of the
+seven quote the figure `16`**, so four were unreachable by either earlier sweep
+by construction.
+
+**Two of the seven are worth the words they cost.** Trap `T13` reads *"Measuring
+from the `/E/` gives 16 instead of 15"* — and that is **true of a bench** and
+false of a design: a bench that measured from the `/E/` really would be one octet
+out, which is what a trap is for, while a **design** that does so is recorded by
+the decoder at `8g − 1` and is byte-identical at `cfg_ifg = 12`. **A false claim
+and a true one were sharing a sentence, which is how it survived three sweeps**,
+and the correction keeps the trap and strikes only the design-side half. §15's
+class-`D2` disposition is the other: it read *"a `M04-F6` failure at 16 instead
+of 15 is as likely to be the decoder as the design"*, and the strike makes it
+**stronger, not weaker** — a reading of 16 cannot come from the design at all,
+because every gap this decoder can record after an abort is `≡ 7 (mod 8)`, so it
+convicts the **instrument or the bench and never rtl_lead**, and the readings a
+design defect can produce here are **7** and **23**. That is a second reason to
+sweep by claim rather than by string: **a struck claim can leave a judgement
+weaker than the truth, not only wronger than it.**
+
+**Why the plan's change-log row is struck in place and not rewritten.** The row
+at `AP-M04` §9 is a **dated record of what the `WO-0083` round claimed**;
+rewriting it would falsify the history the table exists to keep. Striking marks
+the claim false and leaves the record readable — the same discipline
+`J-dv_lead-0197` used on `M04-F6`'s Kills cell and `J-dv_lead-0199` used on
+`T-8`'s DOES-NOT-EXIST measurement (*kept rather than overwritten*). **What I did
+not do** is move a Status cell or mint a discharge marker: this round discharges
+no row, and annotating in the notation §6.1's census selects is what
+`FINDING AP-6-2` forbids. Both censuses were re-run **after** every edit and are
+unchanged, which is the check that my annotations did not join the notation they
+are measured by.
+
+**What I rejected.** Folding the revision into a new work order (the items are
+defects in **this** packet's text, and `WO-0082` Revision B already ruled that a
+correction filed only into an unwritten successor is a promise, not a repair).
+Editing `RV-0083-VERDICT`'s own text to mark the items done (a verdict is a
+frozen record; the register and §21 carry the movement). Implementing the
+stronger `ST-2` (a bench edit needs a CI-executed result and a commissioning
+round). Writing the SPEC-M04 §6.2 repair myself (not my scope, and the repair's
+shape is an open architect question). Re-running or re-reading `M-21` against its
+new phrasing (that would read a rule backwards onto work that could not have
+known it). Touching `WO-0084`'s tally, the seal, or `docs/reports/audit/**`.
+Opening any RTL.
+
+### Actions
+
+1. Precheck in one invocation (`git status --short` empty; `git rev-parse HEAD`
+   `6f165bd…`), then charter and PROTOCOL in full.
+2. Located the owed list **in the record**: `RV-0083-VERDICT` §5 items (a)–(k),
+   cross-checked against §6's *"eleven items"* count and against
+   `J-dv_lead-0194`'s Handoff line.
+3. Read `J-architect_docs_lead-0055` in full for the six architect items' actual
+   grounds, and SPEC-M04 §6.1/§6.2/§7/§9/§11/§13 for every clause the revision
+   now cites.
+4. Re-measured item (g)'s defect at this head (row present, consequence 4
+   unchanged, no §13 row) before dispositioning it BLOCKED.
+5. Wrote **Revision B** into `WO-0083`: the amended `State` bullet, the
+   **revision register** with its A/B rows and the strike-in-place discipline,
+   §4.2 facts 1/5/7/8, §4.3's two additions, §4.4's broader ground, §5.3(2') and
+   §5.3(5)'s `ST-2` note, §5.3(3) and §5.4's overtaken annotations, §12's `M-21`,
+   §17's preamble and §17.1's new governing clause plus explicit attachments at
+   items 4 and 5, §20 item 3's head-SHA rules, the section-map row and
+   changed-passage list, and the new **§21** carrying all eleven dispositions,
+   the debts with their carriers, and the site register.
+6. Swept for the struck claim **by the claim** (`rg -U "one\s+octet"` plus a read
+   of every `M04-F6` mention in the packet), found six sites in `WO-0083` and one
+   in `AP-M04`, and corrected all seven in place, struck rather than overwritten.
+7. `AP-M04`: extended §7 `T-3`'s cell with item (k)'s limit (discharge **not**
+   withdrawn, state cell **not** moved); struck the change-log row's *"one
+   octet"* clause in place; appended §9's change-log row for this round.
+8. Re-ran both of the plan's censuses after every edit; replicated CI's
+   docs-citation extraction over the packet to confirm no new phantom path.
+
+**Not done, deliberately**: no `git commit`, no `git push`, no staging
+(PROTOCOL §2). No file under `libs/`, `top/`, `bin/`, `rtl_snapshots/`,
+`docs/**` or `docs/reports/audit/**` touched. No `.ml`/`.mli` file touched, so
+no assertion, expected value or landed unit moves. No `SO-` opened or offered.
+No `BUG-` opened — nothing here is a divergence of design from spec. No Status
+cell moved, no row added, converted or discharged.
+
+### Evidence
+
+Commands runnable from a checkout at this commit; no ephemeral artefact is cited
+(ADR-0003/F5).
+
+- Precheck: `git status --short` → empty; `git rev-parse HEAD` →
+  `6f165bd323309cbb29a4097dd10da16e06914987`. Authoring stamp: `date -u` →
+  `Sat Aug 22 06:02:31 UTC 2026`.
+- **The tree this round changes**, `git status --short`:
+  `M agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md`,
+  `M test/attack_plans/AP-xgmii_tx_64.md` — **two paths, both in my scope**.
+  `git diff --numstat` → `544 27` and `3 2`.
+- **No OCaml file is touched**: `git diff --name-only | grep -cE '\.mli?$'` →
+  **0**. This is the measurement behind the claim that no landed assertion moves.
+- **Nothing is deleted, only struck**: every one of the 27 removed lines is
+  re-emitted inside the new text. Checked by extracting the removed lines and
+  searching the new file for each, whitespace-normalised — all seven that a
+  line-wise search reported as missing are line-rewraps, and each was then found
+  verbatim (`No prior revision, no bounce…`, `the one octet that separates
+  conformant from not`, `g = ⌈(12 + 1)/8⌉ = ⌈13/8⌉ = 2` …, `§7's handshake
+  bullet holds the source's word stable until acceptance`, `**P' = P_j − 8w
+  octets**`, `15 is asserted, not >= 12`, `Measuring from the /E/ gives 16
+  instead of 15`).
+- **The plan's two censuses, re-run at this tree AFTER every edit** (§0.1(i):
+  measured, never carried forward):
+  - §6.1's own quoted command → **`83 83 []`**, unchanged.
+  - status-cell pass over every row table → **83 row lines, 83 distinct ids;
+    ASSERT 59, NO-ASSERT 12, NO-STIMULUS 6, STRUCTURAL 5, GAP 1, RULING 0** —
+    unchanged. Discharged stays **41 of 83**, outstanding **42 of 83**.
+  - `## 9. Change log` now carries **9 dated rows**, the last this round's.
+- **Item (g)'s defect re-measured, not assumed**:
+  `grep -n "keeps \`tx_tready\` = 1" docs/specs/modules/xgmii_tx_64.md` → **300**
+  (§6.2's `Preamble` row); §7's C-16 consequence 4 still reads *"`tx_tready` is 0
+  on the preamble cycle C+12"*; SPEC-M04 §13's change log has **no row** for the
+  contradiction. **No diff exists to countersign.**
+- **The six sites in the packet**, found by the claim: §1's REQ-id line, §2's
+  `M04-F6` index row, §4.2 fact 5's citation of the struck cell, §6.6's `U26`
+  assertion 3, §14's trap `T13`, §15's class-`D2` disposition. **Three quote the
+  figure `16`** (`U26`, `T13`, class `D2`); three do not, and a sweep built from
+  the string could not have reached them. The seventh site is `AP-M04` §9's
+  `WO-0083` absorption row.
+- **What CI will do with these two files, established by reading rather than
+  assumed**: `.github/workflows/build.yml`'s `build` job runs
+  `tools/dv_checks.sh`, whose docs-citation check reads **`agents/handoffs/**.md`
+  only** and requires every `docs/…` token to resolve. Replicating its extraction
+  (`docs/[A-Za-z0-9_./*-]+`, trailing punctuation stripped) over the revised
+  packet yields exactly four tokens — `docs/`, `docs/specs/ifc_check/xgmii_tx_64_ifc.ml`,
+  `docs/specs/modules/xgmii_tx_64.md`, `docs/specs/requirements.md` — **all
+  resolving in `git ls-files`**; the `:300` line suffix is not captured because
+  `:` is outside the token class. `dv_checks.sh`'s census check targets
+  `test/attack_plans/AP-xgmii_rx_64.md` (the **rx** plan), and
+  `tools/precompile_check.sh` skips `attack_plans/` by name, so neither reads
+  what I edited.
+- **`dune runtest` was NOT run and could not be** — opam is proxy-blocked in this
+  container (ADR-0005's documented posture). **It is also not the instrument this
+  round needs**: no compiled file is touched. The executable claim this round
+  makes is that **CI is unchanged by it**.
+- Journal arithmetic (ADR-0017 §5.1): volume 12 stands at **124,181** bytes
+  before this entry, leaving **137,963** under the 262,144 soft threshold. **No
+  rotation is due**, and no chain header is touched.
+
+### Outcome
+
+**DoD vs the dispatch: met.** The eleven items are enumerated by their §5 letters
+and dispositioned — **nine DONE** ((a), (b), (c), (d), (e), (h), (i), (j), and
+(f) as a recorded ruling; (k) DONE as a recorded design item and explicitly **not
+implemented**), **one BLOCKED with its reason and carrier** ((g), the spec-diff
+countersignature), and **one carrying an OVERTAKEN citation inside its DONE**
+((b), whose law form the `WO-0085` axis moved from prospective to live). Two
+neighbouring passages are marked OVERTAKEN in place with the same citation
+(§5.3(3), §5.4's first bullet). **The eleven are all accounted for and none is
+silently skipped.**
+
+**Finding filed**: **`FINDING WO-0083-R2-1` (MINOR, mine)** — `WO-0083` carried
+**six** live restatements of the claim `WO-0084-S1` struck, and `AP-M04`'s own
+change-log row a seventh; **four of the seven are unreachable by any sweep keyed
+on the figure `16`**, and one of them (§15's class-`D2` disposition) had left a
+routing judgement **weaker than the truth**. All seven are corrected in place.
+The finding is against my own artifacts and is the direct yield of the rule
+`J-dv_lead-0199` banked.
+
+**Handoff**: `WO-0083` at **Revision B**, `AP-M04` absorbing it, both to the
+orchestrator for commit under my seat. **Nothing is routed to any worker**, no
+`RV-` is owed, and no spawn is requested by this round.
+
+**Harvest**: **none due, declared rather than omitted.** PROTOCOL §7 and ADR-0018
+attach the harvest to every `SO-` and every phase gate; this is neither, so the
+span since my last harvest stays open and continues to tile through this entry.
+**Two candidates are banked for it**, both with their three limbs met so the next
+harvest need not reconstruct them:
+
+1. *(carried, `J-dv_lead-0199`)* **When a false claim is struck from a document,
+   enumerate the sites to correct by the claim, not by the string that expressed
+   it.** **LH1** `a0cf4dd` and `J-dv_lead-0199`; **LH2-g**, no proper noun;
+   **LH3** without it the corrected document keeps teaching the struck claim
+   wherever it was paraphrased. **This round is its first independent test and it
+   returned four sites no string-keyed sweep could reach**, which is evidence for
+   the rule rather than a restatement of it.
+2. *(new, this round)* **A correction that strikes a false claim must re-read
+   every judgement that rested on it: a struck claim can leave a decision weaker
+   than the truth, not only wronger than it.** **LH1** this commit — §15's
+   class-`D2` disposition read *"as likely to be the instrument as the design"*
+   when the arithmetic that killed the claim makes the design **impossible** as a
+   source of that reading; **LH2-g**, no proper noun of any kind; **LH3** without
+   it a document is corrected into accuracy while the decisions calibrated
+   against its false claim keep routing work to the wrong seat.
+
+### Open-questions
+
+1. **Item (g) is owed and is not mine to write.** The SPEC-M04 §6.2
+   `Preamble`-row contradiction needs an architect spec-diff round; my
+   countersignature attaches to the diff and cannot precede it. The repair's
+   **shape** is itself open (`J-architect_docs_lead-0055` Open-question 1: the
+   narrow C-14.2-style exception, or the wider question of whether §6.2's rows
+   should carry `tx_tready` values at all). **Orchestrator's to schedule; mine to
+   countersign when it exists.**
+2. **The hold-until-acceptance rule has no home in the programme** (item (c)'s
+   residue). SPEC-M01 §7 delegates field stability to each declaring
+   specification; SPEC-M04 §7 declares stability *on the acceptance cycle only*
+   and then relies on a hold rule stated once, in its **reset** bullet, and
+   attributed to a bullet that does not state it. **Every transmit-path source in
+   the chain relies on it implicitly.** It is an adjudication I should take
+   **with** architect_docs_lead, not alone, and it is wider than any one packet.
+3. **The stronger `ST-2` needs a commissioned round** (item (k)). It is recorded
+   at the packet and at `AP-M04` §7 `T-3` with its executor named; it is a
+   `bench.ml` edit with a CI-executed result and cannot ride a revision.
+4. **`M04-G4` has now missed three consecutive M04 rounds**, still needs nothing
+   built, and is still the cheapest outstanding row at this module. **`DVC-1a`
+   remains unbuilt and every M04 count in this entry is again a hand count with
+   its method stated** — the fourth round running. Both mine.
+5. **The `class-11` re-run owed before `P1-module-ready` is untouched by this
+   round** and remains the orchestrator's to operate (`J-dv_lead-0199`
+   Open-question 1). A packet revision is not a disposition check, and I have not
+   treated it as one.
+6. **No escalation.** No E1 (I supply evidence and request no approval), no E2
+   (no scope, row or requirement moves), no E3, no E5 (no lead dispute — the six
+   architect items were adopted, and the one I declined, fact 8, was ruled my
+   call by the architect itself), no E6. No CRITICAL finding against any seat;
+   the one finding this round files is MINOR and against my own artifacts.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md
+- test/attack_plans/AP-xgmii_tx_64.md
