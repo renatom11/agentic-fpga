@@ -4244,3 +4244,289 @@ at my seat) — no `E6` anomaly to flag.
 - test/xgmii_tx_64/test_m04_f.ml
 - test/xgmii_tx_64/test_m04_a.ml
 - agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md
+
+## [J-tb_writer-0047] 2026-08-22T04:58Z | task:WO-0085 | The cfg_ifg gap axis lands — `g_max`, the `?ifg` knob on `create`/`run_stream`/`run_scheduled`, `M04-F3` and `M04-F7` (eight sweep members total), and the `M04-F6` "16 is one octet from conformant" text corrected at all three of its sites; `dune runtest` could not be executed locally (network-policy block, disclosed in full)
+
+### Trigger
+Explicit spawn dispatch, spawn short-id `WO-0085/2026-08-22T04:45Z` (copied
+verbatim from the dispatch, per PROTOCOL §4.1). The dispatch mandated an
+abort-first precheck — `git status --short` then `git rev-parse HEAD`, one
+shell invocation, before reading anything else. Output: `git status
+--short` → empty; `git rev-parse HEAD` →
+`8ab9d70b8c6b19938d13d8b19800f162e9027d81`, matching the dispatch's
+expected prefix `8ab9d70`. No stop condition tripped; proceeded to read
+the charter, protocol, and packet in the mandated order.
+
+### Inputs
+Read in full, in this order: `agents/charters/tb_writer.md`;
+`agents/PROTOCOL.md` §2–§6 and §10 (the dispatch's own citation; I also
+read §1, §7–§9 and §11 for the gate/escalation/amendment context those
+sections carry, without those sections governing this round's own work);
+`agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md` in full, both the
+frozen packet header/Context/Task and the (until this entry) empty Return
+log. `docs/specs/modules/xgmii_tx_64.md` (SPEC-M04) in full — §1–§3 for
+scope and invariants, §4.1–§4.3 for the interface and the `cfg_ifg`
+sampling rule, §6.1 in full for the gap identity (`g = ⌈(cfg_ifg +
+t)/8⌉`, gap `8g − t`) and the cycle-by-cycle table, §6.2's state table,
+§7's throughput/handshake/reset bullets, §9's abort-word/strobe/gap text,
+§10's REQ-204 hook, §13's change log (cross-checking that no post-freeze
+diff touches the gap identity itself). `test/xgmii_tx_64/bench.mli` in
+full, before and after every edit. `test/xgmii_tx_64/bench.ml` in full,
+before and after every edit — the file this round's whole diff lives in.
+`test/xgmii/tx_decoder.mli` in full (the `frame`/`violation` record
+shapes, `gaps`, `create ~ifg`, what is judged vs merely reported).
+`test/xgmii_tx_64/test_m04_f.ml` in full, before and after every edit —
+the append-only target and the `M04-F6` correction site.
+`test/attack_plans/AP-xgmii_tx_64.md` — §4.F in full (`M04-F1` through
+`M04-F7` row text, including `M04-F6`'s own corrected row and `M04-F7`'s
+rejections (a)/(b)/(c)), §7's `T-8` cell in full (the capability this
+round discharges), §10's REQ-204/REQ-802 index rows, §0–§2 for the
+standing obligations and the three §0.1 rules. `test/xgmii_tx_64/dune` in
+full, before and after my own header edit — read to find the next free
+unit number across the whole directory (see Reasoning) after a
+labelling defect I caught in my own first draft. My own last entry,
+`J-tb_writer-0046`, re-read for the ID to increment (0046 → 0047) and to
+confirm the journal's own EOF state before appending.
+
+**Not read, confirmed**: `libs/**` (in particular
+`libs/hardcaml_ethernet/src/xgmii_tx_64.ml`), `rtl_snapshots/**`,
+`top/**`, `bin/**`. No RTL reached this round's context at any point.
+Every expected value in both new units is derived from SPEC-M04 §6.1's
+identity by hand (never carried forward from a prior round's `cfg_ifg =
+12` figures, per the packet's own instruction), and cross-checked against
+`M04-F1`'s and `M04-F6`'s own already-landed results at the `cfg_ifg = 12`
+control member (Reasoning, below) — never against the design's own
+output, a loopback, or a co-simulation result.
+
+### Reasoning
+**The knob, in one sentence.** `Bench.t` gains an `ifg : int` field set
+once at `create` and read by every `sample_cycle` choke point instead of
+a hardcoded `12`, so the DUT's own `cfg_ifg` port and the standing
+decoder's REQ-204 arm (`Tx_decoder.create ~ifg`) are constructed from the
+SAME value and can never drift apart — the failure mode T-8's own cell
+named ("the decoder's own REQ-204 arm must be re-created to track the
+driven value or its gap-legality threshold is wrong").
+
+**Why `g_max` is a new named function rather than an inlined
+`(ifg + 14) / 8` at each of its two call sites.** `cycles_for_run` and
+`cycles_for_scheduled_run` each carried the SAME derivation
+(`⌈(cfg_ifg+7)/8⌉`, the `t = 7` worst-case lane) under two different
+hardcoded spellings (`3` used directly, and `4`/`3` folded into `+4`/
+`max 3 hold`) before this round — a single named function makes the
+shared derivation visible as shared, and makes "re-derive `g_max` from
+the identity" (the packet's own instruction, echoing `bench.ml`'s
+pre-existing run-length note) a one-function-body statement rather than
+two independently-hand-verified arithmetic sites that could drift. Every
+site that used the hardcoded `3`/`4` now reads `g_max ~ifg`, and at
+`ifg = 12` every arithmetic term is unchanged (verified by hand,
+Evidence below) — the packet's byte-identical-default requirement.
+
+**Why the content-reader decoder in `wire_frames` is deliberately left
+at `~ifg:12`.** The packet's own text names what T-8 requires re-created:
+"its standing REQ-204 gap-legality arm" — `t.decoder`, the instrument
+`assert_instruments_clean_n`/`assert_instruments_scheduled` check for
+cleanliness and `Tx_decoder.gaps (decoder t)` reads. `wire_frames`
+builds a SEPARATE, independent reader used only for structural facts
+(`terminate_lane`, `start_cycle`, `.octets`) — its own cleanliness is
+never asserted anywhere in this bench, and the true driven gap is always
+`>= 12` at every member either new unit drives (the packet's own
+`cfg_ifg >= 12` floor, requirements.md §9.1), so a hardcoded `~ifg:12`
+reader raises no spurious REQ-204 violation regardless of which `cfg_ifg`
+the DUT itself was actually driven with. Touching it would be an
+out-of-scope diff against a working, unaffected reader.
+
+**Why `M04-F3`'s stimulus is `run_stream` over two `P = 60` frames rather
+than a bespoke driver.** `t = 0` is the row's own stimulus precondition
+(§4.F's row text), and `P = 60` is the established, already-proven
+`t = 0` member (`M04-F2`'s own `p1 = 60, t1 = 0` row) — reusing it rather
+than re-deriving a new `t = 0` length is the same "smallest sufficient
+representation" instinct `WO-0082`'s `cycles_for_run` already follows.
+Two frames (not one) because `Tx_decoder.gaps` reports a gap only once
+its CLOSING start character has been observed — a one-frame run
+completes none, which is `M04-F1`'s own file-header note, quoted rather
+than re-derived.
+
+**Why `M04-F7`'s stimulus is byte-identical to `M04-F6`'s own stall
+shape.** `AP-xgmii_tx_64.md`'s own rejection (c) rules out widening
+`M04-F6` to carry the axis — that row stays pinned at `cfg_ifg = 12` so
+its `= 15` assertion is undisturbed, and the configuration axis is a
+DISTINCT instrument. Reusing `{ frame = 0; word = 4; hold = 1; after =
+Abandon }` verbatim (rather than a new stall shape) means the abort
+word's own cycle (`R = C+4`, `A = C+6`) is identical across every `M04-F7`
+member and independent of `cfg_ifg` — only the GAP that follows it moves,
+which is exactly the row's own claim (rejection (a): the separation is
+in the word count, not in when the abort happens).
+
+**Cross-check: the general formula against two already-landed results.**
+`M04-F3`'s `s2_off = 10 + g` at `g = 2` (the `cfg_ifg = 12` member) gives
+`C+12` — `M04-F1`'s own already-established next-start cycle. `M04-F7`'s
+`s2 = A + g` at `g = 2` (the `cfg_ifg = 12` member) gives `A + 2 = (C+6)
++ 2 = C+8` — `M04-F6`'s own already-established next-start cycle. Both
+control members of my two NEW sweeps reproduce PRE-EXISTING, independently
+-derived figures exactly, which is the strongest hand-check available
+without a compiler: the general form collapses onto the specific form
+where the two must agree.
+
+**A labelling defect I caught before landing, not after.** My first
+draft numbered the two new units `U27`/`U28` in the file's own `(* ----
+U<n>: ... *)` convention (continuing `M04-F6`'s own `U26`). Before
+finalising I grepped every `(* ---- U<n>` marker across ALL of
+`test/xgmii_tx_64/*.ml`, not just `test_m04_f.ml` — the numbering is
+directory-wide, not per-file — and found `U27` already claimed by
+`M04-A4` (`test_m04_a.ml`, landed at `WO-0083`, `J-tb_writer-0046`'s own
+derivation-map table). Renumbered to `U28`/`U29`, the next free slots
+after the highest existing marker (`27`), and fixed the matching
+reference in `dune`'s own header row. Recorded here per the same
+`§8`/`M-9` re-derive-before-transcribe discipline that would have caught
+it had I copied the number rather than deriving it — I DID derive it, on
+the second pass, after the first pass's assumption ("continue from F6's
+own U26") proved to be the wrong scope.
+
+**The two-unit derivation map.**
+
+| Unit | Row | REQ ids | AP- row | §4/§6 clause discharged |
+|---|---|---|---|---|
+| U28 | `M04-F3` | REQ-204, REQ-802 | `M04-F3` | §6.1's identity at `t = 0`; §4.3's `ifg` sampling row; §10's REQ-204 hook |
+| U29 | `M04-F7` | REQ-204, REQ-206, REQ-802 | `M04-F7` | §6.1's identity at `t = 1`; §9's abort-word/gap text; §4.3's `ifg` row; §10's REQ-204/REQ-206 hooks |
+
+**Why the `M04-F6` text correction touches three sites, not the two the
+dispatch named.** The dispatch's own wording named "the comment and
+failure-message" (matching `AP-xgmii_tx_64.md`'s own naming of the
+finding's "second site"). I found the SAME false claim — "the wrong
+design is one octet from conformant" — restated a third time in the
+file's own top-of-file `{2 WO-0083 addendum — M04-F6 …}` docstring
+(without the literal digit 16, but the identical substantive claim the
+`WO-0084-S1`/`AP` correction refutes). Leaving that third site standing
+while correcting the other two would have left one true statement and
+one false one about the same design in the same file describing the same
+row — corrected for consistency, narrowly (the false clause only, not
+the surrounding history), citing the same two authorities
+(`WO-0084-S1`, `AP-xgmii_tx_64.md`'s corrected row) the dispatch named
+for the other two sites. The `= 15` assertion itself: untouched at all
+three sites, exactly as the dispatch specifies.
+
+### Actions
+Edited `test/xgmii_tx_64/bench.ml`: added the `ifg` field to `type t`;
+`create` gained `?(ifg = 12)`; `sample_cycle` reads `t.ifg` instead of a
+literal `12`; added `g_max ~ifg`; `cycles_for_run` and
+`cycles_for_scheduled_run` (and `run_stream`/`run_scheduled`) gained the
+same `?(ifg = 12)`, threaded through to `create` and to the two cycle-
+bound functions; one stale comment (the old "`cfg_ifg = 12` … driven as
+constants" sentence at `sample_cycle`'s own step-3 comment) corrected to
+describe the new `t.ifg` read. Edited `test/xgmii_tx_64/bench.mli` to
+match every changed signature, with docstring additions explaining `?ifg`
+at `create`/`run_stream`/`run_scheduled`, plus one correcting addendum to
+the file's own top-of-file `create` paragraph (which had said `cfg_ifg`
+"lands with [its] first consumer … not here" — no longer true for the
+`?ifg` knob itself, though `cfg_tx_enable`'s own capability still does).
+Edited `test/xgmii_tx_64/test_m04_f.ml`: corrected the `M04-F6` false
+claim at its three sites (Reasoning); appended two new units, U28
+(`M04-F3`, five members) and U29 (`M04-F7`, three members), each with its
+own `%expect_test` asserting an empty diff. Edited `test/xgmii_tx_64/dune`
+to add the WO-0085 row to the file's own running header (the repo's own
+"when a packet adds rows, add its line" convention), and to fix the
+U27→U28/U29 renumbering in that same row after the labelling defect was
+caught. Attempted local dependency installation twice (Evidence), both
+exhausted per organisational policy; created and then removed one scratch
+opam switch (`fpga51`) in that attempt — no repository file touched by
+either the install attempts or the switch lifecycle. Ran
+`ocamlc -stop-after parsing -dsource` against all three touched
+`.ml`/`.mli` files as a syntax-only substitute check (Evidence). Appended
+the RETURNED entry to the packet's own Return log (this same commit).
+
+### Evidence
+`git status --short` at the round's start → empty; `git rev-parse HEAD`
+→ `8ab9d70b8c6b19938d13d8b19800f162e9027d81`. `git status --short` at
+this entry's own write time → exactly four modified paths:
+`test/xgmii_tx_64/{bench.ml,bench.mli,dune,test_m04_f.ml}` (reproducible
+from a checkout at this commit's parent).
+
+`dune runtest`/`dune build` — **NOT RUN**, disclosed in full rather than
+silently omitted. `eval $(opam env --switch=fpga) && opam install .
+--deps-only --with-test --yes` →
+`[ERROR] Package conflict! … agentic_fpga -> hardcaml_axi >= v0.17 ->
+ocaml >= 5.1.0 …` against the switch's own `ocaml-system 4.14.1`
+invariant (ephemeral: this attempt touched only the local opam state, no
+repo file, and is not independently re-runnable from the repo alone — it
+depends on this container's own opam switch, ADR-0003/F5's ephemeral-
+artefact disclosure rule). `opam switch create fpga51 5.1.1` (matching
+CI's own `5.1` pin) succeeded; `opam install . --deps-only --with-test
+--yes` on it → `curl error code 403` on every package fetch (hardcaml,
+core, ppx_hardcaml, ppx_expect, and every transitive dependency),
+matching `/root/.ccr/README.md`'s documented "403/407 = organisational
+policy denial, do not retry" failure class exactly. Stopped there per
+that instruction; `opam switch remove fpga51 --yes` cleaned the scratch
+switch. Both attempts corroborate, rather than contradict,
+`test/xgmii_tx_64/dune`'s own pre-existing (unedited) header line: "this
+directory is EXCLUDED from [the STUBBABLE precompile] harness by
+construction and CI's `dune build @default` is the only compiler that
+reaches it (ADR-0005)" and `.github/workflows/build.yml`'s own comment,
+"The development container's network policy blocks opam package
+downloads … so CI … is where OCaml correctness is established."
+
+Substitute syntax check (reproducible from a checkout at this commit,
+using only the system OCaml compiler already present, no opam packages
+needed): `ocamlc -stop-after parsing -dsource test/xgmii_tx_64/bench.ml`
+→ exit 0, full file reconstructed to its last binding
+(`assert_instruments_clean`). `ocamlc -stop-after parsing -dsource
+test/xgmii_tx_64/test_m04_f.ml` → exit 0, full file reconstructed to its
+last binding (the `M04-F7` `%expect_test`). `ocamlc -stop-after parsing
+-dsource -intf test/xgmii_tx_64/bench.mli` → exit 0, full file
+reconstructed to its last declaration (`assert_instruments_scheduled`).
+Re-run after every edit, most recently after the `U27`→`U28`/`U29`
+renumbering and the `sample_cycle` comment correction — exit 0 both
+times.
+
+Hand-derived `g_max` and cycle-bound table (§T-8's own run-length
+warning; `g_max ~ifg = ⌈(ifg+7)/8⌉`, computed as `(ifg+14)/8` in integer
+division):
+
+| Row | `cfg_ifg` | `g_max` | `cycles_for_run`/`_scheduled_run` total |
+|---|---|---|---|
+| F3 | 12 | 3 | 51 (= F1/F2's own established 51) |
+| F3 | 13 | 3 | 51 |
+| F3 | 16 | 3 | 51 |
+| F3 | 20 | 4 | 53 |
+| F3 | 255 | 33 | 111 |
+| F7 | 12 | 3 | 47 (= F6's own established 47) |
+| F7 | 16 | 3 | 47 |
+| F7 | 24 | 4 | 49 |
+
+Every total checked by hand against the cycle each row's own second
+frame must reach to fully decode (F3: `C+20+g`; F7: `C+19+g` to `C+20+g`
+depending on member) — every member's margin is tens of cycles, never
+tight. Full arithmetic in the Return log's own §3 table (same figures).
+
+### Outcome
+DoD status vs the work order: **partially met, one gap named rather than
+silently absorbed**. All four deliverables built and traced to spec
+(Reasoning's derivation map; the `M04-F6` correction). `git diff
+--exit-code` clean is vacuously true (nothing has been run to drift) but
+NOT the DoD's own "no unpromoted expect drift" claim, which presumes a
+`dune runtest` this round could not execute. `dune runtest` green: **NOT
+DEMONSTRATED**, for a reason external to this round's own diff (Evidence)
+and consistent with this directory's own standing, pre-existing
+verification posture (CI-only, ADR-0005). Substituted: syntax-only parse
+verification (green) and exhaustive hand-derivation with two independent
+cross-checks against already-landed results. Handed to the orchestrator
+via the packet's own Return log (same commit) for CI verification before
+any dv_lead `RV-`.
+
+### Open-questions
+None requiring a written spec question — every value in this packet's
+own Context section re-derived cleanly from SPEC-M04 §6.1's identity, and
+the two independent-result cross-checks (Reasoning) found no
+disagreement. The one standing item is procedural, not a spec ambiguity:
+this round's `dune runtest` verdict is owed to CI, per ADR-0003/ADR-0005,
+and I could not discharge it myself in this container (Evidence). No RTL
+leak. No licensing-taint concern (no Essenceia-derived material in any
+input). No effort anomaly against the packet's own scope — the two opam
+attempts were environment reconnaissance, not bench-writing effort, and
+are disclosed as such rather than folded into the deliverable count.
+
+### Files-in-this-commit
+- test/xgmii_tx_64/bench.ml
+- test/xgmii_tx_64/bench.mli
+- test/xgmii_tx_64/dune
+- test/xgmii_tx_64/test_m04_f.ml
+- agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md

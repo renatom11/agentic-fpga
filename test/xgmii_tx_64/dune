@@ -35,6 +35,18 @@
 ;            witness, §5.2), and test_m04_a.ml/f.ml/g.ml each APPEND-ONLY,
 ;            new units per file (§11.4): A4 (a.ml); F6 (f.ml); G1, G2, G3,
 ;            G5, G6, G8 (g.ml, four %expect_test units — U22 through U25)
+;   WO-0085  F3, F7 ASSERT (T-8's cfg_ifg-driving knob closes the class-11 /
+;            IC-10 coverage gap WO-0084's campaign found) — no new file;
+;            bench.mli/bench.ml gain the ?ifg knob on create/run_stream/
+;            run_scheduled (default 12, byte-identical for every
+;            pre-existing call site) and the g_max helper cycles_for_run/
+;            cycles_for_scheduled_run's own "+4"/"3" constants are
+;            re-expressed over (§T-8's own run-length warning) — the seven
+;            landed test_m04_{scaffold,a,b,c,d,e,g}.ml files unmodified
+;            (regression witness), and test_m04_f.ml APPEND-ONLY, two new
+;            units (U28, U29: F3, F7) plus the M04-F6 comment/
+;            failure-message correction (WO-0084-S1's second site, no
+;            assertion change)
 ; When a packet adds rows, add its line — WO-0038's own dune header found
 ; the staleness this rule guards against (see test/xgmii_rx_64/dune's own
 ; history) and this header follows that precedent from its first commit.

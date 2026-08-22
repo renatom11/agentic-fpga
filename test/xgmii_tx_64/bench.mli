@@ -67,8 +67,12 @@
     including idle ones (C-23's counting convention). No [Clear] or [Enable]
     schedule type is built here (WO-0080 §7.1, §1.2, BOUNCE BM5): [clear] is
     1 on cycle 0 alone and 0 for the rest of every run in this round;
-    [cfg_tx_enable] is 1 and [cfg_ifg] is 12 throughout — both capabilities
-    land with their first consumer (families K and L), not here.
+    [cfg_tx_enable] is 1 and [cfg_ifg] is 12 throughout for every caller that
+    does not pass {!create}'s own [?ifg] — [cfg_tx_enable]'s own capability
+    still lands with its first consumer (families K and L), not here, and
+    the [cfg_ifg] = 12 figures immediately above are this function's
+    DEFAULT, landed at WO-0080, not a constant WO-0085's own [?ifg] knob
+    later lifts (§T-8, {!create}'s own updated docstring below).
 
     Obligation 3 (transmit-side frame conservation) has no committed monitor
     for this port (AP-xgmii_tx_64.md §7 item T-2: the committed
@@ -108,8 +112,18 @@ type t
 (** Elaborate {!Hardcaml_ethernet.Xgmii_tx_64}, release [clear] after one
     cycle, and attach the standing wire decoder (obligation 1) and strobe
     monitor (obligation 4). See the module docstring above for the full
-    reset-drive and monitor-attachment contract. *)
-val create : unit -> t
+    reset-drive and monitor-attachment contract.
+
+    {2 WO-0085: the [cfg_ifg] knob (§T-8)}
+
+    [?ifg] is the [cfg_ifg] value driven onto the DUT throughout this
+    instance's whole life — the reset cycle {!create} itself drives and
+    every cycle {!sample_cycle} drives after it — and the value the
+    standing decoder's REQ-204 arm is constructed with ([Dv_xgmii.Tx_decoder.create
+    ~ifg]), so the driven value and the judge of it never drift apart.
+    Default 12 (requirements.md §9.1's own default), byte-identical to
+    every call site that predates this WO. *)
+val create : ?ifg:int -> unit -> t
 
 val decoder : t -> Dv_xgmii.Tx_decoder.t
 val strobes : t -> Dv_monitors.Strobe_monitor.t
@@ -298,8 +312,14 @@ val assert_instruments_clean : t -> row:string -> unit
     asserts it from [samples] in its own unit.
 
     Returned in the order [contents] was given, with the single instance
-    and the full sample list. *)
-val run_stream : int list list -> int list list * t * sample list
+    and the full sample list.
+
+    [?ifg] (WO-0085 §T-8, default 12) is threaded to {!create} (both the
+    DUT's own [cfg_ifg] port and the standing decoder's REQ-204 arm) and to
+    the internal, unexported [cycles_for_run], whose per-frame cycle
+    allowance is re-derived from [ifg] rather than carrying the [ifg = 12]
+    figure forward ({!create}'s own docstring; bench.ml's [g_max]). *)
+val run_stream : ?ifg:int -> int list list -> int list list * t * sample list
 
 (** [wire_frames samples] decodes [samples]' own [wire] words through a
     FRESH {!Dv_xgmii.Tx_decoder} instance (the same [~name] discipline and
@@ -374,8 +394,12 @@ end
     stall.word] under [Abandon], [0] under [Resume]); [ST-4] nothing else —
     in particular no contiguity claim and no claim about the acceptance cycle
     of any word offered at or after the withheld cycle (§4.2 fact 8, WO-0083
-    trap T22). *)
-val run_scheduled : int list list -> Stall.t -> int list list * t * sample list
+    trap T22).
+
+    [?ifg] (WO-0085 §T-8, default 12) is threaded to {!create} and to the
+    internal, unexported [cycles_for_scheduled_run], exactly as
+    {!run_stream}'s own [?ifg] is. *)
+val run_scheduled : ?ifg:int -> int list list -> Stall.t -> int list list * t * sample list
 
 (** [underflow_event ~frame ~cycle ~why] — the §0.6 window rule in exactly
     one expression (WO-0083 §5.3(4), bar M-21): the record

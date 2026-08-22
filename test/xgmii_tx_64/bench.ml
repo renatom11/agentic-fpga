@@ -21,6 +21,15 @@ type t =
            skipped drive can be caught before anything downstream treats the
            result as a statement about M04. Starts at 0 in {!create};
            incremented on every conforming call. *)
+  ; ifg : int
+        (* WO-0085 §T-8: the cfg_ifg value {!create} drove and every
+           {!sample_cycle} call re-drives, held constant for the run's whole
+           life (T-8's own "stable from well before the terminate character"
+           precondition). Read by {!sample_cycle}'s own choke point rather
+           than re-threaded as an argument, so a caller cannot silently
+           drive one value into the DUT and another into the standing
+           decoder's REQ-204 arm (which {!create} constructs from this same
+           field). Default 12, matching requirements.md §9.1. *)
   }
 
 let decoder t = t.decoder
@@ -40,12 +49,18 @@ let bits_of_int ~width value =
 
 let poison = 0xA5
 
-let create () =
+(* WO-0085 §T-8: [?ifg] is the cfg_ifg knob — the value driven onto the DUT's
+   own cfg_ifg port throughout this instance's whole life (reset cycle
+   included, {!sample_cycle}'s own choke point for every cycle after) and
+   the value the standing decoder's REQ-204 arm is constructed with, so the
+   two never drift apart. Default 12, byte-identical to every call site that
+   predates this WO (requirements.md §9.1's own default). *)
+let create ?(ifg = 12) () =
   let scope = Scope.create ~flatten_design:true () in
   let sim = Sim.create (Hardcaml_ethernet.Xgmii_tx_64.create scope) in
   let i = Cyclesim.inputs sim in
   (* SPEC-M04 §7.1 (WO-0080's own pin): clear for exactly one cycle, then
-     release. cfg_tx_enable = 1 and cfg_ifg = 12 driven THROUGH that reset
+     release. cfg_tx_enable = 1 and cfg_ifg = ifg driven THROUGH that reset
      cycle and every cycle after — this function's own choke point for both,
      matching {!sample_cycle}'s later choke point for the same two inputs.
      The source is driven with Stream_word.idle () through the reset cycle
@@ -65,13 +80,14 @@ let create () =
     (Stream_word.idle ());
   i.clear := Bits.vdd;
   i.cfg_tx_enable := Bits.vdd;
-  i.cfg_ifg := bits_of_int ~width:8 12;
+  i.cfg_ifg := bits_of_int ~width:8 ifg;
   Cyclesim.cycle sim;
   i.clear := Bits.gnd;
   { sim
-  ; decoder = Tx_decoder.create ~name:"M04 tx" ~ifg:12 ()
+  ; decoder = Tx_decoder.create ~name:"M04 tx" ~ifg ()
   ; strobes = Strobe_monitor.create ~name:"M04 tx" ~strobes:[ "error_underflow" ]
   ; cycles_driven = 0
+  ; ifg
   }
 ;;
 
@@ -114,9 +130,10 @@ let sample_cycle t ~cycle (offered : Stream_word.t) : sample =
      input, never a conditional one (WO-0067 §1.1(R-e) / WO-0072 §5 clause 4,
      carried to this port). clear is always 0 here: the one reset cycle is
      {!create}'s own, outside this function's cycle numbering (§7.1); no
-     Clear or Enable schedule type is built this round (BOUNCE BM5), so
-     cfg_ifg = 12 and cfg_tx_enable = 1 are driven as constants rather than
-     read from a schedule argument. *)
+     Clear or Enable schedule type is built for either (BOUNCE BM5), so
+     cfg_tx_enable = 1 is driven as a constant and cfg_ifg is driven from
+     [t.ifg] — {!create}'s own choke point for the same field (WO-0085
+     §T-8) — rather than either being read from a schedule argument. *)
   Axi64_driver.to_refs
     ~tvalid:i.tx.tvalid
     ~tdata:i.tx.tdata
@@ -126,7 +143,7 @@ let sample_cycle t ~cycle (offered : Stream_word.t) : sample =
     ~tuser:i.tx.tuser
     offered;
   i.clear := Bits.gnd;
-  i.cfg_ifg := bits_of_int ~width:8 12;
+  i.cfg_ifg := bits_of_int ~width:8 t.ifg;
   i.cfg_tx_enable := Bits.vdd;
   (* Step 4. *)
   Cyclesim.cycle t.sim;
@@ -359,16 +376,29 @@ let frame_words ~p = (Int.max p 60 + 4) / 8
    expressed over the shared helper (bar M-6b). *)
 let cycles_for ~p = 27 + frame_words ~p
 
-(* WO-0082 §5.3(3): the per-frame allowance is ⌊F_k/8⌋ + 4, where the 4 is
-   1 (the preamble word) + g_max = 3, the largest g at cfg_ifg = 12
-   (⌈(12+7)/8⌉ = 3). Since the true cadence is 1 + ⌊F_k/8⌋ + g_k and
-   g_k <= 3, the allowance is an upper bound at every terminate lane, with
-   equality at t in {5, 6, 7}. A round that changes cfg_ifg must re-derive
-   this (§5.3(3)'s own warning; that round is stage 3). *)
-let cycles_for_run contents =
+(* WO-0085 §T-8: g_max generalises the "3" / "4" constants
+   {!cycles_for_run} and {!cycles_for_scheduled_run} were built around — the
+   largest g = ⌈(ifg + t)/8⌉ over every terminate lane t in 0..7, i.e. the
+   t = 7 case, derived from SPEC-M04 §6.1's own identity:
+   g_max = ⌈(ifg + 7)/8⌉ = (ifg + 14)/8 in integer division. At ifg = 12
+   this is 3, byte-identical to every pre-WO-0085 call site's own hardcoded
+   value (⌈(12+7)/8⌉ = 3, the comments below re-derived from). *)
+let g_max ~ifg = (ifg + 14) / 8
+
+(* WO-0082 §5.3(3), re-derived per WO-0085 §T-8: the per-frame allowance is
+   ⌊F_k/8⌋ + 1 + g_max, where the 1 is the preamble word and g_max
+   ({!g_max}) is the largest g at any terminate lane for the ifg this run
+   drives. Since the true cadence is 1 + ⌊F_k/8⌋ + g_k and g_k <= g_max, the
+   allowance is an upper bound at every terminate lane, with equality at
+   t in {5, 6, 7}, for every ifg — not only the default. At ifg = 12,
+   g_max = 3 and this is byte-identical to the "+4" every unit before
+   WO-0085 built against. A round that changes cfg_ifg re-derives g_max
+   from the identity rather than carrying the cfg_ifg = 12 figure forward
+   (§5.3(3)'s own warning, discharged here). *)
+let cycles_for_run ?(ifg = 12) contents =
   27
   + List.fold contents ~init:0 ~f:(fun acc content ->
-      acc + frame_words ~p:(List.length content) + 4)
+      acc + frame_words ~p:(List.length content) + 1 + g_max ~ifg)
 ;;
 
 (* WO-0082 §5.3(1): the multi-frame continuous presenter — the capability
@@ -378,7 +408,7 @@ let cycles_for_run contents =
    run's last word only and reject every earlier frame's). One SINGLE
    elaboration for the whole run (unlike {!run_frames}, which elaborates
    afresh per frame — that is the whole point). *)
-let run_stream (contents : int list list) : int list list * t * sample list =
+let run_stream ?(ifg = 12) (contents : int list list) : int list list * t * sample list =
   let per_frame_words = List.map contents ~f:source_words in
   List.iteri per_frame_words ~f:(fun frame_idx words ->
     match check_words words with
@@ -394,8 +424,8 @@ let run_stream (contents : int list list) : int list list * t * sample list =
               ]
             :: problems)));
   let words = List.concat per_frame_words in
-  let t = create () in
-  let total = cycles_for_run contents in
+  let t = create ~ifg () in
+  let total = cycles_for_run ~ifg contents in
   let samples = present_stream t words ~total in
   contents, t, samples
 ;;
@@ -535,24 +565,28 @@ let check_schedule (per_frame_words : Stream_word.t list list) (stall : Stall.t)
       (String.concat [ "Bench.run_scheduled: schedule.hold = "; Int.to_string stall.hold; " must be >= 1" ])
 ;;
 
-(* WO-0083 §5.3(3): the allowance, derived from §4.2 fact 7 rather than
-   chosen. [frame_words] (WO-0082's own, unchanged — ⌊F/8⌋'s one site, bar
-   M-8) is reused for every UNwithheld frame and for the Resume tail; the
-   withheld frame's own contribution is the abort-law arithmetic:
-   [w + max(3, hold) + 1] (the true cadence from S_j to the next start
-   character is [w + 3] under branch (a), [hold <= 3], and [w + hold] under
-   branch (b), [hold >= 4]; [w + max(3, hold)] covers both, +1 for the same
-   one-cycle head room the normal allowance carries). *)
-let cycles_for_scheduled_run (contents : int list list) (stall : Stall.t) =
+(* WO-0083 §5.3(3), re-derived per WO-0085 §T-8: the allowance, derived
+   from §4.2 fact 7 rather than chosen. [frame_words] (WO-0082's own,
+   unchanged — ⌊F/8⌋'s one site, bar M-8) is reused for every UNwithheld
+   frame and for the Resume tail, each now carrying [+ 1 + g_max ~ifg]
+   rather than the fixed "+4"; the withheld frame's own contribution is the
+   abort-law arithmetic: [w + max(g_max ~ifg, hold) + 1] (the true cadence
+   from S_j to the next start character is [w + g_max] under branch (a),
+   [hold <= g_max], and [w + hold] under branch (b), [hold >= g_max + 1];
+   [w + max(g_max ~ifg, hold)] covers both, +1 for the same one-cycle head
+   room the normal allowance carries). At ifg = 12, g_max ~ifg = 3 and every
+   term below is byte-identical to what this function computed before
+   WO-0085 (⌈(12+7)/8⌉ = 3, the comment {!g_max} re-derives). *)
+let cycles_for_scheduled_run ?(ifg = 12) (contents : int list list) (stall : Stall.t) =
   27
   + List.foldi contents ~init:0 ~f:(fun idx acc content ->
       if idx = stall.frame
-      then acc + stall.word + Int.max 3 stall.hold + 1
-      else acc + frame_words ~p:(List.length content) + 4)
+      then acc + stall.word + Int.max (g_max ~ifg) stall.hold + 1
+      else acc + frame_words ~p:(List.length content) + 1 + g_max ~ifg)
   + (match stall.after with
      | Resume ->
        let p_j = List.length (List.nth_exn contents stall.frame) in
-       frame_words ~p:(p_j - (8 * stall.word)) + 4
+       frame_words ~p:(p_j - (8 * stall.word)) + 1 + g_max ~ifg
      | Abandon -> 0)
 ;;
 
@@ -689,7 +723,9 @@ let present_scheduled t (per_frame_words : Stream_word.t array array) (stall : S
 ;;
 
 (* WO-0083 §5.3(2): the third runner. *)
-let run_scheduled (contents : int list list) (stall : Stall.t) : int list list * t * sample list =
+let run_scheduled ?(ifg = 12) (contents : int list list) (stall : Stall.t)
+  : int list list * t * sample list
+  =
   let per_frame_words_list = List.map contents ~f:source_words in
   List.iteri per_frame_words_list ~f:(fun frame_idx words ->
     match check_words words with
@@ -702,8 +738,8 @@ let run_scheduled (contents : int list list) (stall : Stall.t) : int list list *
               [ "Bench.run_scheduled: frame "; Int.to_string frame_idx; " fails obligation 6:" ]
             :: problems)));
   check_schedule per_frame_words_list stall;
-  let t = create () in
-  let total = cycles_for_scheduled_run contents stall in
+  let t = create ~ifg () in
+  let total = cycles_for_scheduled_run ~ifg contents stall in
   let per_frame_words = Array.of_list (List.map per_frame_words_list ~f:Array.of_list) in
   let samples = present_scheduled t per_frame_words stall ~total in
   contents, t, samples
