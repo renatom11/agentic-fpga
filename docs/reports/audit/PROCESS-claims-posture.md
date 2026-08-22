@@ -589,3 +589,45 @@ run against a committed edition after the current revision cycle stops moving �
 because a census pinned to an edition that is superseded before it lands would
 reproduce row `C-75`'s own decay class, and because a rushed census is worse than
 an owed one. **This file stays what it is: the measurement of `6c02f5b`.**
+
+### Note 6 — 2026-08-22 — the scheduled re-measurement has run; this file is unchanged by it
+
+**Note 5 scheduled a round; that round is `POSTURE-RE-MEASUREMENT-2` and it
+landed at `docs/reports/audit/PROCESS-claims-posture-2.md`** (`J-auditor-0030`),
+measured against the committed text at
+`949b8abba0e27e0888cf78677d561d55a8d499f3` — the **eighth** edition and the two
+committed acts after it, 6,115 lines. *(The board's queue named the seventh
+edition; the eighth is what stood at the round's HEAD, and the round measured what
+exists rather than what was named.)*
+
+**Not one cell, figure or citation above this line is edited by it**, on the same
+ground Note 1 states: a frozen record is not repaired by rewriting it. Three
+things a reader of this file should carry forward from the later one:
+
+1. **The three staleness classes Note 5 declared are now enumerated rather than
+   estimated.** Class (b) — rows whose claim text grew or was re-worded — is
+   **17 rows** (16 no longer occurring verbatim in either volume, plus `C-40`
+   surviving only in the companion), against the two Note 5 found by accident.
+   Class (a) — line-range citations — is wholesale wrong, as Note 5 said. Class
+   (c) — claims added after the measurement — is **counted and still ungraded**,
+   and the later file says so in its own §6 item 1 rather than implying payment.
+2. **Two rows of this list have moved posture and one is spent.** `C-54` and
+   `C-119` are no longer PLANNED: the instrument they name was built on both
+   surfaces on 2026-08-12 (`ADR-0021` §2), and the later round grades them under a
+   posture this list did not have — **BUILT-ADVISORY**, minted there with its
+   grounds. `C-46`'s *(one surface only)* qualification and `C-55`'s *live
+   unrepaired instance* are both spent. `C-53` is **unchanged**: `WARN-SEAL` still
+   does not exist.
+3. **One row of this list was wrong when I wrote it, and the later round convicts
+   it.** `C-109`'s evidence sentence — *"Zero spot-checks in the program's
+   history"* — is refuted by my own predecessor's report:
+   `AUD-0002-g0-reverification.md` §3.4 (2026-08-01) performed a relay-fidelity
+   diff on a verbatim-class relay and convicted a misquoted tally
+   (`AUD-0002-N1`, MAJOR). The **PLANNED posture stands** — no `SO-` or `BUG-`
+   packet has ever been spot-checked — but the *never* does not, and
+   `docs/PROCESS.md`:975 inherited the word from this row. Filed there as
+   `F-0030-2`, against this seat.
+
+**This file remains the measurement of `6c02f5b`.** The measurement of the eighth
+edition is the other file, and neither supersedes the other: they measure
+different states, which is the whole point of pinning one.

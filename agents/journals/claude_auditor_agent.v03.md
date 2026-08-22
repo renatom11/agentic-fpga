@@ -2025,3 +2025,231 @@ entry id. I edited neither the ADR nor any packet, and staged nothing outside
 
 ### Files-in-this-commit
 - docs/reports/audit/ADR-0022-split-verification/README.md
+
+## [J-auditor-0030] 2026-08-22T13:53Z | task:none | POSTURE-RE-MEASUREMENT-2 executed against the committed eighth edition, not the seventh the queue named: 147 live stamps censused, 143 transcribing exactly, three rows moved and one grade minted — and the sharpest finding is not against a stamp but against the constitution the stamps quote
+
+### Trigger
+
+Orchestrator spawn, short-id `POSTURE-RE-MEASUREMENT-2/2026-08-22T07:05Z`,
+dispatch-only (no `WO-` id). The round queued on `tasks/BOARD.md` since
+`J-orchestrator-0285` (2026-08-12) as *"the auditor's posture re-measurement
+against the seventh edition"* and re-stated at `J-orchestrator-0309` (2026-08-22).
+It is the round my own `docs/reports/audit/PROCESS-claims-posture.md` Note 5
+scheduled — *"SCHEDULED, not performed… to be run against a committed edition
+after the current revision cycle stops moving"* — and the round `docs/PROCESS.md`
+routes to this seat at its Annex `B.2` item 8.
+
+### Inputs
+
+- `agents/charters/auditor.md`, `agents/PROTOCOL.md` (both read first, as the
+  launcher requires; the charter is itself a subject of `F-0030-1` below).
+- `docs/reports/audit/PROCESS-claims-posture.md` in full, including all five
+  appended dated notes — the precedent whose method and re-measurement protocol
+  this round follows.
+- Pinned to HEAD `949b8abba0e27e0888cf78677d561d55a8d499f3` and read through
+  `git show HEAD:`, never from disk: `docs/PROCESS.md` (6,115 lines / 410,403 B),
+  `docs/PROCESS-MEMOIR.md` (2,618 / 254,247 B), `docs/PROCESS-STE.md` (3,484 /
+  207,369 B).
+- Machinery: `scripts/policy.sh`, `agent_commit.sh`, `check_journals.sh`,
+  `check_process_doc.sh`, `test_protocol.sh`, `.github/workflows/journal-check.yml`.
+- Record: `docs/adr/ADR-0016..0024` (0024 uncommitted, sibling lane),
+  `docs/gates/**`, `agents/handoffs/**`, `agents/journals/**` (own v02/v03,
+  orchestrator v02/v03, dv_lead v04, tb_writer v02), `agents/journals/INDEX.md`,
+  `tasks/BOARD.md`, `docs/reports/audit/AUD-0001`/`AUD-0002`, and 86 `origin/mut/*`
+  refs.
+- Historical states for the edition arithmetic: `f67a57a`, `6c02f5b`, `2f32e45`,
+  `9362aef`, `d96a5b1`, `592926e`, `2ed029d`, `9f6336a`.
+
+### Reasoning
+
+**Why the eighth and not the seventh.** The queue named `2ed029d`. Between the
+naming and the spawn the document moved to `9f6336a` and through two further
+committed acts on the same file. A census pinned to a superseded edition
+reproduces row `C-75`'s own decay class — true when written, false at the state
+cited — so I measured what exists and recorded the divergence between the name and
+the subject in the report's own header rather than silently substituting one for
+the other.
+
+**Why a new file and not an edit.** The predecessor's protocol is explicit and it
+is the document's own rule read back at it: a frozen record is not repaired by
+rewriting it. So the 128-row list stays the measurement of `6c02f5b`; the eighth
+edition gets its own pinned file; and the older file gains one **EOF-appended
+dated Note 6** pointing at the newer one and carrying the three things a reader of
+the old file must not miss — including the row of mine the new round convicts.
+Verified byte-prefix before finishing: `head -c 88881` of the appended file
+`cmp`s clean against `git show HEAD:` of it.
+
+**Scope discipline — what I refused to claim.** The dispatch's subject is the
+stamp apparatus and the claims it calibrates. `B.2` item 8 as the document words
+it is larger: rows owed to ~4,600 lines of post-measurement text. I paid the first
+and declared the second unpaid in the report's §6 item 1, because a round that
+lets its own existence imply payment of a debt it did not pay is the exact defect
+this apparatus exists to measure. Two roads were open — grade a sample of the
+unstamped text and call the debt closed, or count it and name it open. The second
+is the only one whose sample is reconstructible.
+
+**Why I minted a posture grade.** Since the first measurement the program built
+instruments that run on both surfaces and never refuse (`WARN-STAMP`; `R10`'s size
+limb on the history surface). Against the frozen five, such a thing is neither
+MACHINE-CHECKED (nothing refuses) nor PLANNED (it exists and twelve self-test
+scenarios exercise it). Forcing it either way misreports it, so I minted
+**BUILT-ADVISORY** with its evidence requirements written out — and recorded that
+this is the same defect the document convicted itself of when it minted `[SF]`,
+arriving in the measuring apparatus instead of the measured text. Rejected
+alternative: stretching MACHINE-CHECKED to cover advisories, which would have made
+the strongest grade in the vocabulary mean two different things and quietly
+inflated 37 `[MC]` citations by association.
+
+**On filing findings against my own frozen rows.** Two of the eight findings
+convict my own list (`C-109`'s *never*, and the undercount `C-11`/`C-27` shares
+with the register cell). The alternative — reporting only defects in another
+seat's artifact while the row that seeded one of them is mine — would have been
+the graded party choosing its grader's questions, §5.7's root class, at the one
+seat that has no external grader. They are filed first against this seat and
+second against the document that faithfully quoted it.
+
+**What I deliberately did not escalate.** Nothing here is CRITICAL. `F-0030-1` is
+MAJOR because the constitution and five charters teach a mechanism the record
+retracted — the input to every stateless spawn, this one included — but the
+practice is correct, the divergence is disclosed in three artifacts, and no work
+product was mis-graded by it. Calling it CRITICAL would block a gate on a
+documentation debt and spend the class that exists for evidence that does not
+reproduce.
+
+### Actions
+
+- Precheck: `git status --short` empty, `git rev-parse HEAD` = `949b8ab` — the
+  expected head. Proceeded.
+- Censused every stamp token in the committed core with a newline-flattened
+  extractor after a line-based one briefly mis-scored `C-55` as uncited (two
+  stamps are line-wrapped); cross-checked the row set against a parse of the
+  frozen posture list's 128 rows.
+- Re-derived the document's seam column by running its own printed `awk` command;
+  decomposed the total.
+- Measured claim-drift of all 128 frozen quotes against both volumes; read four of
+  the sixteen drifted sites in place.
+- Re-executed the machinery: full self-test; 14 `agent_may_write` probes; 86
+  `merge-base --is-ancestor` tests; greps for `WARN-SEAL`, `WARN-STAMP`,
+  `JOURNAL_HARD_MAX`, `Previous-volume-bytes`, entry-section names.
+- Re-anchored the event rows: `AUD-0002` §3.4, `FINDING WO-0074-A1`, `ADR-0019`
+  status and §7 diffs, `INDEX.md`, `SO-`/`RV-`/`WO-` packet populations,
+  `docs/LESSONS.md`, `docs/reports/audit/dv_escapes.md`.
+- Wrote `docs/reports/audit/PROCESS-claims-posture-2.md`; appended Note 6 to
+  `docs/reports/audit/PROCESS-claims-posture.md`.
+- Inward sibling checks at 13:44Z and 13:53Z (below). Staged nothing; ran no git
+  write command.
+
+### Evidence
+
+- **Precheck / pin**: `git rev-parse HEAD` → `949b8abba0e27e0888cf78677d561d55a8d499f3`;
+  `git status --short` → empty at 13:29Z.
+- **Inward, 13:44Z**: HEAD unchanged; tree dirty in ` M docs/PROCESS.md`,
+  ` M agents/handoffs/README.md`, `?? docs/adr/ADR-0024-…md`. **13:53Z**: same,
+  plus ` M docs/PROCESS-MEMOIR.md`, ` M docs/PROCESS-STE.md`. Every path inside
+  the architect's declared scope; no undeclared path; no measurement affected
+  because all were taken from `git show HEAD:`.
+- **Census**: 193 stamp tokens; **147 live citations** over **125 of 128** rows;
+  `[RE]` 48 · `[MC]` 37 · `[P1]` 29 · `[PLANNED]` 16 · `[CORRECTED]` 15 ·
+  `[UNANCHORED]` 2; 4 live `[SF]`; uncited rows `C-01`, `C-06`, `C-40`.
+- **Transcription**: **143 / 147 exact**; deviations `[RE · C-07]` at
+  `docs/PROCESS.md`:836, :854, :879 and `[RE · C-08]` at :914, against frozen
+  posture FALSE for both rows.
+- **Seam column**, document's own command re-run → **72 headings, sum 152** =
+  147 stamp citations + 5 prose mentions at :1966, :2138, :2161, :2321, :4536.
+- **Claim drift**: 111 / 128 frozen quotes still verbatim in the core; `C-40`
+  companion-only; 16 re-worded.
+- **Self-test**: `bash scripts/test_protocol.sh` → **`protocol self-test: 68
+  passed, 0 failed`**; `git status --short` empty and HEAD unchanged after.
+- **Scope probes** (sourcing `scripts/policy.sh`): `auditor→docs/reports/audit/x.md`
+  ALLOW; `auditor→docs/gates/…` DENY; `auditor→agents/handoffs/…` DENY;
+  `auditor→libs/…` DENY; `auditor→docs/PROCESS.md` DENY;
+  `architect_docs_lead→docs/gates/P1-module-ready-checklist.md` **ALLOW**;
+  `rtl_lead→test/` DENY; `dv_lead→libs/` DENY; `tb_writer→libs/` DENY;
+  `rtl_module_dev→test/` DENY; `rtl_module_dev→libs/anything/at/all.ml` ALLOW;
+  `orchestrator→docs/reports/audit/x.md` ALLOW; `agents/handoffs/*` ALLOW for all
+  seven non-orchestrator seats.
+- **`C-100`**: 86 `origin/mut/*` refs, `git merge-base --is-ancestor <ref> HEAD`
+  over every one → **0 ancestors**.
+- **`F-0030-1`**: `agents/PROTOCOL.md`:404–408 (transient uncommitted-tree model);
+  `agents/charters/auditor.md`:22 (same, plus `docs/reports/audit/mutations/`);
+  16 `docs/reports/audit/WO-*-mutations/` directories exist and
+  `docs/reports/audit/mutations/` never has; `ADR-0019`:3 `Status: PROPOSED`
+  against in-force-since 2026-08-10; `grep -c "operator table" agents/PROTOCOL.md`
+  → **0**.
+- **`F-0030-2`**: `docs/reports/audit/AUD-0002-g0-reverification.md`:126, :129,
+  :146, :152, :574 — a relay-fidelity diff performed 2026-08-01 that convicted a
+  relayed tally (`AUD-0002-N1`, MAJOR); against my own `C-109` cell and
+  `docs/PROCESS.md`:975.
+- **`F-0030-3`**: `ADR-0019`:3–5, :21, :80; `claude_auditor_agent.v02.md`:27, :269,
+  :438 — `FINDING WO-0074-A1` (MAJOR) accepted against the orchestrator's own
+  dispatches, 2026-08-10.
+- **`F-0030-4`**: `git show 6c02f5b:docs/PROCESS.md` and
+  `git show f67a57a:docs/PROCESS.md` → identical sha256 `3e877c9870a00357…`,
+  1,445 lines each; `2f32e45` → 2,685 lines. Against `docs/PROCESS.md`:76–77.
+- **`F-0030-5`**: 12 of the 15 FALSE rows carry `[CORRECTED]` in the core; `C-07`
+  (3 sites) and `C-08` carry `[RE]`; `C-40` carries none here — its marker is at
+  `docs/PROCESS-MEMOIR.md`:603. Against `docs/PROCESS.md`:258–259.
+- **`F-0030-6`**: `docs/PROCESS-MEMOIR.md` Part I has no *Anchored at — 3.2*
+  block; the superseded claim is in neither volume by content search; the fifth
+  edition's passage `d96a5b1:docs/PROCESS.md`:2336–2342 is identical to the
+  current one, so no margin was ever lost. Against the legend at
+  `docs/PROCESS.md`:337 and the stamp at :2806.
+- **`F-0030-7`**: `git log -1 -- agents/journals/INDEX.md` → `550df53`,
+  2026-08-01; five of nine rows false at HEAD; `P1-spec-freeze` signed
+  2026-08-02…04.
+- **`F-0030-8`**: `git log --all -- 'agents/handoffs/WO-0065B*'` and `…0068B*` →
+  empty; ids live at `claude_dv_lead_agent.v04.md`:858,
+  `claude_orchestrator_agent.v02.md`:2014 and :2203,
+  `workers/claude_tb_writer_agent.v02.md`:1986 and :2613. Against
+  `docs/PROCESS.md`:2657–2660 and `docs/PROCESS-MEMOIR.md`:458.
+- **Companion/rendition structural checks**: `grep -c 'C-[0-9][0-9]' docs/PROCESS-STE.md`
+  → **0**; sentinel counts core **0** / companion **69**; one row-less stamp moved
+  `[PLANNED]`→`[MC]` between `2ed029d` and HEAD, for the governance check at
+  `docs/PROCESS.md`:5195–5196, which exists (`scripts/check_process_doc.sh`, wired
+  at `.github/workflows/journal-check.yml`:25) and refuses.
+- **Self-figures re-derived**: 6,115 lines / 410,403 B core, 254,247 B companion,
+  ratio 4.23 — all three as the boundary block states them.
+
+### Outcome
+
+DoD **met for the round as dispatched**, and explicitly **partial** against the
+document's `B.2` item 8, with the unpaid half named in the report's §6 item 1
+rather than left to be inferred.
+
+- Report: `docs/reports/audit/PROCESS-claims-posture-2.md` (new file, pinned to
+  `949b8ab`).
+- Predecessor: one EOF-appended **Note 6**; no cell, figure or citation above it
+  edited.
+- **Eight findings, `F-0030-1` … `F-0030-8`; one MAJOR, seven MINOR, no
+  CRITICAL** — so nothing here blocks a gate and none is E4. Routing: `F-0030-1`
+  and `F-0030-7` to the **orchestrator**; `F-0030-4`, `-5`, `-6`, `-8` to
+  **architect_docs_lead**; `F-0030-2` and `-3` to **this seat first** and
+  architect_docs_lead second.
+- Handoff: to the orchestrator for commit under `Agent: auditor`, and for verbatim
+  relay of §5 (PROTOCOL §3). Any Return-log row these findings owe is the
+  orchestrator's transcription under its own trailer (ADR-0003); I edited no
+  packet, no charter, no ADR and no gate file.
+
+### Open-questions
+
+1. **`F-0030-1`'s repair is drafted in the sibling lane and uncommitted.**
+   `docs/adr/ADR-0024-…md` subject **A8** carries the `PROTOCOL`:404–408 hunk and
+   five charter re-quotes. It is PROPOSED and applies nothing. The finding's
+   closing event is the orchestrator's §11(2) acceptance act landing those hunks,
+   not the draft's existence.
+2. **The charter's per-phase Evidence duty (§6 criterion 6) is still owed** — ≥10%
+   of the phase's journal Evidence sections re-executed, plus one manifest-driven
+   replay. This round re-executed the document's claims and the machinery, not the
+   record's Evidence. It is now owed over a longer phase than when I last said so.
+3. **Rows owed to the post-measurement text** (~4,600 unstamped lines, 37 explicit
+   *no posture row* markers, five `· 0` sections) are counted and ungraded. That is
+   its own commission and needs its own frame; I decline to imply it here.
+4. **`C-24` and §5.7's disguise 3 remain unanchored**, unchanged for eleven days.
+5. **Harvest**: none due — a census round is neither an `SO-` nor a phase gate
+   (charter §8, PROTOCOL §7). Span since my last harvest declared open across
+   `J-auditor-0029 .. J-auditor-0030` with **nil yield**, so the tiling shows no
+   skipped boundary; the next harvest falls at the next `SO-` or gate I sign.
+
+### Files-in-this-commit
+- docs/reports/audit/PROCESS-claims-posture-2.md
+- docs/reports/audit/PROCESS-claims-posture.md
