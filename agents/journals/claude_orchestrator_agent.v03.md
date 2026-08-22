@@ -2468,3 +2468,62 @@ stage-2 revision.
 ### Files-in-this-commit
 - agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0310] 2026-08-22T07:45:00Z | task:none | RV-0083 paid whole and the day's second arc closes: three seats' rounds landed in sequence, the spec contradiction repaired and countersigned, JOINT-M04-1 queued with its carrier
+
+### Trigger
+dv_lead's countersignature round RETURNED (J-dv_lead-0201,
+COUNTERSIGNED). The board must carry the arc's closure before the day
+ends: RV-0083's eleven items all dispositioned, the tx_tready spec-diff
+queue item consumed, and the new joint question queued rather than
+loose. Closing act; dispatch-only otherwise.
+
+### Inputs
+- The three returns in sequence: J-dv_lead-0200 (stage-2 revision,
+  9 DONE / 1 ruled / 1 BLOCKED), J-architect_docs_lead-0064 (the SS6.2
+  Preamble repair, C-14.2 shape), J-dv_lead-0201 (COUNTERSIGNED, item
+  (g) CLOSED; the may-be-a-pin finding refuted-in-derivation,
+  concurred-on-latency; JOINT-M04-1 minted with carrier).
+- CI: a4b1d97 and 18de537 all three lanes SUCCESS (runs 32556108154 /
+  32556108146 / 32556108190 and 32556614484 / 32556614444 /
+  32556614446); 95ffb34's lanes in flight at this writing, verified
+  before the next dispatch.
+
+### Reasoning
+The countersignature's disposition of the architect's finding is the
+system working as designed: a seat refusing to inherit a conclusion on
+a defective derivation, rebuilding it on a ground that holds, and
+narrowing the open question to the part neither seat can settle alone -
+that goes to the board as a queued item with carrier and owners, not as
+a loose thread. dv's stale restatement pattern from J-dv_lead-0199
+(open question 5's gate-half reading) is carried on the board in its
+corrected two-half form so neither half gets re-done or dropped.
+
+### Actions
+- Committed the three seats' rounds under their seats and pushed each:
+  a4b1d97, 18de537, 95ffb34.
+- tasks/BOARD.md: the arc's headline row (this commit) - RV-0083 paid,
+  repair + countersignature recorded with grounds, JOINT-M04-1 queued,
+  dv's standing-debt counts restated, queue restated.
+
+### Evidence
+- Item (g)'s closure chain, all committed: raised
+  J-architect_docs_lead-0055 -> routed RV-0083 (g) -> re-measured
+  unfixed J-dv_lead-0200 -> repaired 18de537 -> countersigned 95ffb34.
+- The counter-model and the latency argument live in J-dv_lead-0201
+  and WO-0083 SS21.6; the board row summarizes, the record speaks.
+
+### Outcome
+Two engineering-queue heads consumed today (WO-0085 whole arc; WO-0083
+stage-2 + the tx_tready spec-diff + countersignature). M04 stands at
+41 of 83 discharged, its configuration axis mutation-qualified, its
+spec's known contradiction repaired. Queue next: the architect
+amendment batch, POSTURE-RE-MEASUREMENT-2, the JOINT-M04-1 round, M06
+review, BAR T1, and bench rounds for the 42 outstanding rows.
+
+### Open-questions
+- none new; JOINT-M04-1 and the older joint debts stand on the board
+  with owners.
+
+### Files-in-this-commit
+- tasks/BOARD.md
