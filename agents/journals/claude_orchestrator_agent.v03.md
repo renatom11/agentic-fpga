@@ -2690,3 +2690,63 @@ architect; the never-merge ancestry check is owed to me.
 - docs/adr/ADR-0024-the-constitution-is-the-last-mile.md
 - docs/adr/ADR-0019-the-seeder-never-operates-the-repo.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0313] 2026-08-22T14:47:00Z | task:none | NIC development pauses on sponsor direction: one round stopped mid-write and its partial discarded with grounds, the tree left clean, and the resume point written down rather than remembered
+
+### Trigger
+Sponsor direction, verbatim: "stop nic development for now." Received
+while two rounds were in flight - dv_lead's AP re-quote (which had
+returned) and the architect's ninth-edition round (which had not).
+
+### Inputs
+- The in-flight rounds' states, measured not assumed: dv_lead RETURNED
+  and committable (landed d2bca17); architect mid-write, docs/PROCESS.md
+  +631/-199 with zero journal entries appended, last observable act
+  "Now SS6.0's kit table rows."
+- git status/diff --stat at the stop; agents/journals/... grep for
+  J-architect_docs_lead-0066 (absent).
+
+### Reasoning
+Two decisions, both mine under the standing delegation, both
+disclosed. FIRST, the partial: it could not be committed lawfully (R2
+couples work to a journal append; there was none) and could not be
+made lawful by writing the entry myself (R8 forbids me writing another
+seat's journal, and I did not do the work). Leaving it in the tree was
+the worse option of the two remaining: the next round's precheck stops
+on a dirty tree, and a round that proceeded anyway would measure a
+half-edited constitution-adjacent document as "this tree" - the exact
+class ADR-0024 SS1.2 convicts. Discarded, with a scratchpad copy that
+is explicitly NOT a record (ephemeral container). A fresh architect
+spawn re-derives the edition from the record, which is the practice
+regardless: this org's rounds do not inherit half-finished trees, they
+re-measure. SECOND, the pause act: a stop is a state change, and this
+board's own rule is that the orchestrator records state changes in the
+same commit as the change. The resume point is written out debt by
+debt with owners because a rehydrating session reads the board, not
+this session's memory.
+
+### Actions
+- Stopped the architect round; verified nothing else was running.
+- Preserved the partial to scratchpad; git checkout -- docs/PROCESS.md;
+  tree verified clean (git status --porcelain | wc -l = 0) at d2bca17.
+- tasks/BOARD.md: the pause row, the discard with its grounds, and the
+  seven-item resume list plus the standing per-seat debts.
+
+### Evidence
+- Tree clean at d2bca17, which is pushed and CI-green on all three
+  lanes (build 32578522641 / journal-check 32578522621 for 469c2f3;
+  d2bca17's lanes launched at push).
+- The session's landings, all pushed: 8ab9d70, a0cf4dd, 23ff121,
+  6f165bd, a4b1d97, 18de537, 95ffb34, 949b8ab, 27a1dbd, f5f531a,
+  2a4a5bc, 5a3577d, ef5fd13, 469c2f3, d2bca17.
+
+### Outcome
+NIC development is paused. Nothing is mid-flight, no packet is
+ISSUED-and-unreturned, no agent is running, and the record carries the
+resume point. The pause lifts on sponsor direction, as the last one did.
+
+### Open-questions
+- none. Every owed item is on the board with an owner.
+
+### Files-in-this-commit
+- tasks/BOARD.md
