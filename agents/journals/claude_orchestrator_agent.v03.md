@@ -2399,3 +2399,72 @@ its commit; rotation is the volume owner's own call (ADR-0017 SS4.3).
 
 ### Files-in-this-commit
 - agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md
+
+## [J-orchestrator-0309] 2026-08-22T05:55:00Z | task:WO-0085 | The round closes measured: dv's ACCEPT lands, the seal's SS10.6 clause discharges as a KILL at the predicted members, and IC-10's first rendering is deferred by decision, not silence
+
+### Trigger
+tb_writer RETURNED (uncommitted, correctly refusing my dispatch's
+commit-it-yourself instruction - PROTOCOL SS2/SS5 makes me sole git
+operator; the dispatch defect was mine and the law held against its
+author); then dv_lead RETURNED its review. Both seats' work needed
+committing, and the verdict's SS10.6 ruling needed operating.
+
+### Inputs
+- tb_writer return + working tree (six paths, R4 set-equal to its
+  J-tb_writer-0047 Files list).
+- RV-0085-VERDICT (J-dv_lead-0199): ACCEPTED; rulings (a)/(b)/dune;
+  FINDING WO-0085-R1; the SS10.6 re-run procedure, seats, predictions,
+  and the four-part KILL bar with four not-closed criteria.
+- CI: build 32553311119 SUCCESS and journal-check 32553311111 SUCCESS on
+  a0cf4dd; then run 32554521276 job 96986499711 on the mutant ref -
+  steps 1-5 SUCCESS, step 6 FAILURE, log read at source.
+
+### Reasoning
+Operator discipline per the verdict, byte for byte: unmodified committed
+diff, never-merge ref, base = the ACCEPT commit, score step 6 at source.
+The KILL is claimed only against the verdict's own four-condition bar,
+each condition checked; the four not-closed criteria each checked not to
+fire (notably both cfg_ifg = 12 controls green - the sweeps failed only
+at their discriminating members). IC-10: dv gave me a decision to make,
+not a task; deferring to the gate's qualification batch spends the
+rendering where the verdict says it must be repeated anyway. dv's stale
+S3 restatement is annotated, not transcribed - the board may not carry a
+debt the record shows paid (SS5.9's discipline, both directions).
+
+### Actions
+- Committed tb_writer's round under its seat: a0cf4dd (J-tb_writer-0047,
+  WARN-JOURNAL expected, rotation left to the volume owner). Pushed.
+- Committed dv's round under its seat: 23ff121 (J-dv_lead-0199). Pushed.
+- Operated the re-run: mut/wo-0085-class-11-rerun = 5c0c568 pushed;
+  plain never-merge commit in the WO-0084 operator format; local branch
+  deleted after scoring; remote ref stands (ADR-0019).
+- WO-0085 Return log: RE-RUN RECORD appended (KILL, quotes, criteria,
+  IC-10 deferral decision, the stale-S3 note).
+- tasks/BOARD.md: the round's headline row; queue restated with the head
+  consumed.
+
+### Evidence
+- Kill quotes, from job 96986499711's log: "M04-F3 (cfg_ifg=20): ...
+  gap of 16 octets counted from the terminate character inclusive, below
+  the 20 cfg_ifg requires"; "M04-F7 (cfg_ifg=16): ... gap of 15 ...
+  below the 16 cfg_ifg requires".
+- Prediction reconciliation: killing unit and member exactly as dv froze
+  them in the verdict before the ref existed; second red exactly as
+  predicted. A failed prediction would have been a finding against dv;
+  there is none.
+
+### Outcome
+WO-0085 is ACCEPTED with its SS10.6 follow-through complete. M04's
+configuration axis exists, is discharged (F3, F7), and is mutation-
+qualified against the auditor's class-11 mutant. 42 of 83 rows remain
+outstanding toward SO-xgmii_tx_64. Queue head is now dv's WO-0083
+stage-2 revision.
+
+### Open-questions
+- IC-10 first rendering: DEFERRED to the P1-module-ready qualification
+  batch (decision recorded in the packet and board; auditor-only when
+  taken).
+
+### Files-in-this-commit
+- agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md
+- tasks/BOARD.md

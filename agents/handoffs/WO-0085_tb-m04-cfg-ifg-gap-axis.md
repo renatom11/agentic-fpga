@@ -585,3 +585,56 @@ untouched; and `WO-0084`'s frozen tally is not edited by anything above.
 **11. Files touched by this review** (set-equal to `git status --short` at my
 return, my own journal excluded): `agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md`,
 `test/attack_plans/AP-xgmii_tx_64.md`, `test/xgmii_tx_64/test_m04_f.ml`.
+
+### RE-RUN RECORD — orchestrator (operator, ADR-0019), `J-orchestrator-0309`, 2026-08-22
+
+**The seal-§10.6 class-11 re-run is DISCHARGED: KILL, both predictions
+confirmed, both controls green.** Procedure exactly as RV-0085-VERDICT §(i)
+ruled: unmodified `docs/reports/audit/WO-0084-mutations/class-11-gap-ignores-ifg.diff`
+applied on never-merge ref `mut/wo-0085-class-11-rerun` = `5c0c568`, base
+`23ff121` (the commit carrying the ACCEPT), pushed by the orchestrator as the
+seat that neither sealed nor seeded. **Scored at step 6 `Run tests` read at
+source, never the job conclusion**: run `32554521276`, job `96986499711`,
+steps 1–5 (through Build) SUCCESS, **step 6 FAILURE**. The failing assertions,
+quoted from the log:
+
+- `M04-F3 (cfg_ifg=20): wire decoder unclean: … gaps (octets, terminate
+  inclusive): 16 … VIOLATION cycle 13 REQ-204: gap of 16 octets counted from
+  the terminate character inclusive, below the 20 cfg_ifg requires` — the
+  predicted killing unit at the predicted member, raised through the standing
+  decoder's REQ-204 arm at U28's assertion 1 (`bench.ml:758` frame), the
+  mutant serving the hard-wired 12-derived gap (16) against the configured 20.
+- `M04-F7 (cfg_ifg=16): wire decoder unclean: … gaps … : 15 … VIOLATION cycle
+  9 REQ-204: gap of 15 octets … below the 16 cfg_ifg requires` — the second
+  predicted red, at U29's first discriminating member.
+
+**All four KILL conditions of the verdict's §(iii) bar are met** (step-6
+FAILURE; read at source; failing assertion naming M04-F3/M04-F7 with a gap
+figure; cited run id), and **none of the four not-closed criteria fired** —
+in particular both `cfg_ifg = 12` control members passed (each sweep runs in
+member order and fell over only at its discriminating member: F3 at 20 after
+12/13/16 green, F7 at 16 after 12 green), so the default path did not move.
+`WO-0084`'s frozen tally is untouched; this record sits beside it, per the
+verdict's framing (a post-campaign qualification check, not a re-scoring).
+The remote ref stands as the never-merge record; the local branch is deleted.
+**M04-F3 and M04-F7 may now be described as mutation-tested against the
+auditor-authored class-11 mutant** (the verdict's own bar, discharged here);
+IC-10 remains unrendered and no artifact may describe it as tested.
+
+**IC-10 disposition (orchestrator decision, standing delegation):** the
+verdict rules IC-10 cannot be re-run (never rendered; "a mutation that does
+not exist") and its first rendering is optional, auditor-only, in a new
+directory under its own WO. **Decision: DEFERRED to the P1-module-ready
+qualification batch, not declined** — the verdict itself notes today's base
+is superseded by a gate-SHA run there, so a rendering now would be repeated
+at the gate regardless. Owner: orchestrator; carrier: the gate's
+qualification batch; recorded on the board.
+
+**One restatement in the verdict's open questions is stale against the
+record, noted without action:** `WO-0084-S3` (class-03/IC-2) was restated as
+"unchanged and still with the auditor", but it closed 2026-08-12 at
+`J-orchestrator-0285` — the auditor's re-seeded v2 (`mut/wo-0084-class-03-v2`
+= `3f83864`) was measured step-6 red = KILL at run `31589039601`, matching
+the frozen `IC-2 = KILL` seal. Nothing is owed under S3.
+
+**State: ACCEPTED stands; the packet's §10.6 follow-through is complete.**
