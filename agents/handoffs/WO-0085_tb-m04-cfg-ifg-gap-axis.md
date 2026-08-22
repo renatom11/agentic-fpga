@@ -1,12 +1,15 @@
 # WO-0085: M04 cfg_ifg gap axis — commission the configuration-coverage benches (M04-F3, M04-F7) that close WO-0084-S2
 
-- **State**: DRAFT — the number is a **PLACEHOLDER**. The orchestrator allocates
-  the next free `WO-` number at commit (PROTOCOL §3); `WO-0085` is the next free
-  id measured at this tree (`ls agents/handoffs | grep -c WO-0085` → 0). If the
-  orchestrator allocates a different number, the filename and every internal
-  self-reference (`WO-0085` appears at the title, this State line, §7 T-8's
-  citation in `AP-xgmii_tx_64.md`, and the `J-dv_lead-0197` change-log row) move
-  together.
+- **State**: ISSUED — number **ALLOCATED as `WO-0085`** (orchestrator,
+  `J-orchestrator-0308`, 2026-08-22, PROTOCOL §3). Re-measured at allocation:
+  the highest committed packet id is this file's own, and
+  `ls agents/handoffs | grep -c 'WO-0085'` → 1 (the draft itself, no other
+  claimant), so the placeholder id stands and **no internal self-reference
+  moves** — the §7 T-8 citation in `AP-xgmii_tx_64.md` and the
+  `J-dv_lead-0197` change-log row already read `WO-0085` and are correct as
+  written. Drafted DRAFT by dv_lead at `J-dv_lead-0197`; the draft's
+  placeholder note is superseded by this allocation, its text preserved in
+  that journal entry.
 - **From** / **To**: dv_lead → tb_writer
 - **Spec basis**: SPEC-M04 §6.1 (the gap paragraph and the identity
   `g = ⌈(cfg_ifg + t)/8⌉` words, gap `8g − t` octets), §9 (the abort word and

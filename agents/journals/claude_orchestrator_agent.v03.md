@@ -2331,3 +2331,71 @@ owed rows above, each with a named carrier that is not this round.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0308] 2026-08-22T04:40:00Z | task:WO-0085 | The engineering queue resumes on sponsor direction: WO-0085 is allocated and ISSUED — the cfg_ifg gap axis goes to tb_writer
+
+### Trigger
+Sponsor direction, verbatim: "Keep going with NIC design." The document
+arc (eighth edition, ADR-0023 retraction mirror, handbook carry) closed at
+8dff23a; the engineering queue has been standing since J-orchestrator-0285
+with the WO-0085 cfg_ifg bench at its head. Precheck (SS4.1): local
+checkout found rolled back to 592a8b2 (incident-13-class, third
+occurrence), cured by the standing preamble - fetch + reset --hard to
+origin = 8dff23a, tree clean, zero loss.
+
+### Inputs
+- tasks/BOARD.md rows at 66/68 (WO-0084 fully closed: S3's class-03 v2
+  re-seed measured KILL at run 31589039601; ADR-0022 in force; the queue
+  as frozen at J-orchestrator-0285).
+- agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md in full (dv_lead's
+  DRAFT at J-dv_lead-0197, placeholder id).
+- test/attack_plans/AP-xgmii_tx_64.md rows M04-F3/M04-F6/M04-F7, SS7 T-8
+  (capability measured absent; executor tb_writer via this carrier).
+- WO-0084-SEALED-predictions.md SS10.6 item 6 ("The day M04-F3 lands,
+  IC-10 must be re-run, not re-quoted") and the campaign packet's act-4
+  row (class-11 survivor evidence; S1/S2/S3 dispositions).
+- Journal tails: dv_lead 0198, tb_writer 0046, auditor 0029,
+  architect 0063, rtl_lead 0026.
+
+### Reasoning
+Allocation is mine as sole committer (PROTOCOL SS3). The draft's
+placeholder measurement (grep -c → 0) predates its own commit; re-measured
+now the file is the only WO-0085 claimant and no higher id exists, so the
+id stands and the draft's cross-references in the AP and dv's change-log
+are already correct - allocating any other number would falsify two
+committed citations to fix a problem that does not exist. Sequencing: the
+queue's other heads (WO-0083 stage-2 revision, architect amendment batch,
+POSTURE-RE-MEASUREMENT-2) do not block this packet and none of the three
+board-owed rows from the retraction round names it as carrier. The
+class-11/IC-10 re-run (seal SS10.6) is sequenced AFTER this packet lands
+green, not alongside - the re-run needs the instrument to exist.
+
+### Actions
+- WO-0085 State line: DRAFT/placeholder -> ISSUED with the allocation
+  record (single-site edit, asserted before writing).
+- Next: spawn tb_writer on the packet (RTL withheld per the packet's own
+  Context clause; dispatch carries the abort-first precheck and the
+  permitted-reads list); dv_lead review on RETURNED; landing + push + CI;
+  then the SS10.6 re-run round.
+
+### Evidence
+- Allocation re-measurement run at this tree, output quoted in the State
+  line itself.
+- HEAD at commit time = 8dff23a's successor (this commit); tree carried
+  only this packet edit.
+
+### Outcome
+WO-0085 is ISSUED to tb_writer. The M04 arc's owed instrument - the
+cfg_ifg axis two blind seats independently demanded (class-11's survival,
+IC-10's sealed survive) - is commissioned. tb_writer's active volume is
+past the soft threshold (269,331 B > 262,144 S): the WARN is expected at
+its commit; rotation is the volume owner's own call (ADR-0017 SS4.3).
+
+### Open-questions
+- Who renders the IC-10 mutant for the SS10.6 re-run: class-11's diff is
+  committed campaign record (I can operate it directly), but IC-10 was
+  never rendered. Routed to dv_lead at the review round - dv owns the
+  campaign follow-through; the auditor seeded the originals.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md
