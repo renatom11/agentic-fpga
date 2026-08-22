@@ -34,7 +34,8 @@
   | Rev | What it is | Grounds | State |
   |---|---|---|---|
   | **A** | The packet as issued at `afbc813`, executed by tb_writer at `J-tb_writer-0046`, landed `91f005d`, adjudicated **ACCEPT** at `RV-0083-VERDICT` / `J-dv_lead-0194`. **Every term stage 2 was executed and judged under is Revision A's** | — | **CLOSED. Nothing at Revision B reopens it** |
-  | **B** | **A post-acceptance corrections revision, staging no test and commissioning no row.** The **eleven** items `RV-0083-VERDICT` §5 routed here — six from architect_docs_lead's independent §4 read (`J-architect_docs_lead-0055`, landed `8ceb973`), three findings of my own (`WO-0083-1`, `-2`, `-3`), one kept-as-written ruling, and one spec-defect countersignature that is **not mine to discharge** — each dispositioned at §21. **Plus six sites of a claim struck after Revision A landed** (`WO-0084-S1`, `J-dv_lead-0196`/`0197`), found here by the site rule `J-dv_lead-0199` banked | `RV-0083-VERDICT` §5 items (a)–(k); `J-architect_docs_lead-0055`; `J-dv_lead-0196` §S1; `J-dv_lead-0199` `FINDING WO-0085-R1` | **The text stage 3 inherits** |
+  | **B** | **A post-acceptance corrections revision, staging no test and commissioning no row.** The **eleven** items `RV-0083-VERDICT` §5 routed here — six from architect_docs_lead's independent §4 read (`J-architect_docs_lead-0055`, landed `8ceb973`), three findings of my own (`WO-0083-1`, `-2`, `-3`), one kept-as-written ruling, and one spec-defect countersignature that is **not mine to discharge** — each dispositioned at §21. **Plus six sites of a claim struck after Revision A landed** (`WO-0084-S1`, `J-dv_lead-0196`/`0197`), found here by the site rule `J-dv_lead-0199` banked | `RV-0083-VERDICT` §5 items (a)–(k); `J-architect_docs_lead-0055`; `J-dv_lead-0196` §S1; `J-dv_lead-0199` `FINDING WO-0085-R1` | ~~**The text stage 3 inherits**~~ **SUPERSEDED by Revision C only where C says so; every other passage of B stands** |
+  | **C** | **The countersignature revision — one act, and the only item Revision B could not discharge.** `RV-0083` item **(g)** was **BLOCKED** at B for want of a diff to countersign; architect_docs_lead landed the repair at **`18de537`** (`J-architect_docs_lead-0064`) and this revision records my verdict on it, flips §21.2 to its closed state, corrects the one passage of B whose quotation the repair made stale (§4.2 fact 1's blockquote), and queues the architect's new finding as the named joint item **`JOINT-M04-1`** at §21.6. **Stages no test, commissions no row, discharges no plan row, reverses nothing** | `18de537` / `J-architect_docs_lead-0064` (the diff, and its Open-question 2); `J-dv_lead-0200` §21.2 (the blocked record this closes); `J-dv_lead-0201` (this act) | **The text stage 3 inherits** |
 
   **Revision discipline, inherited verbatim from `WO-0082` Revision B and
   restated because a discipline cited is not a discipline carried.** Every
@@ -47,6 +48,12 @@
   **`M-21` is re-phrased for its next consumer and its Revision-A pass stands**
   (§21 item i). The corrections bind the **next** consumer of this text: the
   stage-3 packet, and the seat that executes it.
+
+  **Revision C inherits this discipline unchanged** and adds one rule its own
+  subject needs: **a passage whose quotation of another document the diff made
+  stale is corrected in place at every site, struck and re-quoted from the text
+  at the landing SHA** — not left standing because its conclusion survives. The
+  conclusion surviving is what makes the stale quotation invisible.
 - **PACKET NUMBER — placeholder, deliberately.** PROTOCOL §3: *"the
   orchestrator — as sole committer — allocates the next `NNNN` per prefix
   when a packet is first committed; drafts circulating before commit use a
@@ -469,14 +476,28 @@ required at cycle `C + 1`"* for `m = 1`).
 > three available clauses inherits every argument that clause admits.
 >
 > **Ground 2 is used at the FIRST frame only, and that is why item (g)'s pending
-> spec defect does not stale this upgrade.** §6.2's `Preamble` row says *"keeps
-> `tx_tready` = 1"* **unconditionally**, and §7's C-16 consequence 4 says it is
+> spec defect does not stale this upgrade.** ~~§6.2's `Preamble` row says *"keeps
+> `tx_tready` = 1"* **unconditionally**, and~~ §7's C-16 consequence 4 says it is
 > **0** on the preamble cycle of a **back-to-back** frame whose word 0 was
 > accepted at the post-`tlast` cycle (§21 item g). `M04-G5` withholds word 1 of
 > the run's **first** frame, where no C-16 acceptance has happened and the
 > qualification cannot bite; grounds 1 and 3 are independent of the row in either
 > case. **When the spec diff lands, this citation is unaffected** — which is
 > stated here so that a later seat re-reads it rather than re-deriving it.
+>
+> **RE-QUOTED at Revision C — the diff landed at `18de537` and the struck words
+> above are what it made stale, not what it made wrong** (`J-dv_lead-0201`,
+> §21.6). §6.2's `Preamble` row now reads *"keeps `tx_tready` = 1, **except on
+> the cycle §7's C-16 consequence 4 covers** — where this frame's word 1 has
+> already been accepted (word 0 on the predecessor's post-`tlast` cycle, word 1
+> on the gap's last cycle), both storage slots hold accepted untransmitted words,
+> `tx_tready` is 0 on this cycle and §7 wins"*. **Ground 2 is unaffected and is
+> now unarguable rather than merely separable**: the carved-out exception's own
+> premise — *this frame's word 1 has already been accepted*, with word 0 taken on
+> a **predecessor's** post-`tlast` cycle — has no instance at a run's **first**
+> frame, which has no predecessor, so the row pins `tx_tready` = 1 at `C + 1`
+> **by its own text** and no longer only by the frame separation this paragraph
+> had to argue. **What was a reading is now the clause.**
 
 **Fact 2 — the strobe.** SPEC-M04 §9, *Strobe cycle, pinned*: `error_underflow`
 pulses **for exactly one cycle**, on **`R`** — *"the cycle the word was required
@@ -2637,6 +2658,14 @@ subject, **named with the citation** rather than skipped silently;
 the carrier**. *(No item is DEFERRED: an item put off without a carrier is the
 failure this section exists to prevent.)*
 
+> **A fourth disposition is added at Revision C** (`J-dv_lead-0201`): **CLOSED**
+> — a **BLOCKED** item whose named carrier has since delivered, closed at the
+> head where the thing it waited for exists, with the BLOCKED cell left standing
+> and struck as the true record of the head it was taken at. **This is the
+> disposition BLOCKED is for**: an item is blocked *at a head*, and a carrier
+> that never delivers is visible precisely because the item never reaches this
+> state. **`(g)` is the first, and at Revision C the only, item in it.**
+
 ### 21.1 The six from architect_docs_lead's independent §4 read
 
 `J-architect_docs_lead-0055`, landed `8ceb973` — **a reading that disputed no
@@ -2654,9 +2683,16 @@ assertion or reopens a bar.
 
 ### 21.2 The one item this seat cannot discharge
 
+> ~~*(heading true at Revision B)*~~ **CLOSED at Revision C, 2026-08-22
+> (`J-dv_lead-0201`): the item this seat could not discharge at `6f165bd` is
+> discharged at `18de537`, because the diff it was waiting for exists.** The
+> heading and the BLOCKED cell below are left standing and struck — they are the
+> accurate record of a head, not a mistake — and the closure is written into the
+> row's own cells and in full at **§21.6**.
+
 | # | Item | Disposition | Reason, carrier, and what would close it |
 |---|---|---|---|
-| **(g)** | The SPEC-M04 §6.2 `Preamble`-row defect: *"keeps `tx_tready` = 1"*, **unconditionally**, against §7's C-16 consequence 4 (*"`tx_tready` is 0 on the preamble cycle C+12"*). **My countersignature is owed when the spec diff is written** | **BLOCKED — and re-measured at this head rather than assumed** | **The defect still stands**: `docs/specs/modules/xgmii_tx_64.md:300` carries the unconditional row and the C-16 consequence is unchanged; **SPEC-M04 §13's change log has no row for it**, so no diff exists to countersign. It is not mine to fix — `docs/**` is architect_docs_lead's scope (PROTOCOL §6) — and it is not a bounce, a `BUG-` or an escalation: **reachability at this round remains nil**, because §4.4's `word ≥ 2` rule forbids the only stimulus that would reach it, which is why the rule written to avoid the hazard is what surfaced the defect. **Carrier**: filed as a carry-forward in the architect's own document (`J-architect_docs_lead-0055`, Reasoning and Open-question 1, which also records that the repair's *shape* is undecided — the narrow C-14.2-style exception, or the wider question of whether §6.2 rows should carry `tx_tready` values at all now that §7 pins them in four places). **What closes it**: an architect spec-diff round, then my countersignature as a `J-dv_lead-NNNN` entry. **Recorded here as a debt with a carrier rather than an item falling between two seats** |
+| **(g)** | The SPEC-M04 §6.2 `Preamble`-row defect: *"keeps `tx_tready` = 1"*, **unconditionally**, against §7's C-16 consequence 4 (*"`tx_tready` is 0 on the preamble cycle C+12"*). **My countersignature is owed when the spec diff is written** | ~~**BLOCKED — and re-measured at this head rather than assumed**~~ **CLOSED at Revision C — COUNTERSIGNED.** The struck word is left standing because it is the **true** record of what this seat could do at Revision B's head `6f165bd`, where no diff existed; a disposition is dated by the head it was taken at | **The defect still stands**: `docs/specs/modules/xgmii_tx_64.md:300` carries the unconditional row and the C-16 consequence is unchanged; **SPEC-M04 §13's change log has no row for it**, so no diff exists to countersign. It is not mine to fix — `docs/**` is architect_docs_lead's scope (PROTOCOL §6) — and it is not a bounce, a `BUG-` or an escalation: **reachability at this round remains nil**, because §4.4's `word ≥ 2` rule forbids the only stimulus that would reach it, which is why the rule written to avoid the hazard is what surfaced the defect. **Carrier**: filed as a carry-forward in the architect's own document (`J-architect_docs_lead-0055`, Reasoning and Open-question 1, which also records that the repair's *shape* is undecided — the narrow C-14.2-style exception, or the wider question of whether §6.2 rows should carry `tx_tready` values at all now that §7 pins them in four places). **What closes it**: an architect spec-diff round, then my countersignature as a `J-dv_lead-NNNN` entry. **Recorded here as a debt with a carrier rather than an item falling between two seats**. **CLOSED 2026-08-22 at Revision C**: the carrier delivered — architect_docs_lead landed the repair at **`18de537`** (`J-architect_docs_lead-0064`), in the narrow **C-14.2** shape, with §7 ruled the winner on the REQ-207 + two-word-depth ground and a §13 change-log row carrying the provenance chain and naming this countersignature owed. **My verdict is COUNTERSIGNED**, recorded at `J-dv_lead-0201` and in full at **§21.6** below with its three ground-survival checks and the one MINOR residual reading it does not treat as a defect in the diff. **`RV-0083` item (g) is closed; nothing of item (g) is carried forward.** What IS carried forward is a **new** item the diff's own round raised and did not land — `JOINT-M04-1`, §21.6 — which is not this item and is not owed by it |
 
 ### 21.3 The four from my own review
 
@@ -2735,6 +2771,198 @@ ground.** Two of the corrections are worth reading twice:
 **No assertion, expected value, bar or verdict moves at any of the six sites.**
 `M04-F6`'s landed `= 15` is right, is unchanged, and is green at `91f005d` and at
 `a0cf4dd`.
+
+### 21.6 REVISION C — the countersignature on item (g)'s diff, and the joint item the same round raised
+
+**Added at Revision C, dv_lead, `J-dv_lead-0201`, 2026-08-22, at head
+`18de537`.** Revision B closed with exactly one item undischarged — item **(g)**,
+BLOCKED for want of a diff. **The diff exists.** This section is my act on it.
+
+#### (g.1) The verdict
+
+**`COUNTERSIGNED`.** SPEC-M04's §6.2-`Preamble`-row-versus-§7-C-16-consequence-4
+contradiction is repaired at `18de537` (`J-architect_docs_lead-0064`) and I
+countersign the repair. **Grounds, in the order I checked them:**
+
+1. **The end convicted is the end my own re-measurement convicted.** §7 wins and
+   the row was the defect. The value §7 pins is *compelled*: with word 0 and word
+   1 both accepted and untransmitted, §6.1's two-word depth (*"not an elastic
+   buffer"*) leaves no register for a third acceptance, so REQ-207 — *never
+   accept a word M04 cannot then transmit* — forbids asserting `tx_tready`
+   there. Nothing compelled the row's unconditional form; it is the C-16 diff
+   having amended the `Idle` row and left this one as it stood.
+2. **The shape is C-14.2's, which this seat has already countersigned once.** The
+   row carries the exception, names the covering §7 clause, says §7 wins, and
+   gains the second entry condition in the `Idle` row's own words; §7 gains one
+   precedence sentence. A repair in the shape of the precedent it cites is a
+   repair a later reader can check against that precedent.
+3. **No conformant design changes and no committed test changes meaning.** §7
+   already governed the cycle; §6.1's own table depicts the *other* branch (its
+   `C + 12` is asserted because no word was accepted at `C + 8` there). Measured
+   rather than assumed: **no unit in `test/**` asserts any value of `tx_tready`
+   at any cycle** — every occurrence of the identifier in the suite is in a
+   docstring or a comment, three of which say in terms that no value is
+   asserted — so nothing landed moves in either direction.
+4. **The §13 row states its own provenance and does not overstate it**: it names
+   the raising entry, this packet's routing, my re-measurement at `6f165bd`, and
+   the countersignature as **owed and not given there**. The architect did not
+   mark its own homework.
+
+#### (g.2) The three ground-survival checks, executed at the source
+
+Read: `git show 18de537 -- docs/specs/modules/xgmii_tx_64.md` (the whole diff, 10
+lines over three hunks) and the three edited regions in the file at HEAD — §6.2's
+`Preamble` row at **line 300**, §7's C-16 consequence 4 at **lines 481–492**,
+§13's new row at **line 667**.
+
+| # | The ground | Survives? | What was checked |
+|---|---|---|---|
+| **(i)** | §4.2 fact 1's **ground 2** — the `Preamble` row pinning `tx_tready` = 1 at a run's **first** frame's preamble cycle, which is the only case the upgrade uses it for | **YES**, and it is now unarguable rather than merely separable | The carved exception's premise is *"this frame's word 1 has already been accepted (word 0 on the **predecessor's** post-`tlast` cycle, word 1 on the gap's last cycle)"*. **A run's first frame has no predecessor**, so the premise has no instance there and the row's `= 1` stands by the row's own text at `C + 1`. `M04-G5`/`U22`'s red stays dispositive; grounds 1 (§6.1's storage sentence) and 3 (consequence 1's uniqueness claim) are untouched by the diff and were independent of the row anyway |
+| **(ii)** | §4.4's broader ground — C-16 consequence 4's **second** branch, *"`tx_tready` **may** be 1 at `C + 12`"*, a **permission** and not a pin | **YES — untightened, and character-for-character** | The diff's second hunk **appends** to consequence 4 and edits nothing inside it: the added text begins after the existing sentence *"Either way M04 holds at most two accepted, untransmitted words."*, and both branches — the first branch's `0` and the second branch's `may` — are byte-identical to their pre-diff form. The appended sentence says so itself (*"Nothing of this consequence's two branches moves in that repair"*) and the diff bears it out. §4.4's `word ≥ 2` lower bound keeps the ground Revision B put under it. **One MINOR residual reading is recorded at (g.3) and is not a defect in this diff** |
+| **(iii)** | The repair's **direction** against my own re-measurement at `J-dv_lead-0200` / §21.2 — *§7 compelled, the row defective* | **YES** | §21.2 named the subject *"the SPEC-M04 §6.2 `Preamble`-row defect"* and measured it at `6f165bd` with the row at line 300, consequence 4 unchanged and **no §13 row**. The diff repairs **the row**, leaves **§7's consequence** unmoved except for a precedence sentence naming the row subordinate, and adds the §13 row. Direction identical. **Nothing in the diff repairs the end my re-measurement did not convict** |
+
+#### (g.3) One MINOR residual reading, recorded rather than countersigned away
+
+The repair carves **one** exception out of the row, and §7's new sentence
+describes the row as keeping `tx_tready` = 1 *"on every other cycle of that
+state"*. At the **second** branch's preamble cycle two readings are then
+available:
+
+- **R1** — the precedence attaches to *this consequence*, **both** branches, so
+  §7 governs wherever consequence 4 speaks and the *"may"* survives against the
+  row's default. **This is the reading the sentence's own subject supports, it is
+  plainly what the diff intends, and it is the reading I countersign under.**
+- **R2** — a reader of §6.2's table alone takes the single named exception as
+  exclusive and reads the row's `= 1` onto every preamble cycle it does not
+  name, including the one §7 leaves permissive.
+
+**R2 is item (g)'s defect class at a second cycle**, and I neither countersign it
+away nor call it a defect in this diff, for three reasons: the disagreement
+**pre-dates** the repair (the row said `= 1` at that cycle before it, with no
+precedence rule anywhere); the repair **strictly improves** it, putting a
+precedence sentence in §7's own voice where there was none; and **its correct
+repair depends on an answer nobody has yet** — if the *"may"* is a pin the row's
+`= 1` is *right* there and wants a citation, not an exception, while if it is a
+permission the row wants a second exception or shape (i)'s wider deletion.
+**Repairing it before that question is answered lands the wrong repair half the
+time.** It is folded into `JOINT-M04-1` below.
+
+#### (g.4) `JOINT-M04-1` — the architect's new finding, dispositioned and queued
+
+**The finding** (`J-architect_docs_lead-0064` Open-question 2, routed to this
+seat jointly): consequence 4's *"may be 1"* is arguably a **pin**, on the ground
+that REQ-210's event delay plus §6.1's transmit rule plus a two-register minimum
+leave word 1 of a ≥ 2-word frame exactly one acceptance cycle. **Not landed by
+the architect, and not landed here.** My disposition, in three parts:
+
+**1. I REFUTE the stated derivation.** There is no two-register minimum in this
+specification, and the ≥ 2-cycle accept-to-transmit distance the derivation needs
+is not merely *"stated for the idle-transmitter frame and inferred elsewhere"* —
+it is **false as a general statement, on §7's own instances**: in consequence 4's
+first branch word 0 is accepted at `C + 8` and transmitted at `C + 13` (distance
+**5**) and word 1 is accepted at `C + 11` and transmitted at `C + 14` (distance
+**3**), and consequence 3 says in terms that §6.1's `C + m + 2` *"is stated for a
+frame whose first word is accepted into an idle transmitter with the gap already
+served"*. **A sentence with instances at 2, 3 and 5 fixes no minimum.** The
+counter-model, stated so it can be refuted rather than waved at — call it the
+**late-accept design**, first frame, `W ≥ 2`:
+
+| Cycle | What it does | Which clause permits it |
+|---|---|---|
+| `C` | accepts word 0 | — |
+| `C + 1` | emits the `/S/` word; **`tx_tready` = 0** | REQ-210's event delay = 1 cycle is met; §7's *"may"* read as a permission |
+| `C + 2` | emits frame octets 0–7; accepts **word 1** | ΔC = 2 to the first word carrying frame octets is met |
+| `C + 3` | emits frame octets 8–15 | one cycle after that word's acceptance |
+| `C + m + 1` | accepts word `m`; emits word `m − 1`'s octets | one XGMII word every cycle, contiguous |
+
+Its wire output is **byte-identical** to the reference cadence, it never holds
+more than two accepted untransmitted words (it never holds more than one), REQ-207
+is honoured at every acceptance, and REQ-204/REQ-209 are untouched. It needs
+**one** word of storage — which is exactly what §6.1 says the depth of two is
+*for*: *"The preamble word is the one output slot that does not consume a source
+word, and that is the whole reason the depth is two rather than one."* **Depth
+two is what the permission costs, not what compels it.**
+
+**2. I CONCUR that a pin is plausible — on a different ground, which I supply.**
+The late-accept design dies against §7's **per-octet latency** pin, not against
+any register count. Its word 0 octets have input octet time `8C + j` and output
+octet time `8(C + 2) + j`, giving **L = 16**; its word 1 octets have input
+`8(C + 2) + j′` and output `8(C + 3) + j′`, giving **L = 8**. **Two values of L
+in one frame** — and §7 pins *"L = 16 for every frame octet, of every frame, at
+every length"*, with §0.5 requiring L to be single-valued and §7 stating exactly
+what makes it single-valued here. Because the frame's words occupy **consecutive**
+cycles on the wire once the start character is out, the **only** acceptance
+schedule that holds L at one value is acceptance on consecutive cycles
+`C, C + 1, …, C + W − 1` — **whose second member is the preamble cycle**. So for a
+frame with `W ≥ 2` **in L's domain**, `tx_tready` = 1 at the preamble cycle is
+**compelled**, and the *"may"* is a pin.
+
+**3. The question that is actually open is narrower than the finding, and it is
+about L's DOMAIN.** §10's REQ-210 hook measures *"each into an idle transmitter
+after the gap has elapsed"*, and §7 puts back-to-back outside REQ-210's domain.
+Two frames sit squarely inside it — a run's **first** frame, and **the frame
+after an abort** (§4.3's tail frame, fact 7 branch (b), issued into an idle
+transmitter). Consequence 4's **second branch is the doubtful one**: its word 0 is
+accepted at `C + 11`, which §7 calls a cycle *"inside the gap"*, so whether L's
+domain reaches it is the real question — and it is **smaller and sharper** than
+*"is the may a pin"*.
+
+**What it would cost, measured rather than guessed:**
+
+- **§4.4's `word ≥ 2` lower bound goes over-broad at the tail frame** — and note
+  it does so **without consequence 4 being touched at all**, because the tail
+  frame is in L's domain directly. Withholding word 1 there would become a
+  **legal** underflow stimulus with a determinate expected strobe at `R = S_j`
+  (fact 1 at `m = 1`, the tail frame's own preamble cycle). **Direction: a
+  coverage exclusion, never a false red** — the rule would forbid a legal
+  stimulus rather than prevent a mislabelled one, and **no landed assertion and
+  no expected value moves**.
+- **A second consumer, in my scope, that the architect could not see**:
+  `test/xgmii_tx_64/bench.ml`'s **P-ACCEPT** precondition on `Bench.present`
+  requires the accepted cycles to be exactly `C, C + 1, …, C + W − 1`
+  **contiguous** — which *is* an acceptance at the preamble cycle, enforced by a
+  `failwith` on every frame `present` drives (disposition class **D3**, routed to
+  dv_lead, deliberately not a bounce). **Today that precondition is
+  design-dependent and the specification does not compel it; under the L ground
+  it becomes spec-compelled** for every frame in L's domain. That is a live
+  dependency of the landed suite on the answer, and it is the strongest reason to
+  take the question rather than leave it.
+- **`AP-M04` consumers, named so the plan-side consequence is not discovered
+  later**: **`M04-H6`** asserts only the first branch's `0` at `C + 12` and routes
+  the second branch away in terms (*"if no word was accepted at `C + 8`, `tready`
+  **may** be 1 at `C + 12`, and that half is M04-H5's"*); **`M04-H5`** is
+  `NO-ASSERT` on the ground that the value is unconstrained. **If the pin lands,
+  H5's routing is wrong for this one cycle and H6 gains a second assertable
+  half.**
+
+**`JOINT-M04-1` — the item, named.** *Does §7's per-octet L = 16 pin compel
+`tx_tready` = 1 at the preamble cycle of every `W ≥ 2` frame, and does its domain
+reach a frame whose word 0 was accepted on the gap's last cycle (consequence 4's
+second branch)?* **Seats: dv_lead + architect_docs_lead, jointly.** **Carrier: the
+architect's shape-(i) round** — `J-architect_docs_lead-0064` Open-question 1,
+already declared *"a round with dv_lead in it"*, which now has **three** subjects
+rather than one: shape (i), this pin question, and **(g.3)**'s residual reading,
+whose repair the pin question decides. **Orchestrator schedules it; the architect
+owns any `docs/**` diff; I supply the derivation above, the domain question and
+the three consumers, and countersign the outcome.** If the pin lands, the
+follow-on is **mine**: §4.4's lower bound at the tail frame, `AP-M04`'s H5/H6, and
+P-ACCEPT's grounding.
+
+*(Id scheme minted here: **`JOINT-`** for an item neither seat may settle alone,
+numbered in the order items are **named**, not the order they arose. The older
+joint debt — the hold-until-acceptance rule with no home in the programme,
+`J-dv_lead-0200` Open-question 2 and `J-architect_docs_lead-0064` Open-question 3
+— is **not** renamed here and keeps the homes it already has.)*
+
+#### (g.5) What this revision does NOT do
+
+**No spec text is edited** — `docs/**` is architect_docs_lead's scope (PROTOCOL
+§6) and a countersignature is an act **on** a diff, never a further diff. **No
+test is staged and no `test/xgmii_tx_64/**` file is touched.** **No row of
+`AP-M04` is added, converted, struck or discharged** — that plan gains one §9
+change-log row and nothing else. **No bar, verdict or disposition of Revision A
+or B is reversed.** **No `SO-xgmii_tx_64.md` is opened or offered, `BAR T1` stays
+SHUT, REQ-206 is not covered, and `M04-G4` is still outstanding.**
 
 ---
 

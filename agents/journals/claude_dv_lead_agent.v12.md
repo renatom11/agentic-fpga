@@ -2314,3 +2314,392 @@ harvest need not reconstruct them:
 ### Files-in-this-commit
 - agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md
 - test/attack_plans/AP-xgmii_tx_64.md
+
+## [J-dv_lead-0201] 2026-08-22T07:34Z | task:WO-0083 | The countersignature I owed is given — the repair convicts the end my own re-measurement convicted, all three of my grounds survive it, and the finding routed jointly with it is refuted in its derivation and concurred in on a ground the derivation never reached
+
+### Trigger
+
+Orchestrator dispatch, **one round, one seat, narrow**: spawn short-id
+**`RV-0083-G-COUNTERSIGN/2026-08-22T07:10Z`**. `RV-0083` item **(g)** — my
+countersignature on the SPEC-M04 §6.2-`Preamble`-row-versus-§7-C-16-consequence-4
+contradiction — was recorded **BLOCKED** at `J-dv_lead-0200` / `WO-0083` §21.2
+for want of a diff to countersign. **The diff now exists**: architect_docs_lead
+landed the repair at `18de537` (`J-architect_docs_lead-0064`). The dispatch also
+routed the architect's **new** finding to this seat jointly — that consequence 4's
+*"may be 1"* is arguably a **pin** — with the explicit instruction **not** to land
+it but to disposition it.
+
+**Precheck, one invocation, before reading anything:**
+
+    git status --short   # (empty — clean)
+    git rev-parse HEAD   # 18de537ac33ab4c80e9d3c39ff4b1edd42fcc2cc
+
+**Both match the dispatched expectation** (clean tree; head prefix `18de537`), so
+neither abort branch was taken and the round proceeded.
+
+### Inputs
+
+**Read at this head, all read-only.** No RTL was opened at any point — this round
+judges a **specification diff** and touches no design question that could tempt
+it.
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` (§3 packets, §4 entry
+  grammar, §6 write scopes, §7 gates and harvest, §10 independence).
+- **The repair at source**: `git show 18de537 -- docs/specs/modules/xgmii_tx_64.md`
+  — the whole diff, ten changed lines over three hunks — and `git show 18de537
+  --stat`, which shows the commit stages **two** paths and no third.
+- **The three edited regions in the file at HEAD, read in the file and not only
+  in the diff**: §6.2's `Preamble` row (line **300**), §7's C-16 consequence 4
+  (lines **481–492**), §13's new row (line **667**).
+- **The surrounding clauses the checks turn on**, read in full rather than
+  quoted from my own packet: §6.1's cycle table, its storage paragraph and its
+  `cfg_tx_enable` paragraph (lines 262–290); §6.2's `Idle` row; §6.3 items 1–5;
+  §7's latency bullet and its two-constant table, its throughput bullet, the
+  whole C-16 bullet with all four consequences, the handshake bullet and the
+  reset bullet (lines 350–530); §9's underflow row; §10's REQ-207 and REQ-210
+  hooks; §11.2 and §11.3; §13's four earlier rows that bear on C-14.1, C-14.2,
+  C-16.
+- **The architect's own round**: `J-architect_docs_lead-0064` — its Outcome
+  (which discharges the two constraints the dispatch attached) and its
+  **Open-questions 1, 2 and 3**, question 2 being the finding routed here.
+- **My own record of the blocked item**: `J-dv_lead-0200` (Reasoning on item (g)
+  and on item (a)'s interaction with it, Evidence's re-measurement,
+  Open-question 1) and `WO-0083` §21.2, §21.1 items (a) and (d), §4.2 fact 1,
+  §4.4, §4.3.
+- **The consumers, so the bench consequence is measured rather than guessed**:
+  `test/xgmii_tx_64/bench.ml` (`present`, `present_stream`, `accepted_cycles_of`,
+  `assert_liveness`, the **P-ACCEPT** precondition at lines 308–335);
+  `test/xgmii_tx_64/test_m04_a.ml`, `test_m04_g.ml`; `test/attack_plans/AP-xgmii_tx_64.md`
+  §4.G rows `M04-G4`/`G5`/`G9`/`G10`, §4.H rows `M04-H1` … `H6`, §6.1's census
+  block, §9's change log.
+
+### Reasoning
+
+**1. What a countersignature is, and what I therefore checked.** It is an act
+**on** a diff by the seat whose grounds the diff touches: it says *this repair
+does what the record said was owed, at the end the record convicted, without
+moving anything I am standing on*. It is not approval of the specification as a
+whole and it is not a second diff. So the round has exactly four questions —
+does it repair the convicted end; is the shape the one its own precedent set;
+does anything landed move; do my three grounds survive — and one obligation the
+dispatch added, the disposition of the new finding.
+
+**2. The verdict is `COUNTERSIGNED`, and the first ground is that the direction
+is mine.** §7 wins and the row is the defect. **The value §7 pins is compelled**:
+with word 0 and word 1 both accepted and untransmitted, §6.1's two-word depth —
+*"not an elastic buffer"* — leaves no register for a third acceptance, so REQ-207
+(*never accept a word M04 cannot then transmit*) forbids asserting `tx_tready`
+there. **Nothing compelled the row's unconditional form**: it is the C-16 diff of
+2026-08-02 having amended the `Idle` row and left this row as it stood, which is
+**C-14.2's defect class exactly** — a §6.2 row stating a value §7 later
+qualified. A repair that convicted the other end would have had to explain how a
+design can accept a third word into two registers, and no such explanation
+exists.
+
+**3. The shape is the precedent's, which is worth more than its tidiness.** The
+row carries the exception, names the covering §7 clause, says §7 wins, and gains
+the second entry condition in the `Idle` row's own words; §7's consequence 4
+gains one precedence sentence; §13 gains a dated row. That is C-14.2's shape
+line for line — and I countersigned C-14.2. **A repair in the shape of the
+precedent it cites is a repair a later reader can check against that precedent**,
+which is the property that makes the third and fourth of these rows cheaper to
+review than the first.
+
+**4. The three ground-survival checks, and why (i) came back stronger than
+"survives".** Item (a)'s upgrade routed §4.2 fact 1 and §4.4 onto three grounds,
+and **ground 2 is the very row item (g) called defective**. At Revision B I
+defended that by **frame separation**: the qualification bites only where an
+early acceptance has happened, and `M04-G5` withholds word 1 of the run's
+**first** frame, where none has. The repair does better than preserve the
+separation — **it writes it into the clause**. The carved exception's premise is
+*"this frame's word 1 has already been accepted (word 0 on the **predecessor's**
+post-`tlast` cycle, word 1 on the gap's last cycle)"*, and **a run's first frame
+has no predecessor**, so the premise has no instance there and the row pins
+`tx_tready` = 1 at `C + 1` **by its own text**. What was an argument is now the
+clause. `U22`'s red stays dispositive; grounds 1 and 3 are untouched by the diff
+and were independent of the row in either case.
+
+Check (ii) is the one where a "yes" could have been lazy, so I checked the
+**bytes**: the second hunk **appends** to consequence 4 and edits nothing inside
+it — the added text begins after the pre-existing sentence *"Either way M04 holds
+at most two accepted, untransmitted words."* — and both branches, the first
+branch's `0` and the second's *"may"*, are character-identical to their pre-diff
+form. §4.4's broader ground keeps what Revision B put under it. Check (iii) is
+the cheapest and is still worth executing: §21.2 named the subject *the §6.2
+`Preamble`-row defect* and measured it at `6f165bd` (row at line 300,
+consequence unchanged, no §13 row); the diff repairs **the row**, leaves the
+consequence unmoved but for a precedence sentence, and adds the §13 row.
+**Direction identical, and nothing in the diff repairs an end my re-measurement
+did not convict.**
+
+**5. The residual reading I found, and why it is recorded rather than bounced.**
+The repair carves **one** exception out of the row, and §7's new sentence
+describes the row as keeping `tx_tready` = 1 *"on every other cycle of that
+state"*. At the **second** branch's preamble cycle two readings are then
+available. **R1**: the precedence attaches to *this consequence*, both branches,
+so §7 governs wherever consequence 4 speaks and the *"may"* survives against the
+row's default — the reading the sentence's own subject supports and the one I
+countersign under. **R2**: a reader of §6.2's table alone takes the single named
+exception as exclusive and reads the row's `= 1` onto every preamble cycle it
+does not name — including the one §7 leaves permissive. **R2 is item (g)'s defect
+class at a second cycle.** I refuse three tempting moves here. I do not
+countersign it away, because a countersignature that notices a thing and says
+nothing is worth less than one that refuses. I do not refuse the diff over it,
+because the disagreement **pre-dates** the repair — the row said `= 1` at that
+cycle before it too, with no precedence rule anywhere — and the repair strictly
+**improves** it by putting a precedence sentence in §7's own voice. And I do not
+ask for it to be repaired now, because **its correct repair depends on an answer
+nobody has**: if the *"may"* is a pin, the row's `= 1` is *right* there and wants
+a citation rather than an exception; if it is a permission, the row wants a
+second exception or the wider shape-(i) deletion. **Repairing it before that
+question is decided lands the wrong repair half the time.** It folds into the
+joint item.
+
+**6. The joint finding: I refute the derivation and concur in the conclusion on a
+ground the derivation never reached.** The architect's ground is REQ-210's event
+delay plus §6.1's transmit rule plus a **two-register minimum**, leaving word 1 of
+a ≥ 2-word frame exactly one acceptance cycle. It names its own soft step (the
+≥ 2-cycle accept-to-transmit distance is *"stated for the idle-transmitter frame
+and inferred elsewhere"*). **The step is not soft, it is false**, and §7's own
+instances kill it: in consequence 4's first branch word 0 is accepted at `C + 8`
+and transmitted at `C + 13` — distance **5** — and word 1 is accepted at `C + 11`
+and transmitted at `C + 14` — distance **3** — and consequence 3 states in terms
+that §6.1's `C + m + 2` is *"stated for a frame whose first word is accepted into
+an idle transmitter with the gap already served"*. **A rule with instances at 2, 3
+and 5 fixes no minimum.** So I built the counter-model rather than asserting the
+refutation: the **late-accept design** accepts word 0 at `C`, emits `/S/` at
+`C + 1` with `tx_tready` **0**, emits frame octets 0–7 at `C + 2` while accepting
+word 1 there, emits octets 8–15 at `C + 3`, and continues one word per cycle. Its
+wire output is **byte-identical** to the reference cadence; REQ-210's 1-cycle
+event delay holds; ΔC = 2 to the first word carrying frame octets holds; REQ-207
+holds at every acceptance; REQ-204 and REQ-209 are untouched; and it never holds
+more than one accepted untransmitted word, let alone three. It needs **one** word
+of storage — which is exactly what §6.1 says the depth of two is *for*: *"The
+preamble word is the one output slot that does not consume a source word, and
+that is the whole reason the depth is two rather than one."* **Depth two is what
+the permission costs, not what compels it**, and that sentence has been read
+backwards.
+
+**What actually kills the counter-model is the per-octet latency, not any
+register count** — and this is the part the architect could not have reached from
+the clauses it cited. In the late-accept design word 0's octets have input octet
+time `8C + j` and output octet time `8(C + 2) + j`, giving **L = 16**; word 1's
+octets have input `8(C + 2) + j′` and output `8(C + 3) + j′`, giving **L = 8**.
+**Two values of L in one frame** — and §7 pins *"L = 16 for every frame octet, of
+every frame, at every length"*, with §0.5 requiring L to be single-valued and §7
+stating precisely what makes it single-valued here. Because the frame's words are
+**contiguous** on the wire once the start character is out, the only acceptance
+schedule that holds L at one value is acceptance on consecutive cycles
+`C, C + 1, …, C + W − 1` — **whose second member is the preamble cycle**.
+**Therefore, for a frame with `W ≥ 2` in L's domain, `tx_tready` = 1 at the
+preamble cycle is compelled and the *"may"* is a pin.** So: **plausibly a pin,
+yes — and on a ground that makes the open question smaller.**
+
+**7. What is genuinely open is L's DOMAIN, and that reframing is the useful
+output.** §10's REQ-210 hook measures *"each into an idle transmitter after the
+gap has elapsed"* and §7 puts back-to-back outside REQ-210's domain — which is
+right, since in consequence 4's first branch L is demonstrably multi-valued (40
+for word 0's octets, 24 for word 1's). Two frames sit squarely **inside** the
+domain: a run's **first** frame, and **the frame after an abort** (§4.3's tail
+frame, fact 7 branch (b), issued into an idle transmitter). Consequence 4's
+**second branch is the doubtful one**: its word 0 is accepted at `C + 11`, which
+§7 itself calls a cycle *"inside the gap"*. **So the bench consequence the
+architect names does not need consequence 4 at all** — the tail frame is in the
+domain directly, and if the L ground holds, §4.4's `word ≥ 2` lower bound is
+over-broad **there**, whatever happens to the *"may"*.
+
+**8. What it would cost, measured in my own artifacts rather than estimated.**
+Three consumers, and the direction matters in all three. **(a)** §4.4's lower
+bound at the tail frame becomes an exclusion of a **legal** underflow stimulus
+with a determinate expected strobe at `R = S_j` (fact 1 at `m = 1`, the tail
+frame's own preamble cycle) — **a coverage exclusion, never a false red**; no
+landed assertion and no expected value moves. **(b)** `AP-M04`'s `M04-H6` asserts
+only the first branch's `0` at `C + 12` and routes the second branch away in
+terms (*"that half is M04-H5's"*), and `M04-H5` is `NO-ASSERT` on the ground that
+the value is unconstrained — **if the pin lands, H5's routing is wrong at exactly
+one cycle and H6 gains a second assertable half**. **(c)** The one the architect
+could not see, and the strongest reason to take the question: `bench.ml`'s
+**P-ACCEPT** precondition on `Bench.present` requires the accepted cycles to be
+exactly `C … C + W − 1` **contiguous**, which *is* an acceptance at the preamble
+cycle, enforced by a `failwith` at disposition class **D3** on every frame it
+drives. **Today that is a precondition the specification does not compel; under
+the L ground it becomes spec-compelled** for every frame in L's domain. A landed
+suite standing on an uncompelled precondition is exactly the thing a joint item
+exists to resolve.
+
+**9. Why it is queued and not landed, and why it gets a name.** Landing it moves
+the ground under §4.4 and under a `NO-ASSERT` row, from a seat that cannot edit
+`docs/**`; and it is an interpretive question about two clauses of one section,
+which is the architect's craft and my consequence. So it is **`JOINT-M04-1`**,
+seats dv_lead + architect_docs_lead, carried by the architect's **shape-(i)
+round** — already declared *"a round with dv_lead in it"* — which now has three
+subjects instead of one: shape (i), this pin question, and §21.6(g.3)'s residual
+reading, whose repair this question decides. **A name because the two older joint
+debts in this chain have drifted for rounds precisely by being described rather
+than named**; the id scheme is minted at §21.6(g.4) with its allocation rule
+stated, and the older debts are deliberately **not** renamed into it.
+
+**10. What I did not do.** No spec text edited (`docs/**` is not mine, PROTOCOL
+§6, and a countersignature is an act on a diff rather than a further diff). No
+`test/xgmii_tx_64/**` edit. No row of `AP-M04` added, converted, struck or
+discharged. No bar, verdict or disposition of Revision A or B reversed. No `SO-`
+opened or offered. No escalation: this is a two-lead **agreement**, not a
+dispute, so no E5 arises, and nothing here is E1–E4 or E6.
+
+### Actions
+
+1. Precheck (one invocation), then read the repair at source and the three
+   edited regions in the file at HEAD, plus every surrounding clause the checks
+   turn on.
+2. Executed the three ground-survival checks **(i)/(ii)/(iii)** against my own
+   Revision-B text, the second of them at the byte level.
+3. Rendered the verdict **`COUNTERSIGNED`** and recorded it where this practice
+   puts it — `WO-0083` §21.2 flipped to its closed state and the full record at
+   the new **§21.6**, with the Revision Register gaining row **C** and the
+   disposition vocabulary gaining **CLOSED**.
+4. Corrected in place the **one** passage of Revision B whose quotation the
+   repair made stale — §4.2 fact 1's blockquote, which quoted the row as
+   unconditional — struck and re-quoted from the text at `18de537`, and stated
+   the rule that found it in the Revision-C discipline paragraph.
+5. Dispositioned the joint finding: refutation with counter-model, concurrence on
+   the L ground, the domain question, the three consumers, and `JOINT-M04-1` with
+   its carrier — `WO-0083` §21.6(g.4).
+6. Recorded the plan-side note **(declared, my call under the dispatch's scope
+   clause)**: one dated row in `AP-M04` §9. **Ground for taking it**: this plan
+   is what a stage-3 seat reads, two of its rows (`M04-H5`, `M04-H6`) are
+   consumers of the queued item, and one of them is a `NO-ASSERT` whose stated
+   ground is the very *"may"* under question — a consumer that learns of the item
+   only from a packet it may not read is a consumer that does not learn.
+7. Re-measured both of the plan's censuses **after** the edit rather than
+   carrying either forward, and this entry.
+
+### Evidence
+
+**Every command below was run in this working tree at `18de537` and its output is
+quoted as observed. No CI run is claimed: this round stages no code and compiles
+nothing.**
+
+- **Precheck**: `git status --short` → empty; `git rev-parse HEAD` →
+  `18de537ac33ab4c80e9d3c39ff4b1edd42fcc2cc`. Matches the dispatched expectation.
+- **The diff, read at source**: `git show 18de537 --stat` → two paths,
+  `agents/journals/claude_architect_docs_lead_agent.v06.md` (+329) and
+  `docs/specs/modules/xgmii_tx_64.md` (**10 changed lines**, `+8 −2`), **and no
+  third path** — so the repair touches no test, no script and no CI input.
+- **Check (ii) at the byte level**: in `git show 18de537 -- docs/specs/modules/xgmii_tx_64.md`
+  the consequence-4 hunk's only `-` line is the pre-existing sentence *"Either way
+  M04 holds at most two accepted, untransmitted words."*, re-emitted as the first
+  line of the `+` block with the new precedence sentences appended after it.
+  **Both branches of consequence 4 appear in no `-` line and in no `+` line.**
+- **The three regions at HEAD, by line number**: `grep -n "keeps \`tx_tready\` = 1"
+  docs/specs/modules/xgmii_tx_64.md` → **300** (the row, now carrying its
+  exception); consequence 4 at **481–492**; §13's new row at **667**, dated
+  2026-08-22 and citing `J-architect_docs_lead-0064`.
+- **The "no committed test changes meaning" claim, measured not assumed**:
+  `grep -rn 'tx_tready' test/ --include=*.ml` returns **six** hits, all in
+  docstrings or comments — `bench.ml:342`, `test_m04_a.ml:372`,
+  `test_m04_g.ml:14`, `:15`, `:101`, `:104` — **and three of them say in terms
+  that no value of `tx_tready` is asserted**. **No unit in the suite asserts any
+  value of `tx_tready` at any cycle**, so nothing landed moves on this diff or on
+  either outcome of the queued item.
+- **The P-ACCEPT consumer, read at its source**: `test/xgmii_tx_64/bench.ml`
+  lines 308–335 — `present` calls `assert_liveness`, then requires
+  `accepted_cycles` to equal `List.init w ~f:(fun m -> c + m)` and `failwith`s
+  otherwise, its message naming **"P-ACCEPT precondition failed (WO-0080 §5.6,
+  disposition class D3)"**. Contiguity from `C` **is** an acceptance at the
+  preamble cycle. `present_stream` deliberately omits it (its comment: contiguity
+  *"is FALSE against a conformant M04 at the second frame of every run"*).
+- **The plan's two censuses, re-run at this tree AFTER the edit** (§0.1(i),
+  measured and never carried forward):
+  - §6.1's own quoted command → **`83 83 []`**, unchanged.
+  - status-cell pass over every row table → **83 row lines, 83 distinct ids;
+    ASSERT 59, NO-ASSERT 12, NO-STIMULUS 6, STRUCTURAL 5, GAP 1, RULING 0** —
+    unchanged. Discharged stays **41 of 83**, outstanding **42 of 83**.
+  - `## 9. Change log` now carries **10 dated rows**, the last this round's.
+- **Table well-formedness of every table this round touched**, counted rather than
+  eyeballed: the Revision Register rows and both §21 item tables measure **5**
+  `|` per line against their own headers; §21.6's ground-check table **5**; its
+  late-accept cadence table **4**; the new `AP-M04` §9 row **4**, byte-identical
+  in delimiter count to the row above it.
+- **Hand-count provenance, again**: `tools/dv_checks.sh` still contains zero
+  occurrences of `M04`, `xgmii_tx_64` or `AP-xgmii_tx`, so **no committed
+  instrument counts an M04 row** and every count above is a hand count with its
+  method stated. **`DVC-1a` is unbuilt for the fifth consecutive M04 round.**
+- **Harvest**: **none due, declared rather than omitted.** PROTOCOL §7 and
+  ADR-0018 attach the harvest to every `SO-` and every phase gate; this is
+  neither, so the span since my last harvest stays open and continues to tile
+  through this entry. **Four candidates are now banked for it**, the two carried
+  from `J-dv_lead-0200` (enumerate a struck claim's sites by the claim, not the
+  string; and re-read every judgement that rested on a struck claim, since a
+  strike can leave a decision **weaker** than the truth) and two new ones, both
+  with their three limbs met:
+  1. **When a document is repaired by carving one named exception out of a rule,
+     the carve-out hardens the rule's reading everywhere it does not name — so
+     the review of that repair must re-read every other case the rule now reads
+     onto, not only the case the exception was written for.** **LH1** this commit
+     (`18de537` plus this entry): the exception repaired the branch it named and
+     left the row reading as a pin at a second branch where the same section
+     calls the value a permission. **LH2-g**, no proper noun of any kind.
+     **LH3** without it, a repair that closes one contradiction silently hardens
+     the next, and the countersignature approving it becomes the record that
+     nobody looked.
+  2. **A floor on a quantity may not be inferred from a formula stated for one
+     case while the same document exhibits other values of that quantity: count
+     the instances before calling it a minimum.** **LH1** this commit — a
+     derivation resting on a two-cycle minimum, in a section whose own worked
+     cases exhibit three and five. **LH2-g**, no proper noun. **LH3** without it,
+     a reading compels a design constraint the specification never imposed, and
+     the benches written to it fail conformant designs.
+
+### Outcome
+
+**DoD: met**, for a countersignature round. **Verdict: `COUNTERSIGNED`.**
+**`RV-0083` item (g) is CLOSED** — the last of the eleven items
+`RV-0083-VERDICT` §5 routed to this packet's revisions, and the only one Revision
+B could not discharge. **All three ground-survival checks return YES**, check (i)
+returning stronger than survival (the frame separation is now written into the
+clause rather than argued around it) and check (ii) verified at the byte level.
+**One MINOR residual reading is recorded and deliberately not repaired**, with
+the reason it cannot be repaired before `JOINT-M04-1` is answered. **The joint
+finding is dispositioned and not landed**: its derivation refuted with a
+conformant counter-model, its conclusion concurred in on the per-octet-latency
+ground, its real question narrowed to L's domain, its three consumers named, and
+`JOINT-M04-1` queued with a carrier that already exists.
+
+**Handoff**: `WO-0083` at **Revision C** and `AP-M04` carrying its §9 row, both to
+the orchestrator for commit under my seat. **Nothing is routed to any worker**, no
+`RV-` is owed, no spawn is requested, and **no `SO-` is opened or offered**.
+`BAR T1` stays **SHUT**; REQ-206 is **not** covered; `M04-G4` is still
+outstanding and has now missed **four** consecutive M04 rounds.
+
+### Open-questions
+
+1. **`JOINT-M04-1` — is §7's *"may be 1"* a pin, and does L's domain reach a
+   frame whose word 0 was accepted on the gap's last cycle?** Seats: me +
+   architect_docs_lead. **Carrier**: the architect's shape-(i) round
+   (`J-architect_docs_lead-0064` Open-question 1), which now carries three
+   subjects. **Orchestrator to schedule; architect owns any `docs/**` diff; the
+   follow-on inside my scope is mine** — `WO-0083` §4.4's lower bound at the tail
+   frame, `AP-M04`'s `M04-H5`/`M04-H6`, and P-ACCEPT's grounding.
+2. **The residual reading at §21.6(g.3) rides item 1 and must not be repaired
+   before it.** Recorded here so that a later seat meeting the row does not file
+   it as a fresh finding and get a narrow repair landed in the wrong direction.
+3. **The hold-until-acceptance rule still has no home in the programme** — the
+   older joint debt, carried unchanged from `J-dv_lead-0200` Open-question 2 and
+   `J-architect_docs_lead-0064` Open-question 3. **It is not renamed into the
+   `JOINT-` scheme by this round**, which would be tidying rather than
+   progressing it.
+4. **`DVC-1a` is unbuilt for the fifth consecutive M04 round**, so every count in
+   this entry is again a hand count. `M04-G4` has now missed four. `T-2` is still
+   unbuilt. All mine.
+5. **The `class-11` re-run owed before `P1-module-ready` is untouched** by this
+   round and remains the orchestrator's to operate (`J-dv_lead-0199`
+   Open-question 1). **A countersignature is not a disposition check, and I have
+   not treated it as one.**
+6. **No escalation.** No E1, E2, E3, E5 or E6, and no CRITICAL finding against
+   any seat: this round agrees with the architect on the repair and disagrees
+   with it only on the derivation of a finding it deliberately did not land,
+   which is collaboration operating as designed rather than a dispute.
+
+### Files-in-this-commit
+- agents/handoffs/WO-0083_tb-m04-stage-2-stall-schedule-and-family-g.md
+- test/attack_plans/AP-xgmii_tx_64.md
