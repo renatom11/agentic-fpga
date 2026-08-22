@@ -3248,3 +3248,333 @@ column or Status cell moves anywhere.
 
 ### Files-in-this-commit
 - (none)
+
+## [J-dv_lead-0203] 2026-08-22T14:45Z | task:none | The owed restatement is paid at its one site: (b.2)'s singular struck in place and the applied plural quoted from the acceptance commit rather than from memory — and the census that found the site is re-run, unchanged at 59, with its own bottom-line phrasing convicted as imprecise and the residue it actually measured restated
+
+### Trigger
+
+Orchestrator spawn `AP-A3-REQUOTE/2026-08-22T14:30Z`. My declared closing event
+has occurred: acceptance commit **`469c2f3`** applied `ADR-0024` A3 to
+`agents/PROTOCOL.md` §7 (b.2), making both killing-unit citation sites plural and
+placing the cardinality sentence per the non-blocking recommendation I gave at the
+countersignature. The debt is the one I wrote down myself at `J-dv_lead-0202`
+(§5 second bullet, §7's block, Open-question 1): `ADR-0024` §18's
+owed-restatement list is declared exhaustive over live text and does not carry
+`test/attack_plans/AP-xgmii_tx_64.md`:1049, which is **mine and no other seat's**.
+Owner dv_lead, closing event the applying commit. This round is the payment.
+
+### Inputs
+
+- `agents/charters/dv_lead.md`; `agents/PROTOCOL.md` **at HEAD** — §4 (entry
+  grammar), §5 (R3/R4), §6 (write scopes), §7 (b.1)–(b.4) read whole.
+- **The applied clause, read at the source and never from memory**:
+  `git show 469c2f3:agents/PROTOCOL.md` lines 336–358 — the survivor limb at
+  `:343`, the frozen-kill limb at `:348`, the cardinality sentence at `:354`–`:357`,
+  and the untouched narrative at `:350`. `git diff 469c2f3 -- agents/PROTOCOL.md`
+  → **empty**, so the working tree's file is the acceptance commit's blob and the
+  two readings cannot disagree.
+- `agents/journals/claude_dv_lead_agent.v12.md`:2707–3251 — my own
+  `J-dv_lead-0202` block whole: §4's eight-site disposition, §5's owed-restatement
+  bullet, §7's Constructions A/B/C, and the Evidence section's census command and
+  its 59-line/16-file result, which this round re-runs rather than quotes.
+- `test/attack_plans/AP-xgmii_tx_64.md`:1000–1051 — the target row in its
+  neighbourhood, plus the struck-in-place precedents at `:1047` (`M04-F6`,
+  `J-dv_lead-0200`) and `:1046` (`M04-G10`'s Stimulus cell, `J-dv_lead-0192`),
+  read to take the file's own strike form rather than invent one.
+- `agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md`:460–619 — `RV-0085-VERDICT`
+  §9(0)(ii) at `:479` (the second verbatim quote of the old singular in my scope),
+  §9(i)'s prediction, §9(iii)'s bar, and the orchestrator's **RE-RUN RECORD** at
+  `:589`–`:619` (`J-orchestrator-0309`), which is where the two killing units and
+  run `32554521276` are recorded.
+- `agents/handoffs/SO-xgmii_rx_64.md`:862–878 — the §2.2-D dated annotation whose
+  ground quotes the old frozen-kill limb at `:870`.
+- `scripts/policy.sh`:13–14 — `JOURNAL_SOFT_MAX` 262144 against this volume's
+  214 448 bytes; no rotation is due at this entry.
+- **No RTL was opened, and no test source was read for derivation.** This round
+  writes one clause of one Markdown change-log row; nothing in it touches a bench,
+  a design or a requirement.
+
+### Reasoning
+
+**§1. Precheck, and the sibling round.** `git status --short` **empty**,
+`git rev-parse HEAD` → `469c2f344ad939c21706085b116ba1c0c49d0168`, matching the
+dispatch's expected prefix. Clean tree, so the "dirty-only-in-the-architect's-set"
+branch was never reached and no ambiguity had to be adjudicated. The architect's
+ninth-edition round declares `docs/**` (except audit/latency), `README.md`,
+`ORG_CHART.md` and its own journal; **my one edit is in `test/**`**, disjoint from
+all of it, and I opened nothing of the architect's for writing. **No stale-snapshot
+restore was observed**: the file I edited was re-read after the edit through
+`git diff` rather than trusted, and `git status --short` at the end shows exactly
+one modified path.
+
+**§2. Why the strike, and not an overwrite.** This plan's standing discipline is
+strike-in-place with the date and the grounds — `:1047`'s `M04-F6` cell and
+`:1046`'s four moved cells are the precedents, and both say in terms that a
+change-log row is *a dated record of what a round claimed* whose text is not
+rewritten. The discipline applies here, but **the reason does not, and I say so on
+the row rather than letting the form imply it**. Every other strike in this file
+marks a claim **false**. This one marks a quotation **stale**: the struck words
+were `(b.2)`'s own text on 2026-08-12 and are not its text at `469c2f3`. A reader
+who meets a strike in this file has learned to read it as *the round got this
+wrong*, and that reading would be a second defect — the round quoted its
+constitution correctly and the constitution moved under it. So the annotation
+opens with the distinction, and the old words stay readable so that what this
+round quoted can still be checked against what `(b.2)` said on its date.
+
+**§3. Why a re-quote at all, when the row is dated.** The historical exemption was
+available and I refused it at `J-dv_lead-0202`, on a ground I re-checked at this
+head rather than re-asserted: the sentence is an **instruction to the gate**, not a
+description of a past day, and **the disposition it instructs is still
+outstanding**. The `class-11` re-run at `6f165bd` was taken at base `23ff121` —
+early, by `RV-0085-VERDICT` §9(i)'s own terms — and is *"superseded by the gate-SHA
+run if the suite moves between them"*. No `P1-module-ready` run has been operated;
+`agents/handoffs/SO-xgmii_tx_64.md` does not exist. **The instruction is live, so
+its quotation of the clause is load-bearing and a stale quotation of a live clause
+is a defect in an instruction, not a fact about a past day.**
+
+**§4. What the re-quote had to carry, and why three clauses and not one.** A bare
+`or units` would have paid the grammar and left the round's own conclusion to be
+re-derived — which is the exact defect I banked as a lessons candidate at
+`J-dv_lead-0202` §8 (*a counting rule repaired from singular to plural is
+incomplete until it says whether the plural binds every member or offers a menu*).
+So the annotation carries three things and stops:
+
+1. **The applied survivor-limb text, quoted from `git show 469c2f3:…` and not from
+   the ADR's draft.** This matters: the ADR's §11 hunk is a *proposal*, the
+   acceptance commit is the *text*, and quoting the draft would repeat in the cure
+   the very error the cure repairs.
+2. **The reach.** The cardinality sentence sits inside the **frozen-kill** limb but
+   opens *"In both limbs, the referent is the campaign record's own naming, at
+   whatever cardinality it named"* — the orchestrator applied my recommended
+   opening. That opening is the whole reason the plural governs the **survivor**
+   limb this row quotes, so the annotation cites it. **My Construction A is now
+   carried by the text and no longer only by my signature**, which is the outcome
+   the recommendation was for.
+3. **The consequence for this sentence's own disposition.** The `class-11` re-run
+   named **two** units — `M04-F3`/`U28` at `cfg_ifg = 20`, `M04-F7`/`U29` at
+   `cfg_ifg = 16`, run `32554521276` — so the gate-SHA disposition carries both and
+   naming `U28` alone is the selection A3 forbids (`J-dv_lead-0202` Construction C).
+   This is not an addition beyond the restatement; it **is** the restatement's
+   content at the site that instructs the act.
+
+**§5. The site census, re-run — and my own bottom line convicted.** The dispatch
+asks whether `J-dv_lead-0201`/`-0202`'s *"exactly one line in my write scope"*
+still holds. Two answers, and the second is a finding against my own wording.
+
+*(a) Nothing has appeared.* `git diff --stat 2a4a5bc 469c2f3 -- test/ tools/
+docs/reports/latency/ agents/handoffs/` is **empty**: my entire write scope is
+byte-identical between the census SHA and this HEAD. The three commits in the
+interval are `5a3577d` (my `J-0202`), `ef5fd13` (the auditor's five subjects) and
+`469c2f3` (the acceptance), and they touch `agents/PROTOCOL.md`, `ADR-0024` and
+journals only. **The WO-0085 and WO-0083 rounds added no site because they landed
+before the census, not after it** — `WO-0085` at `23ff121`/`6f165bd`, the `WO-0083`
+Revision B at `6f165bd`, both already inside the census's own reading. The literal
+census re-runs to **59 lines over 16 files**, per-file figure for per-file figure
+identical to `J-dv_lead-0202`'s Evidence. **No second site has appeared and none is
+re-quoted on that ground.**
+
+*(b) But "exactly one line in my write scope" was never literally true, and I
+correct it here rather than let it stand.* `PROTOCOL` §6 puts **`agents/handoffs/**`
+inside my scope**, and it holds **20** of the 59 lines. What `J-dv_lead-0202` §4
+actually established — and what its Evidence sentence compressed badly — is a
+**residue after class-by-class disposition**: exactly **one** line is a *live
+forward instruction to the gate* whose quotation goes stale on A3's application.
+The correct statement is *"exactly one live forward instruction, and it is in my
+write scope"*, not *"exactly one line in my write scope"*. The 20 handoff lines
+were dispositioned individually at §4 and none of them is that; the arithmetic was
+right and the sentence naming it was not. **Filed as `FINDING J-0202-1` (MINOR,
+mine, against my own census's bottom line, no result moved.)**
+
+*(c) The one site §4 counted but did not disposition as a quote-site, and why it is
+not paid here.* Of the 20 handoff lines, **`WO-0085`:479** is a **verbatim quote of
+the old survivor limb** — *"the unmodified committed diff, replayed against the
+bench as it stands at the gate SHA, at a run id, with the killing unit named"* — and
+`J-dv_lead-0202` §4 item 6 reached that packet's §9(i) **scoring** sentence while
+not reaching this one. That is a real gap in an enumeration I called exhaustive.
+**I disposition it now and rule NO restatement owed**, on the §3 ground applied
+symmetrically rather than on convenience: **its instruction is spent.** The re-run
+it framed was operated and is **discharged in the same file** at `:589`–`:619`,
+where the orchestrator's RE-RUN RECORD names **both** units — so the packet's own
+closing record already speaks the repaired constitution, and the quote above it is
+the dated ground of a completed ruling in an **ACCEPTED** packet. The identical
+disposition covers `SO-xgmii_rx_64.md`:870 (the old frozen-kill limb quoted as the
+ground of a dated annotation whose table is the discharge; and that packet carries
+**`FAIL`**, so it instructs no gate), `:993` and `:996` (retrospective quotations
+that quote the singular **in order to convict it** — the class `R-SEAL-1`'s own
+carve-out names, and rewriting them would delete the evidence of the finding),
+`WO-0084-SEALED-predictions.md`:992 and `WO-0084_m04-mutation-campaign.md`:97
+(**frozen measurements**, which `ADR-0024` §18 and PROTOCOL §7 both decline to
+rewrite and which I agreed at `J-0202` §4 item 5 must not be), and
+`WO-0085`:474/:503/:604 (the round's own **prediction** labels, spent, and which
+named the second unit at `:511` anyway). **`agents/handoffs/README.md`:47 needs
+nothing: it already prints the plural, and at `469c2f3` the skeleton and the
+constitution finally agree** — the disagreement I gave as my strongest ground for
+signing A3 is closed by the same commit that closed the debt this round pays.
+
+**§6. What this round deliberately does not do.** No `Status` cell moves; no count,
+census figure, discharge tally or coverage-map line moves; no row is added,
+converted, struck or discharged; **`BAR T1` stays SHUT**; **no
+`SO-xgmii_tx_64.md` is opened or offered**; `M04-G4` is still outstanding;
+`DVC-1a` and `T-2` are still unbuilt; **`WO-0084`'s tally is untouched**. The
+`class-11` gate-SHA disposition remains **owed and unoperated** — this round
+re-quotes the instruction, it does not execute it, and the operator seat is the
+orchestrator's (ADR-0019). The round-interval counters at `J-dv_lead-0201`/`-0202`
+are again **not incremented**: this is a clerical restatement round, not an M04
+engineering round, and an interval that counts rounds it did not run is the
+arithmetic this seat files findings about.
+
+**§7. Harvest.** **None due, declared rather than omitted.** `PROTOCOL` §7 and
+`ADR-0018` attach the harvest to every `SO-` and every phase gate; this is
+neither, so the span since my last harvest stays open and continues to tile
+through this entry, as `J-dv_lead-0199` … `-0202` recorded. **One candidate is
+banked**, distinct from `J-0202` §8's and with its three limbs discharged: *a
+census that reports a residue must state the predicate that produced it, not the
+scope it was measured over — a residue reported as a scope figure is read as a
+scope figure and is wrong the moment the scope is wider than the predicate.*
+**LH1** this entry's §5(b) and the `J-dv_lead-0202` Evidence sentence it corrects;
+**LH2-g**, no proper noun of any kind in the rule statement; **LH3** without it a
+later reader takes the residue for a sweep result and stops looking, which is the
+`FINDING WO-0085-R1` failure re-run one level up — there the sweep was scoped by a
+string, here the report was labelled by a scope.
+
+### Actions
+
+- Ran the precheck in **one** shell invocation as dispatched: `git status --short`
+  (**empty**) and `git rev-parse HEAD` (**`469c2f3…`**). Proceeded on clean.
+- Read the applied `(b.2)` **at `469c2f3` via `git show`**, then confirmed the
+  working-tree file is the same blob, so the quote is taken from the acceptance
+  commit and not from the ADR draft, the dispatch's summary, or memory.
+- **Edited exactly one line** — `test/attack_plans/AP-xgmii_tx_64.md`:1049 —
+  striking `**killing unit named**` in place and appending the dated annotation
+  carrying the applied survivor-limb text, the *"In both limbs"* reach, and the
+  two-unit consequence for the `class-11` disposition.
+- Re-ran the site census at this HEAD by three passes: the literal string
+  repo-wide; the same restricted to `PROTOCOL` §6's four write-scope roots; and a
+  **paraphrase sweep** by the claim rather than the string (`run id`,
+  `unmodified committed diff`, `disposition form`, `exactly one disposition`), per
+  the rule `FINDING WO-0085-R1` banked at `J-dv_lead-0199`.
+- Measured my whole write scope against the census SHA `2a4a5bc` to establish that
+  no site could have appeared, rather than inferring it from the commit subjects.
+- Dispositioned every singular-carrying line in my scope individually (§5c),
+  including the two the earlier enumeration counted but did not classify.
+- **Wrote two files and no others**: the one `test/**` line, and this journal.
+  No `docs/**`, no `libs/**`, no packet, nothing of the architect's or the
+  auditor's, **and no git write of any kind**.
+
+### Evidence
+
+All commands run from a checkout at `469c2f3` with the single edit in the tree;
+each reproduces there.
+
+- **Precheck.** `git status --short` → empty. `git rev-parse HEAD` →
+  `469c2f344ad939c21706085b116ba1c0c49d0168`.
+- **The applied clause at the source.** `git show 469c2f3:agents/PROTOCOL.md |
+  sed -n '336,358p'` → survivor limb *"… at a **run id**, with the **killing unit
+  or units named** — anything weaker lets a survivor be argued dead"*; frozen-kill
+  limb *"together with the killing unit or units named, **each** present and green
+  at the gate SHA"*; and the cardinality sentence opening *"**In both limbs**, the
+  referent is the campaign record's own naming, at whatever cardinality it
+  named"*. `git diff 469c2f3 -- agents/PROTOCOL.md` → **0 lines** (tree = blob).
+  `grep -n "killing unit" agents/PROTOCOL.md` → `:343`, `:348`, `:350`; the first
+  two are plural, the third is the untouched narrative.
+- **The edit is one line and breaks no table.** `git diff --numstat --
+  test/attack_plans/AP-xgmii_tx_64.md` → `1 1`; `git diff -U0` hunk header
+  → `@@ -1049 +1049 @@`; pipe count on the row, HEAD **4** and tree **4**, so the
+  five-column change-log row is intact.
+- **The strike and the re-quote are both present.**
+  `grep -o "~~\*\*killing unit named\*\*~~"` → one hit (the old words preserved);
+  `grep -o "killing unit or units named"` → one hit (the applied words).
+- **The census, re-run.** `grep -rc "killing unit" --include=*.md .` with journals
+  and `ADR-0024` excluded → **16 files** summing to **59 lines**:
+  `agents/PROTOCOL.md` 3; `agents/handoffs/` — `SO-xgmii_rx_64.md` 9, `WO-0085…` 4,
+  `WO-0084-SEALED-predictions.md` 3, `WO-0084_m04-mutation-campaign.md` 2,
+  `README.md` 1, `WO-0083…` 1; `docs/PROCESS.md` 10, `PROCESS-STE.md` 4,
+  `PROCESS-MEMOIR.md` 2; `docs/adr/ADR-0020-…` 12,
+  `docs/reports/audit/ADR-0020-auditor-countersignatures.md` 4,
+  `…/WO-0041-mutations/README.md` 1, `…/process-council/round-4/sal-framework.md` 1;
+  `tasks/BOARD.md` 1; `test/attack_plans/AP-xgmii_tx_64.md` **1**. **Identical,
+  file for file, to `J-dv_lead-0202`'s Evidence.** *One instrument artefact,
+  recorded because it would mislead a re-runner*: the line-wise form
+  `grep -rn … | grep -v 'ADR-0024'` now returns **58**, not 59, because my own
+  annotation cites `ADR-0024` **inside** the AP row and the content filter drops
+  it; the per-file `-c` form filters on the **path** and is the one to use. The
+  count did not move — the filter did.
+- **No site could have appeared.** `git diff --stat 2a4a5bc 469c2f3 -- test/
+  tools/ docs/reports/latency/ agents/handoffs/` → **empty**.
+  `git log --oneline 2a4a5bc..469c2f3` → `5a3577d`, `ef5fd13`, `469c2f3`.
+  `git diff --stat 2a4a5bc -- <same four roots>` with my edit in the tree → exactly
+  `test/attack_plans/AP-xgmii_tx_64.md | 2 +-`.
+- **The paraphrase sweep.** `grep -rn -i "run id" test/ tools/ docs/reports/latency/
+  agents/handoffs/ | grep -v "killing unit"` and
+  `grep -rn -i "unmodified committed diff\|disposition form\|exactly one
+  disposition" <same roots>` → no further quotation of `(b.2)`'s disposition form
+  in my scope beyond the sites enumerated at §5c; the `run id` hits are CI-citation
+  discipline across the M03 campaign packets and carry no killing-unit clause.
+- **The two sites ruled not owed, read at the source.**
+  `sed -n '460,619p' agents/handoffs/WO-0085_tb-m04-cfg-ifg-gap-axis.md` → `:479`'s
+  quote, and the **RE-RUN RECORD** at `:589`–`:619` naming run **`32554521276`**,
+  job **`96986499711`**, step 6 **FAILURE**, with **`M04-F3 (cfg_ifg=20)`** and
+  **`M04-F7 (cfg_ifg=16)`** both quoted. `sed -n '862,878p'
+  agents/handoffs/SO-xgmii_rx_64.md` → `:870`'s quote inside the **DATED
+  ANNOTATION, 2026-08-11, `J-dv_lead-0187`**.
+- **Journal bound.** `scripts/policy.sh` `JOURNAL_SOFT_MAX=262144`; this volume was
+  **214 448** bytes before this entry. No rotation due; `R10` clear.
+- **No test suite was run and none is claimed.** No bench executes in this round,
+  no `[%expect]` block is written or promoted, no design is measured, and no CI run
+  is triggered by me. `dune runtest` remains unrunnable in this container
+  (**ADR-0005**, opam proxy-blocked) and **was not attempted**; every figure above
+  is a count or a read over committed text, produced by the commands named here.
+
+### Outcome
+
+**DoD: met**, for the one-site clerical round the dispatch scoped. **The owed
+restatement declared at `J-dv_lead-0202` (§5, §7's block, Open-question 1) is
+PAID and the debt is CLOSED**: `test/attack_plans/AP-xgmii_tx_64.md`:1049 now
+carries `(b.2)`'s applied text, quoted from `469c2f3` at the source, with the
+stale words struck in place and the strike explicitly labelled *stale, not false*.
+
+**The census re-measurement**: **no second site has appeared** — my whole write
+scope is byte-identical between the census SHA `2a4a5bc` and this HEAD, and the
+literal census re-runs to the same **59 lines over 16 files**, per-file figure for
+per-file figure. **One correction to my own bottom line is filed rather than
+buried** (`FINDING J-0202-1`, MINOR, mine): *"exactly one line in my write scope"*
+was imprecise, since `agents/handoffs/**` is also my scope and holds 20 of the 59;
+the true measurement is **exactly one live forward instruction to the gate**, and
+that is the line paid here. Every other singular-carrying line in my scope is
+dispositioned individually at §5c — spent instructions, frozen measurements, or
+retrospective quotations that convict the singular — and **none is re-quoted, each
+on a stated ground.**
+
+**Handoff**: this entry plus the single edited path to the orchestrator for commit
+under my seat. **No packet is written** (the reason is `J-dv_lead-0202`'s and
+`ADR-0024` A7's: a countersignature or clerical note in `agents/handoffs/` would be
+a fifth packet type minted by use). **Nothing is routed to any worker**, no `RV-` is
+owed, no spawn is requested, no `SO-` is opened or offered, and no row, status
+cell, count or tally moves anywhere.
+
+### Open-questions
+
+1. **The `class-11` gate-SHA disposition is still owed and still unoperated.** The
+   `6f165bd` rehabilitation was taken early at base `23ff121`; `RV-0085-VERDICT`
+   §9(i) supersedes it with a gate-SHA run if the suite moves. **Operator: the
+   orchestrator** (ADR-0019). Under the clause as applied, its citation carries
+   **`M04-F3`/`U28` and `M04-F7`/`U29` both** — which the re-quoted row now says on
+   its face, so no later seat has to reconstruct it from a signature block.
+2. **`FINDING J-0202-1` is filed against my own census's phrasing and needs no
+   further act** — the residue it reported was correct, the label on it was not, and
+   §5(b) states the corrected form. Recorded so an auditor sampling `J-0202`'s
+   Evidence meets the correction rather than the claim.
+3. **`WO-0085`:479 and `SO-xgmii_rx_64.md`:870 keep the old singular deliberately**,
+   ruled not owed at §5c on the ground that both instructions are spent and both
+   sit in dated records whose own closing text is already plural. **If a later seat
+   disagrees, the disagreement is with the ground and not with an oversight** —
+   which is the difference this entry exists to record.
+4. **`M04-G4` has now missed five consecutive M04 rounds**; `DVC-1a` is still
+   unbuilt so every M04 count remains a hand count with its method stated; `T-2` is
+   still unbuilt. All mine, all unchanged by this round, and **the round-interval
+   counters are deliberately not incremented** — this round ran no bench.
+5. **No escalation.** No E1, E2, E3, E5 or E6. **No finding is filed against any
+   other seat**, and the one filed against mine moves no result.
+
+### Files-in-this-commit
+- test/attack_plans/AP-xgmii_tx_64.md
