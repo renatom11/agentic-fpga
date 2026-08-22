@@ -60,6 +60,15 @@ routing it, but must relay *Verbatim*-class packets and all auditor findings
 unedited — fidelity is load-bearing there. The auditor spot-checks relay
 fidelity on the protected classes.
 
+**Minting a packet type.** The four types above are the whole of them. A fifth
+is minted only by a numbered ADR naming its **token**, its **writer**, its
+**consumer**, its **relay class** (§3's Relay rule) and its **retirement
+condition**, accepted by a seat that did not propose it; the table above then
+gains a row in the same amendment. A type minted by use binds nobody and its
+traffic is unrouted. **A type may also be retired**, by the same instrument, and
+retirement is a disposition rather than a deletion: the table keeps the row with
+its dates. (ADR-0024 A7.)
+
 Work-order lifecycle: `DRAFT → ISSUED → RETURNED → ACCEPTED | BOUNCED`
 (state recorded in the packet header; BOUNCED packets carry the defect list and
 respawn as a new ISSUED revision). Every work order carries the
@@ -162,10 +171,15 @@ The orchestrator commits exclusively via **`scripts/agent_commit.sh`**, which
 enforces, before any commit is created:
 
 - **R1 — One agent per commit.** Mixed-agent changes are split into separate
-  sequential commits. *Honesty note*: for scoped agents this is emergent from
-  R7+R8 (a commit cannot mix two scoped agents' work); for the orchestrator —
-  whose scope is everything — correct attribution and splitting is
-  audit-enforced, not mechanical. The mechanical invariant is one journal
+  sequential commits. *Honesty note*: for scoped agents R7+R8 **narrow** the
+  mixing surface without closing it — the scope table's rows are not disjoint,
+  and `agents/handoffs/**` is deliberately shared by every packet participant
+  (§3), so a commit staging two seats' packets breaks no scope rule; what makes
+  such a commit single-agent is R2's one journal append, which assigns
+  attribution rather than refusing the mixture. **R1 is therefore
+  audit-enforced for every seat**, and mechanical for none (ADR-0024 A1); for
+  the orchestrator — whose scope is everything — correct attribution and
+  splitting is audit-enforced likewise. The mechanical invariant is one journal
   append per commit.
 - **R2 — Coupling.** Any commit touching work products must stage a pure
   EOF-append to exactly the responsible agent's journal containing the new
@@ -206,11 +220,24 @@ enforces, before any commit is created:
   ultimately guaranteed by GitHub branch protection on *both* `main` and the
   working branch — a sponsor-side setting (G0 checklist), without which R9 is
   convention only.
+- **R10 — Journal chain integrity.** The chain is verified across volumes:
+  rotation headers, back-links, contiguous ids, one volume per commit. **The
+  active volume's size is bounded**: above `JOURNAL_SOFT_MAX` the commit script
+  warns, above `JOURNAL_HARD_MAX` it refuses and names the rotation. CI
+  evaluates the same bound over history and reports it as a warning, because a
+  permanent red is proportionate to harm that persists in every future reader
+  and an oversized volume's harm is bounded by one file's readability, with its
+  cure available prospectively to its owner — where `R11`'s blob gate refuses on
+  exactly the opposite proportionality.
+- **R11 — CI blob gate.** `check_journals.sh` re-verifies ADR-0002's blob
+  threshold over every commit, with journals carved out per `R10`.
 
 **CI re-verification**: `.github/workflows/journal-check.yml` runs
 `scripts/check_journals.sh` over the entire pushed range and re-checks
-R1–R8 for every commit (append-only across the range, monotonic IDs,
-files-list equality, trailer well-formedness, path isolation). A locally
+`R1`–`R8` and `R10`–`R11` for every commit (append-only across the range,
+monotonic IDs, files-list equality, trailer well-formedness, path isolation),
+and emits advisory `WARN-STAMP`/`WARN-JOURNAL` counters that never affect its
+verdict (ADR-0021, ADR-0024 A4). A locally
 bypassed check (`git commit --no-verify` outside the script) still fails on
 GitHub before merge. **One out-of-repo dependency**: branch protection on
 `main` **and the working branch** (no force push, no deletion, `journal-check`
@@ -255,8 +282,22 @@ journal-entry reference (`J-<agent>-NNNN`), so governance itself is diffable.
 | `P<n>-module-ready` | Per-module DV sign-off packets (`SO-*.md`) PASS; the auditor's seeded mutations dispositioned per **Mutation record** below; line-rate stress green for rx-path modules. |
 | `P<n>-phase-accept` | System replay clean; latency report committed; audit report committed with no open CRITICAL findings; sponsor approval (escalation class E1). |
 
-**Signature transcription**: signers cannot stage `docs/gates/**` themselves
-(§6), so the **orchestrator transcribes** all gate-checklist signatures. A
+**Cadenced controls have a spawning owner.** Every review-enforced control whose
+charter states an interval (*once per phase*, *per gate*, *per cycle*) is
+dischargeable only inside a round somebody commissions. The **orchestrator**
+owns the cadence: it is the seat obliged to schedule each such control's next
+occurrence, and `tasks/BOARD.md` carries the next-due date. A control whose
+next-due cell is empty is unscheduled, and that is a visible debt rather than a
+silent one. **Review-enforced.** (ADR-0024 A6.)
+
+**Signature transcription**: the **orchestrator transcribes** all
+gate-checklist signatures. **The ground is a rule, not a refusal**: §6 puts
+`docs/gates/**` outside `dv_lead`'s and the auditor's scopes but **inside**
+`architect_docs_lead`'s, so for the specification lead — the seat that authors
+gate checklists — self-signature is prevented by this clause and by the
+declaration in the checklist file itself, and by nothing mechanical. The
+residue is declared rather than closed; narrowing the scope table is available
+and is not taken here (ADR-0024 A2). A
 signature's authority is the referenced `J-<agent>-NNNN` entry, which must
 itself state "I sign gate X item Y" in the signer's own journal — the
 checklist edit is clerical and commits under `Agent: orchestrator`.
@@ -299,17 +340,22 @@ mutation **survived its own campaign** when its campaign's seal predicted a kill
 and no unit killed it. For such a mutation the disposition takes exactly this
 evidence form and no weaker one: the **unmodified** committed diff, replayed
 against the bench as it stands at the gate SHA, at a **run id**, with the
-**killing unit named** — anything weaker lets a survivor be argued dead. The
+**killing unit or units named** — anything weaker lets a survivor be argued dead. The
 campaign's own `survived` count keeps what it measured; the two facts are
 recorded side by side and never folded into one. **A campaign kill is a frozen
 measurement too**, and this clause's question is present-tense for both outcomes:
 a class killed in its own campaign is dispositioned by that campaign's record
-**together with the named killing unit, present and green at the gate SHA**. That
+**together with the killing unit or units named, each present and green at the
+gate SHA**. That
 form catches a killing unit deleted or disabled since its campaign; it does not
 catch one weakened, and it is not a re-run of the campaign — a rehabilitation
 reverses the record's own measurement and so needs a new one, while a kill's
 disposition preserves that measurement and needs only that its instrument still
-stands. **(b.3) Equivalent mutants.** A
+stands. **In both limbs, the referent is the campaign record's own naming, at
+whatever cardinality it named**: where a class was killed by several units,
+every one of them is the disposition's subject and every one must be present
+and green — a disposition may not select the most durable member (ADR-0024 A3).
+**(b.3) Equivalent mutants.** A
 mutation that no conformant observation can distinguish from the unmutated
 design is an **equivalent mutant** and leaves the denominator — but only where
 the equivalence is **proven in a committed artefact**, the proof quantifying over
@@ -401,11 +447,28 @@ The org must survive the loss of any session, including the orchestrator's:
   MAC/UDP vs verilog-ethernet differential co-sim).
 - The **auditor owns the DV-escape ledger** (`docs/reports/audit/`): any
   post-sign-off divergence found later is recorded there, not by DV.
-- Mutation discipline — the **transient model**, sequenced: the auditor
-  authors mutation manifests (patches) under `docs/reports/audit/mutations/`;
-  the **orchestrator applies each manifest transiently in an uncommitted
-  working tree**, runs the DV suite against it, reverts fully, and never lets
-  mutated RTL enter history. Sequencing: for each module, the campaign runs
+- Mutation discipline — the **never-merge model**, sequenced (ADR-0019;
+  ADR-0024 A8, which composes the two records' drafts): the auditor authors
+  mutation manifests (patches) under `docs/reports/audit/<WO-id>-mutations/`
+  together with the **operator table** the orchestrator executes from, and
+  **runs no `git` write of any kind — it seeds manifests only** (ADR-0019).
+  The **orchestrator alone operates the manifest**: it renders each class onto
+  a marked never-merge reference — one transient `mut/*` branch per class,
+  fresh from the campaign base, each branch being that base plus exactly one
+  manifest diff — commits each with a plain `git commit` messaged
+  `MUTATION RUN <id> -- never merge`, pushes it so that CI — the only
+  authoritative build environment (ADR-0005) — can run the DV suite against
+  it, and records the run id. A transient is **never merged, never rebased and
+  never force-pushed**: **the never-merge property replaces reversion** as the
+  guarantee that mutated RTL never reaches the working branch or `main`, and
+  it is checkable by a stranger from a full clone. The **manifest's operator
+  table is the sole authority** for what is cut; a disagreement with it is a
+  finding routed back, never an edit. A red `journal-check` on a `mut/*` ref
+  is declared noise (ADR-0019 §4 B4): never a verdict, never a clearance, and
+  never a substitute for the check on a protected branch. **Where an adopter's
+  substrate can run the suite locally, the transient apply-and-revert form is
+  lawful and preferred** — it leaves no reference to police.
+  Sequencing: for each module, the campaign runs
   **after rtl_lead's `RV-` ACCEPT and before dv_lead may issue `SO-` PASS**,
   so every PASS reports **the disposition of every seeded mutation, each
   non-kill named and dispositioned** — at least three seeded classes, spanning
@@ -446,7 +509,14 @@ The org must survive the loss of any session, including the orchestrator's:
 Any change to this protocol, a charter, or the enforcement scripts requires:
 (1) a numbered ADR in `docs/adr/` recording alternatives and rationale,
 (2) an orchestrator journal entry, (3) if the change alters enforcement
-semantics, an updated `scripts/test_protocol.sh` case proving the new behavior.
+semantics, an updated `scripts/test_protocol.sh` case proving the new behavior,
+(4) if the change alters **enforcement semantics** — what a rule refuses, on
+which surface, under what posture — either a **re-edition of the process
+description** (`docs/PROCESS.md`) naming the clauses that moved, or a
+**logged waiver** stating that nothing there needs to change and why. Both are
+acts with an author and a date; neither may be silent. The obligation is owned
+by `architect_docs_lead` and discharged in that seat's journal. **Review-enforced
+— no script reads it.** (ADR-0024 A5.)
 
 Program-scope parameters (phase decomposition, clock/datapath figures,
 book depth, message subsets) are canonically stated in README's phase table

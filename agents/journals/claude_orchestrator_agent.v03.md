@@ -2596,3 +2596,97 @@ charters - the act that closes F-0030-1 and triggers the ninth edition.
 ### Files-in-this-commit
 - agents/journals/INDEX.md
 - tasks/BOARD.md
+
+## [J-orchestrator-0312] 2026-08-22T15:15:00Z | task:none | The SS11(2) acceptance: ADR-0024's eight subjects and ADR-0019's twelve-days-owed status land in one commit, the hunks composed where two records drafted one clause
+
+### Trigger
+Both countersignature rounds RETURNED (auditor ACCEPT x5 at ef5fd13;
+dv_lead A3 COUNTERSIGNED whole at 5a3577d). Every owed signature but my
+own is rendered; the acceptance act, the application, and the
+composition ruling F-0031-3 routed to me are this entry.
+
+### Inputs
+- ADR-0024 in full (806 lines pre-acceptance); ADR-0019 in full;
+  agents/PROTOCOL.md in full at 2a4a5bc.
+- docs/reports/audit/ADR-0024-auditor-countersignatures.md and
+  J-auditor-0031 (the five ACCEPTs, F-0031-1/2/3, the scoped F-0030-1
+  closure statement).
+- J-dv_lead-0202 (A3 whole; Constructions A/B/C; the placement
+  recommendation; the AP:1049 owed restatement).
+- The nineteen charter sites, each read at its line before editing.
+
+### Reasoning
+My five limbs, grounds stated: A4 - the enumeration matches what
+refuses, and today's own record is the exhibit (WARN-JOURNAL fired at
+a0cf4dd's commit, WARN-STAMP twice, the R10 hard bound named in the
+warn text; the blob gate lives in check_journals.sh). A5 - the fourth
+requirement reaches me and I accept being reached; this very commit is
+its first subject (no refusal semantics move, so the obligation lands
+as the ninth edition's trigger, not a waiver). A6 - the cadence reading
+is how I in fact commission rounds; the board carries next-due debts
+already. A7 - the minting route is operable by the numbering authority;
+HT- is the exhibit. A8 - I operated the never-merge model myself, 13
+refs at WO-0084 and one this morning; never-merge-replaces-reversion is
+the true invariant. COMPOSITION (F-0031-3, mine to rule): ADR-0019 SS7.1
+carries the mechanics (operator table, path, message, B4) and ADR-0024
+A8 carries the invariant framing and the adopter alternative; the
+composed bullet takes both, renamed "the never-merge model" so the
+stale heading F-0031-2 convicted falls with it; the auditor charter
+takes SS7.2/SS7.3 verbatim; ADR-0019's status moves in the same commit.
+PLACEMENT (dv's recommendation): adopted - the cardinality sentence
+opens "In both limbs". SITE READING: SS12.1's sites are lines, not
+phrases - auditor:22's residual "You record N/N results" moved with its
+site (leaving it would have made the charter self-contradictory in the
+sentence next to its repair); recorded here so the choice is visible.
+F-0031-1's three citation fixes are the architect's text and are NOT
+made here - owed at the ninth edition, per the auditor's own routing.
+
+### Actions
+- agents/PROTOCOL.md: all eight subjects applied (SS3 minting; SS5 R1
+  note + R10/R11 + CI paragraph; SS7 cadence owner + transcription
+  ground + plural killing-unit with the In-both-limbs sentence; SS10 the
+  composed never-merge bullet; SS11 requirement (4)).
+- Seven charters, nineteen sites re-quoted (SS12.1 x9 as whole lines,
+  SS12.2 x10, ADR-0019 SS7.2/SS7.3).
+- ADR-0024: Status ACCEPTED - IN FORCE; SS21 countersignature
+  transcription appended (authority in each seat's cited artifact).
+- ADR-0019: Status ACCEPTED - IN FORCE with the composition citation.
+- tasks/BOARD.md: the acceptance row; five standing debts each with
+  owner; queue restated (ninth edition now triggered).
+
+### Evidence
+- scripts/test_protocol.sh: 68 passed, 0 failed, run at this tree
+  before commit (no enforcement semantics moved - the scripts were
+  untouched, and the suite proves it).
+- scripts/check_process_doc.sh: OK at this tree.
+- Charter edits applied with single-site assertions (count==1 checked
+  per site before replacement; the apply script printed 16 sites over
+  seven files, plus auditor:22's compound site edited by hand).
+
+### Outcome
+The constitution now teaches what the program does: eleven rules
+enumerated, the never-merge campaign model, the plural killing unit,
+the minting route, the cadence owner, the fourth amendment requirement.
+F-0030-1's residue list is emptied on the auditor's own terms, subject
+to its re-measurement. The ninth edition is triggered and owed to the
+architect; the never-merge ancestry check is owed to me.
+
+### Open-questions
+- The never-merge CI ancestry assertion (ADR-0024 SS19): owed, mine,
+  closing event a CI check on the working branch.
+- The adverse-party residue stands as stated at ADR-0024 SS17: A4/A5/A7
+  carry no independent limb; a reviewer with one check should spend it
+  there (the auditor's next audit cycle is the natural carrier).
+
+### Files-in-this-commit
+- agents/PROTOCOL.md
+- agents/charters/auditor.md
+- agents/charters/dv_lead.md
+- agents/charters/tb_writer.md
+- agents/charters/formal_dv.md
+- agents/charters/orchestrator.md
+- agents/charters/rtl_lead.md
+- agents/charters/rtl_module_dev.md
+- docs/adr/ADR-0024-the-constitution-is-the-last-mile.md
+- docs/adr/ADR-0019-the-seeder-never-operates-the-repo.md
+- tasks/BOARD.md

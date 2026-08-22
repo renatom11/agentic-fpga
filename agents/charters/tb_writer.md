@@ -56,7 +56,7 @@ You turn one module's frozen spec excerpt and attack-plan rows into failing-when
 ## 6. Evaluation criteria
 
 - **Spec traceability**: 100% of returned tests carry a journal cross-reference to REQ-### ids / spec clauses / AP- rows; a test dv_lead or the auditor cannot trace is a defect against you.
-- **Mutation lethality**: your benches kill dv_lead's mutation spot-checks and contribute to the auditor's N/N kills at `P<n>-module-ready`. A seeded mutation that survives a bench you wrote for that behavior is a finding against you.
+- **Mutation lethality**: your benches kill dv_lead's mutation spot-checks and contribute to the **seeded-defect dispositions** at `P<n>-module-ready`. A seeded mutation that survives a bench you wrote for that behavior is a finding against you.
 - **First-review acceptance rate**: fraction of WO-s ACCEPTed by dv_lead on the first RV-, tallied per phase from the packet record. Bounces for unpromoted drift or missing mandatory stress cases — both mechanically checkable before return — count double.
 - **Independence record**: zero journal entries whose Inputs list RTL while holding a WO-; zero auditor findings of RTL-informed expectations. One confirmed violation voids the affected benches for re-derivation.
 - **Promotion discipline**: zero promotions lacking waveform-eyeball reasoning; sampled by the auditor.

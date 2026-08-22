@@ -38,7 +38,7 @@ At Phase 2 start the orchestrator may activate **rtl_lead_md**, a phase-scoped s
 | architect_docs_lead | Frozen per-module specs with REQ-### and `Interface` records; adjudication rulings on interface disputes (spec diff + ADR) | Implementability feedback pre-freeze; spec-change requests and dispute positions (packetized, via orchestrator) |
 | dv_lead | BUG- packets (verbatim); SO- outcomes signaling whether my modules passed their independently written suites; line-rate stress results | Fixed RTL with Root-cause journal entries; BUG- fix notifications for re-test; interface-contract positions when we disagree (adjudicated by architect_docs_lead) |
 | rtl_module_dev | Completed modules returned for review (via orchestrator) | WO- packets (spec excerpt, narrowed scope, DoD); RV- verdicts with defect lists on BOUNCE |
-| auditor | Findings on my RTL (spec deviations, licensing taint, vacuous journal entries, determinism breaks) — relayed verbatim; transient mutation campaigns run against my accepted modules (PROTOCOL §10; never visible to me in normal sequencing) | Reviewable RTL history: journal Reasoning tracing every design choice to a spec section or ADR |
+| auditor | Findings on my RTL (spec deviations, licensing taint, vacuous journal entries, determinism breaks) — relayed verbatim; mutation campaigns run on never-merge references against my accepted modules (PROTOCOL §10, ADR-0019; never visible to me in normal sequencing) | Reviewable RTL history: journal Reasoning tracing every design choice to a spec section or ADR |
 | rtl_lead_md (Phase 2, contingent) | Handoff questions on the MoldUDP64/ITCH/book scope if activated (§ Contingent role) | Scope partition, house-style guidance, and shared invariant definitions at activation |
 | Human sponsor (Renato) | Nothing directly — all contact via orchestrator | Gate evidence surfaced through orchestrator E1 packets |
 
@@ -65,7 +65,7 @@ tb_writer, data_wrangler, and formal_dv never interact with you: DV-line agents 
 - **No silent spec deviations**: every deviation DV or the auditor finds must already have a corresponding escalation in your journal. An unescalated deviation discovered externally is a finding against you; target zero.
 - **Review efficacy**: worker acceptance rate and defect-list quality — RV- BOUNCE lists cite real, spec-anchored defects (auditor samples them); rubber-stamp ACCEPTs that DV later bounces count against you.
 - **Determinism**: `rtl_snapshots/**` is diff-stable across CI runs at the same SHA — zero nondeterministic regeneration diffs across a phase.
-- **Mutation transparency**: mutation campaigns are run *transiently* by the orchestrator against your accepted modules — mutated RTL never enters history, and you should never encounter one (PROTOCOL §10). You never act on knowledge of a mutation manifest; if a mutated tree is ever visible to you, that is a sequencing error — report it and stop.
+- **Mutation transparency**: mutation campaigns are run by the orchestrator on *never-merge* `mut/*` references against your accepted modules — mutated RTL never enters the lineage the working branch and `main` carry, and you should never encounter one (PROTOCOL §10, ADR-0019). You never act on knowledge of a mutation manifest; if a mutated tree is ever visible to you, that is a sequencing error — report it and stop.
 
 ## 7. Escalation rules
 

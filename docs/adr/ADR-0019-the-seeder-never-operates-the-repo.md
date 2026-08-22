@@ -1,6 +1,11 @@
 # ADR-0019: the seeder never operates the repo, and the operator never authors the evidence
 
-- **Status**: **PROPOSED**, and the rule it records **has been in force since
+- **Status**: **ACCEPTED — IN FORCE** (orchestrator §11(2) acceptance at
+  `J-orchestrator-0312`, 2026-08-22, in the commit that lands the §7 texts
+  composed with `ADR-0024` A8 — the reconciliation `F-0031-3` asked for is
+  recorded in that entry and in `ADR-0024` §21; the twelve days this line
+  read PROPOSED while the rule was in force are `F-0030-1`'s subject). The
+  rule it records **has been in force since
   `J-orchestrator-0218`** (2026-08-10), where `FINDING WO-0074-A1` (MAJOR,
   auditor) was ruled **ACCEPTED** by the orchestrator against its own dispatches.
   This ADR is the authorising instrument PROTOCOL §11 requires for that ruling

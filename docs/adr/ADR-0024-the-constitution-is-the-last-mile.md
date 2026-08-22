@@ -1,6 +1,11 @@
 # ADR-0024: the constitution is the last mile
 
-- **Status**: **PROPOSED.** Nothing here is self-ratifying. In force per subject
+- **Status**: **ACCEPTED — IN FORCE**, all eight subjects (orchestrator §11(2)
+  acceptance at `J-orchestrator-0312`, 2026-08-22; countersignatures rendered
+  and transcribed at §21; the §11 hunks and §12 re-quotes applied in the
+  accepting commit, A8 composed with `ADR-0019` §7 per the auditor's
+  `F-0031-3`). The original status block is preserved below as the record of
+  what acceptance required. **Originally PROPOSED.** Nothing here is self-ratifying. In force per subject
   only on (1) this record, (2) the orchestrator's `PROTOCOL` §11(2) acceptance
   entry, (3) the countersignatures §17 names, and (4) for the subjects that move
   enforcement semantics, the `scripts/test_protocol.sh` cases §19 owes. The
@@ -804,3 +809,33 @@ applicable" eight times without stating the measurement is a step nobody ran.*
 - **Whether this batch should have been eight records.** §16.1 states the choice;
   a reviewer who disagrees is disagreeing with the record's shape and not with any
   subject in it, and can say so in one countersignature line.
+
+---
+
+## 21. Countersignatures — rendered (transcribed by the orchestrator, 2026-08-22)
+
+Authority lives in each seat's own committed artifacts, cited per row; this
+section is clerical transcription under the acceptance commit's trailer
+(the §3-packet/§7-gate transcription convention).
+
+| Subject | Seat | Verdict | Source of record |
+|---|---|---|---|
+| A1 | auditor | **ACCEPT** (attribution audit-enforced in its practice, thinness disclosed: exercised in two ratification-era cycles, not per merge window) | `docs/reports/audit/ADR-0024-auditor-countersignatures.md`, `J-auditor-0031` |
+| A2 | auditor | **ACCEPT** (scope probes re-run at HEAD; checklist:71 corroboration noted) | same |
+| A3 | auditor | **ACCEPT**, with `F-0031-1` (MINOR): this record's citation of the stop entry is wrong at :99, :215, :549 — the stop is at `J-architect_docs_lead-0047`, not `-0056`. Correction, not contest; the three sites are owed to the architect at the ninth edition | same |
+| A3 | dv_lead | **COUNTERSIGNED whole** — move 3 signed as operative text; Constructions A/B/C recorded; placement recommendation (move 3 reading across both limbs) **adopted in the applied text** ("In both limbs, …") | `J-dv_lead-0202` §7's delimited block |
+| A4 | orchestrator | **ACCEPT** — verified at application: `scripts/policy.sh` carries `JOURNAL_SOFT_MAX`/`JOURNAL_HARD_MAX`, `agent_commit.sh` warns/refuses by them (both fired in today's record: WARN-JOURNAL at `a0cf4dd`'s commit, WARN-STAMP twice), `check_journals.sh` carries the blob gate; the three-surface table matches what refuses | `J-orchestrator-0312` |
+| A5 | orchestrator | **ACCEPT** — the fourth requirement binds this seat too, and today's record is its use case: this acceptance alters no refusal semantics, so the ninth edition it triggers is §2.7(4)'s re-edition limb, not a waiver | same |
+| A6 | orchestrator + auditor | **ACCEPT both limbs** — the spawning seat recognises the cadence-ownership reading (it is how today's rounds were in fact commissioned); the auditor confirmed the intervals are its charter's | `J-orchestrator-0312`; `J-auditor-0031` |
+| A7 | orchestrator | **ACCEPT** — the minting route is operable by the numbering authority; the `HT-` mint-by-use and retirement (ADR-0023) is the exhibit it would have prevented | `J-orchestrator-0312` |
+| A8 | orchestrator + auditor | **ACCEPT both limbs** — the operator's own record confirms the pushed-reference model is what ran (13 + 1 refs operated by this seat at WO-0084/WO-0085 alone; 86 total, 0 merged, re-verified by the auditor this morning); never-merge is the right invariant. **Applied composed with `ADR-0019` §7.1–§7.3** (operator table, manifest path, plain-commit message, B4's noise rule), the auditor's `F-0031-2`/`F-0031-3` being the grounds: the bullet is renamed from "the transient model" to "the never-merge model", and `ADR-0019` moves to ACCEPTED in the same commit | `J-orchestrator-0312`; `J-auditor-0031` |
+
+**Closure state of `F-0030-1` after this commit** (per the auditor's own scoped
+statement): the constitution teaches the true mechanism; the manifest path, the
+operator table, and the auditor charter's path half are landed via the
+`ADR-0019` §7 composition; `ADR-0019`'s status is moved. The finding's residue
+list is emptied on its own terms; the auditor re-measures at its next round.
+
+**New debt this acceptance re-affirms** (§19): nothing verifies that a `mut/*`
+reference never merges — owner orchestrator, closing event a CI ancestry
+assertion on the working branch; carried on `tasks/BOARD.md`.
