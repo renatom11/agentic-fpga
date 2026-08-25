@@ -36,6 +36,12 @@ body { margin:0; background:var(--bg); color:var(--ink);
   text-transform:uppercase; color:var(--rx); display:block; margin:1.5rem 0 .35rem; }
 h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem; }
 .sub { color:var(--ink-2); max-width:80ch; margin:0 0 1.2rem; font-size:.95rem; }
+.whybox{border:1.5px solid var(--line);border-left:4px solid var(--human);border-radius:12px;
+  background:var(--panel);padding:.72rem .95rem .78rem;margin:0 0 1.3rem;max-width:96ch}
+.whybox .wt{font:600 .68rem ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--human);display:block;margin-bottom:.32rem}
+.whybox p{margin:0;font-size:.88rem;color:var(--ink-2);line-height:1.62}
+.whybox b{color:var(--ink)}
 .mono { font-family:'Plex Mono',monospace; }
 
 .app { display:grid; grid-template-columns: minmax(0,1fr) 318px; gap:1rem; align-items:start; }
@@ -289,12 +295,29 @@ h1 { font-size:clamp(1.4rem,3.2vw,2rem); line-height:1.15; margin:.1rem 0 .4rem;
 </style>
 <nav class="tabbar"><a href="index.html">OVERVIEW</a><a href="block-diagram.html">BLOCK DIAGRAM</a><a href="spec-atlas.html">SPEC ATLAS</a><a href="org-chart.html">ORG CHART</a><a href="framework.html">FRAMEWORK</a><a href="lifecycle.html" class="here">LIFECYCLE</a><a href="backlog.html">BACKLOG</a><a href="https://github.com/renatom11/agentic-fpga" target="_blank" rel="noopener">GITHUB ↗</a></nav>
 <!-- site-chrome-end -->
+
 </head>
 <body>
 <div class="wrap">
   <span class="eyebrow">agentic-fpga / lifecycle</span>
   <h1>One project, start to finish</h1>
   <p class="sub">This page follows one FPGA project end to end: uart_lite, a fixed-rate 115200 baud 8N1 serial port for a 50 MHz board, five modules, built by AI agents under one human sponsor. Thirty-nine beats, from an empty repository to a signed-off receiver. Press play, or drag the scrubber. Click any box in the repository to see what is inside it at that point on the timeline.</p>
+
+  <div class="whybox">
+    <span class="wt">Why a UART here, and not the NIC</span>
+    <p>The programme this organisation exists to build is the <b>10G trading network card</b>
+    documented across the rest of this site &#8212; and it is <b>not finished</b>, so it cannot yet be
+    shown end to end. A walkthrough built from it today would stop in the middle of a module:
+    that demonstrates a method working, not a method completing. <b>uart_lite was chosen because
+    it is small enough to carry the whole way</b> &#8212; specification, review, a testbench written
+    blind from the spec, a real bug caught, a mutation campaign against the benches themselves,
+    and a passing suite in CI &#8212; inside one finished project, in its own repository, so the
+    demonstration and the NIC programme never contaminate each other. What you are watching is
+    the <b>method, shown whole on a design that fits</b>. The NIC is where the same seats, the
+    same protocol and the same gates are doing the work that is still in progress; the
+    <a href="backlog.html">backlog</a> is where that work reports its real state.</p>
+  </div>
+
 
   <div class="app">
     <div>

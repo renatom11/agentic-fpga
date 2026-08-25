@@ -2750,3 +2750,71 @@ resume point. The pause lifts on sponsor direction, as the last one did.
 
 ### Files-in-this-commit
 - tasks/BOARD.md
+
+## [J-orchestrator-0314] 2026-08-25T22:50:00Z | task:none | The lifecycle page states why the demonstration is a UART - sponsor-directed site work, not an engineering round, with the pause intact
+
+### Trigger
+Sponsor direction: add a note to the showcase site's lifecycle page
+explaining why the UART project carries the process demonstration
+rather than the NIC programme - the NIC is not finished and cannot do
+it yet. Site/communication work; the NIC engineering pause
+(J-orchestrator-0313) is untouched and no engineering seat was spawned.
+
+### Inputs
+- site/lifecycle_src.html and site/public/lifecycle.html (header region
+  and CSS at the .sub anchor, read in both before editing).
+- site/build.py's ART list, which chrome-injects lifecycle.html rather
+  than generating it - so the published artifact is a committed file and
+  the edit must land in it, not only in the source.
+- .github/workflows/site-deploy.yml, whose own comment governs what may
+  be committed: pages are regenerated at deploy time, so a landing must
+  not carry regenerated output.
+
+### Reasoning
+Placement and styling follow the page's existing semantics: the note
+answers a question the reader has BEFORE the walkthrough, so it sits
+between the standfirst and the stage, and it takes the --human accent
+which this page already uses for "the sponsor, the one human" - the
+note is the sponsor's answer, so it wears the sponsor's colour. Both
+files were edited with single-site assertions rather than one, because
+the source and the published artifact are separately committed here and
+a note in only one of them is a page that disagrees with its own source.
+The local build.py run also refreshed six generated pages (fresh commit
+counts, journal totals, the M04 row); those were REVERTED before
+staging - the deploy workflow regenerates them from the pushed tree, and
+committing them is the generated-file loop its comment exists to
+prevent. Wording carries no figure that can go stale, and it points at
+the backlog rather than restating any NIC status of its own.
+
+### Actions
+- site/lifecycle_src.html, site/public/lifecycle.html: .whybox styles
+  and the note block after the standfirst, identical in both.
+- Reverted six regenerated pages left dirty by the local build.
+
+### Evidence
+- python3 site/build.py -> "site built . 694 commits . 638 entries . 83
+  WOs . 224 attack rows . 7/20 RTL", exit 0; the note survives the
+  chrome-injection pass (grep -c 'class="whybox"' -> 1).
+- git diff --numstat site/public/lifecycle.html -> 23 0: pure addition,
+  nothing clobbered.
+- Headless-chromium render of the built page reviewed before commit.
+- Incident: the container restored a stale snapshot (592a8b2) mid-task
+  for the fourth time this session, which is why an earlier reading of
+  this repository reported no lifecycle page at all. Cured by
+  fetch + reset to 5e2d648; the false reading was corrected to the
+  sponsor before any edit landed here.
+
+### Outcome
+The showcase site's lifecycle page now says why the demonstration is a
+UART and where the NIC's real state is reported. No engineering round
+ran; the pause stands.
+
+### Open-questions
+- The same note was added to the agentic-uart-demo site's own lifecycle
+  page earlier this session (b7d582c there) under a misread of which
+  site was meant. It is accurate where it sits and I have left it, with
+  the sponsor told; removing it is a one-line round if not wanted.
+
+### Files-in-this-commit
+- site/lifecycle_src.html
+- site/public/lifecycle.html
